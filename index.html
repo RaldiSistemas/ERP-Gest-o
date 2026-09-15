@@ -6908,7 +6908,7 @@
     if(!o||!o.inicio||!o.inicio.em) return 0;
     const f=ate||(o.fim&&o.fim.em)||new Date().toISOString();
     const bruto=tempoTrabalhado(o.inicio.em,f,o.jornada,true);
-    const pausado=pausasDe(o).reduce((a,p)=>a+((p&&p.de)?tempoTrabalhado(p.de,p.ate||f,o.jornada,true):0),0);
+    const pausado=pausasEfetivas(o).reduce((a,p)=>a+((p&&p.de)?tempoTrabalhado(p.de,p.ate||f,o.jornada,true):0),0);
     return _rd(exato,Math.max(0,bruto-pausado));
   }
   /* ===== Hora extra por SESSÃO =============================================
@@ -6931,7 +6931,7 @@
         const sf=s.ate||f;
         if(!(sf>s.de)) return;
         let b=tempoHoraExtra(s.de,sf,o.jornada,true);
-        pausasDe(o).forEach(p=>{
+        pausasEfetivas(o).forEach(p=>{
           if(!p||!p.de) return;
           const pa=p.ate||f;
           const pi=(p.de>s.de)?p.de:s.de, pf=(pa<sf)?pa:sf;
@@ -6943,7 +6943,7 @@
     }
     if(!o.extra) return 0;
     const bruto=tempoHoraExtra(o.inicio.em,f,o.jornada,true);
-    const pausado=pausasDe(o).reduce((a,p)=>a+((p&&p.de)?tempoHoraExtra(p.de,p.ate||f,o.jornada,true):0),0);
+    const pausado=pausasEfetivas(o).reduce((a,p)=>a+((p&&p.de)?tempoHoraExtra(p.de,p.ate||f,o.jornada,true):0),0);
     return _rd(exato,Math.max(0,bruto-pausado));
   }
   function tempoTotalOP(o,ate,exato){
@@ -7016,9 +7016,23 @@
   // pausas: [{de:ISO, ate:ISO|null, func, por}]
   function pausasDe(o){ const p=o&&o.pausas; return p?(Array.isArray(p)?p:Object.values(p)):[]; }
   function pausaAberta(o){ return pausasDe(o).find(p=>p&&p.de&&!p.ate)||null; }
+  /* Pausas que valem para o apontamento atual. Rede de segurança contra dado
+     sujo (OP resetada/editada que ficou com pausa de um apontamento anterior):
+     pausa encerrada antes do início atual é descartada, e pausa que começou
+     antes do início é cortada no início. */
+  function pausasEfetivas(o){
+    const ini=o&&o.inicio&&o.inicio.em;
+    const lista=pausasDe(o).filter(p=>p&&p.de);
+    if(!ini) return lista;
+    return lista.reduce((acc,p)=>{
+      if(p.ate&&p.ate<=ini) return acc;            // pausa de antes do reset
+      acc.push(p.de<ini?{...p,de:ini}:p);          // corta o excedente
+      return acc;
+    },[]);
+  }
   function minutosPausados(o,ateISO){
     const fim=ateISO||new Date().toISOString();
-    return pausasDe(o).reduce((a,p)=>{
+    return pausasEfetivas(o).reduce((a,p)=>{
       if(!p||!p.de) return a;
       const f=p.ate||fim;
       return a+tempoTrabalhado(p.de,f,o.jornada);
@@ -7049,7 +7063,7 @@
       .then(()=>{ toast('OP retomada'); })
       .catch(e=>toast('Erro: '+e.message));
   }
-  function totalPausas(o){ return pausasDe(o).length; }
+  function totalPausas(o){ return pausasEfetivas(o).length; }
 
 
   /* ---- Hora extra: sessões declaradas pelo operador ---- */
@@ -7728,7 +7742,16 @@
     const upd={setor:g('edSetor'),atividade:g('edAtiv'),projeto:g('edProj').trim(),
       lote:g('edLote').trim(),obs:g('edObs'),status:st,
       editadoEm:new Date().toISOString(),editadoPor:usuarioAtual()};
-    if(st==='nao'){ upd.inicio=null; upd.fim=null; upd.tempoMin=null; }
+    if(st==='nao'){
+      // Reset de verdade: além de início/fim, apaga o histórico de pausas,
+      // as sessões de hora extra e todos os tempos já calculados. Sem isso a
+      // OP volta a "Não iniciada" carregando pausas antigas, e ao ser iniciada
+      // de novo o tempo nasce descontado (aparece 0min com horas pausadas).
+      upd.inicio=null; upd.fim=null; upd.tempoMin=null;
+      upd.pausas=null; upd.extras=null;
+      upd.tempoNormalMin=null; upd.tempoExtraMin=null; upd.tempoPausaMin=null;
+      upd.leadDesvioMin=null; upd.foraExpediente=false; upd.extra=false;
+    }
     else{
       const ini=g('edIni'); if(!ini){ toast('Informe o início real'); return; }
       const iniISO=new Date(ini).toISOString();
@@ -8819,7 +8842,7 @@
               <b class="aa-t">${fmtMin(decorrido)}</b></div>
           </div>
           ${totalPausas(o)?`<div class="ap-pausas">
-            ${pausasDe(o).map((pp,pi)=>`<div class="app-l">
+            ${pausasEfetivas(o).map((pp,pi)=>`<div class="app-l">
               <span class="app-n">${pi+1}</span>
               <span class="app-h">${fmtHora(pp.de)} → ${pp.ate?fmtHora(pp.ate):'<b>em curso</b>'}</span>
               <span class="app-t">${fmtMin(tempoTrabalhado(pp.de,pp.ate||new Date().toISOString(),o.jornada))}</span>
@@ -9973,7 +9996,7 @@
     normalizaData,novaACE,novaAtividade,novaSA,novaSC,novaSimEst,novaTarefa,novoCadastroDados,novoSetor,objParaArray,
     objVinc,opSetorDe,opsNoPeriodo,ordenar,padSeq,painelAdd,painelDia,painelExcluir,painelExcluirSel,painelIrLote,
     painelMarcar,painelMarcarTodos,painelSet,painelTecla,parseDim,parseGrade,partesCodigo,pausaAberta,pausarOP,
-    pausasDe,pctCard,pedirConversoes,pendentesDaAtiv,pendentesDoCard,percorre,pinIcon,pinIconAtivo,planoCorteSVG,
+    pausasDe,pausasEfetivas,pctCard,pedirConversoes,pendentesDaAtiv,pendentesDoCard,percorre,pinIcon,pinIconAtivo,planoCorteSVG,
     planoDoLote,porPin,posicoesUsadas,previaLote,previewACE,previewCodigo,previewColar,previewNumOP,prodAbrirModal,
     prodFecharModal,prodSetorDe,progressoProjeto,projetosDoLote,proximaOPNum,proximaSA,proximaSC,proximoCC,
     redrawVinc,remCustom,remLinha,removerContagem,removerFeriado,rendAtalho,rendPeriodo,renderACE,renderACEEstoque,
