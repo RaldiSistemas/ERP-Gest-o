@@ -1104,7 +1104,10 @@
   .and-kb-linha{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .and-kb-linha .kb-nome{ color:var(--texto); }
   .and-kb-body{ padding:9px; display:flex; flex-direction:column; gap:8px; }
+  .ac-cli{ font-size:11.5px; font-weight:600; color:var(--texto); margin-top:3px; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap; }
   .and-c{ border-left-color:var(--sc,#d4930d); }
+  .ac-cli{ font-size:11.5px; font-weight:600; color:var(--texto); margin-top:4px; }
   .and-c-pausada{ opacity:.72; }
   .and-pill-pausa{ font-size:9.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--muted);
     background:rgba(75,75,85,.08); padding:2px 7px; border-radius:999px; }
@@ -7151,6 +7154,15 @@
   }
 
   function opSetorDe(sig){ return OP_SETORES[sig]||OP_SETORES.SL; }
+  function opClienteAmbiente(o){
+    const pl=o.projetosLote||[];
+    if(!pl.length) return '';
+    if(o.tipo==='lote'){
+      if(pl.length===1) return [pl[0].cliente,pl[0].ambiente].filter(Boolean).join(' · ');
+      return pl.length+' projetos do lote';
+    }
+    return [pl[0].cliente,pl[0].ambiente].filter(Boolean).join(' · ');
+  }
 
   /* ================= 1. PAINEL DE CONTROLE ================= */
   const P_COLS=[
@@ -8791,6 +8803,7 @@
               return `<button class="and-c${pausada?' and-c-pausada':''}" style="--sc:${S.cor}" onclick="abrirApont('${o.id}')">
                 <div class="ac-t"><span class="op-num">${escHtml(o.numero)}</span>
                   ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
+                ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
                 <div class="ac-f">${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</div>
                 <div class="ac-tm">${fmtMin(tempoLiquido(o,new Date().toISOString()))} ${htmlLeadMini(o)}</div>
               </button>`;
