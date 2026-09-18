@@ -7225,6 +7225,7 @@
     const e=emissaoDe(r);
     const porSetor={};
     e.det.forEach(a=>{ (porSetor[a.setor]=porSetor[a.setor]||[]).push(a); });
+    const faltaApoio=e.det.filter(a=>a.setor==='APOIO'&&!a.op);
     const corpo='<div class="ple-l">'+Object.keys(porSetor).map(sig=>{
       const S=opSetorDe(sig);
       return '<div class="ple-s" style="color:'+S.cor+'">'+sig+' &middot; '+escHtml(S.nome)
@@ -7236,7 +7237,43 @@
     abrirModal('Emissão de OP &middot; projeto '+escHtml(e.projeto||'—')+(e.lote?' &middot; lote '+escHtml(e.lote):''),
       '<p class="page-sub" style="margin:-4px 0 12px">'+e.feitas+' de '+e.total+' atividades com OP emitida.</p>'+corpo,
       '<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>'
-      +'<button class="btn btn-primary" onclick="fecharModal();abrirEmissao()">Emitir OP</button>');
+      +(faltaApoio.length&&r.projeto?'<button class="btn btn-ghost" style="border-color:#7a6ea8;color:#7a6ea8" onclick="painelEmitirApoio(\''+id+'\')">Emitir Área de Apoio ('+faltaApoio.length+')</button>':'')
+      +'<button class="btn btn-primary" onclick="fecharModal();abrirEmissao()">Emitir por lote</button>');
+  }
+  /* Emite direto do Painel só as atividades de Área de Apoio que ainda faltam
+     para o projeto da linha — sem passar pela tela "Emitir Área de Apoio" e
+     sem depender de lote (a Área de Apoio nunca exigiu lote). */
+  function painelEmitirApoio(id){
+    const r=PAINEL.find(x=>x.id===id); if(!r) return;
+    if(!String(r.projeto||'').trim()){ toast('Essa linha não tem projeto informado'); return; }
+    const e=emissaoDe(r);
+    const faltando=e.det.filter(a=>a.setor==='APOIO'&&!a.op).map(a=>a.atividade);
+    if(!faltando.length){ toast('Área de Apoio já emitida para esse projeto'); return; }
+    if(!confirm(`Emitir ${faltando.length} OP(s) de Área de Apoio para o projeto ${r.projeto}?\n\n${faltando.join(', ')}`)) return;
+    emitirApoioRapido(r,faltando);
+  }
+  async function emitirApoioRapido(r,ativs){
+    const doPainel=PAINEL.filter(x=>String(x.projeto).trim()===String(r.projeto).trim());
+    const projLote=doPainel.map(x=>({projeto:x.projeto||'',cliente:x.cliente||'',ambiente:x.ambiente||'',
+      local:x.local||'',consultor:x.consultor||'',telefone:x.telefone||''}));
+    const base=r.projeto;
+    const prox=()=>new Promise((res,rej)=>db.ref('contadores/OP_'+base)
+      .transaction(n=>(n||0)+1,(e,ok,sn)=>(e||!ok)?rej(e||new Error('contador')):res(sn.val())));
+    let feitas=0;
+    try{
+      for(const a of ativs){
+        const n=await prox(), numero=String(base)+'01'+String(n).padStart(3,'0');
+        const id='op'+Date.now()+Math.floor(Math.random()*900+100);
+        await db.ref('ops/'+id).set({id,numero,tipo:'digital',projeto:r.projeto,lote:r.lote||'',
+          projetosLote:projLote,setor:'APOIO',atividade:a,jornada:jornadaSalvar(jornadaPadrao()),obs:'',
+          status:'nao',emitidoEm:new Date().toISOString(),emitidoPor:usuarioAtual()});
+        feitas++;
+      }
+      fecharModal();
+      toast(`${feitas} OP(s) de Área de Apoio emitida(s) para o projeto ${r.projeto}`);
+    }catch(e){
+      alert('Erro ao emitir: '+(e.message||e)+(feitas?`\n\n${feitas} OP(s) já foram criadas.`:''));
+    }
   }
   function painelIrStatus(nivel){
     const idx=indiceEmissao();
@@ -7249,6 +7286,10 @@
 
   function renderPainel(){
     TELA='painel';
+    const _scrollY=view.scrollTop; // preserva a rolagem: o listener do Firebase
+    // re-renderiza a tela inteira a cada mudança (até uma letra digitada numa
+    // célula), e trocar o innerHTML zera o scroll — sem isso a tela pula pro
+    // topo a cada linha cadastrada/editada.
     const IDX=indiceEmissao();
     const EST=PAINEL.map(r=>emissaoDe(r,IDX));
     const cNao=EST.filter(e=>e.nivel==='nao').length;
@@ -7312,6 +7353,7 @@
           <button class="btn btn-ghost" onclick="painelAdd(5)">+ 5 linhas</button>
           <button class="btn btn-primary" onclick="abrirColar()">Colar do Excel</button></div></div>`:''}
     </div>`;
+    view.scrollTop=_scrollY;
     ligarPaste();
   }
   function linhasPainel(EST){
@@ -10015,7 +10057,7 @@
     acPreencheExato,aceAddLinha,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
     agHoje,agMover,ambientesDoCliente,aptosPara,ativDe,ativsDoSetor,atualizaAtivsFunc,atualizarContagem,
     emitirApoio,renderEmissaoApoio,salvarApoio,toggleDiaApoio,
-    indiceEmissao,emissaoDe,badgeEmissao,painelDetalheEmissao,painelIrStatus,
+    indiceEmissao,emissaoDe,badgeEmissao,painelDetalheEmissao,painelEmitirApoio,painelIrStatus,
     atualizarInsumos,atualizarListaEst,atualizarListaPcp,atualizarMapa,atualizarOps,atualizarPosicao,atualizarSA,
     atualizarSAEst,atualizarSC,atualizarSCEst,barraFiltros,barrasSVG,baseNumOP,blocoChecklist,blocoVinculo,buscarCEP,
     buscarEndereco,cabecalhoContagem,caixaAtividade,calcularFita,calcularSim,cardHtml,cardsProducao,celDia,cellInput,
