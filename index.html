@@ -7363,6 +7363,7 @@
   }
   function emgRender(){
     const rxb=document.querySelector('#modalOv .rx-b'); const _sy=rxb?rxb.scrollTop:0;
+    const _lista=document.querySelector('#modalOv .emg-lista'); const _syL=_lista?_lista.scrollTop:0;
     let titulo,corpo,acoes;
     if(EMG.passo===1){
       const vis=emgVisiveis();
@@ -7420,6 +7421,7 @@
     }
     abrirModal(titulo,corpo,acoes);
     const rxb2=document.querySelector('#modalOv .rx-b'); if(rxb2) rxb2.scrollTop=_sy;
+    const lista2=document.querySelector('#modalOv .emg-lista'); if(lista2) lista2.scrollTop=_syL;
   }
   async function emgConfirmar(){
     const calc=emgCalcular();
