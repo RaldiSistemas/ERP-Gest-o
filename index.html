@@ -122,6 +122,8 @@
   .btn{ font:inherit; font-weight:600; font-size:14px; border-radius:9px; padding:9px 16px; cursor:pointer; border:1px solid transparent; transition:background .15s; }
   .btn-primary{ background:var(--vermelho); color:#fff; }
   .btn-primary:hover{ background:var(--vermelho-2); }
+  .btn-danger{ background:var(--vermelho-2); color:#fff; }
+  .btn-danger:hover{ background:#5c1616; }
   .btn-ghost{ background:transparent; color:var(--texto); border-color:var(--linha); }
   .btn-ghost:hover{ background:rgba(75,75,85,.06); }
 
@@ -4262,8 +4264,11 @@
         <div><h1 class="page-title">Cadastro simples (insumos)</h1><p class="page-sub">${INSUMOS.length} item(ns) cadastrado(s)</p></div>
         <div style="display:flex;gap:10px">
           ${selMode?`<button class="btn btn-ghost" onclick="sairSelecao()">Cancelar seleção</button>
-            <button class="btn btn-primary" onclick="gerarEtiquetas()" ${selIds.size?'':'disabled style="opacity:.5"'}>Gerar ${selIds.size||''} etiqueta(s)</button>`
-          :`<button class="btn btn-ghost" onclick="entrarSelecao()">Gerar etiquetas</button>
+            ${selProp==='excluir'
+              ?`<button class="btn btn-danger" onclick="excluirInsumosSelecionados()" ${selIds.size?'':'disabled style="opacity:.5"'}>Excluir ${selIds.size||''} item(ns)</button>`
+              :`<button class="btn btn-primary" onclick="gerarEtiquetas()" ${selIds.size?'':'disabled style="opacity:.5"'}>Gerar ${selIds.size||''} etiqueta(s)</button>`}`
+          :`<button class="btn btn-ghost" onclick="entrarSelecao('etiquetas')">Gerar etiquetas</button>
+            <button class="btn btn-ghost" onclick="entrarSelecao('excluir')">Apagar por seleção</button>
             <button class="btn btn-ghost" onclick="abrirImportacao()">Importar do Excel</button>
             <button class="btn btn-primary" onclick="formInsumo()">+ Novo insumo</button>`}
         </div>
@@ -4393,16 +4398,20 @@
         const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
         const ws=wb.Sheets[wb.SheetNames[0]];
         const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-        if(rows.length<2){ res.innerHTML='<p class="imp-err">Planilha vazia ou sem dados.</p>'; return; }
-        const head=rows[0].map(h=>String(h||'').trim().toLowerCase());
+        if(!rows.length){ res.innerHTML='<p class="imp-err">Planilha vazia ou sem dados.</p>'; return; }
+        // Se a primeira célula da linha 1 já é um código válido (ex.: 1.01.0000378),
+        // a planilha não tem cabeçalho — todas as linhas são dados, nenhuma é pulada.
+        const temCabecalho=!partesCodigo(String(rows[0][0]||'').trim());
+        if(temCabecalho&&rows.length<2){ res.innerHTML='<p class="imp-err">Planilha vazia ou sem dados.</p>'; return; }
+        const head=temCabecalho?rows[0].map(h=>String(h||'').trim().toLowerCase()):[];
         const acha=(...alts)=>{ for(const a of alts){ const i=head.findIndex(h=>h.includes(a)); if(i>=0) return i; } return -1; };
         let cCod=acha('cód','cod'), cDesc=acha('descri'), cUn=acha('und','unid','un'), cDisc=acha('discipl');
         if(cCod<0) cCod=0; if(cDesc<0) cDesc=1; if(cUn<0) cUn=2; if(cDisc<0) cDisc=3;
         const ok=[], erros=[], vistos=new Set();
         const codsExistentes=new Set(INSUMOS.map(i=>i.codigo));
         const unidValidas=UNIDADES.map(u=>u[0]);
-        rows.slice(1).forEach((r0,idx)=>{
-          const ln=idx+2;
+        (temCabecalho?rows.slice(1):rows).forEach((r0,idx)=>{
+          const ln=temCabecalho?idx+2:idx+1;
           const cod=String(r0[cCod]||'').trim();
           const desc=String(r0[cDesc]||'').trim();
           if(!cod && !desc) return;
@@ -5249,17 +5258,28 @@
 
 
   /* ================= Memorial de cálculo — Simulação de fita ================= */
-  const ROLOS_FITA=[{l:22,m:10},{l:35,m:10},{l:45,m:10},{l:100,m:5},{l:260,m:5}];
+  const ROLOS_FITA=[{l:22,m:10},{l:35,m:10},{l:45,m:10},{l:100,m:1},{l:260,m:1}];
   let simF={perda:5, usarMetragem:true, linhas:[], resultado:null}; // usarMetragem: regra fixa (sem emenda)
 
-  // aceita 22X10, 22MM X 10M, 22 mm x 10 m, 260MMX5M
-  const RE_DIM=/(\d+(?:[.,]\d+)?)\s*(?:mm)?\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*m?\b/i;
+  // O cadastro do insumo traz só a largura (ex.: "FITA DE BORDA ABSOLUTO 35MM PROADEC").
+  // O comprimento do rolo é sempre inferido pela tabela ROLOS_FITA a partir da largura —
+  // não fica mais escrito na descrição, então não dá mais pra extrair "35X10" do texto.
+  const RE_LARG=/(\d+(?:[.,]\d+)?)\s*mm\b/i;
+  function larguraDe(desc){
+    const m=String(desc||'').match(RE_LARG);
+    return m?parseFloat(m[1].replace(',','.')):null;
+  }
+  function metragemPadrao(largura){
+    const r=ROLOS_FITA.find(x=>Math.abs(x.l-largura)<0.01);
+    return r?r.m:null;
+  }
   function parseDim(desc){
-    const m=String(desc||'').match(RE_DIM);
-    return m?{l:parseFloat(m[1].replace(',','.')), m:parseFloat(m[2].replace(',','.'))}:null;
+    const l=larguraDe(desc); if(l==null) return null;
+    const m=metragemPadrao(l);
+    return m!=null?{l,m}:null; // largura fora da tabela de rolos padrão — comprimento não pode ser inferido
   }
   function materialDe(desc){
-    return String(desc||'').replace(RE_DIM,' ')
+    return String(desc||'').replace(RE_LARG,' ')
       .replace(/\s*[-–]\s*$/,'').replace(/\s{2,}/g,' ').trim().toUpperCase();
   }
   function linhaFitaVazia(){ return {insumoId:null,codigo:'',descricao:'',larguraRolo:'',metragemRolo:'',larguraNec:'',metragemNec:'',qtd:1}; }
@@ -5951,14 +5971,23 @@
 
 
   /* ================= Etiquetas (Argox 105 × 30 mm) ================= */
-  let selMode=false, selIds=new Set();
-  function entrarSelecao(){ selMode=true; selIds.clear(); renderInsumos(); }
+  let selMode=false, selIds=new Set(), selProp='etiquetas';
+  function entrarSelecao(prop){ selMode=true; selProp=prop||'etiquetas'; selIds.clear(); renderInsumos(); }
   function sairSelecao(){ selMode=false; selIds.clear(); renderInsumos(); }
   function marcarItem(id,on){ on?selIds.add(id):selIds.delete(id); renderInsumos(); }
   function marcarTodos(on){
     const lista=filtrarInsumos().slice(0,400);
     lista.forEach(i=> on?selIds.add(i.id):selIds.delete(i.id));
     renderInsumos();
+  }
+  function excluirInsumosSelecionados(){
+    const itens=INSUMOS.filter(i=>selIds.has(i.id));
+    if(!itens.length){ toast('Selecione ao menos um item'); return; }
+    if(!confirm(`Excluir ${itens.length} insumo(s) selecionado(s)?\n\nOs códigos NÃO serão reaproveitados. Esta ação não pode ser desfeita.`)) return;
+    const upd={}; itens.forEach(i=>upd['insumos/'+i.id]=null);
+    db.ref().update(upd)
+      .then(()=>{ toast(`${itens.length} insumo(s) excluído(s)`); sairSelecao(); })
+      .catch(e=>toast('Erro: '+e.message));
   }
 
   /* --- Code 128 (subset B/C) em SVG, sem dependência externa --- */
