@@ -2085,7 +2085,7 @@
   const MODULES = [
     {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Cadastro de clientes'}, {label:'Cadastro de dados'}, {label:'Mapa'} ]},
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
-      {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Simulação de Estoque']},
+      {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
       {label:'Programação', children:['Plano Mestre','MRP','Capacidade']},
@@ -2218,6 +2218,7 @@
     if(mod.id==='est' && name==='Contagem') return renderContagem();
     if(mod.id==='est' && name==='Cadastro de centro de custo (CC)') return renderCC();
     if(mod.id==='pcp' && name==='Solicitação Armazém (SA)') return renderSA();
+    if(mod.id==='pcp' && name==='Solicitações de fita') return renderSolFitas();
     if(mod.id==='pcp' && name==='Simulação de estoque de fita') return renderFita();
     if(mod.id==='pcp' && name==='Solicitação de Compras (SC)') return renderSC();
     if(mod.id==='pcp' && name==='Simulação de Estoque') return renderSimEst();
@@ -2694,6 +2695,7 @@
   ];
   const EMPRESA={ end1:'Rua Miguel Luiz Goulart, 116', end2:'São João Margem Esquerda,', end3:'Tubarão - SC, 88708-500' };
   let ACES=[]; let ace=null;
+  let SOLFITAS=[]; let solFitaCalc=null; let sfModoSel=false, sfSel=new Set();
   function linhaVazia(){ const o={}; ACE_COLS.forEach(c=>o[c.k]=''); return o; }
 
   function textoBuscaAce(a){
@@ -2763,9 +2765,9 @@
       .then(()=>toast(st==='liberado'?'Liberado para o almoxarifado':'Voltou para análise'))
       .catch(e=>toast('Erro: '+e.message));
   }
-  function novaACE(){ ace={id:null,clienteId:null,ambienteNome:'',numero:'',lote:'',consultor:'',arq:'',statusPcp:'analise',data:new Date().toISOString().slice(0,10),itens:[linhaVazia(),linhaVazia(),linhaVazia()]}; renderACEForm(); }
+  function novaACE(){ ace={id:null,painelId:null,clienteNome:'',ambienteNome:'',numero:'',lote:'',consultor:'',arq:'',statusPcp:'analise',data:new Date().toISOString().slice(0,10),itens:[linhaVazia(),linhaVazia(),linhaVazia()]}; renderACEForm(); }
   function editarACE(id){ const a=ACES.find(x=>x.id===id); if(!a) return;
-    ace={id:a.id,clienteId:a.clienteId,ambienteNome:a.ambiente,numero:a.numero,lote:a.lote||'',consultor:a.consultor,arq:a.arq,statusPcp:stPcp(a),data:a.data,itens:(a.itens||[]).map(i=>({...i}))};
+    ace={id:a.id,painelId:a.painelId||null,clienteNome:a.cliente,ambienteNome:a.ambiente,numero:a.numero,lote:a.lote||'',consultor:a.consultor,arq:a.arq,statusPcp:stPcp(a),data:a.data,itens:(a.itens||[]).map(i=>({...i}))};
     if(!ace.itens.length) ace.itens=[linhaVazia()]; renderACEForm(); }
   function excluirACE(id){
     const a=ACES.find(x=>x.id===id);
@@ -2796,20 +2798,19 @@
   }
   function renderACEForm(){
     TELA='form';
-    const c=ace.clienteId?CLIENTES.find(x=>x.id===ace.clienteId):null;
-    const nomeCli=c?(c.cliente2?`${escHtml(c.cliente1)} & ${escHtml(c.cliente2)}`:escHtml(c.cliente1)):'';
-    const ambs=ace.clienteId?ambientesDoCliente(ace.clienteId):[];
-    const blocoCliente = c
-      ? `<div class="sel-card"><div><div class="n">${nomeCli}</div><div class="s">${[c.cidade,c.whatsapp].filter(Boolean).map(escHtml).join(' · ')}</div></div>
+    const linhasCli=ace.clienteNome?linhasPainelDoCliente(ace.clienteNome):[];
+    const r=ace.painelId?PAINEL.find(x=>x.id===ace.painelId):null;
+    const blocoCliente = ace.clienteNome
+      ? `<div class="sel-card"><div><div class="n">${escHtml(ace.clienteNome)}</div><div class="s">${[r&&r.local,r&&r.telefone].filter(Boolean).map(escHtml).join(' · ')}</div></div>
            <button class="link-btn" onclick="aceTrocarCliente()">Trocar</button></div>`
       : `<div class="ac"><input id="aceAc" autocomplete="off" placeholder="Digite o nome do cliente..." oninput="aceBusca(this.value)"><div id="aceAcList"></div></div>`;
-    const blocoAmb = c
-      ? (ambs.length
+    const blocoAmb = ace.clienteNome
+      ? (linhasCli.length
         ? `<select id="aceAmb" onchange="aceSelAmb(this.value)">
             <option value="">Selecione o ambiente...</option>
-            ${ambs.map(a=>`<option value="${escHtml(a.nome)}" ${ace.ambienteNome===a.nome?'selected':''}>${escHtml(a.nome)}${a.numeroProjeto?' — '+escHtml(a.numeroProjeto):''}</option>`).join('')}
+            ${linhasCli.map(x=>`<option value="${x.id}" ${ace.painelId===x.id?'selected':''}>${escHtml(x.ambiente||'(sem descrição)')}${x.projeto?' — '+escHtml(x.projeto):''}</option>`).join('')}
            </select>`
-        : `<p class="aviso">Este cliente não tem ambientes cadastrados. Cadastre em <b>Orçamentos › Cadastro de dados</b>.</p>`)
+        : `<p class="aviso">Nenhuma linha desse cliente no <b>Painel de Controle</b>.</p>`)
       : `<p class="aviso">Selecione um cliente primeiro.</p>`;
 
     const rows=ace.itens.map((it,i)=>`<tr>
@@ -2863,31 +2864,33 @@
         </div>
       </div>
     </div>`;
-    if(!c) setTimeout(()=>{ const i=document.getElementById('aceAc'); if(i) i.focus(); },30);
+    if(!ace.clienteNome) setTimeout(()=>{ const i=document.getElementById('aceAc'); if(i) i.focus(); },30);
   }
+  let aceResNomes=[];
   function aceBusca(q){
     const list=document.getElementById('aceAcList'); q=(q||'').trim().toLowerCase();
     if(!q){ list.innerHTML=''; return; }
-    const res=CLIENTES.filter(c=>((c.cliente1||'')+' '+(c.cliente2||'')).toLowerCase().includes(q)).slice(0,8);
-    if(!res.length){ list.innerHTML=`<div class="ac-list"><div class="ac-empty">Nenhum cliente encontrado.</div></div>`; return; }
-    list.innerHTML=`<div class="ac-list">${res.map(c=>{
-      const n=c.cliente2?`${escHtml(c.cliente1)} & ${escHtml(c.cliente2)}`:escHtml(c.cliente1);
-      const s=[c.cidade,c.whatsapp].filter(Boolean).map(escHtml).join(' · ');
-      return `<div class="ac-item" onclick="aceSelCliente('${c.id}')"><span class="n">${n}</span>${s?`<span class="s">${s}</span>`:''}</div>`;
+    aceResNomes=nomesPainel().filter(n=>n.toLowerCase().includes(q)).slice(0,8);
+    if(!aceResNomes.length){ list.innerHTML=`<div class="ac-list"><div class="ac-empty">Nenhum cliente encontrado no Painel de Controle.</div></div>`; return; }
+    list.innerHTML=`<div class="ac-list">${aceResNomes.map((n,i)=>{
+      const linhas=linhasPainelDoCliente(n), first=linhas[0]||{};
+      const s=[first.local,first.telefone].filter(Boolean).map(escHtml).join(' · ');
+      return `<div class="ac-item" onclick="aceSelCliente(${i})"><span class="n">${escHtml(n)}</span>
+        <span class="s">${s}${linhas.length>1?(s?' · ':'')+linhas.length+' ambiente(s)':''}</span></div>`;
     }).join('')}</div>`;
   }
-  function aceSelCliente(id){
-    ace.clienteId=id; ace.ambienteNome=''; ace.numero=''; ace.lote=''; ace.consultor='';
-    const c=CLIENTES.find(x=>x.id===id); ace.arq=c&&c.resp?c.resp:'';
+  function aceSelCliente(i){
+    const nome=aceResNomes[i]; if(nome===undefined) return;
+    const linhas=linhasPainelDoCliente(nome);
+    ace.clienteNome=nome; ace.painelId=null; ace.ambienteNome=''; ace.numero=''; ace.lote=''; ace.consultor='';
+    if(linhas.length===1){ const x=linhas[0]; ace.painelId=x.id; ace.ambienteNome=x.ambiente||''; ace.numero=x.projeto||''; ace.lote=x.lote||''; ace.consultor=x.consultor||''; }
     renderACEForm();
   }
-  function aceTrocarCliente(){ ace.clienteId=null; ace.ambienteNome=''; ace.numero=''; ace.lote=''; ace.consultor=''; ace.arq=''; renderACEForm(); }
-  function aceSelAmb(nome){
-    ace.ambienteNome=nome;
-    const a=ambientesDoCliente(ace.clienteId).find(x=>x.nome===nome);
-    if(a){ ace.numero=a.numeroProjeto||''; ace.lote=a.lote||''; ace.consultor=a.consultor||''; }
-    const c=CLIENTES.find(x=>x.id===ace.clienteId);
-    if(c&&c.resp&&!ace.arq) ace.arq=c.resp;
+  function aceTrocarCliente(){ ace.painelId=null; ace.clienteNome=''; ace.ambienteNome=''; ace.numero=''; ace.lote=''; ace.consultor=''; ace.arq=''; renderACEForm(); }
+  function aceSelAmb(id){
+    const x=PAINEL.find(r=>r.id===id);
+    ace.painelId=id||null; ace.ambienteNome=x?(x.ambiente||''):'';
+    ace.numero=x?(x.projeto||''):''; ace.lote=x?(x.lote||''):''; ace.consultor=x?(x.consultor||''):'';
     renderACEForm();
   }
 
@@ -2962,11 +2965,10 @@
   function aceAddLinha(n){ for(let i=0;i<n;i++) ace.itens.push(linhaVazia()); renderACEForm(); }
   function aceRemLinha(i){ ace.itens.splice(i,1); if(!ace.itens.length) ace.itens.push(linhaVazia()); renderACEForm(); }
   function salvarACE(){
-    if(!ace.clienteId){ toast('Selecione o cliente'); return; }
+    if(!ace.clienteNome){ toast('Selecione o cliente'); return; }
     if(!ace.ambienteNome){ toast('Selecione o ambiente'); return; }
-    const c=CLIENTES.find(x=>x.id===ace.clienteId);
-    const data={ id:ace.id||('a'+Date.now()), clienteId:ace.clienteId,
-      cliente:c?(c.cliente2?`${c.cliente1} & ${c.cliente2}`:c.cliente1):'',
+    const data={ id:ace.id||('a'+Date.now()), painelId:ace.painelId||null,
+      cliente:ace.clienteNome,
       ambiente:ace.ambienteNome, numero:ace.numero, lote:ace.lote||'', consultor:ace.consultor, arq:ace.arq, data:ace.data,
       statusPcp: stPcp(ace),
       itens:ace.itens.filter(i=>Object.values(i).some(v=>(v||'').trim())),
@@ -2979,8 +2981,7 @@
     renderACE();
   }
   function previewACE(){
-    const c=CLIENTES.find(x=>x.id===ace.clienteId);
-    folhaACE({ cliente:c?(c.cliente2?`${c.cliente1} & ${c.cliente2}`:c.cliente1):'', ambiente:ace.ambienteNome,
+    folhaACE({ cliente:ace.clienteNome, ambiente:ace.ambienteNome,
       numero:ace.numero, consultor:ace.consultor, arq:ace.arq, data:ace.data, itens:ace.itens });
   }
   function imprimirACE(id){ const a=ACES.find(x=>x.id===id); if(a) folhaACE(a); }
@@ -3082,6 +3083,9 @@
     db.ref('sas').on('value',s=>{ SAS=Object.values(s.val()||{}).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
       if(TELA==='sa') renderSA(); else if(TELA==='sa-est') renderSAEstoque();
       else if(TELA==='sa-detalhe'&&saViewId) verSA(saViewId); else if(TELA==='posicao') atualizarPosicao(); });
+    db.ref('solfitas').on('value',s=>{ SOLFITAS=objParaArray(s);
+      if(TELA==='solfitas') renderSolFitas(); },
+      e=>toast('Erro de leitura: '+e.message));
     db.ref('scs').on('value',s=>{ SCS=Object.values(s.val()||{}).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
       if(TELA==='sc') renderSC(); else if(TELA==='sc-est') renderSCEstoque();
       else if(TELA==='sc-detalhe'&&scViewId) verSC(scViewId); });
@@ -4881,55 +4885,70 @@
 
 
 
-  /* ================= Vínculo com cliente/ambiente (opcional) ================= */
-  let vincAlvo=null, vincRedraw=null;
+  /* ================= Vínculo com cliente/ambiente (opcional) =================
+     Fonte de dados: PAINEL (Painel de Controle), que já traz cliente + ambiente
+     + projeto + lote por linha. Cada linha do Painel = 1 combinação
+     cliente/ambiente; "Cliente" busca pelo nome (pode haver várias linhas com
+     o mesmo nome, uma por ambiente) e "Ambiente" escolhe a linha exata. */
+  function nomesPainel(){
+    const seen=new Set(), out=[];
+    PAINEL.forEach(r=>{ const n=String(r.cliente||'').trim(); if(n && !seen.has(n.toLowerCase())){ seen.add(n.toLowerCase()); out.push(n); } });
+    return out;
+  }
+  function linhasPainelDoCliente(nome){
+    const alvo=String(nome||'').trim().toLowerCase();
+    if(!alvo) return [];
+    return PAINEL.filter(r=>String(r.cliente||'').trim().toLowerCase()===alvo);
+  }
+  let vincResNomes=[];
   function blocoVinculo(o,alvoNome,redrawNome){
-    const c=o.clienteId?CLIENTES.find(x=>x.id===o.clienteId):null;
-    const ambs=o.clienteId?ambientesDoCliente(o.clienteId):[];
-    const nome=c?(c.cliente2?`${escHtml(c.cliente1)} & ${escHtml(c.cliente2)}`:escHtml(c.cliente1)):'';
+    const r=o.painelId?PAINEL.find(x=>x.id===o.painelId):null;
+    const linhasCli=o.clienteNome?linhasPainelDoCliente(o.clienteNome):[];
     return `<div class="fld"><label>Cliente <span class="opc">opcional</span></label>
-        ${c?`<div class="sel-card" style="padding:8px 12px"><div><div class="n">${nome}</div>
-              <div class="s">${[c.cidade,c.whatsapp].filter(Boolean).map(escHtml).join(' · ')}</div></div>
+        ${o.clienteNome?`<div class="sel-card" style="padding:8px 12px"><div><div class="n">${escHtml(o.clienteNome)}</div>
+              <div class="s">${[r&&r.local,r&&r.telefone].filter(Boolean).map(escHtml).join(' · ')}</div></div>
               <button class="link-btn" onclick="vincTrocar('${alvoNome}','${redrawNome}')">Trocar</button></div>`
         :`<div class="ac"><input id="vincAc" autocomplete="off" placeholder="Buscar cliente..."
             oninput="vincBusca(this,'${alvoNome}','${redrawNome}')" onblur="setTimeout(vincFecha,140)"><div id="vincList"></div></div>`}
       </div>
       <div class="fld"><label>Ambiente <span class="opc">opcional</span></label>
-        ${c?(ambs.length?`<select onchange="vincAmb(this.value,'${alvoNome}','${redrawNome}')">
+        ${o.clienteNome?(linhasCli.length?`<select onchange="vincAmb(this.value,'${alvoNome}','${redrawNome}')">
               <option value="">Nenhum</option>
-              ${ambs.map(a=>`<option value="${escHtml(a.nome)}" ${o.ambiente===a.nome?'selected':''}>${escHtml(a.nome)}${a.numeroProjeto?' — '+escHtml(a.numeroProjeto):''}</option>`).join('')}
-            </select>`:`<p class="aviso" style="font-size:12px;padding:8px 10px">Cliente sem ambientes cadastrados.</p>`)
+              ${linhasCli.map(x=>`<option value="${x.id}" ${o.painelId===x.id?'selected':''}>${escHtml(x.ambiente||'(sem descrição)')}${x.projeto?' — '+escHtml(x.projeto):''}</option>`).join('')}
+            </select>`:`<p class="aviso" style="font-size:12px;padding:8px 10px">Nenhuma linha desse cliente no Painel de Controle.</p>`)
         :`<input disabled placeholder="Selecione um cliente primeiro">`}
       </div>`;
   }
-  function objVinc(n){ return n==='saForm'?saForm:(n==='scForm'?scForm:(n==='simE'?simE:simFita)); }
-  function redrawVinc(n){ ({renderSAForm,renderSCForm,renderSimForm,renderSimFita})[n](); }
+  function objVinc(n){ return n==='saForm'?saForm:(n==='scForm'?scForm:(n==='simE'?simE:(n==='solFitaCalc'?solFitaCalc:simFita))); }
+  function redrawVinc(n){ ({renderSAForm,renderSCForm,renderSimForm,renderSimFita,renderSolFitaNovo})[n](); }
   function vincFecha(){ const b=document.getElementById('vincList'); if(b) b.innerHTML=''; }
   function vincBusca(input,alvo,redraw){
     const q=(input.value||'').trim().toLowerCase(), box=document.getElementById('vincList');
     if(q.length<2){ box.innerHTML=''; return; }
-    const res=CLIENTES.filter(c=>((c.cliente1||'')+' '+(c.cliente2||'')).toLowerCase().includes(q)).slice(0,8);
-    if(!res.length){ box.innerHTML='<div class="ac-list"><div class="ac-empty">Nenhum cliente encontrado</div></div>'; return; }
-    box.innerHTML=`<div class="ac-list">${res.map(c=>{
-      const n=c.cliente2?`${escHtml(c.cliente1)} & ${escHtml(c.cliente2)}`:escHtml(c.cliente1);
-      return `<div class="ac-item" onmousedown="vincSel('${c.id}','${alvo}','${redraw}')"><span class="n">${n}</span>
-        <span class="s">${[c.cidade,c.whatsapp].filter(Boolean).map(escHtml).join(' · ')}</span></div>`;}).join('')}</div>`;
+    vincResNomes=nomesPainel().filter(n=>n.toLowerCase().includes(q)).slice(0,8);
+    if(!vincResNomes.length){ box.innerHTML='<div class="ac-list"><div class="ac-empty">Nenhum cliente encontrado no Painel de Controle</div></div>'; return; }
+    box.innerHTML=`<div class="ac-list">${vincResNomes.map((n,i)=>{
+      const linhas=linhasPainelDoCliente(n), first=linhas[0]||{};
+      const s=[first.local,first.telefone].filter(Boolean).map(escHtml).join(' · ');
+      return `<div class="ac-item" onmousedown="vincSel(${i},'${alvo}','${redraw}')"><span class="n">${escHtml(n)}</span>
+        <span class="s">${s}${linhas.length>1?(s?' · ':'')+linhas.length+' ambiente(s)':''}</span></div>`;}).join('')}</div>`;
   }
-  function vincSel(id,alvo,redraw){
-    const o=objVinc(alvo), c=CLIENTES.find(x=>x.id===id);
-    o.clienteId=id; o.clienteNome=c?(c.cliente2?`${c.cliente1} & ${c.cliente2}`:c.cliente1):'';
-    o.ambiente=''; o.numeroProjeto=''; vincFecha(); redrawVinc(redraw);
+  function vincSel(i,alvo,redraw){
+    const o=objVinc(alvo), nome=vincResNomes[i]; if(nome===undefined) return;
+    const linhas=linhasPainelDoCliente(nome);
+    o.clienteNome=nome; o.painelId=null; o.ambiente=''; o.numeroProjeto='';
+    if(linhas.length===1){ const x=linhas[0]; o.painelId=x.id; o.ambiente=x.ambiente||''; o.numeroProjeto=x.projeto||''; }
+    vincFecha(); redrawVinc(redraw);
   }
   function vincTrocar(alvo,redraw){
-    const o=objVinc(alvo); o.clienteId=null; o.clienteNome=''; o.ambiente=''; o.numeroProjeto=''; redrawVinc(redraw);
+    const o=objVinc(alvo); o.painelId=null; o.clienteNome=''; o.ambiente=''; o.numeroProjeto=''; redrawVinc(redraw);
   }
-  function vincAmb(nome,alvo,redraw){
-    const o=objVinc(alvo); o.ambiente=nome;
-    const a=ambientesDoCliente(o.clienteId).find(x=>x.nome===nome);
-    o.numeroProjeto=a?(a.numeroProjeto||''):'';
+  function vincAmb(id,alvo,redraw){
+    const o=objVinc(alvo), x=PAINEL.find(r=>r.id===id);
+    o.painelId=id||null; o.ambiente=x?(x.ambiente||''):''; o.numeroProjeto=x?(x.projeto||''):'';
     redrawVinc(redraw);
   }
-  function vincDados(o){ return {clienteId:o.clienteId||null, clienteNome:o.clienteNome||'', ambiente:o.ambiente||'', numeroProjeto:o.numeroProjeto||''}; }
+  function vincDados(o){ return {painelId:o.painelId||null, clienteNome:o.clienteNome||'', ambiente:o.ambiente||'', numeroProjeto:o.numeroProjeto||''}; }
   function vincSub(x){
     if(!x.clienteNome) return '';
     return `<div class="cel-sub vinc-sub">${escHtml(x.clienteNome)}${x.ambiente?' · '+escHtml(x.ambiente):''}${x.numeroProjeto?' · '+escHtml(x.numeroProjeto):''}</div>`;
@@ -4998,7 +5017,7 @@
   function novaSA(){
     if(!INSUMOS.length){ toast('Cadastre insumos primeiro'); return; }
     if(!CCS.length){ toast('Cadastre um centro de custo primeiro (Estoque › Cadastro › CC)'); return; }
-    saForm={insumoId:null,codigo:'',descricao:'',unidade:'',ccCod:'',setor:'',qtd:'',obs:'',clienteId:null,clienteNome:'',ambiente:'',numeroProjeto:''};
+    saForm={insumoId:null,codigo:'',descricao:'',unidade:'',ccCod:'',setor:'',qtd:'',obs:'',painelId:null,clienteNome:'',ambiente:'',numeroProjeto:''};
     renderSAForm();
   }
   function renderSAForm(){
@@ -5626,7 +5645,7 @@
         <div class="fita-acao">
           <div class="fa-t">Relatório completo com o plano de corte de cada rolo</div>
           <button class="btn btn-ghost" onclick="abrirRelatorioFita()">Ver relatório</button>
-          <button class="btn btn-primary" onclick="verSimEstoqueFita()">Ver simulação de estoque</button>
+          <button class="btn btn-primary" onclick="verSolFita()">Gerar solicitação de fita</button>
         </div>
         <div class="fita-sobras">
           <div class="fs-t">Sobras remanescentes (${M.sobras.length})</div>
@@ -6077,7 +6096,7 @@
   function novaSimEst(){
     if(!INSUMOS.length){ toast('Cadastre insumos primeiro'); return; }
     if(!CCS.length){ toast('Cadastre um centro de custo primeiro'); return; }
-    simE={ccCod:'',setor:'',obs:'',clienteId:null,clienteNome:'',ambiente:'',numeroProjeto:'',linhas:[linhaSimVazia(),linhaSimVazia(),linhaSimVazia()],resultado:null};
+    simE={ccCod:'',setor:'',obs:'',painelId:null,clienteNome:'',ambiente:'',numeroProjeto:'',linhas:[linhaSimVazia(),linhaSimVazia(),linhaSimVazia()],resultado:null};
     renderSimForm();
   }
   function renderSimForm(){
@@ -6256,8 +6275,7 @@
   }
 
 
-  /* ===== Fita -> Simulação de estoque ===== */
-  let simFita=null;
+  /* ===== Fita -> Solicitação de fita (sem checar estoque) ===== */
   function insumoDoRolo(mat,largura,metragem){
     return INSUMOS.find(i=>{
       if(materialDe(i.descricao)!==mat) return false;
@@ -6265,7 +6283,7 @@
       return d && Math.abs(d.l-largura)<0.01 && Math.abs(d.m-metragem)<0.01;
     })||null;
   }
-  function verSimEstoqueFita(){
+  function verSolFita(){
     const R=simF.resultado; if(!R) return;
     const linhas=[];
     R.materiais.forEach(M=>{
@@ -6276,14 +6294,14 @@
           unidade:ins?ins.unidade:''});
       });
     });
-    if(!linhas.length){ toast('Nada a comprar nesta simulação'); return; }
-    simFita={linhas,ccCod:'',setor:'',obs:'',clienteId:null,clienteNome:'',ambiente:'',numeroProjeto:'',geradas:null,conv:{}};
+    if(!linhas.length){ toast('Nada a solicitar nesta simulação'); return; }
+    solFitaCalc={linhas,ccCod:'',setor:'',obs:'',painelId:null,clienteNome:'',ambiente:'',numeroProjeto:'',conv:{}};
     pedirConversoes(0);
   }
   // pergunta a equivalência em metros para itens que não estão cadastrados em M
   function pedirConversoes(idx){
-    const pend=simFita.linhas.filter(l=>l.insumoId && l.unidade!=='M');
-    if(idx>=pend.length){ renderSimFita(); return; }
+    const pend=solFitaCalc.linhas.filter(l=>l.insumoId && l.unidade!=='M');
+    if(idx>=pend.length){ renderSolFitaNovo(); return; }
     const l=pend[idx], i=INSUMOS.find(x=>x.id===l.insumoId);
     const nomeUn=(UNIDADES.find(u=>u[0]===l.unidade)||[l.unidade,l.unidade])[1];
     const ultimo=parseFloat(i&&i.metrosPorUn);
@@ -6298,50 +6316,224 @@
         <div class="qt-row"><input id="cvVal" type="number" step="any" min="0" value="${fmtNum(sugerido)}" autofocus>
         <span class="qt-un">m</span></div>
         <span class="fld-hint">Pela descrição: ${fmtNum(l.metrosRolo)} m${(!isNaN(ultimo)&&ultimo>0&&ultimo!==l.metrosRolo)?` · usado da última vez: ${fmtNum(ultimo)} m`:''}. Confirme a cada simulação.</span></div>`,
-      `<button class="btn btn-ghost" onclick="fecharModal(); simFita=null;">Cancelar</button>
+      `<button class="btn btn-ghost" onclick="fecharModal(); solFitaCalc=null;">Cancelar</button>
        <button class="btn btn-primary" onclick="salvarConversao('${l.insumoId}',${idx})">Confirmar</button>`);
   }
-  // conversões valem só para esta simulação — confirmadas a cada vez
+  // conversões valem só para esta solicitação — confirmadas a cada vez
   function metrosPorUn(insumoId){
     const i=INSUMOS.find(x=>x.id===insumoId);
     if(!i) return null;
     if(i.unidade==='M') return 1;
-    const v=simFita&&simFita.conv?simFita.conv[insumoId]:null;
+    const v=solFitaCalc&&solFitaCalc.conv?solFitaCalc.conv[insumoId]:null;
     return (v&&v>0)?v:null;
   }
   function salvarConversao(insumoId,idx){
     const v=parseFloat(document.getElementById('cvVal').value);
     if(isNaN(v)||v<=0){ toast('Informe um valor válido'); return; }
-    simFita.conv=simFita.conv||{};
-    simFita.conv[insumoId]=v;
+    solFitaCalc.conv=solFitaCalc.conv||{};
+    solFitaCalc.conv[insumoId]=v;
     // guarda apenas como sugestão para a próxima vez (não é usado no cálculo)
     db.ref('insumos/'+insumoId+'/metrosPorUn').set(v).catch(()=>{});
     const i=INSUMOS.find(x=>x.id===insumoId); if(i) i.metrosPorUn=v;
     fecharModal(); setTimeout(()=>pedirConversoes(idx+1),60);
   }
 
-  function renderSimFita(){
-    TELA='simfita';
-    // converte metros -> unidade do insumo
-    simFita.linhas.forEach(l=>{
+  function renderSolFitaNovo(){
+    TELA='solfita-novo';
+    // converte metros -> unidade do insumo (não olha estoque — isso só acontece no agrupamento)
+    solFitaCalc.linhas.forEach(l=>{
       if(!l.insumoId){ l.qtd=null; return; }
       const mpu=metrosPorUn(l.insumoId)||1;
       l.qtd=+(l.metros/mpu).toFixed(4);
       if(l.unidade!=='M') l.qtd=Math.ceil(l.qtd); // embalagem fechada
+    });
+    const validas=solFitaCalc.linhas.filter(l=>l.insumoId);
+    const semCad=solFitaCalc.linhas.filter(l=>!l.insumoId);
+
+    view.innerHTML=`<div class="page page-wide">
+      <div class="page-head"><div><h1 class="page-title">Nova Solicitação de Fita</h1>
+        <p class="page-sub">PCP · Solicitações · Fita — baseada no memorial de cálculo</p></div>
+        <button class="btn btn-ghost" onclick="renderFita()">Voltar ao cálculo</button></div>
+
+      <section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Destino das solicitações</h3>
+        <div class="grid">
+          <div class="fld"><label>Centro de custo<i>*</i></label>
+            <select onchange="solFitaCC(this.value)"><option value="">Selecione...</option>
+              ${CCS.map(c=>`<option value="${c.codigo}" ${solFitaCalc.ccCod===c.codigo?'selected':''}>${escHtml(c.codigo)} - ${escHtml(c.setor)}</option>`).join('')}
+            </select></div>
+          <div class="fld"><label>Setor</label><input value="${escHtml(solFitaCalc.setor)}" disabled></div>
+          <div class="fld full"><label>Observação</label><textarea oninput="solFitaCalc.obs=this.value">${escHtml(solFitaCalc.obs)}</textarea></div>
+          ${blocoVinculo(solFitaCalc,'solFitaCalc','renderSolFitaNovo')}
+        </div></section>
+
+      <section class="fs">
+        <h3 class="fs-title">Rolos necessários</h3>
+        <div class="table-wrap"><table class="tbl tbl-sim">
+          <thead><tr><th style="width:112px">Código</th><th>Item</th><th style="width:52px">Un.</th><th style="width:110px">Necessário</th></tr></thead>
+          <tbody>${validas.map(l=>`<tr>
+            <td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
+            <td><div class="cel-nome">${escHtml(l.descricao)}</div>
+              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m${
+                l.unidade!=='M'&&solFitaCalc.conv[l.insumoId]?` · 1 ${escHtml(l.unidade)} = ${fmtNum(solFitaCalc.conv[l.insumoId])} m`:''}</div></td>
+            <td class="ctr">${escHtml(l.unidade)}</td>
+            <td class="ctr sd-tot">${fmtNum(l.qtd)}</td>
+          </tr>`).join('')}
+          ${semCad.map(l=>`<tr class="row-sem">
+            <td colspan="2"><div class="cel-nome">${escHtml(l.descricao)}</div>
+              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s)</div></td>
+            <td colspan="2"><span class="ro-flag">Rolo do catálogo do fornecedor, sem item cadastrado — não é possível solicitar</span></td>
+          </tr>`).join('')}</tbody></table></div>
+
+        <div class="sim-acao">
+          <div class="sa-t">Será criada 1 solicitação de fita com ${validas.length} item(ns)${solFitaCalc.ccCod?` em <b>${escHtml(solFitaCalc.ccCod)} — ${escHtml(solFitaCalc.setor)}</b>`:''}</div>
+          <button class="btn btn-primary" ${solFitaCalc.ccCod&&validas.length?'':'disabled style="opacity:.5"'} onclick="salvarSolFitaNova()">Gerar solicitação de fita</button>
+        </div>
+      </section></div>`;
+  }
+  function solFitaCC(cod){ solFitaCalc.ccCod=cod; solFitaCalc.setor=setorDe(cod); renderSolFitaNovo(); }
+  function salvarSolFitaNova(){
+    if(!solFitaCalc.ccCod){ toast('Selecione o centro de custo'); return; }
+    const L=solFitaCalc.linhas.filter(l=>l.insumoId);
+    if(!L.length){ toast('Nenhum item com cadastro para solicitar'); return; }
+    const id='sf'+Date.now()+Math.floor(Math.random()*900+100);
+    const data={ id, ccCod:solFitaCalc.ccCod, setor:solFitaCalc.setor, obs:(solFitaCalc.obs||'').trim(),
+      ...vincDados(solFitaCalc),
+      itens:L.map(l=>({insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,unidade:l.unidade,
+        mat:l.mat,largura:l.largura,metrosRolo:l.metrosRolo,rolos:l.rolos,metros:l.metros,qtd:l.qtd})),
+      criadoEm:new Date().toISOString(), criadoPor:usuarioAtual() };
+    db.ref('solfitas/'+id).set(data)
+      .then(()=>{ toast('Solicitação de fita criada');
+        SOLFITAS=SOLFITAS.filter(x=>x.id!==data.id).concat([data]);
+        solFitaCalc=null; irSolFitas(); })
+      .catch(e=>toast('Erro ao salvar: '+e.message));
+  }
+  function irSolFitas(){
+    if(typeof selectLeaf==='function' && activeMod==='pcp') selectLeaf('Solicitações de fita');
+    else renderSolFitas();
+  }
+
+  /* ===== Módulo Solicitações de fita (lista + agrupamento por lote) ===== */
+  function chaveSolFita(x){
+    return x.painelId ? ('p:'+x.painelId)
+      : ('n:'+[x.clienteNome,x.ambiente,x.numeroProjeto,x.ccCod,x.setor].map(v=>String(v||'').trim().toLowerCase()).join('|'));
+  }
+  function gruposSolFita(){
+    const map=new Map();
+    SOLFITAS.forEach(x=>{
+      const k=chaveSolFita(x);
+      if(!map.has(k)) map.set(k,{chave:k,clienteNome:x.clienteNome,ambiente:x.ambiente,numeroProjeto:x.numeroProjeto,ccCod:x.ccCod,setor:x.setor,regs:[]});
+      map.get(k).regs.push(x);
+    });
+    return [...map.values()].sort((a,b)=>String(a.clienteNome||'').localeCompare(String(b.clienteNome||''))||String(a.ambiente||'').localeCompare(String(b.ambiente||'')));
+  }
+  function itensDoGrupo(g){
+    const map=new Map();
+    g.regs.forEach(r=>(r.itens||[]).forEach(it=>{
+      const k=it.insumoId||('x:'+it.codigo);
+      if(!map.has(k)) map.set(k,{...it,metros:0,rolos:0,qtd:0});
+      const acc=map.get(k); acc.metros+=(it.metros||0); acc.rolos+=(it.rolos||0); acc.qtd+=(it.qtd||0);
+    }));
+    return [...map.values()];
+  }
+  function renderSolFitas(){
+    TELA='solfitas';
+    const grupos=gruposSolFita();
+    view.innerHTML=`<div class="page">
+      <div class="page-head"><div><h1 class="page-title">Solicitações de fita</h1>
+        <p class="page-sub">${grupos.length} ambiente(s) · ${SOLFITAS.length} solicitação(ões) pendente(s)</p></div>
+        ${grupos.length?`<button class="btn ${sfModoSel?'btn-primary':'btn-ghost'}" onclick="sfToggleSelecao()">${sfModoSel?'Cancelar seleção':'Agrupar por lote'}</button>`:''}
+      </div>
+      ${grupos.length?`
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr>${sfModoSel?'<th style="width:36px"></th>':''}
+          <th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº Projeto</th><th style="width:90px">CC</th><th>Setor</th><th style="width:80px">Itens</th><th style="width:180px"></th></tr></thead>
+        <tbody>${grupos.map(g=>{
+          const itens=itensDoGrupo(g);
+          return `<tr>
+            ${sfModoSel?`<td><input type="checkbox" ${sfSel.has(g.chave)?'checked':''} onchange="sfMarcar('${g.chave}',this.checked)"></td>`:''}
+            <td>${escHtml(g.clienteNome)||'—'}</td>
+            <td>${escHtml(g.ambiente)||'—'}</td>
+            <td>${escHtml(g.numeroProjeto)||'—'}</td>
+            <td class="ctr">${escHtml(g.ccCod)||'—'}</td>
+            <td class="cel-disc">${escHtml(g.setor)||'—'}</td>
+            <td class="ctr">${itens.length}</td>
+            <td class="acoes">
+              <button class="btn btn-ghost btn-sm" onclick="sfAbrirGrupo('${g.chave}')">Ver fitas</button>
+              <button class="icon-btn danger" title="Excluir" onclick="sfExcluirGrupo('${g.chave}')">${TRASH_SVG}</button>
+            </td></tr>`;
+        }).join('')}</tbody></table></div>`
+        :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.pcp}</svg></div>
+          <h3>Nenhuma solicitação de fita pendente</h3><p>Gere solicitações pelo Memorial de cálculo.</p></div>`}
+      ${sfModoSel?`<div class="sim-acao" style="margin-top:16px">
+        <div class="sa-t">${sfSel.size} ambiente(s) selecionado(s)</div>
+        <button class="btn btn-primary" ${sfSel.size?'':'disabled style="opacity:.5"'} onclick="sfSomarQuantidade()">Somar quantidade</button>
+      </div>`:''}
+    </div>`;
+  }
+  function sfToggleSelecao(){ sfModoSel=!sfModoSel; sfSel=new Set(); renderSolFitas(); }
+  function sfMarcar(chave,checked){ if(checked) sfSel.add(chave); else sfSel.delete(chave); renderSolFitas(); }
+  function sfAbrirGrupo(chave){
+    const g=gruposSolFita().find(x=>x.chave===chave); if(!g) return;
+    const itens=itensDoGrupo(g);
+    const corpo=`<p class="page-sub" style="margin:-4px 0 12px">${escHtml(g.clienteNome)||'—'}${g.ambiente?' · '+escHtml(g.ambiente):''}${g.numeroProjeto?' · Nº '+escHtml(g.numeroProjeto):''} · ${escHtml(g.ccCod)||'—'} — ${escHtml(g.setor)||'—'}</p>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th style="width:112px">Código</th><th>Item</th><th style="width:60px">Un.</th><th style="width:100px">Necessário</th></tr></thead>
+        <tbody>${itens.map(it=>`<tr><td><span class="cod-mono">${escHtml(it.codigo)}</span></td>
+          <td>${escHtml(it.descricao)}</td><td class="ctr">${escHtml(it.unidade)}</td><td class="ctr">${fmtNum(it.qtd)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="fld-hint" style="margin-top:10px">${g.regs.length} solicitação(ões) desse ambiente.</p>`;
+    abrirModal('Fitas pedidas', corpo, '<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>');
+  }
+  function sfExcluirGrupo(chave){
+    const g=gruposSolFita().find(x=>x.chave===chave); if(!g) return;
+    if(!confirm(`Excluir a(s) ${g.regs.length} solicitação(ões) de fita de "${g.clienteNome||g.ambiente||'este ambiente'}"?`)) return;
+    const upd={}; g.regs.forEach(r=>upd['solfitas/'+r.id]=null);
+    const ids=g.regs.map(r=>r.id);
+    db.ref().update(upd)
+      .then(()=>{ toast('Excluído'); SOLFITAS=SOLFITAS.filter(x=>!ids.includes(x.id)); renderSolFitas(); })
+      .catch(e=>toast('Erro: '+e.message));
+  }
+  function sfSomarQuantidade(){
+    const grupos=gruposSolFita().filter(g=>sfSel.has(g.chave));
+    if(!grupos.length){ toast('Selecione ao menos um ambiente'); return; }
+    const map=new Map(), origemInfo=[], origemIds=[];
+    grupos.forEach(g=>{
+      origemInfo.push({clienteNome:g.clienteNome,ambiente:g.ambiente,numeroProjeto:g.numeroProjeto});
+      g.regs.forEach(r=>{
+        origemIds.push(r.id);
+        (r.itens||[]).forEach(it=>{
+          if(!it.insumoId) return;
+          if(!map.has(it.insumoId)) map.set(it.insumoId,{insumoId:it.insumoId,codigo:it.codigo,descricao:it.descricao,unidade:it.unidade,metros:0,rolos:0,qtd:0});
+          const acc=map.get(it.insumoId); acc.metros+=(it.metros||0); acc.rolos+=(it.rolos||0); acc.qtd+=(it.qtd||0);
+        });
+      });
+    });
+    const linhas=[...map.values()];
+    if(!linhas.length){ toast('Nenhum item com cadastro nessas solicitações'); return; }
+    simFita={linhas,ccCod:'',setor:'',obs:'',geradas:null,origemIds,origemInfo};
+    sfModoSel=false; sfSel=new Set();
+    renderSimFita();
+  }
+
+  /* ===== Agrupamento de fita -> Simulação de estoque -> SA/SC ===== */
+  let simFita=null;
+  function renderSimFita(){
+    TELA='simfita';
+    // já vem com "qtd" somada das solicitações de fita agrupadas — só falta olhar o estoque
+    simFita.linhas.forEach(l=>{
       const sd=saldoDe(l.insumoId);
       l.emEstoque=sd.total; l.disponivel=sd.disp;
       l.qSA=Math.min(l.qtd,Math.max(0,sd.disp));
       l.qSC=+(l.qtd-l.qSA).toFixed(4);
       l.tipo=l.qSC<=0?'SA':(l.qSA<=0?'SC':'AMBOS');
     });
-    const validas=simFita.linhas.filter(l=>l.insumoId);
-    const semCad=simFita.linhas.filter(l=>!l.insumoId);
+    const validas=simFita.linhas;
     const nSA=validas.filter(l=>l.qSA>0).length, nSC=validas.filter(l=>l.qSC>0).length;
+    const origem=simFita.origemInfo||[];
 
     view.innerHTML=`<div class="page page-wide">
       <div class="page-head"><div><h1 class="page-title">Simulação de estoque — fita</h1>
-        <p class="page-sub">Baseada no memorial de cálculo</p></div>
-        <button class="btn btn-ghost" onclick="renderFita()">Voltar ao cálculo</button></div>
+        <p class="page-sub">Agrupamento de ${origem.length} ambiente(s)</p></div>
+        <button class="btn btn-ghost" onclick="irSolFitas()">Voltar às solicitações de fita</button></div>
 
       ${simFita.geradas?`<section class="fs" style="margin-bottom:18px">
         <div class="ger-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>
@@ -6357,7 +6549,9 @@
             </select></div>
           <div class="fld"><label>Setor</label><input value="${escHtml(simFita.setor)}" disabled></div>
           <div class="fld full"><label>Observação</label><textarea oninput="simFita.obs=this.value">${escHtml(simFita.obs)}</textarea></div>
-          ${blocoVinculo(simFita,'simFita','renderSimFita')}
+        </div>
+        <div class="fld full" style="margin-top:10px"><label>Ambientes agrupados nesta simulação</label>
+          <div class="ger-list">${origem.map(o=>`<span class="ger-p ger-sa">${escHtml(o.clienteNome||'—')}${o.ambiente?' · '+escHtml(o.ambiente):''}${o.numeroProjeto?' · Nº '+escHtml(o.numeroProjeto):''}</span>`).join('')}</div>
         </div></section>`}
 
       <section class="fs">
@@ -6370,8 +6564,7 @@
           <tbody>${validas.map(l=>`<tr>
             <td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
             <td><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m${
-                l.unidade!=='M'&&simFita.conv[l.insumoId]?` · 1 ${escHtml(l.unidade)} = ${fmtNum(simFita.conv[l.insumoId])} m`:''}</div></td>
+              <div class="cel-sub">${fmtNum(l.metros)} m no total</div></td>
             <td class="ctr">${escHtml(l.unidade)}</td>
             <td class="ctr sd-tot">${fmtNum(l.qtd)}</td>
             <td class="ctr">${fmtNum(l.emEstoque)}</td>
@@ -6380,23 +6573,18 @@
             <td class="ctr">${l.qSC>0?`<b class="v-sc">${fmtNum(l.qSC)}</b>`:'—'}</td>
             <td>${l.tipo==='SA'?'<span class="tag-sa">SA</span>':(l.tipo==='SC'?'<span class="tag-sc">SC</span>'
               :'<span class="tag-sa">SA</span> <span class="tag-sc">SC</span>')}</td>
-          </tr>`).join('')}
-          ${semCad.map(l=>`<tr class="row-sem">
-            <td colspan="3"><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s)</div></td>
-            <td colspan="6"><span class="ro-flag">Rolo do catálogo do fornecedor, sem item cadastrado — não é possível verificar estoque nem gerar solicitação</span></td>
           </tr>`).join('')}</tbody></table></div>
 
         ${!simFita.geradas?`<div class="sim-acao">
           <div class="sa-t">Serão criadas <b>${nSA+nSC}</b> solicitação(ões)${simFita.ccCod?` em <b>${escHtml(simFita.ccCod)} — ${escHtml(simFita.setor)}</b>`:''}</div>
           <button class="btn btn-primary" ${simFita.ccCod?'':'disabled style="opacity:.5"'} onclick="gerarSolFita()">Gerar solicitações automaticamente</button>
-        </div>`:'<div style="margin-top:16px"><button class="btn btn-ghost" onclick="renderFita()">Concluir</button></div>'}
+        </div>`:'<div style="margin-top:16px"><button class="btn btn-ghost" onclick="irSolFitas()">Concluir</button></div>'}
       </section></div>`;
   }
   function simFitaCC(cod){ simFita.ccCod=cod; simFita.setor=setorDe(cod); renderSimFita(); }
   async function gerarSolFita(){
     if(!simFita.ccCod){ toast('Selecione o centro de custo'); return; }
-    const L=simFita.linhas.filter(l=>l.insumoId);
+    const L=simFita.linhas;
     const nSA=L.filter(l=>l.qSA>0).length, nSC=L.filter(l=>l.qSC>0).length;
     if(!confirm(`Gerar ${nSA} SA(s) e ${nSC} SC(s)?`)) return;
     const btn=document.querySelector('.sim-acao .btn-primary');
@@ -6405,21 +6593,27 @@
     const prox=(k)=>new Promise((res,rej)=>db.ref('contadores/'+k).transaction(n=>(n||0)+1,(e,ok,sn)=>(e||!ok)?rej(e||new Error('contador')):res(sn.val())));
     try{
       for(const l of L){
-        const obs=simFita.obs||`Gerada pelo memorial de cálculo de fita (${fmtNum(l.metros)} m)`;
+        const obs=simFita.obs||`Gerada pelo agrupamento de fita (${fmtNum(l.metros)} m)`;
         if(l.qSA>0){
           const n=await prox('SA'), num='SA'+String(n).padStart(6,'0'), id='sa'+Date.now()+Math.floor(Math.random()*900+100);
           await db.ref('sas/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
             unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSA,obs,
-            ...vincDados(simFita),status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
+            status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
           sas.push(num);
         }
         if(l.qSC>0){
           const n=await prox('SC'), num='SC'+String(n).padStart(6,'0'), id='sc'+Date.now()+Math.floor(Math.random()*900+100);
           await db.ref('scs/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
             unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSC,obs,
-            ...vincDados(simFita),status:'pendente',entrada:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
+            status:'pendente',entrada:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
           scs.push(num);
         }
+      }
+      // as solicitações de fita que entraram no agrupamento somem da lista de pendentes
+      if(simFita.origemIds&&simFita.origemIds.length){
+        const upd={}; simFita.origemIds.forEach(id=>upd['solfitas/'+id]=null);
+        await db.ref().update(upd);
+        SOLFITAS=SOLFITAS.filter(x=>!simFita.origemIds.includes(x.id));
       }
       simFita.geradas={sas,scs};
       toast(`${sas.length} SA(s) e ${scs.length} SC(s) geradas`);
@@ -10360,8 +10554,10 @@
     stOp,stPcp,stSa,stSc,stepDot,symSvg,syncLinhas,tarefaLinha,tarefasDaAtiv,tarefasDoCard,telaCard,telaSetor,
     tempoAtiv,tempoExtraOP,tempoHoraExtra,tempoLiquido,tempoNormalOP,tempoTotal,tempoTotalOP,tempoTrabalhado,
     textoBuscaAce,tituloAgenda,toast,todasAtividades,togFunc,toggleAmb,toggleDia,togglePlay,toggleTarefa,totalPausas,
-    traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSimEstoqueFita,vincAmb,
-    vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3});
+    traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSolFita,vincAmb,
+    vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
+    renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
+    sfExcluirGrupo,sfSomarQuantidade,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
   Object.defineProperty(window,'fDan',{get:()=>fDan,set:v=>fDan=v});
