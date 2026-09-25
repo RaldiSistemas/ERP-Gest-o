@@ -2087,6 +2087,7 @@
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
+      {label:'Liberação de lote', children:['Projetos liberados','Lotes agrupados']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
       {label:'Programação', children:['Plano Mestre','MRP','Capacidade']},
       {label:'Consultas', children:['Ordens Abertas','Backlog']},
@@ -2230,6 +2231,8 @@
     if(mod.id==='pcp' && name==='Rendimento') return renderRendimento();
     if(mod.id==='pcp' && name==='Cadastro de Lead time') return renderLead('cad');
     if(mod.id==='pcp' && name==='Painel de Atrasos') return renderLead('dash');
+    if(mod.id==='pcp' && name==='Projetos liberados') return renderLiberacaoLote('lista');
+    if(mod.id==='pcp' && name==='Lotes agrupados') return renderLiberacaoLote('agrupados');
     if(mod.id==='est' && name==='Solicitação de Compras (SC)') return renderSCEstoque();
     if(mod.id==='est' && name==='Solicitação Armazém (SA)') return renderSAEstoque();
     if(mod.id==='est' && name==='Posição Atual') return renderPosicao();
@@ -2696,6 +2699,9 @@
   const EMPRESA={ end1:'Rua Miguel Luiz Goulart, 116', end2:'São João Margem Esquerda,', end3:'Tubarão - SC, 88708-500' };
   let ACES=[]; let ace=null;
   let SOLFITAS=[]; let solFitaCalc=null; let sfModoSel=false, sfSel=new Set();
+  let LOTES=[]; let lbAba='lista', lbModoSel=false, lbSel=new Set();
+  let fLib={busca:'',status:'',lote:'',soVerdes:false};
+  let LIB_IGNORADOS={}, lbMostrarExcluidos=false;
   function linhaVazia(){ const o={}; ACE_COLS.forEach(c=>o[c.k]=''); return o; }
 
   function textoBuscaAce(a){
@@ -3075,6 +3081,7 @@
       else if(TELA==='acomp-op') renderAcompOP();
       else if(TELA==='acomp-det'&&acompDet) detalheAcomp(acompDet);
       else if(TELA==='painel') renderPainel();
+      else if(TELA==='liblote') renderLiberacaoLote(lbAba);
       else if(TELA==='lead') renderLead(); });
     db.ref('cartoes').on('value',s=>{ CARTOES=Object.values(s.val()||{}).sort((a,b)=>(b.numero||0)-(a.numero||0));
       if(TELA==='danos') renderDanos(); else if(TELA==='danos-proj') renderDanosProjeto();
@@ -3086,6 +3093,10 @@
     db.ref('solfitas').on('value',s=>{ SOLFITAS=objParaArray(s);
       if(TELA==='solfitas') renderSolFitas(); },
       e=>toast('Erro de leitura: '+e.message));
+    db.ref('lotesAgrupados').on('value',s=>{ LOTES=objParaArray(s).reverse();
+      if(TELA==='liblote') renderLiberacaoLote(lbAba); });
+    db.ref('libIgnorados').on('value',s=>{ LIB_IGNORADOS=s.val()||{};
+      if(TELA==='liblote') renderLiberacaoLote(lbAba); });
     db.ref('scs').on('value',s=>{ SCS=Object.values(s.val()||{}).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
       if(TELA==='sc') renderSC(); else if(TELA==='sc-est') renderSCEstoque();
       else if(TELA==='sc-detalhe'&&scViewId) verSC(scViewId); });
@@ -9573,6 +9584,30 @@
     const o=OPS.find(x=>x.id===id); if(!o) return;
     if(stOp(o)==='nao'){ toast('Esta OP ainda não foi iniciada'); return; }
     if(stOp(o)==='encerrada'){ toast('Esta OP já está encerrada'); return; }
+    // a atividade "Liberado do PCP" pergunta o número de peças do projeto no momento do
+    // encerramento; o valor também pode ser preenchido/ajustado depois pela tela de
+    // Liberação de lote — os dois caminhos gravam no mesmo campo da OP.
+    if(o.atividade==='Liberado do PCP' && o.pecasProjeto==null){
+      abrirModal('Número de peças do projeto',
+        `<p class="page-sub" style="margin:-4px 0 12px">Projeto ${escHtml(o.projeto)||'—'}</p>
+         <div class="fld"><label>Número de peças do projeto<i>*</i></label>
+           <input id="fpPecas" type="number" min="1" step="1" placeholder="Ex.: 42" autofocus
+             onkeydown="if(event.key==='Enter') confirmarPecasEEncerrar('${id}')"></div>`,
+        `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+         <button class="btn btn-primary" onclick="confirmarPecasEEncerrar('${id}')">Encerrar OP</button>`);
+      return;
+    }
+    _finalizarOPExec(id);
+  }
+  function confirmarPecasEEncerrar(id){
+    const el=document.getElementById('fpPecas');
+    const v=parseInt(el&&el.value,10);
+    if(!v||v<=0){ toast('Informe o número de peças do projeto'); return; }
+    fecharModal();
+    _finalizarOPExec(id, v);
+  }
+  function _finalizarOPExec(id, pecas){
+    const o=OPS.find(x=>x.id===id); if(!o) return;
     const lista=apFuncs.length?apFuncs.slice():funcsDe(o,'inicio');
     const agora=new Date(), agoraISO=agora.toISOString();
     if(!confirmaFora(o,agora)) return;
@@ -9588,12 +9623,235 @@
       pausas:pl, tempoMin:norm+ext, tempoNormalMin:norm, tempoExtraMin:ext, tempoPausaMin:pausado,
       foraExpediente:fora||!!o.foraExpediente,
       ...(xl.length?{extras:xl}:{}),
+      ...(pecas!=null?{pecasProjeto:pecas}:{}),
       ...(lm!=null?{leadMin:lm, leadDesvioMin:(norm+ext)-lm}:{})})
       .then(()=>{ toast('OP encerrada — '+fmtMin(norm+ext)+(ext?' ('+fmtMin(ext)+' extra)':'')
         +(lm!=null?((norm+ext)>lm?' · ATRASO de '+fmtMin((norm+ext)-lm):' · dentro do lead time'):'')); abrirApont(id); })
       .catch(e=>toast('Erro: '+e.message));
   }
 
+
+/* ================= LIBERAÇÃO DE LOTE ================= */
+  // Todo projeto com a atividade "Liberado do PCP" encerrada aparece aqui — a quantidade
+  // de peças é preenchida direto nesta tela (dá pra preencher a qualquer momento, mesmo
+  // depois da OP já ter sido encerrada). Depois de agrupado em lote, o projeto sai
+  // desta lista e passa a aparecer só dentro do lote, na aba "Lotes agrupados".
+  function opsLiberadas(){
+    // elegíveis para agrupar: já têm a quantidade de peças preenchida (independente do
+    // status da OP) e ainda não foram agrupados em nenhum lote.
+    return OPS.filter(o=>o.atividade==='Liberado do PCP' && Number(o.pecasProjeto)>0 && !o.loteAgrupadoId)
+      .sort((a,b)=>String(a.projeto||'').localeCompare(String(b.projeto||'')));
+  }
+  function clientesAmbientesDe(o){
+    const pl=o.projetosLote||[];
+    return {clientes:[...new Set(pl.map(r=>r.cliente).filter(Boolean))],
+            ambientes:[...new Set(pl.map(r=>r.ambiente).filter(Boolean))]};
+  }
+  function slugProjChave(p){ return String(p||'').trim().replace(/[.#$/\[\]]/g,'_'); }
+  // Todos os projetos do Painel de Controle, cruzados com a OP (se já existir) da
+  // atividade "Liberado do PCP". Projetos já agrupados em lote não entram aqui.
+  function projetosLiberacao(){
+    const porProj=new Map();
+    PAINEL.forEach(r=>{
+      const p=String(r.projeto||'').trim(); if(!p) return;
+      if(!porProj.has(p)) porProj.set(p,{projeto:p,lote:r.lote||'',clientes:new Set(),ambientes:new Set()});
+      const g=porProj.get(p);
+      if(r.cliente) g.clientes.add(r.cliente);
+      if(r.ambiente) g.ambientes.add(r.ambiente);
+      if(!g.lote && r.lote) g.lote=r.lote;
+    });
+    return [...porProj.values()].map(g=>{
+      const op=OPS.find(o=>o.atividade==='Liberado do PCP' && String(o.projeto||'').trim()===g.projeto) || null;
+      const temPecas=!!(op && Number(op.pecasProjeto)>0);
+      return {projeto:g.projeto, lote:g.lote, clientes:[...g.clientes], ambientes:[...g.ambientes],
+        op, status: op?stOp(op):'sem-op', temPecas,
+        ignorado: !!LIB_IGNORADOS[slugProjChave(g.projeto)]};
+    }).filter(g=>!(g.op && g.op.loteAgrupadoId))
+      .sort((a,b)=>a.projeto.localeCompare(b.projeto));
+  }
+  function libStatusInfo(st){
+    return st==='sem-op'?{label:'Sem OP emitida',cor:'#a8a69c'}
+      : st==='nao'?{label:'Aguardando início',cor:'#c0392b'}
+      : (st==='parcial'||st==='pausada')?{label:'Em andamento',cor:'#d4930d'}
+      : st==='encerrada'?{label:'Liberado',cor:'#2f8f46'}
+      : {label:'—',cor:'#a8a69c'};
+  }
+  function renderLiberacaoLote(aba){
+    TELA='liblote'; lbAba=aba||lbAba||'lista';
+    return lbAba==='agrupados'?renderLibAgrupados():renderLibLista();
+  }
+  function renderLibLista(){
+    const todos=projetosLiberacao().filter(g=>lbMostrarExcluidos?true:!g.ignorado);
+    const excluidosCount=projetosLiberacao().filter(g=>g.ignorado).length;
+    const lotes=[...new Set(todos.map(g=>String(g.lote||'').trim()).filter(Boolean))].sort();
+    const buscaRaw=(fLib.busca||'').trim();
+    const termosVirgula=buscaRaw.includes(',')?buscaRaw.split(',').map(x=>x.trim().toLowerCase()).filter(Boolean):null;
+    const termosEspaco=buscaRaw.toLowerCase().split(/\s+/).filter(Boolean);
+    const itens=todos.filter(g=>{
+      if(fLib.soVerdes && !(g.temPecas && !g.ignorado)) return false;
+      if(fLib.status==='sem-op' && g.status!=='sem-op') return false;
+      if(fLib.status==='nao' && g.status!=='nao') return false;
+      if(fLib.status==='andamento' && !(g.status==='parcial'||g.status==='pausada')) return false;
+      if(fLib.status==='liberado' && g.status!=='encerrada') return false;
+      if(fLib.lote && String(g.lote||'').trim()!==fLib.lote) return false;
+      const alvo=[g.projeto,g.lote,...g.clientes,...g.ambientes].filter(Boolean).join(' ').toLowerCase();
+      if(termosVirgula) return !termosVirgula.length || termosVirgula.some(x=>alvo.includes(x));
+      return !termosEspaco.length || termosEspaco.every(x=>alvo.includes(x));
+    });
+    // contador: soma de peças de todos os projetos já com quantidade preenchida (verdes)
+    // que ainda não foram agrupados em lote — não é afetado pela busca/filtros.
+    const pendentes=opsLiberadas().filter(o=>!LIB_IGNORADOS[slugProjChave(o.projeto)]);
+    const totalPendente=pendentes.reduce((s,o)=>s+(Number(o.pecasProjeto)||0),0);
+    const liberaveis=itens.filter(g=>g.temPecas && !g.ignorado);
+    const totalSel=itens.filter(g=>g.op&&lbSel.has(g.op.id)).reduce((s,g)=>s+(Number(g.op.pecasProjeto)||0),0);
+    view.innerHTML=`<div class="page page-wide">
+      <div class="page-head"><div><h1 class="page-title">Liberação de lote</h1>
+        <p class="page-sub">${itens.length} de ${todos.length} projeto(s)${excluidosCount?` · ${excluidosCount} excluído(s)`:''}</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          ${excluidosCount?`<button class="btn btn-ghost" onclick="lbMostrarExcluidos=!lbMostrarExcluidos; renderLibLista()">${lbMostrarExcluidos?'Ocultar excluídos':'Ver excluídos ('+excluidosCount+')'}</button>`:''}
+          <button class="btn ${fLib.soVerdes?'btn-primary':'btn-ghost'}" onclick="fLib.soVerdes=!fLib.soVerdes; renderLibLista()">${fLib.soVerdes?'Ver todos os projetos':'Ver projetos prontos'}</button>
+          <button class="btn btn-ghost" onclick="renderLiberacaoLote('agrupados')">Ver lotes agrupados</button>
+          ${liberaveis.length||lbModoSel?`<button class="btn ${lbModoSel?'btn-primary':'btn-ghost'}" onclick="lbToggleSelecao()">${lbModoSel?'Cancelar seleção':'Agrupar lote'}</button>`:''}
+        </div></div>
+
+      <div class="pl-status" style="margin-bottom:14px">
+        <div class="pls" style="cursor:default"><i style="background:#2f8f46"></i><b>${fmtNum(totalPendente)}</b><span>peça(s) prontas para agrupar (${pendentes.length} projeto(s))</span></div>
+      </div>
+
+      <div class="inv-filtros">
+        <input class="search" value="${(fLib.busca||'').replace(/"/g,'&quot;')}" placeholder="Buscar por projeto, lote, cliente ou ambiente... (separe vários projetos por vírgula: 02854,02876)"
+          oninput="fLib.busca=this.value; clearTimeout(window._lbd); window._lbd=setTimeout(renderLibLista,250)">
+        <select onchange="fLib.lote=this.value; renderLibLista()"><option value="">Todos os lotes</option>
+          ${lotes.map(l=>`<option value="${escHtml(l)}" ${fLib.lote===l?'selected':''}>Lote ${escHtml(l)}</option>`).join('')}</select>
+        <select onchange="fLib.status=this.value; renderLibLista()">
+          <option value="">Todos os status</option>
+          <option value="sem-op" ${fLib.status==='sem-op'?'selected':''}>Sem OP emitida</option>
+          <option value="nao" ${fLib.status==='nao'?'selected':''}>Aguardando início</option>
+          <option value="andamento" ${fLib.status==='andamento'?'selected':''}>Em andamento</option>
+          <option value="liberado" ${fLib.status==='liberado'?'selected':''}>Liberado</option>
+        </select>
+        ${(fLib.busca||fLib.lote||fLib.status)?`<button class="btn btn-ghost btn-sm" onclick="fLib={busca:'',status:'',lote:''};renderLibLista()">Limpar</button>`:''}
+      </div>
+
+      ${itens.length?`
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr>${lbModoSel?'<th style="width:36px"></th>':''}
+          <th>Projeto</th><th>Cliente(s)</th><th>Ambiente(s)</th><th style="width:100px">Lote</th>
+          <th style="width:140px">Status</th><th style="width:130px">Peças</th><th style="width:50px"></th></tr></thead>
+        <tbody>${itens.map(g=>{
+          const si=libStatusInfo(g.status), op=g.op;
+          const sel=op&&lbSel.has(op.id);
+          const corLinha=g.ignorado?'opacity:.55'
+            :(g.temPecas?'background:#eaf7ec':'');
+          return `<tr${sel?' class="row-sel"':''} style="${corLinha}">
+            ${lbModoSel?`<td>${(g.temPecas&&!g.ignorado)
+                ?`<input type="checkbox" ${sel?'checked':''} onchange="lbMarcar('${op.id}',this.checked)">`
+                :''}</td>`:''}
+            <td class="mono">${escHtml(g.projeto)||'—'}</td>
+            <td>${g.clientes.map(escHtml).join(', ')||'—'}</td>
+            <td class="cel-disc">${g.ambientes.map(escHtml).join(', ')||'—'}</td>
+            <td>${escHtml(g.lote)||'—'}</td>
+            <td><span style="background:${si.cor};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>${si.label}</td>
+            <td>${op?`<input class="cell-in ctr" type="number" min="0" step="1" ${g.ignorado?'disabled':''}
+                value="${op.pecasProjeto!=null?Number(op.pecasProjeto):''}" placeholder="0"
+                onchange="lbSetPecas('${op.id}',this.value)">`:'<span class="cel-disc">—</span>'}</td>
+            <td class="acoes">${g.ignorado
+                ?`<button class="btn btn-ghost btn-sm" onclick="lbRestaurarProjeto('${escHtml(g.projeto)}')">Restaurar</button>`
+                :`<button class="icon-btn danger" title="Excluir da lista" onclick="lbExcluirProjeto('${escHtml(g.projeto)}')">${TRASH_SVG}</button>`}</td>
+          </tr>`;
+        }).join('')}</tbody></table></div>`
+        :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.pcp}</svg></div>
+          <h3>Nenhum projeto encontrado</h3><p>Ajuste a busca ou os filtros, ou cadastre projetos no Painel de Controle.</p></div>`}
+      ${lbModoSel?`<div class="sim-acao" style="margin-top:16px">
+        <div class="sa-t">${lbSel.size} projeto(s) selecionado(s) · ${fmtNum(totalSel)} peça(s)</div>
+        <button class="btn btn-primary" ${lbSel.size?'':'disabled style="opacity:.5"'} onclick="lbAbrirResumo()">Agrupar</button>
+      </div>`:''}
+    </div>`;
+  }
+  function lbExcluirProjeto(projeto){
+    if(!confirm(`Excluir o projeto ${projeto} desta lista? Ele deixa de aparecer em "Liberação de lote".`)) return;
+    db.ref('libIgnorados/'+slugProjChave(projeto)).set(true).catch(e=>toast('Erro: '+e.message));
+  }
+  function lbRestaurarProjeto(projeto){
+    db.ref('libIgnorados/'+slugProjChave(projeto)).remove().catch(e=>toast('Erro: '+e.message));
+  }
+  function lbToggleSelecao(){ lbModoSel=!lbModoSel; lbSel=new Set(); renderLibLista(); }
+  function lbMarcar(id,checked){ if(checked) lbSel.add(id); else lbSel.delete(id); renderLibLista(); }
+  function lbSetPecas(id,val){
+    const v=val===''?null:parseInt(val,10);
+    if(val!==''&&(isNaN(v)||v<0)){ toast('Valor inválido'); renderLibLista(); return; }
+    db.ref('ops/'+id+'/pecasProjeto').set(v).catch(e=>toast('Erro: '+e.message));
+    const o=OPS.find(x=>x.id===id); if(o) o.pecasProjeto=v;
+  }
+  function lbAbrirResumo(){
+    const itens=opsLiberadas().filter(o=>lbSel.has(o.id));
+    if(!itens.length){ toast('Selecione ao menos um projeto'); return; }
+    const semPecas=itens.filter(o=>!(Number(o.pecasProjeto)>0)).length;
+    const total=itens.reduce((s,o)=>s+(Number(o.pecasProjeto)||0),0);
+    abrirModal('Agrupar lote',
+      `<p class="page-sub" style="margin:-4px 0 12px">${itens.length} projeto(s) selecionado(s)</p>
+       ${semPecas?`<p class="aviso" style="margin-bottom:12px">${semPecas} projeto(s) selecionado(s) ainda estão sem peças preenchidas — serão contados como 0.</p>`:''}
+       <div class="sa-t" style="margin-bottom:14px">Quantidade total somada: <b>${fmtNum(total)} peça(s)</b></div>
+       <div class="fld"><label>Insira o número do lote<i>*</i></label>
+         <input id="lbNumLote" type="text" placeholder="Ex.: 4521" autofocus
+           onkeydown="if(event.key==='Enter') lbConfirmarAgrupar()"></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="lbConfirmarAgrupar()">Confirmar</button>`);
+  }
+  function lbConfirmarAgrupar(){
+    const el=document.getElementById('lbNumLote');
+    const numero=(el&&el.value||'').trim();
+    if(!numero){ toast('Informe o número do lote'); return; }
+    const itens=opsLiberadas().filter(o=>lbSel.has(o.id));
+    if(!itens.length){ toast('Selecione ao menos um projeto'); return; }
+    const total=itens.reduce((s,o)=>s+(Number(o.pecasProjeto)||0),0);
+    const id='lote'+Date.now()+Math.floor(Math.random()*900+100);
+    const itensSalvos=itens.map(o=>{
+      const {clientes,ambientes}=clientesAmbientesDe(o);
+      return {opId:o.id,projeto:o.projeto||'',lote:o.lote||'',clientes,ambientes,pecas:Number(o.pecasProjeto)||0};
+    });
+    const upd={};
+    upd['lotesAgrupados/'+id]={id,numero,qtdTotal:total,itens:itensSalvos,criadoEm:new Date().toISOString(),criadoPor:usuarioAtual()};
+    itens.forEach(o=>{ upd['ops/'+o.id+'/loteAgrupadoId']=id; });
+    db.ref().update(upd)
+      .then(()=>{ toast('Lote '+numero+' agrupado com '+fmtNum(total)+' peça(s)'); fecharModal();
+        lbModoSel=false; lbSel=new Set();
+        if(typeof selectLeaf==='function' && activeMod==='pcp') selectLeaf('Lotes agrupados');
+        else renderLiberacaoLote('agrupados'); })
+      .catch(e=>toast('Erro: '+e.message));
+  }
+  function renderLibAgrupados(){
+    const lotes=LOTES;
+    view.innerHTML=`<div class="page page-wide">
+      <div class="page-head"><div><h1 class="page-title">Lotes agrupados</h1>
+        <p class="page-sub">${lotes.length} lote(s) agrupado(s)</p></div>
+        <button class="btn btn-ghost" onclick="renderLiberacaoLote('lista')">Voltar para Liberação de lote</button></div>
+      ${lotes.length?`
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>Lote</th><th style="width:110px">Projetos</th><th style="width:110px">Peças</th><th style="width:160px"></th></tr></thead>
+        <tbody>${lotes.map(l=>`<tr>
+          <td class="mono">${escHtml(l.numero)||'—'}</td>
+          <td class="ctr">${(l.itens||[]).length}</td>
+          <td class="ctr">${fmtNum(l.qtdTotal||0)}</td>
+          <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="lbVerLote('${l.id}')">Mostrar</button></td>
+        </tr>`).join('')}</tbody></table></div>`
+        :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.pcp}</svg></div>
+          <h3>Nenhum lote agrupado ainda</h3><p>Agrupe projetos pela tela "Liberação de lote".</p></div>`}
+    </div>`;
+  }
+  function lbVerLote(id){
+    const l=LOTES.find(x=>x.id===id); if(!l) return;
+    const corpo=`<p class="page-sub" style="margin:-4px 0 12px">${fmtNum(l.qtdTotal||0)} peça(s) · ${(l.itens||[]).length} projeto(s)</p>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>Projeto</th><th>Cliente(s)</th><th>Ambiente(s)</th><th style="width:90px">Peças</th></tr></thead>
+        <tbody>${(l.itens||[]).map(it=>`<tr>
+          <td class="mono">${escHtml(it.projeto)||'—'}</td>
+          <td>${(it.clientes||[]).map(escHtml).join(', ')||'—'}</td>
+          <td class="cel-disc">${(it.ambientes||[]).map(escHtml).join(', ')||'—'}</td>
+          <td class="ctr">${fmtNum(it.pecas||0)}</td>
+        </tr>`).join('')}</tbody></table></div>`;
+    abrirModal('Lote '+escHtml(l.numero), corpo, '<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>');
+  }
 
 /* ================= LEAD TIME — cadastro e painel de atrasos ================= */
   const LT={ aba:'cad', proj:null, busca:'', filtro:'' };
