@@ -4669,6 +4669,7 @@
       <div class="page-head">
         <div><h1 class="page-title">Contagem de inventário</h1>
           <p class="page-sub">${totQ} de ${INSUMOS.length} item(ns) inventariado(s)</p></div>
+        <button class="btn btn-primary" onclick="abrirImportacaoContagem()">Importar planilha</button>
       </div>
       <div class="abas">
         <button class="aba ${invAba==='feitos'?'on':''}" onclick="invAba='feitos'; renderContagem()">Itens inventariados <span class="aba-n">${totQ}</span></button>
@@ -4760,6 +4761,90 @@
     const i=INSUMOS.find(x=>x.id===insumoId);
     if(!confirm(`Remover a contagem de ${i?i.codigo:''}?\n\nO item volta para "não inventariado".`)) return;
     db.ref('inventario/'+insumoId).remove().then(()=>toast('Contagem removida')).catch(e=>toast('Erro: '+e.message));
+  }
+
+  /* --- Importação de contagem por planilha (A=código, B=descrição, C=quantidade) --- */
+  let impContLinhas=null;
+  function abrirImportacaoContagem(){
+    abrirModal('Importar contagem por planilha',
+      `<p style="font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:14px">
+        Coluna <b>A</b>: código do insumo (já cadastrado) · coluna <b>B</b>: descrição (só conferência) ·
+        coluna <b>C</b>: quantidade contada. Pode ter linha de título ou não.</p>
+      <input type="file" id="impContFile" style="display:none" onchange="lerPlanilhaContagem(this)">
+      <div class="file-box" onclick="document.getElementById('impContFile').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4"/><path d="M12 11v6M9 14l3-3 3 3"/></svg>
+        <span class="fb-t" id="fbContNome">Clique para escolher a planilha</span>
+        <span class="fb-s">.xlsx, .xls ou .csv</span>
+      </div>
+      <div id="impContRes"></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       <button class="btn btn-primary" id="btnImpCont" disabled style="opacity:.5" onclick="confirmarImportacaoContagem()">Importar</button>`);
+    impContLinhas=null;
+  }
+  function lerPlanilhaContagem(input){
+    const f=input.files&&input.files[0]; if(!f) return;
+    const res=document.getElementById('impContRes');
+    const nm=document.getElementById('fbContNome'); if(nm) nm.textContent=f.name;
+    if(typeof XLSX==='undefined'){
+      res.innerHTML='<p class="imp-err">A biblioteca de leitura de planilhas não carregou. Verifique a conexão com a internet (ou se a rede bloqueia cdnjs.cloudflare.com) e recarregue a página.</p>';
+      return;
+    }
+    if(!/\.(xlsx|xls|csv)$/i.test(f.name)){
+      res.innerHTML='<p class="imp-err">Formato não suportado. Use .xlsx, .xls ou .csv.</p>';
+      return;
+    }
+    res.innerHTML='<p class="imp-load">Lendo arquivo...</p>';
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        if(!rows.length){ res.innerHTML='<p class="imp-err">Planilha vazia ou sem dados.</p>'; return; }
+        // se a coluna A da 1ª linha já é um código válido, não há linha de título
+        const temCabecalho=!partesCodigo(String(rows[0][0]||'').trim());
+        const dados=temCabecalho?rows.slice(1):rows;
+        if(!dados.length){ res.innerHTML='<p class="imp-err">Planilha vazia ou sem dados.</p>'; return; }
+        const porCodigo=new Map(INSUMOS.map(i=>[i.codigo,i]));
+        const ok=[], erros=[], vistos=new Set();
+        dados.forEach((r0,idx)=>{
+          const ln=temCabecalho?idx+2:idx+1;
+          const cod=String(r0[0]||'').trim(), qtdRaw=r0[2];
+          if(!cod && (qtdRaw===''||qtdRaw==null)) return;
+          if(!cod){ erros.push(`Linha ${ln}: código vazio`); return; }
+          const item=porCodigo.get(cod);
+          if(!item){ erros.push(`Linha ${ln}: código não cadastrado (${cod})`); return; }
+          const qtd=parseFloat(String(qtdRaw).replace(',','.'));
+          if(qtdRaw===''||qtdRaw==null||isNaN(qtd)||qtd<0){ erros.push(`Linha ${ln}: quantidade inválida ("${qtdRaw}") para ${cod}`); return; }
+          if(vistos.has(cod)){ erros.push(`Linha ${ln}: código repetido na planilha (${cod})`); return; }
+          vistos.add(cod);
+          ok.push({insumoId:item.id,codigo:cod,descricao:item.descricao,unidade:item.unidade,qtd});
+        });
+        impContLinhas=ok;
+        res.innerHTML=`<div class="imp-res">
+          <div class="imp-ok"><b>${ok.length}</b> item(ns) prontos para lançar</div>
+          ${erros.length?`<div class="imp-err"><b>${erros.length}</b> linha(s) ignorada(s):<ul>${erros.slice(0,12).map(e=>`<li>${escHtml(e)}</li>`).join('')}${erros.length>12?`<li>… e mais ${erros.length-12}</li>`:''}</ul></div>`:''}
+        </div>`;
+        const b=document.getElementById('btnImpCont');
+        b.disabled=!ok.length; b.style.opacity=ok.length?'1':'.5'; b.textContent=`Lançar ${ok.length} contagem(ns)`;
+      }catch(e){ res.innerHTML='<p class="imp-err">Não foi possível ler o arquivo: '+escHtml(e.message)+'</p>'; }
+    };
+    r.readAsArrayBuffer(f);
+  }
+  function confirmarImportacaoContagem(){
+    if(!impContLinhas||!impContLinhas.length) return;
+    if(!confirm(`Lançar a contagem de ${impContLinhas.length} item(ns)? Contagens já existentes para esses códigos serão substituídas.`)) return;
+    const b=document.getElementById('btnImpCont'); b.disabled=true; b.textContent='Importando...';
+    const upd={}, agora=new Date().toISOString(), quem=usuarioAtual();
+    impContLinhas.forEach(it=>{
+      const atual=INVENT[it.insumoId];
+      upd['inventario/'+it.insumoId]={insumoId:it.insumoId,codigo:it.codigo,qtd:it.qtd,
+        posicao:(atual&&atual.posicao)||'',por:quem,em:agora};
+    });
+    db.ref().update(upd)
+      .then(()=>{ fecharModal(); toast(impContLinhas.length+' contagem(ns) lançada(s)'); })
+      .catch(e=>{ b.disabled=false; b.textContent='Importar'; toast('Erro: '+e.message); });
   }
 
 
@@ -5384,26 +5469,20 @@
   }
 
   /* --- núcleo do cálculo --- */
-  function calcularFita(){
-    const perda=1+(simF.perda/100);
-    const pedidos=[];
-    simF.linhas.forEach((r,idx)=>{
-      const w=parseFloat(r.larguraNec), m=parseFloat(r.metragemNec), q=Math.max(1,parseInt(r.qtd,10)||1);
-      if(!r.descricao||isNaN(w)||w<=0||isNaN(m)||m<=0) return;
-      for(let k=0;k<q;k++) pedidos.push({idx,mat:materialDe(r.descricao),desc:r.descricao,codigo:r.codigo,w,m});
+  // pedidosBrutos: [{mat,desc,codigo,w,m}] (m já pode vir somado de vários pedaços da mesma largura).
+  // rolosPorMat: {mat: [{l,m,doItem?}]} — opções de rolo por material (catálogo padrão + rolos avulsos informados).
+  // Junta pedaços da mesma largura dentro do mesmo material antes de otimizar — isso evita comprar
+  // rolos "picados" à toa quando duas necessidades de mesma largura poderiam vir de uma compra só.
+  function otimizarCorte(pedidosBrutos,rolosPorMat,perdaPct){
+    const perda=1+(perdaPct/100);
+    const agreg=new Map();
+    pedidosBrutos.forEach(p=>{
+      const k=p.mat+'|'+p.w;
+      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0});
+      agreg.get(k).m+=p.m;
     });
-    if(!pedidos.length){ toast('Preencha ao menos uma linha com descrição, largura e metragem'); return; }
+    const pedidos=[...agreg.values()];
     pedidos.sort((a,b)=> b.w-a.w || b.m-a.m);
-
-    const rolosPorMat={};
-    simF.linhas.forEach(r=>{
-      if(!r.descricao) return;
-      const mat=materialDe(r.descricao);
-      const L=parseFloat(r.larguraRolo), M=parseFloat(r.metragemRolo);
-      rolosPorMat[mat]=rolosPorMat[mat]||ROLOS_FITA.map(x=>({...x}));
-      if(!isNaN(L)&&L>0&&!isNaN(M)&&M>0 && !rolosPorMat[mat].some(x=>x.l===L&&x.m===M))
-        rolosPorMat[mat].push({l:L,m:M,doItem:true});
-    });
 
     const porMat={};
     pedidos.forEach(p=>{ (porMat[p.mat]=porMat[p.mat]||[]).push(p); });
@@ -5476,6 +5555,26 @@
         metrosCortados:+lista.reduce((a,p)=>a+p.m,0).toFixed(2),
         aprov: areaComprada? Math.min(100,areaUsada/areaComprada*100):0});
     });
+    return materiais;
+  }
+  function calcularFita(){
+    const pedidosBrutos=[];
+    simF.linhas.forEach(r=>{
+      const w=parseFloat(r.larguraNec), m=parseFloat(r.metragemNec), q=Math.max(1,parseInt(r.qtd,10)||1);
+      if(!r.descricao||isNaN(w)||w<=0||isNaN(m)||m<=0) return;
+      pedidosBrutos.push({mat:materialDe(r.descricao),desc:r.descricao,codigo:r.codigo,w,m:m*q});
+    });
+    if(!pedidosBrutos.length){ toast('Preencha ao menos uma linha com descrição, largura e metragem'); return; }
+    const rolosPorMat={};
+    simF.linhas.forEach(r=>{
+      if(!r.descricao) return;
+      const mat=materialDe(r.descricao);
+      const L=parseFloat(r.larguraRolo), M=parseFloat(r.metragemRolo);
+      rolosPorMat[mat]=rolosPorMat[mat]||ROLOS_FITA.map(x=>({...x}));
+      if(!isNaN(L)&&L>0&&!isNaN(M)&&M>0 && !rolosPorMat[mat].some(x=>x.l===L&&x.m===M))
+        rolosPorMat[mat].push({l:L,m:M,doItem:true});
+    });
+    const materiais=otimizarCorte(pedidosBrutos,rolosPorMat,simF.perda);
     simF.resultado={materiais, geradoEm:new Date().toISOString(), perda:simF.perda};
     renderFita();
     setTimeout(()=>{ const el=document.getElementById('fitaRes'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },60);
@@ -6283,73 +6382,27 @@
       return d && Math.abs(d.l-largura)<0.01 && Math.abs(d.m-metragem)<0.01;
     })||null;
   }
+  // A esta altura NÃO se escolhe rolo nenhum — só registra a necessidade bruta (largura × metros).
+  // A otimização de corte/rolo do fornecedor só roda quando as solicitações forem agrupadas por lote,
+  // pra poder somar necessidades de vários ambientes antes de decidir quanto comprar.
   function verSolFita(){
-    const R=simF.resultado; if(!R) return;
-    const linhas=[];
-    R.materiais.forEach(M=>{
-      M.linhasCompra.forEach(c=>{
-        const ins=insumoDoRolo(M.mat,c.largura,c.metrosRolo);
-        linhas.push({mat:M.mat, largura:c.largura, metrosRolo:c.metrosRolo, rolos:c.rolos, metros:c.metros,
-          insumoId:ins?ins.id:null, codigo:ins?ins.codigo:'', descricao:ins?ins.descricao:`${M.mat} ${fmtNum(c.largura)}MM X ${fmtNum(c.metrosRolo)}M`,
-          unidade:ins?ins.unidade:''});
-      });
+    const porChave=new Map();
+    simF.linhas.forEach(r=>{
+      const w=parseFloat(r.larguraNec), m=parseFloat(r.metragemNec), q=Math.max(1,parseInt(r.qtd,10)||1);
+      if(!r.descricao||isNaN(w)||w<=0||isNaN(m)||m<=0) return;
+      const mat=materialDe(r.descricao), k=mat+'|'+w;
+      if(!porChave.has(k)) porChave.set(k,{mat,codigo:r.codigo,descricao:r.descricao,largura:w,metros:0,
+        larguraRolo:parseFloat(r.larguraRolo)||null, metragemRolo:parseFloat(r.metragemRolo)||null});
+      porChave.get(k).metros+=m*q;
     });
-    if(!linhas.length){ toast('Nada a solicitar nesta simulação'); return; }
-    solFitaCalc={linhas,ccCod:'',setor:'',obs:'',painelId:null,clienteNome:'',ambiente:'',numeroProjeto:'',conv:{}};
-    pedirConversoes(0);
+    const linhas=[...porChave.values()];
+    if(!linhas.length){ toast('Preencha ao menos uma linha com descrição, largura e metragem'); return; }
+    solFitaCalc={linhas,ccCod:'',setor:'',obs:'',painelId:null,clienteNome:'',ambiente:'',numeroProjeto:''};
+    renderSolFitaNovo();
   }
-  // pergunta a equivalência em metros para itens que não estão cadastrados em M
-  function pedirConversoes(idx){
-    const pend=solFitaCalc.linhas.filter(l=>l.insumoId && l.unidade!=='M');
-    if(idx>=pend.length){ renderSolFitaNovo(); return; }
-    const l=pend[idx], i=INSUMOS.find(x=>x.id===l.insumoId);
-    const nomeUn=(UNIDADES.find(u=>u[0]===l.unidade)||[l.unidade,l.unidade])[1];
-    const ultimo=parseFloat(i&&i.metrosPorUn);
-    const sugerido=(!isNaN(ultimo)&&ultimo>0)?ultimo:l.metrosRolo;
-    abrirModal(`Equivalência em metros ${pend.length>1?`(${idx+1} de ${pend.length})`:''}`,
-      `<div class="inv-item"><span class="cod-mono">${escHtml(i.codigo)}</span>
-        <b>${escHtml(i.descricao)}</b>
-        <span>Cadastrado em <b>${escHtml(l.unidade)}</b> — ${escHtml(nomeUn)}</span></div>
-      <p class="aviso" style="margin-top:14px">O cálculo da fita trabalha em metros, mas este item é controlado em
-        <b>${escHtml(l.unidade)}</b>. Confirme quantos metros tem 1 ${escHtml(l.unidade)}.</p>
-      <div class="fld" style="margin-top:14px"><label>1 ${escHtml(l.unidade)} equivale a quantos metros?<i>*</i></label>
-        <div class="qt-row"><input id="cvVal" type="number" step="any" min="0" value="${fmtNum(sugerido)}" autofocus>
-        <span class="qt-un">m</span></div>
-        <span class="fld-hint">Pela descrição: ${fmtNum(l.metrosRolo)} m${(!isNaN(ultimo)&&ultimo>0&&ultimo!==l.metrosRolo)?` · usado da última vez: ${fmtNum(ultimo)} m`:''}. Confirme a cada simulação.</span></div>`,
-      `<button class="btn btn-ghost" onclick="fecharModal(); solFitaCalc=null;">Cancelar</button>
-       <button class="btn btn-primary" onclick="salvarConversao('${l.insumoId}',${idx})">Confirmar</button>`);
-  }
-  // conversões valem só para esta solicitação — confirmadas a cada vez
-  function metrosPorUn(insumoId){
-    const i=INSUMOS.find(x=>x.id===insumoId);
-    if(!i) return null;
-    if(i.unidade==='M') return 1;
-    const v=solFitaCalc&&solFitaCalc.conv?solFitaCalc.conv[insumoId]:null;
-    return (v&&v>0)?v:null;
-  }
-  function salvarConversao(insumoId,idx){
-    const v=parseFloat(document.getElementById('cvVal').value);
-    if(isNaN(v)||v<=0){ toast('Informe um valor válido'); return; }
-    solFitaCalc.conv=solFitaCalc.conv||{};
-    solFitaCalc.conv[insumoId]=v;
-    // guarda apenas como sugestão para a próxima vez (não é usado no cálculo)
-    db.ref('insumos/'+insumoId+'/metrosPorUn').set(v).catch(()=>{});
-    const i=INSUMOS.find(x=>x.id===insumoId); if(i) i.metrosPorUn=v;
-    fecharModal(); setTimeout(()=>pedirConversoes(idx+1),60);
-  }
-
   function renderSolFitaNovo(){
     TELA='solfita-novo';
-    // converte metros -> unidade do insumo (não olha estoque — isso só acontece no agrupamento)
-    solFitaCalc.linhas.forEach(l=>{
-      if(!l.insumoId){ l.qtd=null; return; }
-      const mpu=metrosPorUn(l.insumoId)||1;
-      l.qtd=+(l.metros/mpu).toFixed(4);
-      if(l.unidade!=='M') l.qtd=Math.ceil(l.qtd); // embalagem fechada
-    });
-    const validas=solFitaCalc.linhas.filter(l=>l.insumoId);
-    const semCad=solFitaCalc.linhas.filter(l=>!l.insumoId);
-
+    const L=solFitaCalc.linhas;
     view.innerHTML=`<div class="page page-wide">
       <div class="page-head"><div><h1 class="page-title">Nova Solicitação de Fita</h1>
         <p class="page-sub">PCP · Solicitações · Fita — baseada no memorial de cálculo</p></div>
@@ -6367,39 +6420,32 @@
         </div></section>
 
       <section class="fs">
-        <h3 class="fs-title">Rolos necessários</h3>
+        <h3 class="fs-title">Necessidade de fita</h3>
+        <p class="page-sub" style="margin-top:-6px;margin-bottom:12px">A decisão de qual rolo comprar só acontece quando essa solicitação for agrupada com outras no lote.</p>
         <div class="table-wrap"><table class="tbl tbl-sim">
-          <thead><tr><th style="width:112px">Código</th><th>Item</th><th style="width:52px">Un.</th><th style="width:110px">Necessário</th></tr></thead>
-          <tbody>${validas.map(l=>`<tr>
-            <td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
-            <td><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m${
-                l.unidade!=='M'&&solFitaCalc.conv[l.insumoId]?` · 1 ${escHtml(l.unidade)} = ${fmtNum(solFitaCalc.conv[l.insumoId])} m`:''}</div></td>
-            <td class="ctr">${escHtml(l.unidade)}</td>
-            <td class="ctr sd-tot">${fmtNum(l.qtd)}</td>
-          </tr>`).join('')}
-          ${semCad.map(l=>`<tr class="row-sem">
-            <td colspan="2"><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s)</div></td>
-            <td colspan="2"><span class="ro-flag">Rolo do catálogo do fornecedor, sem item cadastrado — não é possível solicitar</span></td>
+          <thead><tr><th>Material</th><th style="width:130px">Largura nec.</th><th style="width:150px">Metros necessários</th></tr></thead>
+          <tbody>${L.map(l=>`<tr>
+            <td><div class="cel-nome">${escHtml(l.descricao)}</div><div class="cel-sub">${escHtml(l.codigo)}</div></td>
+            <td class="ctr">${fmtNum(l.largura)}mm</td>
+            <td class="ctr sd-tot">${fmtNum(l.metros)} m</td>
           </tr>`).join('')}</tbody></table></div>
 
         <div class="sim-acao">
-          <div class="sa-t">Será criada 1 solicitação de fita com ${validas.length} item(ns)${solFitaCalc.ccCod?` em <b>${escHtml(solFitaCalc.ccCod)} — ${escHtml(solFitaCalc.setor)}</b>`:''}</div>
-          <button class="btn btn-primary" ${solFitaCalc.ccCod&&validas.length?'':'disabled style="opacity:.5"'} onclick="salvarSolFitaNova()">Gerar solicitação de fita</button>
+          <div class="sa-t">Será criada 1 solicitação de fita com ${L.length} item(ns)${solFitaCalc.ccCod?` em <b>${escHtml(solFitaCalc.ccCod)} — ${escHtml(solFitaCalc.setor)}</b>`:''}</div>
+          <button class="btn btn-primary" ${solFitaCalc.ccCod&&L.length?'':'disabled style="opacity:.5"'} onclick="salvarSolFitaNova()">Gerar solicitação de fita</button>
         </div>
       </section></div>`;
   }
   function solFitaCC(cod){ solFitaCalc.ccCod=cod; solFitaCalc.setor=setorDe(cod); renderSolFitaNovo(); }
   function salvarSolFitaNova(){
     if(!solFitaCalc.ccCod){ toast('Selecione o centro de custo'); return; }
-    const L=solFitaCalc.linhas.filter(l=>l.insumoId);
-    if(!L.length){ toast('Nenhum item com cadastro para solicitar'); return; }
+    const L=solFitaCalc.linhas;
+    if(!L.length){ toast('Nada a solicitar'); return; }
     const id='sf'+Date.now()+Math.floor(Math.random()*900+100);
     const data={ id, ccCod:solFitaCalc.ccCod, setor:solFitaCalc.setor, obs:(solFitaCalc.obs||'').trim(),
       ...vincDados(solFitaCalc),
-      itens:L.map(l=>({insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,unidade:l.unidade,
-        mat:l.mat,largura:l.largura,metrosRolo:l.metrosRolo,rolos:l.rolos,metros:l.metros,qtd:l.qtd})),
+      itens:L.map(l=>({mat:l.mat,codigo:l.codigo,descricao:l.descricao,largura:l.largura,metros:l.metros,
+        larguraRolo:l.larguraRolo,metragemRolo:l.metragemRolo})),
       criadoEm:new Date().toISOString(), criadoPor:usuarioAtual() };
     db.ref('solfitas/'+id).set(data)
       .then(()=>{ toast('Solicitação de fita criada');
@@ -6429,11 +6475,11 @@
   function itensDoGrupo(g){
     const map=new Map();
     g.regs.forEach(r=>(r.itens||[]).forEach(it=>{
-      const k=it.insumoId||('x:'+it.codigo);
-      if(!map.has(k)) map.set(k,{...it,metros:0,rolos:0,qtd:0});
-      const acc=map.get(k); acc.metros+=(it.metros||0); acc.rolos+=(it.rolos||0); acc.qtd+=(it.qtd||0);
+      const k=it.mat+'|'+it.largura;
+      if(!map.has(k)) map.set(k,{mat:it.mat,codigo:it.codigo,descricao:it.descricao,largura:it.largura,metros:0});
+      map.get(k).metros+=(it.metros||0);
     }));
-    return [...map.values()];
+    return [...map.values()].sort((a,b)=>b.largura-a.largura);
   }
   function renderSolFitas(){
     TELA='solfitas';
@@ -6477,10 +6523,10 @@
     const itens=itensDoGrupo(g);
     const corpo=`<p class="page-sub" style="margin:-4px 0 12px">${escHtml(g.clienteNome)||'—'}${g.ambiente?' · '+escHtml(g.ambiente):''}${g.numeroProjeto?' · Nº '+escHtml(g.numeroProjeto):''} · ${escHtml(g.ccCod)||'—'} — ${escHtml(g.setor)||'—'}</p>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:112px">Código</th><th>Item</th><th style="width:60px">Un.</th><th style="width:100px">Necessário</th></tr></thead>
-        <tbody>${itens.map(it=>`<tr><td><span class="cod-mono">${escHtml(it.codigo)}</span></td>
-          <td>${escHtml(it.descricao)}</td><td class="ctr">${escHtml(it.unidade)}</td><td class="ctr">${fmtNum(it.qtd)}</td></tr>`).join('')}</tbody></table></div>
-      <p class="fld-hint" style="margin-top:10px">${g.regs.length} solicitação(ões) desse ambiente.</p>`;
+        <thead><tr><th>Material</th><th style="width:100px">Largura</th><th style="width:130px">Metros necessários</th></tr></thead>
+        <tbody>${itens.map(it=>`<tr><td><div class="cel-nome">${escHtml(it.descricao)}</div><div class="cel-sub">${escHtml(it.codigo)}</div></td>
+          <td class="ctr">${fmtNum(it.largura)}mm</td><td class="ctr">${fmtNum(it.metros)} m</td></tr>`).join('')}</tbody></table></div>
+      <p class="fld-hint" style="margin-top:10px">${g.regs.length} solicitação(ões) desse ambiente. O rolo do fornecedor só é decidido no agrupamento por lote.</p>`;
     abrirModal('Fitas pedidas', corpo, '<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>');
   }
   function sfExcluirGrupo(chave){
@@ -6495,38 +6541,97 @@
   function sfSomarQuantidade(){
     const grupos=gruposSolFita().filter(g=>sfSel.has(g.chave));
     if(!grupos.length){ toast('Selecione ao menos um ambiente'); return; }
-    const map=new Map(), origemInfo=[], origemIds=[];
+    // junta a necessidade bruta (largura × metros) de todos os ambientes selecionados e só AQUI
+    // roda a otimização de corte/rolo do fornecedor — quanto maior o lote, menor o desperdício.
+    const pedidosBrutos=[], rolosPorMat={}, origemInfo=[], origemIds=[];
     grupos.forEach(g=>{
       origemInfo.push({clienteNome:g.clienteNome,ambiente:g.ambiente,numeroProjeto:g.numeroProjeto});
       g.regs.forEach(r=>{
         origemIds.push(r.id);
         (r.itens||[]).forEach(it=>{
-          if(!it.insumoId) return;
-          if(!map.has(it.insumoId)) map.set(it.insumoId,{insumoId:it.insumoId,codigo:it.codigo,descricao:it.descricao,unidade:it.unidade,metros:0,rolos:0,qtd:0});
-          const acc=map.get(it.insumoId); acc.metros+=(it.metros||0); acc.rolos+=(it.rolos||0); acc.qtd+=(it.qtd||0);
+          if(!it.largura||!it.metros) return;
+          pedidosBrutos.push({mat:it.mat,desc:it.descricao,codigo:it.codigo,w:it.largura,m:it.metros});
+          if(it.larguraRolo>0 && it.metragemRolo>0){
+            rolosPorMat[it.mat]=rolosPorMat[it.mat]||ROLOS_FITA.map(x=>({...x}));
+            if(!rolosPorMat[it.mat].some(x=>x.l===it.larguraRolo&&x.m===it.metragemRolo))
+              rolosPorMat[it.mat].push({l:it.larguraRolo,m:it.metragemRolo,doItem:true});
+          }
         });
       });
     });
-    const linhas=[...map.values()];
-    if(!linhas.length){ toast('Nenhum item com cadastro nessas solicitações'); return; }
-    simFita={linhas,ccCod:'',setor:'',obs:'',geradas:null,origemIds,origemInfo};
+    if(!pedidosBrutos.length){ toast('Nenhuma necessidade nessas solicitações'); return; }
+    const materiais=otimizarCorte(pedidosBrutos,rolosPorMat,0);
+    const linhas=[];
+    materiais.forEach(M=>{
+      M.linhasCompra.forEach(c=>{
+        const ins=insumoDoRolo(M.mat,c.largura,c.metrosRolo);
+        linhas.push({mat:M.mat, largura:c.largura, metrosRolo:c.metrosRolo, rolos:c.rolos, metros:c.metros,
+          insumoId:ins?ins.id:null, codigo:ins?ins.codigo:'', descricao:ins?ins.descricao:`${M.mat} ${fmtNum(c.largura)}MM X ${fmtNum(c.metrosRolo)}M`,
+          unidade:ins?ins.unidade:''});
+      });
+    });
+    if(!linhas.length){ toast('Nada a comprar nesse agrupamento'); return; }
+    simFita={linhas,ccCod:'',setor:'',obs:'',geradas:null,origemIds,origemInfo,conv:{}};
     sfModoSel=false; sfSel=new Set();
-    renderSimFita();
+    pedirConversoes(0);
+  }
+  // pergunta a equivalência em metros para itens que não estão cadastrados em M — só faz sentido
+  // agora que o rolo já foi escolhido (no agrupamento por lote)
+  function pedirConversoes(idx){
+    const pend=simFita.linhas.filter(l=>l.insumoId && l.unidade!=='M');
+    if(idx>=pend.length){ renderSimFita(); return; }
+    const l=pend[idx], i=INSUMOS.find(x=>x.id===l.insumoId);
+    const nomeUn=(UNIDADES.find(u=>u[0]===l.unidade)||[l.unidade,l.unidade])[1];
+    const ultimo=parseFloat(i&&i.metrosPorUn);
+    const sugerido=(!isNaN(ultimo)&&ultimo>0)?ultimo:l.metrosRolo;
+    abrirModal(`Equivalência em metros ${pend.length>1?`(${idx+1} de ${pend.length})`:''}`,
+      `<div class="inv-item"><span class="cod-mono">${escHtml(i.codigo)}</span>
+        <b>${escHtml(i.descricao)}</b>
+        <span>Cadastrado em <b>${escHtml(l.unidade)}</b> — ${escHtml(nomeUn)}</span></div>
+      <p class="aviso" style="margin-top:14px">O cálculo da fita trabalha em metros, mas este item é controlado em
+        <b>${escHtml(l.unidade)}</b>. Confirme quantos metros tem 1 ${escHtml(l.unidade)}.</p>
+      <div class="fld" style="margin-top:14px"><label>1 ${escHtml(l.unidade)} equivale a quantos metros?<i>*</i></label>
+        <div class="qt-row"><input id="cvVal" type="number" step="any" min="0" value="${fmtNum(sugerido)}" autofocus>
+        <span class="qt-un">m</span></div>
+        <span class="fld-hint">Pela descrição: ${fmtNum(l.metrosRolo)} m${(!isNaN(ultimo)&&ultimo>0&&ultimo!==l.metrosRolo)?` · usado da última vez: ${fmtNum(ultimo)} m`:''}. Confirme a cada simulação.</span></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal(); simFita=null;">Cancelar</button>
+       <button class="btn btn-primary" onclick="salvarConversao('${l.insumoId}',${idx})">Confirmar</button>`);
+  }
+  function metrosPorUn(insumoId){
+    const i=INSUMOS.find(x=>x.id===insumoId);
+    if(!i) return null;
+    if(i.unidade==='M') return 1;
+    const v=simFita&&simFita.conv?simFita.conv[insumoId]:null;
+    return (v&&v>0)?v:null;
+  }
+  function salvarConversao(insumoId,idx){
+    const v=parseFloat(document.getElementById('cvVal').value);
+    if(isNaN(v)||v<=0){ toast('Informe um valor válido'); return; }
+    simFita.conv=simFita.conv||{};
+    simFita.conv[insumoId]=v;
+    db.ref('insumos/'+insumoId+'/metrosPorUn').set(v).catch(()=>{});
+    const i=INSUMOS.find(x=>x.id===insumoId); if(i) i.metrosPorUn=v;
+    fecharModal(); setTimeout(()=>pedirConversoes(idx+1),60);
   }
 
   /* ===== Agrupamento de fita -> Simulação de estoque -> SA/SC ===== */
   let simFita=null;
   function renderSimFita(){
     TELA='simfita';
-    // já vem com "qtd" somada das solicitações de fita agrupadas — só falta olhar o estoque
+    // rolo do fornecedor já foi decidido no agrupamento — converte metros -> unidade do insumo e olha o estoque
     simFita.linhas.forEach(l=>{
+      if(!l.insumoId){ l.qtd=null; return; }
+      const mpu=metrosPorUn(l.insumoId)||1;
+      l.qtd=+(l.metros/mpu).toFixed(4);
+      if(l.unidade!=='M') l.qtd=Math.ceil(l.qtd); // embalagem fechada
       const sd=saldoDe(l.insumoId);
       l.emEstoque=sd.total; l.disponivel=sd.disp;
       l.qSA=Math.min(l.qtd,Math.max(0,sd.disp));
       l.qSC=+(l.qtd-l.qSA).toFixed(4);
       l.tipo=l.qSC<=0?'SA':(l.qSA<=0?'SC':'AMBOS');
     });
-    const validas=simFita.linhas;
+    const validas=simFita.linhas.filter(l=>l.insumoId);
+    const semCad=simFita.linhas.filter(l=>!l.insumoId);
     const nSA=validas.filter(l=>l.qSA>0).length, nSC=validas.filter(l=>l.qSC>0).length;
     const origem=simFita.origemInfo||[];
 
@@ -6564,7 +6669,8 @@
           <tbody>${validas.map(l=>`<tr>
             <td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
             <td><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">${fmtNum(l.metros)} m no total</div></td>
+              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m${
+                l.unidade!=='M'&&simFita.conv&&simFita.conv[l.insumoId]?` · 1 ${escHtml(l.unidade)} = ${fmtNum(simFita.conv[l.insumoId])} m`:''}</div></td>
             <td class="ctr">${escHtml(l.unidade)}</td>
             <td class="ctr sd-tot">${fmtNum(l.qtd)}</td>
             <td class="ctr">${fmtNum(l.emEstoque)}</td>
@@ -6573,6 +6679,11 @@
             <td class="ctr">${l.qSC>0?`<b class="v-sc">${fmtNum(l.qSC)}</b>`:'—'}</td>
             <td>${l.tipo==='SA'?'<span class="tag-sa">SA</span>':(l.tipo==='SC'?'<span class="tag-sc">SC</span>'
               :'<span class="tag-sa">SA</span> <span class="tag-sc">SC</span>')}</td>
+          </tr>`).join('')}
+          ${semCad.map(l=>`<tr class="row-sem">
+            <td colspan="3"><div class="cel-nome">${escHtml(l.descricao)}</div>
+              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s)</div></td>
+            <td colspan="6"><span class="ro-flag">Rolo do catálogo do fornecedor, sem item cadastrado — não é possível verificar estoque nem gerar solicitação</span></td>
           </tr>`).join('')}</tbody></table></div>
 
         ${!simFita.geradas?`<div class="sim-acao">
@@ -6584,7 +6695,7 @@
   function simFitaCC(cod){ simFita.ccCod=cod; simFita.setor=setorDe(cod); renderSimFita(); }
   async function gerarSolFita(){
     if(!simFita.ccCod){ toast('Selecione o centro de custo'); return; }
-    const L=simFita.linhas;
+    const L=simFita.linhas.filter(l=>l.insumoId);
     const nSA=L.filter(l=>l.qSA>0).length, nSC=L.filter(l=>l.qSC>0).length;
     if(!confirm(`Gerar ${nSA} SA(s) e ${nSC} SC(s)?`)) return;
     const btn=document.querySelector('.sim-acao .btn-primary');
@@ -10557,7 +10668,8 @@
     traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSolFita,vincAmb,
     vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
-    sfExcluirGrupo,sfSomarQuantidade,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas});
+    sfExcluirGrupo,sfSomarQuantidade,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,
+    abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
   Object.defineProperty(window,'fDan',{get:()=>fDan,set:v=>fDan=v});
