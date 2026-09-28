@@ -2702,6 +2702,7 @@
   let LOTES=[]; let lbAba='lista', lbModoSel=false, lbSel=new Set();
   let fLib={busca:'',status:'',lote:'',soVerdes:false};
   let LIB_IGNORADOS={}, lbMostrarExcluidos=false;
+  let resumoCarregado={ops:false,ign:false}, resumoUltimo=null;
   function linhaVazia(){ const o={}; ACE_COLS.forEach(c=>o[c.k]=''); return o; }
 
   function textoBuscaAce(a){
@@ -3076,6 +3077,7 @@
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       if(TELA==='equipe') renderEquipe(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
+      resumoCarregado.ops=true; sincronizarResumoTela();
       if(TELA==='ops') renderOPs(); else if(TELA==='apont') renderApont();
       else if(TELA==='apont-op'&&apontOP) abrirApont(apontOP);
       else if(TELA==='acomp-op') renderAcompOP();
@@ -3096,6 +3098,7 @@
     db.ref('lotesAgrupados').on('value',s=>{ LOTES=objParaArray(s).reverse();
       if(TELA==='liblote') renderLiberacaoLote(lbAba); });
     db.ref('libIgnorados').on('value',s=>{ LIB_IGNORADOS=s.val()||{};
+      resumoCarregado.ign=true; sincronizarResumoTela();
       if(TELA==='liblote') renderLiberacaoLote(lbAba); });
     db.ref('scs').on('value',s=>{ SCS=Object.values(s.val()||{}).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
       if(TELA==='sc') renderSC(); else if(TELA==='sc-est') renderSCEstoque();
@@ -9669,6 +9672,20 @@
     return {clientes:[...new Set(pl.map(r=>r.cliente).filter(Boolean))],
             ambientes:[...new Set(pl.map(r=>r.ambiente).filter(Boolean))]};
   }
+  // projetos verdes (peças preenchidas) que ainda não foram agrupados nem excluídos
+  function resumoLiberacao(){
+    const pend=opsLiberadas().filter(o=>!LIB_IGNORADOS[slugProjChave(o.projeto)]);
+    return {pendentes:pend, pecasProntas:pend.reduce((t,o)=>t+(Number(o.pecasProjeto)||0),0), projetos:pend.length};
+  }
+  // publica o contador em resumoTela para o painel fixo do Rainmeter (leitura pública, escrita só logado)
+  function sincronizarResumoTela(){
+    if(!resumoCarregado.ops||!resumoCarregado.ign||!auth.currentUser) return;
+    const r=resumoLiberacao(), chave=r.pecasProntas+'|'+r.projetos;
+    if(chave===resumoUltimo) return;
+    resumoUltimo=chave;
+    db.ref('resumoTela').set({pecasProntas:r.pecasProntas,projetos:r.projetos,atualizadoEm:Date.now()})
+      .catch(()=>{ resumoUltimo=null; });
+  }
   function slugProjChave(p){ return String(p||'').trim().replace(/[.#$/\[\]]/g,'_'); }
   // Todos os projetos do Painel de Controle, cruzados com a OP (se já existir) da
   // atividade "Liberado do PCP". Projetos já agrupados em lote não entram aqui.
@@ -9722,8 +9739,7 @@
     });
     // contador: soma de peças de todos os projetos já com quantidade preenchida (verdes)
     // que ainda não foram agrupados em lote — não é afetado pela busca/filtros.
-    const pendentes=opsLiberadas().filter(o=>!LIB_IGNORADOS[slugProjChave(o.projeto)]);
-    const totalPendente=pendentes.reduce((s,o)=>s+(Number(o.pecasProjeto)||0),0);
+    const resumo=resumoLiberacao(), pendentes=resumo.pendentes, totalPendente=resumo.pecasProntas;
     const liberaveis=itens.filter(g=>g.temPecas && !g.ignorado);
     const totalSel=itens.filter(g=>g.op&&lbSel.has(g.op.id)).reduce((s,g)=>s+(Number(g.op.pecasProjeto)||0),0);
     view.innerHTML=`<div class="page page-wide">
