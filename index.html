@@ -5045,6 +5045,9 @@
     redrawVinc(redraw);
   }
   function vincDados(o){ return {painelId:o.painelId||null, clienteNome:o.clienteNome||'', ambiente:o.ambiente||'', numeroProjeto:o.numeroProjeto||''}; }
+  function loteSub(x){
+    return x.lote?`<div class="cel-sub"><span class="ger-p ger-sa" style="padding:1px 8px">Lote ${escHtml(x.lote)}</span></div>`:'';
+  }
   function vincSub(x){
     if(!x.clienteNome) return '';
     return `<div class="cel-sub vinc-sub">${escHtml(x.clienteNome)}${x.ambiente?' · '+escHtml(x.ambiente):''}${x.numeroProjeto?' · '+escHtml(x.numeroProjeto):''}</div>`;
@@ -5058,7 +5061,7 @@
       if(f.status && stSa(x)!==f.status) return false;
       if(f.cc && x.ccCod!==f.cc) return false;
       if(!t.length) return true;
-      const txt=[x.numero,x.codigo,x.descricao,x.setor,x.ccCod,x.obs].filter(Boolean).join(' ').toLowerCase();
+      const txt=[x.numero,x.codigo,x.descricao,x.setor,x.ccCod,x.obs,x.lote?('lote '+x.lote):''].filter(Boolean).join(' ').toLowerCase();
       return t.every(y=>txt.includes(y));
     });
   }
@@ -5073,7 +5076,7 @@
       ${SAS.length?`
       <div class="st-resumo">${Object.entries(ST_SA).map(([k,v])=>`<div class="st-item"><span class="dot" style="background:${v.cor}"></span>${v.label} <b>${cont[k]}</b></div>`).join('')}</div>
       <div class="inv-filtros">
-        <input class="search" id="buscaSAin" value="${buscaSA.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SA, código ou descrição..." oninput="buscaSA=this.value; atualizarSA()">
+        <input class="search" id="buscaSAin" value="${buscaSA.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SA, código, descrição ou lote..." oninput="buscaSA=this.value; atualizarSA()">
         <select onchange="fSA.status=this.value; atualizarSA()"><option value="">Todos os status</option>
           ${Object.entries(ST_SA).map(([k,v])=>`<option value="${k}" ${fSA.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
         <select onchange="fSA.cc=this.value; atualizarSA()"><option value="">Todos os centros de custo</option>
@@ -5096,7 +5099,7 @@
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
-        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${vincSub(x)}</td>
+        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="ctr">${escHtml(x.ccCod)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
@@ -5218,7 +5221,7 @@
       ${SAS.length?`
       <div class="st-resumo">${Object.entries(ST_SA).map(([k,v])=>`<div class="st-item"><span class="dot" style="background:${v.cor}"></span>${v.label} <b>${cont[k]}</b></div>`).join('')}</div>
       <div class="inv-filtros">
-        <input class="search" id="buscaSAe" value="${buscaSAEst.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SA, código ou descrição..." oninput="buscaSAEst=this.value; atualizarSAEst()">
+        <input class="search" id="buscaSAe" value="${buscaSAEst.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SA, código, descrição ou lote..." oninput="buscaSAEst=this.value; atualizarSAEst()">
         <select onchange="fSAEst.status=this.value; atualizarSAEst()"><option value="">Todos os status</option>
           ${Object.entries(ST_SA).map(([k,v])=>`<option value="${k}" ${fSAEst.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
       </div>
@@ -5238,7 +5241,7 @@
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
-        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${vincSub(x)}</td>
+        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
         <td><select class="st-sel" onchange="mudarStatusSA('${x.id}',this.value)">
@@ -5458,10 +5461,11 @@
     if(modo==='cod') simF.linhas[i].codigo=input.value; else simF.linhas[i].descricao=input.value;
     const box=document.getElementById('fitaAc');
     if(q.length<2){ box.innerHTML=''; return; }
+    const termos=q.split(/\s+/).filter(Boolean);
     const res=INSUMOS.filter(x=>{
-      const alvo = modo==='cod'?String(x.codigo):String(x.descricao);
-      return alvo.toLowerCase().includes(q);
-    }).slice(0,8);
+      const alvo = (modo==='cod'?String(x.codigo):String(x.descricao)).toLowerCase();
+      return termos.every(t=>alvo.includes(t));
+    }).slice(0,80);
     if(!res.length){ box.innerHTML=''; return; }
     const r=input.getBoundingClientRect();
     box.innerHTML=`<div class="ac-float" style="display:block;position:fixed;top:${r.bottom+3}px;left:${r.left}px;min-width:${Math.max(r.width,340)}px">
@@ -5780,9 +5784,8 @@
       if(f.status && stSc(x)!==f.status) return false;
       if(f.cc && x.ccCod!==f.cc) return false;
       if(!t.length) return true;
-      return [x.numero,x.codigo,x.descricao,x.setor,x.ccCod,x.obs].filter(Boolean).join(' ').toLowerCase().split(' ').join(' ').includes(t[0])
-        ? t.every(y=>[x.numero,x.codigo,x.descricao,x.setor,x.ccCod,x.obs].filter(Boolean).join(' ').toLowerCase().includes(y))
-        : t.every(y=>[x.numero,x.codigo,x.descricao,x.setor,x.ccCod,x.obs].filter(Boolean).join(' ').toLowerCase().includes(y));
+      const txt=[x.numero,x.codigo,x.descricao,x.setor,x.ccCod,x.obs,x.lote?('lote '+x.lote):''].filter(Boolean).join(' ').toLowerCase();
+      return t.every(y=>txt.includes(y));
     });
   }
   function resumoSC(lista){
@@ -5801,7 +5804,7 @@
         <button class="btn btn-primary" onclick="novaSC()">+ Nova SC</button></div>
       ${SCS.length?`${resumoSC(SCS)}
       <div class="inv-filtros">
-        <input class="search" id="buscaSCin" value="${buscaSC.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SC, código ou descrição..." oninput="buscaSC=this.value; atualizarSC()">
+        <input class="search" id="buscaSCin" value="${buscaSC.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SC, código, descrição ou lote..." oninput="buscaSC=this.value; atualizarSC()">
         <select onchange="fSC.status=this.value; atualizarSC()"><option value="">Todos os status</option>
           ${Object.entries(ST_SC).map(([k,v])=>`<option value="${k}" ${fSC.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
         <select onchange="fSC.cc=this.value; atualizarSC()"><option value="">Todos os centros de custo</option>
@@ -5825,7 +5828,7 @@
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
-        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${vincSub(x)}</td>
+        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="ctr">${escHtml(x.ccCod)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
@@ -5945,7 +5948,7 @@
         <p class="page-sub">${SCS.length} solicitação(ões) recebidas do PCP</p></div></div>
       ${SCS.length?`${resumoSC(SCS)}
       <div class="inv-filtros">
-        <input class="search" id="buscaSCe" value="${buscaSCEst.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SC, código ou descrição..." oninput="buscaSCEst=this.value; atualizarSCEst()">
+        <input class="search" id="buscaSCe" value="${buscaSCEst.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SC, código, descrição ou lote..." oninput="buscaSCEst=this.value; atualizarSCEst()">
         <select onchange="fSCEst.status=this.value; atualizarSCEst()"><option value="">Todos os status</option>
           ${Object.entries(ST_SC).map(([k,v])=>`<option value="${k}" ${fSCEst.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
       </div>
@@ -5965,7 +5968,7 @@
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
-        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${vincSub(x)}</td>
+        <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
         <td><select class="st-sel" onchange="mudarStatusSC('${x.id}',this.value)">
@@ -6552,6 +6555,25 @@
   function sfSomarQuantidade(){
     const grupos=gruposSolFita().filter(g=>sfSel.has(g.chave));
     if(!grupos.length){ toast('Selecione ao menos um ambiente'); return; }
+    abrirModal('Insira o lote',
+      `<p class="page-sub" style="margin:-4px 0 12px">${grupos.length} ambiente(s) selecionado(s)</p>
+       <div class="fld"><label>Número do lote<i>*</i></label>
+         <input id="sfLoteIn" type="text" placeholder="Ex.: 4521" autocomplete="off"
+           onkeydown="if(event.key==='Enter') sfConfirmarLote()">
+         <span class="fld-hint">Este lote vai aparecer nas SA e SC geradas, e dá para pesquisar por ele nas solicitações.</span></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="sfConfirmarLote()">Continuar</button>`);
+  }
+  function sfConfirmarLote(){
+    const el=document.getElementById('sfLoteIn');
+    const lote=(el&&el.value||'').trim();
+    if(!lote){ toast('Informe o número do lote'); return; }
+    fecharModal();
+    sfSomarQuantidadeExec(lote);
+  }
+  function sfSomarQuantidadeExec(lote){
+    const grupos=gruposSolFita().filter(g=>sfSel.has(g.chave));
+    if(!grupos.length){ toast('Selecione ao menos um ambiente'); return; }
     // junta a necessidade bruta (largura × metros) de todos os ambientes selecionados e só AQUI
     // roda a otimização de corte/rolo do fornecedor — quanto maior o lote, menor o desperdício.
     const pedidosBrutos=[], rolosPorMat={}, origemInfo=[], origemIds=[];
@@ -6582,7 +6604,7 @@
       });
     });
     if(!linhas.length){ toast('Nada a comprar nesse agrupamento'); return; }
-    simFita={linhas,ccCod:'',setor:'',obs:'',geradas:null,origemIds,origemInfo,conv:{}};
+    simFita={linhas,ccCod:'',setor:'',obs:'',lote,geradas:null,origemIds,origemInfo,conv:{}};
     sfModoSel=false; sfSel=new Set();
     pedirConversoes(0);
   }
@@ -6648,7 +6670,7 @@
 
     view.innerHTML=`<div class="page page-wide">
       <div class="page-head"><div><h1 class="page-title">Simulação de estoque — fita</h1>
-        <p class="page-sub">Agrupamento de ${origem.length} ambiente(s)</p></div>
+        <p class="page-sub">Lote ${escHtml(simFita.lote||'—')} · Agrupamento de ${origem.length} ambiente(s)</p></div>
         <button class="btn btn-ghost" onclick="irSolFitas()">Voltar às solicitações de fita</button></div>
 
       ${simFita.geradas?`<section class="fs" style="margin-bottom:18px">
@@ -6715,18 +6737,18 @@
     const prox=(k)=>new Promise((res,rej)=>db.ref('contadores/'+k).transaction(n=>(n||0)+1,(e,ok,sn)=>(e||!ok)?rej(e||new Error('contador')):res(sn.val())));
     try{
       for(const l of L){
-        const obs=simFita.obs||`Gerada pelo agrupamento de fita (${fmtNum(l.metros)} m)`;
+        const obs=simFita.obs||`Gerada pelo agrupamento de fita (${fmtNum(l.metros)} m) — Lote ${simFita.lote||'—'}`;
         if(l.qSA>0){
           const n=await prox('SA'), num='SA'+String(n).padStart(6,'0'), id='sa'+Date.now()+Math.floor(Math.random()*900+100);
           await db.ref('sas/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
-            unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSA,obs,
+            unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSA,obs,lote:simFita.lote||'',
             status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
           sas.push(num);
         }
         if(l.qSC>0){
           const n=await prox('SC'), num='SC'+String(n).padStart(6,'0'), id='sc'+Date.now()+Math.floor(Math.random()*900+100);
           await db.ref('scs/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
-            unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSC,obs,
+            unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSC,obs,lote:simFita.lote||'',
             status:'pendente',entrada:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
           scs.push(num);
         }
@@ -10926,7 +10948,7 @@
     traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSolFita,vincAmb,
     vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
-    sfExcluirGrupo,sfSomarQuantidade,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,
+    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,
     abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
