@@ -6625,7 +6625,9 @@
       const liq=+(p.m-usa).toFixed(4);
       if(liq>1e-9) liquidos.push({...p,m:liq});
     });
+    console.log('[fita-debug] liquidos', JSON.parse(JSON.stringify(liquidos)));
     const materiais=liquidos.length?otimizarCorte(liquidos,simFita.rolosPorMat,0):[];
+    console.log('[fita-debug] materiais', JSON.parse(JSON.stringify(materiais)));
     const linhas=[], porIns=new Map();
     materiais.forEach(M=>{
       M.linhasCompra.forEach(c=>{
@@ -6780,7 +6782,29 @@
           <div class="sa-t">Serão criadas <b>${nSA+nSC}</b> solicitação(ões)${simFita.ccCod?` em <b>${escHtml(simFita.ccCod)} — ${escHtml(simFita.setor)}</b>`:''}</div>
           <button class="btn btn-primary" ${simFita.ccCod?'':'disabled style="opacity:.5"'} onclick="gerarSolFita()">Gerar solicitações automaticamente</button>
         </div>`:'<div style="margin-top:16px"><button class="btn btn-ghost" onclick="irSolFitas()">Concluir</button></div>'}
+        ${(()=>{ const opL=opLaminadoDoLote(simFita.lote);
+          return `<div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost" ${validas.length?'':'disabled style="opacity:.5"'} onclick="salvarFitaNaOPLaminado()">Salvar necessidade na OP de Laminado</button>
+            <span class="cel-sub">${opL?`OP ${escHtml(opL.numero)} encontrada para este lote${opL.necessidadeFita?' · já tem necessidade salva':''}`
+              :`Nenhuma OP de Laminado emitida ainda para o lote ${escHtml(simFita.lote)||'—'}`}</span>
+          </div>`; })()}
       </section></div>`;
+  }
+  function opLaminadoDoLote(lote){
+    const l=String(lote||'').trim(); if(!l) return null;
+    return OPS.find(o=>o.atividade==='Laminado' && String(o.lote||'').trim()===l) || null;
+  }
+  function salvarFitaNaOPLaminado(){
+    const op=opLaminadoDoLote(simFita.lote);
+    if(!op){ toast('Nenhuma OP de Laminado encontrada para o lote '+(simFita.lote||'—')); return; }
+    const L=simFita.linhas.filter(l=>l.insumoId);
+    if(!L.length){ toast('Nenhum item para salvar'); return; }
+    const itens=L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',
+      necessario:+(l.necM||l.metros||0).toFixed(4), estoqueUsado:+(l.metrosEstoque||0).toFixed(4),
+      comprar:+(l.metros||0).toFixed(4), rolos:l.rolos||0, metrosRolo:l.metrosRolo||0}));
+    db.ref('ops/'+op.id+'/necessidadeFita').set({itens,lote:simFita.lote||'',salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()})
+      .then(()=>{ toast('Necessidade de fita salva na OP '+op.numero+' (Laminado)'); renderSimFita(); })
+      .catch(e=>toast('Erro: '+e.message));
   }
   function simFitaCC(cod){ simFita.ccCod=cod; simFita.setor=setorDe(cod); renderSimFita(); }
   async function gerarSolFita(){
@@ -10220,6 +10244,17 @@
 
       <table class="opz-tbl"><thead>${cab}</thead>
         <tbody>${linhasItens||'<tr><td colspan="7" class="ctr vazio">—</td></tr>'}</tbody></table>
+
+      ${o.necessidadeFita&&(o.necessidadeFita.itens||[]).length?`
+      <div class="opz-fita">
+        <div class="fs-title" style="margin:10px 0 6px">Necessidade de fita de borda — lote ${escHtml(o.necessidadeFita.lote||o.lote)||'—'}</div>
+        <table class="opz-tbl"><thead><tr><th style="width:96px">Código</th><th>Item</th><th style="width:40px">Un.</th>
+          <th style="width:96px">Necessário</th></tr></thead>
+          <tbody>${o.necessidadeFita.itens.map(it=>`<tr>
+            <td class="mono">${escHtml(it.codigo)||'—'}</td><td>${escHtml(it.descricao)||'—'}</td><td class="ctr">${escHtml(it.unidade)}</td>
+            <td class="ctr">${fmtNum(it.necessario||0)}</td>
+          </tr>`).join('')}</tbody></table>
+      </div>`:''}
 
       <div class="opz-op">
         <div class="opz-oph"><span>Recurso</span><span>Operação</span><span>Apontamento</span></div>
