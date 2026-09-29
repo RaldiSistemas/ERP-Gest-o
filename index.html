@@ -10203,14 +10203,34 @@
   }
 
   /* ================= OP IMPRESSA ================= */
+  // Total de peças do lote (usado na OP de Laminado).
+  // 1º: lote agrupado (Liberação de lote) cujo número é igual ao lote da OP.
+  // 2º (fallback): soma das peças dos projetos "Liberado do PCP" desse lote.
+  function pecasDoLote(lote){
+    const l=String(lote||'').trim(); if(!l) return null;
+    const g=LOTES.find(x=>String(x.numero||'').trim()===l);
+    if(g && Number(g.qtdTotal)>0) return Number(g.qtdTotal);
+    const soma=OPS.filter(o=>o.atividade==='Liberado do PCP' && String(o.lote||'').trim()===l)
+      .reduce((t,o)=>t+(Number(o.pecasProjeto)||0),0);
+    return soma>0?soma:null;
+  }
+  // Peças de um projeto dentro do lote: 1º pelo lote agrupado, 2º pela OP "Liberado do PCP" do projeto.
+  function pecasDoProjeto(lote,projeto){
+    const l=String(lote||'').trim(), p=String(projeto||'').trim(); if(!p) return null;
+    const g=LOTES.find(x=>String(x.numero||'').trim()===l);
+    const it=g&&(g.itens||[]).find(i=>String(i.projeto||'').trim()===p);
+    if(it && Number(it.pecas)>0) return Number(it.pecas);
+    const op=OPS.find(o=>o.atividade==='Liberado do PCP' && String(o.projeto||'').trim()===p && Number(o.pecasProjeto)>0);
+    return op?Number(op.pecasProjeto):null;
+  }
   function folhaOP(o){
     const S=opSetorDe(o.setor), v=ST_OP[stOp(o)];
     const projs=(o.projetosLote&&o.projetosLote.length)?o.projetosLote:null;
     const linhasItens=(o.projetosLote||[]).map(r=>`<tr>
       <td class="mono">${escHtml(r.projeto)||'—'}</td><td>${escHtml(r.cliente)||'—'}</td>
       <td>${escHtml(r.ambiente)||'—'}</td><td>${escHtml(r.local)||'—'}</td><td>${escHtml(r.consultor)||'—'}</td>
-      <td class="ctr">${escHtml(o.lote)||'—'}</td><td></td></tr>`).join('');
-    const cab='<tr><th style="width:78px">Projeto</th><th>Cliente</th><th>Ambiente</th><th style="width:120px">Local</th><th style="width:110px">Consultor(a)</th><th style="width:56px">Lote</th><th style="width:96px">Conferido</th></tr>';
+      <td class="ctr">${escHtml(o.lote)||'—'}</td><td class="ctr">${(()=>{ const n=pecasDoProjeto(o.lote,r.projeto); return n!=null?fmtNum(n):'—'; })()}</td></tr>`).join('');
+    const cab='<tr><th style="width:78px">Projeto</th><th>Cliente</th><th>Ambiente</th><th style="width:120px">Local</th><th style="width:110px">Consultor(a)</th><th style="width:56px">Lote</th><th style="width:96px">Peças</th></tr>';
     const campo=(l,val)=>`<div class="ol"><span>${l}</span><b>${val||'&nbsp;'}</b></div>`;
     return `<div class="opz">
       <div class="opz-top">
@@ -10229,6 +10249,7 @@
           ${campo('Tipo de OP:',escHtml(TIPO_OP[o.tipo]))}
           ${campo('Emissão:',fmtData((o.emitidoEm||'').slice(0,10)))}
           ${campo('Lote:',escHtml(o.lote)||'—')}
+          ${o.atividade==='Laminado'?campo('Peças do lote:',(()=>{ const n=pecasDoLote(o.lote); return n!=null?fmtNum(n):'—'; })()):''}
           ${campo(projs?'Projetos:':'Projeto:',projs?projs.length+' no lote':escHtml(o.projeto)||'—')}
           ${campo('Registros:',(o.projetosLote||[]).length||'—')}
           ${campo('Situação:',v.label)}
