@@ -6596,26 +6596,79 @@
       });
     });
     if(!pedidosBrutos.length){ toast('Nenhuma necessidade nessas solicitações'); return; }
-    const materiais=otimizarCorte(pedidosBrutos,rolosPorMat,0);
-    const linhas=[];
+    simFita={linhas:[],ccCod:'',setor:'',obs:'',lote,geradas:null,origemIds,origemInfo,conv:{},pedidosBrutos,rolosPorMat};
+    sfModoSel=false; sfSel=new Set();
+    pedirConversoes(0,1);
+  }
+  // Regra: 1º desconta o estoque disponível da necessidade; 2º arredonda o que faltou para o rolo do fornecedor.
+  // O estoque de um item só abate pedidos da MESMA largura (ex.: fita 22mm só abate necessidade de 22mm).
+  function sfCalcular(){
+    const agreg=new Map();
+    simFita.pedidosBrutos.forEach(p=>{
+      const k=p.mat+'|'+p.w;
+      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0});
+      agreg.get(k).m+=p.m;
+    });
+    const liquidos=[], usos=new Map(), restM=new Map();
+    agreg.forEach(p=>{
+      const opts=simFita.rolosPorMat[p.mat]||ROLOS_FITA;
+      const r=opts.find(x=>Math.abs(x.l-p.w)<0.01);
+      const ins=r?insumoDoRolo(p.mat,r.l,r.m):null;
+      let usa=0;
+      if(ins){
+        if(!restM.has(ins.id)) restM.set(ins.id,Math.max(0,saldoDe(ins.id).disp)*(metrosPorUn(ins.id)||r.m));
+        usa=Math.min(p.m,restM.get(ins.id));
+        restM.set(ins.id,restM.get(ins.id)-usa);
+        const u=usos.get(ins.id)||{ins,r,mat:p.mat,estM:0,necM:0};
+        u.estM+=usa; u.necM+=p.m; usos.set(ins.id,u);
+      }
+      const liq=+(p.m-usa).toFixed(4);
+      if(liq>1e-9) liquidos.push({...p,m:liq});
+    });
+    const materiais=liquidos.length?otimizarCorte(liquidos,simFita.rolosPorMat,0):[];
+    const linhas=[], porIns=new Map();
     materiais.forEach(M=>{
       M.linhasCompra.forEach(c=>{
         const ins=insumoDoRolo(M.mat,c.largura,c.metrosRolo);
-        linhas.push({mat:M.mat, largura:c.largura, metrosRolo:c.metrosRolo, rolos:c.rolos, metros:c.metros,
+        const l={mat:M.mat, largura:c.largura, metrosRolo:c.metrosRolo, rolos:c.rolos, metros:c.metros, metrosEstoque:0, necM:c.metros,
           insumoId:ins?ins.id:null, codigo:ins?ins.codigo:'', descricao:ins?ins.descricao:`${M.mat} ${fmtNum(c.largura)}MM X ${fmtNum(c.metrosRolo)}M`,
-          unidade:ins?ins.unidade:''});
+          unidade:ins?ins.unidade:''};
+        linhas.push(l); if(ins) porIns.set(ins.id,l);
       });
     });
-    if(!linhas.length){ toast('Nada a comprar nesse agrupamento'); return; }
-    simFita={linhas,ccCod:'',setor:'',obs:'',lote,geradas:null,origemIds,origemInfo,conv:{}};
-    sfModoSel=false; sfSel=new Set();
-    pedirConversoes(0);
+    usos.forEach((u,id)=>{
+      if(u.estM<=1e-9) return;
+      let l=porIns.get(id);
+      if(!l){
+        l={mat:u.mat, largura:u.r.l, metrosRolo:u.r.m, rolos:0, metros:0, metrosEstoque:0, necM:0,
+          insumoId:id, codigo:u.ins.codigo, descricao:u.ins.descricao, unidade:u.ins.unidade};
+        linhas.push(l); porIns.set(id,l);
+      }
+      l.metrosEstoque=+u.estM.toFixed(4); l.necM=+u.necM.toFixed(4);
+    });
+    if(!linhas.length){ toast('Nada a comprar nesse agrupamento'); simFita=null; return; }
+    simFita.linhas=linhas;
+    pedirConversoes(0,2);
   }
   // pergunta a equivalência em metros para itens que não estão cadastrados em M — só faz sentido
   // agora que o rolo já foi escolhido (no agrupamento por lote)
-  function pedirConversoes(idx){
-    const pend=simFita.linhas.filter(l=>l.insumoId && l.unidade!=='M');
-    if(idx>=pend.length){ renderSimFita(); return; }
+  function pedirConversoes(idx,fase){
+    fase=fase||2;
+    if(idx===0){
+      let base;
+      if(fase===1){ // itens que podem abater estoque: mesma largura do pedido
+        const vistos=new Set(); base=[];
+        simFita.pedidosBrutos.forEach(p=>{
+          const opts=simFita.rolosPorMat[p.mat]||ROLOS_FITA;
+          const r=opts.find(x=>Math.abs(x.l-p.w)<0.01);
+          const ins=r?insumoDoRolo(p.mat,r.l,r.m):null;
+          if(ins&&!vistos.has(ins.id)){ vistos.add(ins.id); base.push({insumoId:ins.id,unidade:ins.unidade,metrosRolo:r.m}); }
+        });
+      } else base=simFita.linhas.filter(l=>l.insumoId);
+      simFita.pend=base.filter(l=>l.unidade!=='M'&&!(simFita.conv&&simFita.conv[l.insumoId]));
+    }
+    const pend=simFita.pend||[];
+    if(idx>=pend.length){ if(fase===1) sfCalcular(); else renderSimFita(); return; }
     const l=pend[idx], i=INSUMOS.find(x=>x.id===l.insumoId);
     const nomeUn=(UNIDADES.find(u=>u[0]===l.unidade)||[l.unidade,l.unidade])[1];
     const ultimo=parseFloat(i&&i.metrosPorUn);
@@ -6631,7 +6684,7 @@
         <span class="qt-un">m</span></div>
         <span class="fld-hint">Pela descrição: ${fmtNum(l.metrosRolo)} m${(!isNaN(ultimo)&&ultimo>0&&ultimo!==l.metrosRolo)?` · usado da última vez: ${fmtNum(ultimo)} m`:''}. Confirme a cada simulação.</span></div>`,
       `<button class="btn btn-ghost" onclick="fecharModal(); simFita=null;">Cancelar</button>
-       <button class="btn btn-primary" onclick="salvarConversao('${l.insumoId}',${idx})">Confirmar</button>`);
+       <button class="btn btn-primary" onclick="salvarConversao('${l.insumoId}',${idx},${fase})">Confirmar</button>`);
   }
   function metrosPorUn(insumoId){
     const i=INSUMOS.find(x=>x.id===insumoId);
@@ -6640,30 +6693,31 @@
     const v=simFita&&simFita.conv?simFita.conv[insumoId]:null;
     return (v&&v>0)?v:null;
   }
-  function salvarConversao(insumoId,idx){
+  function salvarConversao(insumoId,idx,fase){
     const v=parseFloat(document.getElementById('cvVal').value);
     if(isNaN(v)||v<=0){ toast('Informe um valor válido'); return; }
     simFita.conv=simFita.conv||{};
     simFita.conv[insumoId]=v;
     db.ref('insumos/'+insumoId+'/metrosPorUn').set(v).catch(()=>{});
     const i=INSUMOS.find(x=>x.id===insumoId); if(i) i.metrosPorUn=v;
-    fecharModal(); setTimeout(()=>pedirConversoes(idx+1),60);
+    fecharModal(); setTimeout(()=>pedirConversoes(idx+1,fase||2),60);
   }
 
   /* ===== Agrupamento de fita -> Simulação de estoque -> SA/SC ===== */
   let simFita=null;
   function renderSimFita(){
     TELA='simfita';
-    // rolo do fornecedor já foi decidido no agrupamento — converte metros -> unidade do insumo e olha o estoque
+    // estoque já abatido e rolo do fornecedor já decidido no agrupamento — converte metros -> unidade do insumo
     simFita.linhas.forEach(l=>{
       if(!l.insumoId){ l.qtd=null; return; }
       const mpu=metrosPorUn(l.insumoId)||1;
-      l.qtd=+(l.metros/mpu).toFixed(4);
-      if(l.unidade!=='M') l.qtd=Math.ceil(l.qtd); // embalagem fechada
+      const emb=(v)=>l.unidade!=='M'?Math.ceil(+(v).toFixed(4)):+v.toFixed(4); // embalagem fechada
       const sd=saldoDe(l.insumoId);
       l.emEstoque=sd.total; l.disponivel=sd.disp;
-      l.qSA=Math.min(l.qtd,Math.max(0,sd.disp));
-      l.qSC=+(l.qtd-l.qSA).toFixed(4);
+      // estoque já foi descontado da necessidade ANTES de arredondar para o rolo do fornecedor
+      l.qSA=Math.min(emb((l.metrosEstoque||0)/mpu),Math.max(0,sd.disp));
+      l.qSC=emb(l.metros/mpu);            // compra: já em rolos fechados
+      l.qtd=emb((l.necM||l.metros)/mpu);  // necessidade total (só para exibir)
       l.tipo=l.qSC<=0?'SA':(l.qSA<=0?'SC':'AMBOS');
     });
     const validas=simFita.linhas.filter(l=>l.insumoId);
@@ -6705,7 +6759,7 @@
           <tbody>${validas.map(l=>`<tr>
             <td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
             <td><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">${fmtNum(l.metros)} m · ${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m${
+              <div class="cel-sub">necessário ${fmtNum(l.necM||l.metros)} m · estoque usado ${fmtNum(l.metrosEstoque||0)} m · comprar ${fmtNum(l.metros)} m (${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m)${
                 l.unidade!=='M'&&simFita.conv&&simFita.conv[l.insumoId]?` · 1 ${escHtml(l.unidade)} = ${fmtNum(simFita.conv[l.insumoId])} m`:''}</div></td>
             <td class="ctr">${escHtml(l.unidade)}</td>
             <td class="ctr sd-tot">${fmtNum(l.qtd)}</td>
@@ -6979,7 +7033,7 @@
         <li>As sobras que restaram — as acima de 22 mm ficam em verde, ainda dão fita.</li></ul>
         <div class="hc-box hc-warn"><b>A % de perda muda o resultado</b>
         <p>Com 10%, uma peça de 25 mm ocupa 27,5 mm do rolo. Se 25 + 15 = 40 mm parece caber num rolo de 45, mas com 15% de perda vira 46 mm e <b>não cabe</b>. A tela mostra a conta em cada linha.</p></div>
-        <p>Depois de calcular, o botão <b>Ver simulação de estoque</b> verifica se esses rolos já existem no almoxarifado e gera as SAs e SCs.</p>
+        <p>Ao agrupar por lote, o sistema <b>primeiro desconta o estoque disponível</b> da necessidade e <b>só depois arredonda</b> o que faltou para o rolo do fornecedor (ex.: precisa de 13 m, tem 5 m → falta 8 m → compra 1 rolo de 10 m). Depois gera as SAs (do estoque) e SCs (compra).</p>
         <div class="hc-box"><b>Item que não é medido em metros</b>
         <p>Se a fita está cadastrada em RL ou CX, o sistema pergunta quantos metros tem uma embalagem — <b>toda vez</b>, para você conferir. Ele mostra o valor da descrição e o que você usou da última vez.</p></div>`}]},
 
