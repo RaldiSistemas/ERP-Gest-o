@@ -9306,6 +9306,21 @@
     else { const a=new Date(h); a.setDate(a.getDate()-t); rendDe=a.toISOString().slice(0,10); rendAte=h.toISOString().slice(0,10); }
     renderRendimento();
   }
+  // Cliente(s) e ambiente(s) de uma OP (OP de projeto = 1; OP de lote = vários).
+  function clienteAmbienteOP(o){
+    let pl=(o.projetosLote||[]).filter(Boolean);
+    if(!pl.length && o.projeto){
+      const reg=PAINEL.find(r=>String(r.projeto||'').trim()===String(o.projeto).trim());
+      if(reg) pl=[reg];
+    }
+    const uniq=a=>[...new Set(a.map(x=>String(x||'').trim()).filter(Boolean))];
+    return {cli:uniq(pl.map(r=>r.cliente)), amb:uniq(pl.map(r=>r.ambiente))};
+  }
+  function celListaOP(arr){
+    if(!arr.length) return '—';
+    const txt=arr.length>2?arr.slice(0,2).join(', ')+' +'+(arr.length-2):arr.join(', ');
+    return `<span title="${escHtml(arr.join(' | '))}">${escHtml(txt)}</span>`;
+  }
   function detalheRend(i){
     const f=dadosRendimento()[i]; if(!f) return;
     TELA='rend-det'; rendFunc=f.nome;
@@ -9368,6 +9383,7 @@
         <div class="table-wrap table-scroll"><table class="tbl">
           <thead><tr><th style="width:26px"></th><th style="width:112px">OP</th><th>Atividade</th>
             <th style="width:56px">Setor</th><th style="width:70px">Projeto</th>
+            <th>Cliente</th><th>Ambiente</th>
             <th style="width:112px">Início</th><th style="width:112px">Fim</th>
             <th style="width:86px">Tempo</th><th style="width:74px">Parte</th></tr></thead>
           <tbody>${lista.map(({o,parte,div})=>{ const v=ST_OP[stOp(o)], S=opSetorDe(o.setor);
@@ -9377,6 +9393,7 @@
               <td class="cel-nome">${escHtml(o.atividade)}${o.extra?'<i class="tag-he">HE</i>':''}</td>
               <td><span class="set-pill" style="background:${S.cor}22;color:${S.cor}">${escHtml(o.setor)}</span></td>
               <td class="ctr">${escHtml(o.projeto)||escHtml(o.lote)||'—'}</td>
+              ${(()=>{ const ca=clienteAmbienteOP(o); return `<td class="cel-disc">${celListaOP(ca.cli)}</td><td class="cel-disc">${celListaOP(ca.amb)}</td>`; })()}
               <td class="cel-disc">${o.inicio?fmtHora(o.inicio.em):'—'}</td>
               <td class="cel-disc">${o.fim?fmtHora(o.fim.em):'—'}</td>
               <td class="ctr op-tempo">${fmtMin(Math.round(parte))}</td>
