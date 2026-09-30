@@ -145,6 +145,16 @@
   .icon-btn:hover{ background:rgba(75,75,85,.08); color:var(--texto); }
   .icon-btn.danger:hover{ background:rgba(152,36,36,.1); color:var(--vermelho); }
   .icon-btn.is-off{ opacity:.3; cursor:not-allowed; }
+  .tbl tbody tr.sc-prio td{ background:#fff2b8; }
+  .tbl tbody tr.sc-prio:hover td{ background:#ffe98f; }
+  .tbl tbody tr.sc-prio td:first-child{ box-shadow:inset 3px 0 0 #e0a800; }
+  .sc-alerta{ width:18px; height:18px; vertical-align:-4px; margin-right:6px; }
+  .icon-btn.sc-pbtn svg{ width:18px; height:18px; fill:initial; stroke:initial; }
+  .icon-btn.sc-pbtn.off svg{ opacity:.4; filter:grayscale(1); }
+  .icon-btn.sc-pbtn.off:hover svg{ opacity:.9; filter:none; }
+  .sc-atraso{ color:#c0392b; font-weight:600; }
+  .fld .chk-prio{ display:flex; align-items:center; gap:8px; font-weight:500; cursor:pointer; padding:9px 0; }
+  .fld .chk-prio input{ width:auto; }
   .icon-btn.is-off:hover{ background:transparent; color:var(--muted); }
   .icon-btn svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 
@@ -5874,6 +5884,15 @@
   const ST_SC={ pendente:{label:'Pendente',cor:'#c0392b'}, comprado:{label:'Comprado',cor:'#d4930d'},
                 pronto:{label:'Pronto para reserva',cor:'#2f6fb5'} };
   function stSc(x){ return (x && ST_SC[x.status]) ? x.status : 'pendente'; }
+  // prioridade de compra só vale enquanto a SC está pendente (depois de comprada, a urgência acabou)
+  function scPrio(x){ return !!(x && x.prioridade) && stSc(x)==='pendente'; }
+  const ALERTA_SVG='<svg class="sc-alerta" viewBox="0 0 24 24" aria-hidden="true"><path style="fill:#f5c400;stroke:#1c1c1c;stroke-width:2;stroke-linejoin:round" d="M12 2.6 22 20.4H2Z"/><rect style="fill:#1c1c1c;stroke:none" x="11" y="8.6" width="2" height="6" rx="1"/><circle style="fill:#1c1c1c;stroke:none" cx="12" cy="17.2" r="1.15"/></svg>';
+  function hojeISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function celNecSC(x){
+    if(!x.dataNec) return '<span class="cel-sub">—</span>';
+    const atr=stSc(x)==='pendente' && x.dataNec<hojeISO();
+    return `<span class="${atr?'sc-atraso':''}" title="${atr?'Data de necessidade vencida':''}">${fmtData(x.dataNec)}</span>`;
+  }
   function filtrarSCs(arr,q,f){
     q=(q||'').trim().toLowerCase(); const t=q?q.split(/\s+/):[];
     return arr.filter(x=>{
@@ -5909,7 +5928,8 @@
       <div class="table-wrap"><table class="tbl">
         <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:140px">Setor</th><th style="width:86px">Qtde</th>
-          <th style="width:150px">Status</th><th style="width:72px"></th></tr></thead>
+          <th style="width:104px">Necessidade</th>
+          <th style="width:150px">Status</th><th style="width:140px"></th></tr></thead>
         <tbody id="scBody">${linhasSC(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.com}</svg></div>
         <h3>Nenhuma SC</h3><p>Solicite a compra de um material ao setor de compras.</p>
@@ -5917,20 +5937,24 @@
     </div>`;
   }
   function linhasSC(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="9">Nenhum resultado</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="10">Nenhum resultado</td></tr>';
     return lista.map(x=>{
-      const st=stSc(x), v=ST_SC[st];
-      return `<tr>
+      const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
+      return `<tr class="${pr?'sc-prio':''}">
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
-        <td><span class="sa-num">${escHtml(x.numero)}</span></td>
+        <td>${pr?`<span title="Prioridade de compra">${ALERTA_SVG}</span>`:''}<span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
         <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="ctr">${escHtml(x.ccCod)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
+        <td class="ctr">${celNecSC(x)}</td>
         <td><span class="st-ro" style="color:${v.cor}"><span class="dot" style="background:${v.cor}"></span>${v.label}</span>
           ${x.statusPor?`<div class="cel-sub">${escHtml(x.statusPor.split('@')[0])}</div>`:''}</td>
         <td class="acoes">
+          ${st==='pendente'?`<button class="icon-btn sc-pbtn ${pr?'':'off'}" title="${pr?'Remover prioridade de compra':'Marcar prioridade de compra'}" onclick="alternarPrioridadeSC('${x.id}')">${ALERTA_SVG.replace(' class="sc-alerta"','')}</button>`:''}
+          ${st==='pendente'?`<button class="icon-btn" title="Editar" onclick="editarSC('${x.id}')">${EDIT_SVG}</button>`
+            :`<button class="icon-btn is-off" title="Já ${v.label.toLowerCase()} — não pode editar" disabled>${EDIT_SVG}</button>`}
           <button class="icon-btn" title="Imprimir / PDF" onclick="imprimirSC('${x.id}')">${FICHA_SVG}</button>
           ${st==='pendente'?`<button class="icon-btn danger" title="Excluir" onclick="excluirSC('${x.id}')">${TRASH_SVG}</button>`
             :`<button class="icon-btn is-off" title="Já ${v.label.toLowerCase()} — não pode excluir" disabled>${TRASH_SVG}</button>`}
@@ -5942,8 +5966,25 @@
   function novaSC(){
     if(!INSUMOS.length){ toast('Cadastre insumos primeiro'); return; }
     if(!CCS.length){ toast('Cadastre um centro de custo primeiro'); return; }
-    scForm={insumoId:null,codigo:'',descricao:'',unidade:'',ccCod:'',setor:'',qtd:'',valorUnit:'',obs:''};
+    scForm={editId:null,insumoId:null,codigo:'',descricao:'',unidade:'',ccCod:'',setor:'',qtd:'',valorUnit:'',obs:'',prioridade:false,dataNec:''};
     renderSCForm();
+  }
+  function editarSC(id){
+    const x=SCS.find(y=>y.id===id); if(!x) return;
+    if(stSc(x)!=='pendente'){ toast('Só é possível editar SCs pendentes'); return; }
+    scForm={editId:id,insumoId:x.insumoId,codigo:x.codigo||'',descricao:x.descricao||'',unidade:x.unidade||'',
+      ccCod:x.ccCod||'',setor:x.setor||'',qtd:x.qtd,valorUnit:x.valorUnit||'',obs:x.obs||'',
+      prioridade:!!x.prioridade,dataNec:x.dataNec||'',
+      painelId:x.painelId||null,clienteNome:x.clienteNome||'',ambiente:x.ambiente||'',numeroProjeto:x.numeroProjeto||''};
+    renderSCForm();
+  }
+  function alternarPrioridadeSC(id){
+    const x=SCS.find(y=>y.id===id); if(!x) return;
+    if(stSc(x)!=='pendente'){ toast('Só SCs pendentes podem ter prioridade'); return; }
+    const nova=!x.prioridade;
+    db.ref('scs/'+id).update({prioridade:nova,prioridadePor:nova?usuarioAtual():null,prioridadeEm:nova?new Date().toISOString():null})
+      .then(()=>toast(nova?x.numero+' marcada como prioridade de compra':'Prioridade removida de '+x.numero))
+      .catch(e=>toast('Erro: '+e.message));
   }
   function proximaSC(){ return 'SC'+String((CONTADORES['SC']||0)+1).padStart(6,'0'); }
   function renderSCForm(){
@@ -5951,13 +5992,13 @@
     const i=scForm.insumoId?INSUMOS.find(x=>x.id===scForm.insumoId):null;
     const s2=i?saldoDe(i.id):null;
     view.innerHTML=`<div class="page">
-      <div class="page-head"><div><h1 class="page-title">Nova Solicitação de Compras</h1>
+      <div class="page-head"><div><h1 class="page-title">${scForm.editId?'Editar Solicitação de Compras':'Nova Solicitação de Compras'}</h1>
         <p class="page-sub">PCP · Solicitações · SC</p></div>
         <button class="btn btn-ghost" onclick="renderSC()">Cancelar</button></div>
       <section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Identificação</h3>
         <div class="grid">
-          <div class="fld"><label>Número da SC</label><div class="cod-prev">${proximaSC()}</div>
-            <span class="fld-hint">Gerado automaticamente ao salvar.</span></div>
+          <div class="fld"><label>Número da SC</label><div class="cod-prev">${scForm.editId?escHtml((SCS.find(y=>y.id===scForm.editId)||{}).numero||''):proximaSC()}</div>
+            <span class="fld-hint">${scForm.editId?'Número mantido na edição.':'Gerado automaticamente ao salvar.'}</span></div>
           <div class="fld"><label>Código do item<i>*</i></label>
             <input id="scCod" value="${(scForm.codigo||'').replace(/"/g,'&quot;')}" autocomplete="off" placeholder="1.01.0000001"
               oninput="scBuscaItem(this,'cod')" onblur="setTimeout(scFecha,140)"></div>
@@ -5983,13 +6024,19 @@
           <div class="fld"><label>Valor unitário (R$)</label>
             <input id="scValor" type="number" step="0.01" min="0" value="${escHtml(String(scForm.valorUnit||''))}" placeholder="0,00" oninput="scForm.valorUnit=this.value">
             <span class="fld-hint">Usado no Kardex para o custo médio.</span></div>
+          <div class="fld"><label>Data de necessidade <span class="opc">opcional</span></label>
+            <input id="scDataNec" type="date" value="${escHtml(scForm.dataNec||'')}" oninput="scForm.dataNec=this.value">
+            <span class="fld-hint">Até quando o material precisa estar na fábrica.</span></div>
+          <div class="fld"><label>Prioridade de compra</label>
+            <label class="chk-prio"><input type="checkbox" ${scForm.prioridade?'checked':''} onchange="scForm.prioridade=this.checked">${ALERTA_SVG}Marcar como prioridade</label>
+            <span class="fld-hint">A linha fica amarela e com o alerta na lista.</span></div>
           <div class="fld full"><label>Observação</label><textarea id="scObs" oninput="scForm.obs=this.value">${escHtml(scForm.obs)}</textarea></div>
         </div>
       </section>
       <section class="fs" style="margin-top:18px"><h3 class="fs-title">Vínculo com projeto</h3>
         <div class="grid">${blocoVinculo(scForm,'scForm','renderSCForm')}</div></section>
       <div class="wiz-nav"><button class="btn btn-ghost" onclick="renderSC()">Voltar</button>
-        <button class="btn btn-primary" onclick="salvarSC()">Salvar SC</button></div>
+        <button class="btn btn-primary" onclick="salvarSC()">${scForm.editId?'Salvar alterações':'Salvar SC'}</button></div>
       <div id="scAc"></div></div>`;
   }
   function scBuscaItem(input,modo){
@@ -6018,12 +6065,24 @@
     if(!scForm.ccCod){ toast('Selecione o centro de custo'); return; }
     const q=parseFloat(document.getElementById('scQtd').value);
     if(isNaN(q)||q<=0){ toast('Informe a quantidade a comprar'); return; }
+    const dn=(document.getElementById('scDataNec')||{}).value||scForm.dataNec||'';
+    if(scForm.editId){
+      const ant=SCS.find(y=>y.id===scForm.editId);
+      if(!ant){ toast('SC não encontrada'); return; }
+      if(stSc(ant)!=='pendente'){ toast('Esta SC já foi '+ST_SC[stSc(ant)].label.toLowerCase()+' e não pode mais ser editada'); renderSC(); return; }
+      db.ref('scs/'+ant.id).update({insumoId:scForm.insumoId,codigo:scForm.codigo,descricao:scForm.descricao,
+        unidade:scForm.unidade,ccCod:scForm.ccCod,setor:scForm.setor,qtd:q,valorUnit:parseFloat(scForm.valorUnit)||0,obs:(scForm.obs||'').trim(),
+        ...vincDados(scForm),prioridade:!!scForm.prioridade,dataNec:dn,
+        editadoEm:new Date().toISOString(),editadoPor:usuarioAtual()})
+        .then(()=>{ toast(ant.numero+' atualizada'); renderSC(); }).catch(e=>toast('Erro: '+e.message));
+      return;
+    }
     db.ref('contadores/SC').transaction(n=>(n||0)+1,(err,ok,snap)=>{
       if(err||!ok){ toast('Não foi possível gerar o número da SC'); return; }
       const num='SC'+String(snap.val()).padStart(6,'0'), id='sc'+Date.now();
       db.ref('scs/'+id).set({id,numero:num,insumoId:scForm.insumoId,codigo:scForm.codigo,descricao:scForm.descricao,
         unidade:scForm.unidade,ccCod:scForm.ccCod,setor:scForm.setor,qtd:q,valorUnit:parseFloat(scForm.valorUnit)||0,obs:(scForm.obs||'').trim(),
-        ...vincDados(scForm),
+        ...vincDados(scForm),prioridade:!!scForm.prioridade,dataNec:dn,
         status:'pendente',entrada:false,criadoEm:new Date().toISOString(),criadoPor:usuarioAtual()})
         .then(()=>{ toast('SC '+num+' criada'); renderSC(); }).catch(e=>toast('Erro: '+e.message));
     });
@@ -6050,23 +6109,24 @@
       </div>
       <div class="table-wrap"><table class="tbl">
         <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
-          <th style="width:140px">Setor</th><th style="width:86px">Qtde</th><th style="width:172px">Status</th><th style="width:112px"></th></tr></thead>
+          <th style="width:140px">Setor</th><th style="width:86px">Qtde</th><th style="width:104px">Necessidade</th><th style="width:172px">Status</th><th style="width:112px"></th></tr></thead>
         <tbody id="scEstBody">${linhasSCEst(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.com}</svg></div>
         <h3>Nenhuma SC recebida</h3><p>As SCs criadas no PCP aparecem aqui automaticamente.</p></div>`}
     </div>`;
   }
   function linhasSCEst(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="8">Nenhum resultado</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="9">Nenhum resultado</td></tr>';
     return lista.map(x=>{
-      const st=stSc(x), v=ST_SC[st];
-      return `<tr>
+      const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
+      return `<tr class="${pr?'sc-prio':''}">
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
-        <td><span class="sa-num">${escHtml(x.numero)}</span></td>
+        <td>${pr?`<span title="Prioridade de compra">${ALERTA_SVG}</span>`:''}<span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
         <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
+        <td class="ctr">${celNecSC(x)}</td>
         <td><select class="st-sel" onchange="mudarStatusSC('${x.id}',this.value)">
           ${Object.entries(ST_SC).map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('')}</select>
           ${x.entrada?'<div class="cel-sub">entrada dada</div>':''}</td>
@@ -6185,7 +6245,9 @@
           ${info('Código',escHtml(x.codigo))}
           ${info('Unidade',escHtml(x.unidade))}
           ${info('Quantidade',fmtNum(parseFloat(x.qtd)||0))}
-          ${info('Solicitante',escHtml(x.criadoPor))}</div>
+          ${info('Solicitante',escHtml(x.criadoPor))}
+          ${info('Necessário até',x.dataNec?fmtData(x.dataNec):'')}
+          ${info('Prioridade',x.prioridade?'SIM':'')}</div>
         <div class="sf-desc"><div class="sf-k">Descrição do item</div><div class="sf-d">${escHtml(x.descricao)}</div></div>
         <div class="sf-obs"><div class="sf-k">Observação</div><div class="sf-o">${escHtml(x.obs)||'—'}</div></div>
         <div class="sf-ass"><div><span></span>Solicitante</div><div><span></span>Compras</div><div><span></span>Recebimento</div></div>
