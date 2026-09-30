@@ -1938,6 +1938,98 @@
     .cvz.cor .cvz-h{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
 
+  /* ===== Checklist de liberação ===== */
+  .chk-ov{ position:fixed; inset:0; z-index:110; background:var(--content); display:none; flex-direction:column; }
+  .chk-ov.open{ display:flex; animation:chkIn .25s ease; }
+  @keyframes chkIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+  .chk-top{ display:flex; align-items:center; gap:18px; padding:12px 22px; background:#fff; border-bottom:1px solid var(--linha); }
+  .chk-tl{ display:flex; flex-direction:column; gap:2px; }
+  .chk-tl h2{ font-size:17px; font-weight:700; color:var(--texto); }
+  .chk-tag{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--vermelho); }
+  .chk-prog{ flex:1; display:flex; align-items:center; gap:12px; max-width:520px; margin-left:auto; }
+  .chk-bar{ flex:1; height:8px; border-radius:99px; background:rgba(75,75,85,.12); overflow:hidden; }
+  .chk-bar i{ display:block; height:100%; width:0; background:var(--vermelho); border-radius:99px; transition:width .3s ease, background .3s; }
+  #chkCnt{ font-size:12.5px; font-weight:600; white-space:nowrap; min-width:88px; text-align:right; }
+  .chk-main{ flex:1; overflow-y:auto; padding:22px 16px 40px; }
+  .chk-col{ max-width:880px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }
+  .chk-card{ background:#fff; border-radius:14px; border:1px solid var(--linha); padding:18px 20px; }
+  .chk-infs{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px 18px; padding-bottom:14px; border-bottom:1px solid var(--linha); }
+  .chk-inf span{ display:block; font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
+  .chk-inf b{ font-size:14px; font-weight:600; }
+  .chk-flds{ display:grid; grid-template-columns:1fr 1fr 150px; gap:12px; margin-top:14px; }
+  .chk-f span{ display:block; font-size:11px; font-weight:700; color:var(--muted); margin-bottom:5px; }
+  .chk-f span i{ color:var(--vermelho); font-style:normal; }
+  .chk-f input{ width:100%; font:inherit; font-size:14px; padding:10px 12px; border:1.5px solid var(--linha); border-radius:9px; background:#fafaf7; color:var(--texto); outline:none; transition:border-color .15s, box-shadow .15s; }
+  .chk-f input:focus{ border-color:var(--vermelho); box-shadow:0 0 0 3px rgba(152,36,36,.12); background:#fff; }
+  .chk-f.err input{ border-color:#b3261e; background:#fdf3f2; }
+  .chk-dica{ font-size:12.5px; color:var(--muted); margin-top:14px; line-height:1.45; }
+  .chk-sec{ background:#fff; border-radius:14px; border:1px solid var(--linha); overflow:hidden; }
+  .chk-sh{ width:100%; display:flex; align-items:center; gap:12px; padding:14px 18px; border:0; background:transparent; font:inherit; cursor:pointer; text-align:left; color:var(--texto); }
+  .chk-sh:hover{ background:#fafaf7; }
+  .chk-snum{ width:26px; height:26px; border-radius:50%; background:rgba(75,75,85,.1); display:grid; place-items:center; font-size:12px; font-weight:700; flex:none; }
+  .chk-st{ flex:1; font-size:15px; font-weight:700; }
+  .chk-scnt{ font-size:12px; font-weight:700; padding:3px 10px; border-radius:99px; background:rgba(75,75,85,.09); }
+  .chk-car{ width:18px; height:18px; transition:transform .2s; color:var(--muted); }
+  .chk-sec.closed .chk-car{ transform:rotate(-90deg); }
+  .chk-sec.closed .chk-sb{ display:none; }
+  .chk-sec.done .chk-snum{ background:#2f8f46; color:#fff; }
+  .chk-sec.done .chk-scnt{ background:#e3f3e7; color:#23723a; }
+  .chk-it{ display:grid; grid-template-columns:30px 1fr auto; gap:12px; align-items:start; padding:12px 18px; border-top:1px solid var(--linha); border-left:4px solid transparent; transition:background .15s, border-color .15s; }
+  .chk-it.is-ok{ border-left-color:#2f8f46; background:#f6fbf7; }
+  .chk-it.is-na{ border-left-color:#9a9aa4; background:#f7f7f5; }
+  .chk-it.pend{ border-left-color:#b3261e; background:#fdf3f2; }
+  .chk-n{ font-size:12px; font-weight:700; color:var(--muted); padding-top:3px; font-variant-numeric:tabular-nums; }
+  .chk-tx{ font-size:14px; line-height:1.45; padding-top:1px; }
+  .chk-ob{ display:none; margin-top:8px; }
+  .chk-ob.open{ display:block; }
+  .chk-ob textarea{ width:100%; font:inherit; font-size:13px; padding:8px 10px; border:1.5px solid var(--linha); border-radius:8px; resize:vertical; outline:none; background:#fff; }
+  .chk-ob textarea:focus{ border-color:var(--vermelho); }
+  .chk-acts{ display:flex; gap:6px; }
+  .chk-b{ font:inherit; font-size:12.5px; font-weight:700; border:1.5px solid var(--linha); background:#fff; color:var(--texto); border-radius:99px; padding:7px 13px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .12s; }
+  .chk-b svg{ width:14px; height:14px; }
+  .chk-b:hover{ border-color:rgba(75,75,85,.4); }
+  .chk-b.ok.on{ background:#2f8f46; border-color:#2f8f46; color:#fff; }
+  .chk-b.na.on{ background:#7b7b85; border-color:#7b7b85; color:#fff; }
+  .chk-b.obs{ padding:7px 9px; }
+  .chk-b.obs.has{ border-color:var(--vermelho); color:var(--vermelho); background:#fbeeee; }
+  .chk-foot{ display:flex; align-items:center; gap:10px; padding:12px 22px; background:#fff; border-top:1px solid var(--linha); }
+  .chk-fim{ opacity:.55; transition:opacity .2s; }
+  .chk-fim.ready{ opacity:1; background:#2f8f46; }
+  @media (max-width:720px){
+    .chk-infs{ grid-template-columns:1fr 1fr; } .chk-flds{ grid-template-columns:1fr; }
+    .chk-it{ grid-template-columns:24px 1fr; } .chk-acts{ grid-column:2; }
+    .chk-top{ flex-wrap:wrap; gap:8px 14px; } .chk-prog{ order:3; flex-basis:100%; max-width:none; }
+    .chk-foot{ flex-wrap:wrap; }
+  }
+  /* folha impressa */
+  .chkp{ background:#fff; width:min(820px,100%); padding:14mm 12mm; font-size:11px; color:#222; border-radius:6px; }
+  .cp-top{ display:flex; align-items:center; gap:14px; border-bottom:2.5px solid #982424; padding-bottom:9px; margin-bottom:10px; }
+  .cp-top img{ height:34px; }
+  .cp-tt{ flex:1; } .cp-tt h1{ font-size:19px; color:#982424; line-height:1.1; } .cp-tt span{ font-size:10.5px; color:#666; }
+  .cp-op{ text-align:right; } .cp-op span{ display:block; font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:#666; } .cp-op b{ font-size:18px; font-family:ui-monospace,Consolas,monospace; }
+  .cp-grid{ display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #bbb; margin-bottom:10px; }
+  .cp-i{ padding:5px 8px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; }
+  .cp-i.w{ grid-column:span 2; }
+  .cp-i span{ display:block; font-size:8.5px; letter-spacing:.06em; text-transform:uppercase; color:#777; font-weight:700; }
+  .cp-i b{ font-size:12px; font-weight:600; }
+  .cp-tbl{ width:100%; border-collapse:collapse; }
+  .cp-tbl th{ background:#f0f0ee; font-size:9px; text-transform:uppercase; letter-spacing:.05em; padding:5px 6px; border:1px solid #bbb; text-align:left; }
+  .cp-tbl td{ border:1px solid #ccc; padding:4px 6px; vertical-align:top; font-size:10.5px; line-height:1.35; }
+  .cp-s td{ background:#982424; color:#fff; font-weight:700; font-size:10.5px; letter-spacing:.03em; }
+  .cp-r{ break-inside:avoid; } .cp-s{ break-after:avoid; }
+  .cp-n{ text-align:center; color:#777; } .cp-c{ text-align:center; vertical-align:middle !important; }
+  .cp-bx{ display:inline-block; width:12px; height:12px; border:1.5px solid #444; border-radius:2px; position:relative; }
+  .cp-bx.on::after{ content:"✓"; position:absolute; left:1px; top:-4px; font-size:13px; font-weight:800; font-style:normal; color:#222; }
+  .cp-o{ margin-top:3px; font-style:italic; color:#555; }
+  .cp-res{ margin-top:8px; font-size:10.5px; font-weight:600; text-align:right; }
+  .cp-ass{ display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:26px; break-inside:avoid; }
+  .cp-ass div{ text-align:center; } .cp-ass span{ display:block; border-bottom:1px solid #333; padding-bottom:3px; font-size:11.5px; min-height:18px; }
+  .cp-ass i{ font-style:normal; font-size:9.5px; color:#666; }
+  @media print{
+    .chk-ov{ display:none !important; }
+    .chkp{ width:100%; padding:0; border-radius:0; }
+    .cp-tbl th,.cp-s td,.cp-bx{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
 </style>
 </head>
 <body>
@@ -3110,7 +3202,8 @@
     db.ref('leadtimes').on('value',s=>{ LEADS=s.val()||{};
       const ae=document.activeElement;
       if(TELA==='lead' && !(ae&&ae.classList&&ae.classList.contains('lt-inp'))) renderLead();
-      else if(TELA==='apont-op'&&apontOP) abrirApont(apontOP); });
+      else if(TELA==='apont-op'&&apontOP) abrirApont(apontOP);
+      else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } });
     db.ref('feriados').on('value',s=>{ FERIADOS=s.val()||{}; if(typeof render==='function'&&TELA==null) render(); });
     db.ref('.info/connected').on('value',s=>{
       document.getElementById('syncOff').classList.toggle('show', s.val()===false);
@@ -7516,9 +7609,17 @@
      sujo (OP resetada/editada que ficou com pausa de um apontamento anterior):
      pausa encerrada antes do início atual é descartada, e pausa que começou
      antes do início é cortada no início. */
+  function pausaImplicita(o){
+    if(!o||stOp(o)!=='pausada'||pausaAberta(o)) return null;
+    let de=(o.inicio&&o.inicio.em)||'';
+    pausasDe(o).forEach(p=>{ if(p&&p.ate&&p.ate>de) de=p.ate; });
+    if(o.editadoEm&&o.editadoEm>de) de=o.editadoEm;
+    return de?{de,ate:null,motivo:'Pausa sem registro',implicita:true}:null;
+  }
   function pausasEfetivas(o){
     const ini=o&&o.inicio&&o.inicio.em;
     const lista=pausasDe(o).filter(p=>p&&p.de);
+    const imp=pausaImplicita(o); if(imp) lista.push(imp);
     if(!ini) return lista;
     return lista.reduce((acc,p)=>{
       if(p.ate&&p.ate<=ini) return acc;            // pausa de antes do reset
@@ -7551,10 +7652,11 @@
   }
   function retomarOP(id){
     const o=OPS.find(x=>x.id===id); if(!o) return;
-    const ab=pausaAberta(o);
+    const real=pausaAberta(o), imp=real?null:pausaImplicita(o), ab=real||imp;
     if(!ab){ toast('Esta OP não está pausada'); return; }
     const agora=new Date().toISOString();
     const lista=pausasDe(o).map(p=>(p===ab||(p.de===ab.de&&!p.ate))?{...p,ate:agora}:p);
+    if(imp) lista.push({de:imp.de,ate:agora,motivo:imp.motivo,func:'',por:usuarioAtual()});
     db.ref('ops/'+id).update({status:'parcial',pausas:lista})
       .then(()=>{ toast('OP retomada'); })
       .catch(e=>toast('Erro: '+e.message));
@@ -8506,6 +8608,11 @@
         upd.fim={func:func||'—',em:fimISO,por:usuarioAtual(),fora:!dentroExpediente(new Date(fim),o.jornada)};
         upd.tempoMin=tempoTrabalhado(iniISO,fimISO,o.jornada);
       } else { upd.fim=null; upd.tempoMin=null; }
+      const agoraP=new Date().toISOString();
+      if(st==='pausada' && !pausaAberta(o))
+        upd.pausas=pausasDe(o).concat([{de:agoraP,motivo:'Pausada pela edição da OP',func:func||'',por:usuarioAtual()}]);
+      else if(st==='parcial' && pausaAberta(o))
+        upd.pausas=pausasDe(o).map(p=>(p&&p.de&&!p.ate)?{...p,ate:agoraP}:p);
     }
     db.ref('ops/'+id).update(upd)
       .then(()=>{ fecharModal(); toast('OP '+o.numero+' atualizada'); })
@@ -9655,7 +9762,8 @@
             <div class="af-l"><span>Fim</span><b>${fmtHora(o.fim&&o.fim.em)}</b><i>${escHtml((o.fim&&o.fim.func)||'')}</i></div>
             <div class="af-t"><span>Tempo realizado</span><b>${fmtMin(o.tempoMin)}</b></div>
           </div>
-          <button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="imprimirOP('${o.id}')">Imprimir OP</button>`}
+          <button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="imprimirOP('${o.id}')">Imprimir OP</button>
+          ${o.checklistLiberacao?`<button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="imprimirChecklist('${o.id}')">Imprimir checklist de liberação</button>`:''}`}
       </div>
     </div>`;
   }
@@ -9704,29 +9812,12 @@
     const o=OPS.find(x=>x.id===id); if(!o) return;
     if(stOp(o)==='nao'){ toast('Esta OP ainda não foi iniciada'); return; }
     if(stOp(o)==='encerrada'){ toast('Esta OP já está encerrada'); return; }
-    // a atividade "Liberado do PCP" pergunta o número de peças do projeto no momento do
-    // encerramento; o valor também pode ser preenchido/ajustado depois pela tela de
-    // Liberação de lote — os dois caminhos gravam no mesmo campo da OP.
-    if(o.atividade==='Liberado do PCP' && o.pecasProjeto==null){
-      abrirModal('Número de peças do projeto',
-        `<p class="page-sub" style="margin:-4px 0 12px">Projeto ${escHtml(o.projeto)||'—'}</p>
-         <div class="fld"><label>Número de peças do projeto<i>*</i></label>
-           <input id="fpPecas" type="number" min="1" step="1" placeholder="Ex.: 42" autofocus
-             onkeydown="if(event.key==='Enter') confirmarPecasEEncerrar('${id}')"></div>`,
-        `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
-         <button class="btn btn-primary" onclick="confirmarPecasEEncerrar('${id}')">Encerrar OP</button>`);
-      return;
-    }
+    // "Liberado do PCP": exige checklist completo (+ projetista, responsável e nº de peças)
+    // antes de encerrar. O checklist grava tudo em `checklistLiberacao` e o nº de peças em `pecasProjeto`.
+    if(o.atividade==='Liberado do PCP'){ abrirChecklist(id); return; }
     _finalizarOPExec(id);
   }
-  function confirmarPecasEEncerrar(id){
-    const el=document.getElementById('fpPecas');
-    const v=parseInt(el&&el.value,10);
-    if(!v||v<=0){ toast('Informe o número de peças do projeto'); return; }
-    fecharModal();
-    _finalizarOPExec(id, v);
-  }
-  function _finalizarOPExec(id, pecas){
+  function _finalizarOPExec(id, pecas, chk){
     const o=OPS.find(x=>x.id===id); if(!o) return;
     const lista=apFuncs.length?apFuncs.slice():funcsDe(o,'inicio');
     const agora=new Date(), agoraISO=agora.toISOString();
@@ -9744,14 +9835,291 @@
       foraExpediente:fora||!!o.foraExpediente,
       ...(xl.length?{extras:xl}:{}),
       ...(pecas!=null?{pecasProjeto:pecas}:{}),
+      ...(chk?{checklistLiberacao:chk}:{}),
       ...(lm!=null?{leadMin:lm, leadDesvioMin:(norm+ext)-lm}:{})})
-      .then(()=>{ toast('OP encerrada — '+fmtMin(norm+ext)+(ext?' ('+fmtMin(ext)+' extra)':'')
+      .then(()=>{ delete CHKS[id]; toast('OP encerrada — '+fmtMin(norm+ext)+(ext?' ('+fmtMin(ext)+' extra)':'')
         +(lm!=null?((norm+ext)>lm?' · ATRASO de '+fmtMin((norm+ext)-lm):' · dentro do lead time'):'')); abrirApont(id); })
       .catch(e=>toast('Erro: '+e.message));
   }
 
 
-/* ================= LIBERAÇÃO DE LOTE ================= */
+/* ================= CHECKLIST DE LIBERAÇÃO (atividade "Liberado do PCP") ================= */
+  // Obrigatório para encerrar a OP "Liberado do PCP": todos os itens precisam ser marcados
+  // como "Conferido" ou "N/A", e Projetista / Responsável / Nº de peças precisam estar preenchidos.
+  // O resultado fica salvo na OP em `checklistLiberacao` (com o texto de cada item no momento).
+  const CHK_SECOES=[
+    {t:'Documentação e pastas', i:[
+      "Conferir se está tudo salvo/descrito/impresso nas pastas de produção (servidor/física)",
+      "Conferir e renomear as fotos do ambiente",
+      "Conferir dados do cliente no SketchUp, no servidor e no Dinabox"]},
+    {t:'Medidas, especificações e render', i:[
+      "Conferir as medidas do projeto com a medição, incluindo pontos elétricos e hidráulicos, e conferir se não foi esquecido nada",
+      "Conferir medidas do projeto da arquiteta(o): profundidade do móvel, altura, largura...",
+      "Conferir especificações do projeto (MDF, vidros, espelhos, perfis, espessuras, abertura das portas, acessórios, divisores, aramados…). O que não estiver descrito pelo vendedor(a), pedir para escrever à mão",
+      "Conferir render: analisar se tem LED ou algo que não esteja detalhado; questionar o vendedor(a) qual é o certo",
+      "Conferir se eletros e cubas estão posicionados (TV, fogão, geladeira, bebedouro, pia, letreiro...)",
+      "Conferir lista de eletros/equipamentos, suas medidas e folgas",
+      "Conferir elétrica (tomadas e interruptores) especificada no projeto da arquiteta(o)",
+      "Conferir posicionamento de LED, arandelas, pendentes e afins (iluminações)"]},
+    {t:'Modulação e Dinabox', i:[
+      "Conferir modulação do Dinabox (medidas de módulos iguais, posição, se encostam um no outro ou na parede, se não tem nada voando, divisórias…)",
+      "Abrir gavetas e portas para conferir que não peguem em nada na hora da abertura",
+      "Conferir se as dobradiças não pegam em nada ou estão bugadas, principalmente depurador e roupeiro (se aplicar material, puxador ou outra coisa depois de deslocar, ela vai bugar)",
+      "Conferir modelo das corrediças e dobradiças",
+      "Conferir se as corrediças não estão passando do fundo do móvel",
+      "Conferir se espelhos orgânicos estão na posição certa (quando copia e cola, às vezes ele espelha)",
+      "Conferir se foram tiradas as peças dos módulos que foram feitos em geometria",
+      "Programar no Dinabox as usinagens que podem ser programadas: canaleta flexível LED (L 12,5 x P 11 mm) e recortes em geral",
+      "Usinagem kit flow",
+      "Priorizar encaixes de lado",
+      "Passar basculantes e prateleira de gaveteiro para minifix",
+      "Conferir se os cantos em 45º estão com o refilar"]},
+    {t:'MDF, espessuras e aproveitamento', i:[
+      "Observar as espessuras de MDF utilizadas e buscar o melhor aproveitamento (ex.: não vale tirar duas frentes de 18mm se o restante é 15mm, ou vice-versa)",
+      "Conferir descontos: metalon (geralmente 2mm), ferragens, quadro de perfil em portas de MDF (diminui 5mm na AxL) e estofados (geralmente 2mm)",
+      "Frente MDF amadeirado: fazer geometria e tirar uma peça inteira separada; na largura fica o mesmo, fitada; na altura total das frentes somar mais 2cm",
+      "Módulos de cor interna: confirmar com o líder do setor se precisa mudar o fundo do módulo e das gavetas para 15mm",
+      "Conferir se as chapas estão dentro da medida limite (1820 x 2720mm)",
+      "Conferir espessuras: caixaria do roupeiro de correr 18mm; frente fixa do canto morto 18mm",
+      "Conferir se o rodateto está 10mm maior para acabamento",
+      "Painéis que vão até o chão: afastamento de 15mm para o rodapezinho (considerar fita no rodapé de madeira)",
+      "Cantoneira 30x30mm branca para inferiores suspensos",
+      "Conferir se o perfil flexível está num lugar onde não tore o MDF (a espessura é maior e há esse risco)"]},
+    {t:'Portas, espelhos, molduras e ripados', i:[
+      "Portas de ambiente com puxador posicionado no sentido de abertura certo e dos dois lados",
+      "Portas com espelho, moldura ou ripados: conferir se a espessura da porta foi mudada para 15mm",
+      "Portas com moldura ou ripadas: tirar todas as fitas das frentes",
+      "Painel ripado: tirar a fita da última ripa (para passarem uma fita só na ripa e no painel juntos)",
+      "Conferir a espessura do ripado: a mesma da geometria (ex.: ripa de topo com 18,5mm, tirar o painel com 18,5mm, já prevendo a fita nas laterais para começar cortando)",
+      "Conferir espelhos com LED (prever a retirada futura caso o LED queime)",
+      "Conferir folga do rasgo do espelho jateado: o rasgo deve ser maior que o jateado (jateado com 2cm, rasgo com 4cm)",
+      "Interno dos móveis com porta reflecta ou vidro: passar o fundo para 15mm ou 18mm",
+      "Transpasse de porta de passagem com 5cm",
+      "Aumentar a estrutura da porta de correr se tiver moldura ou for ripada",
+      "Recuo frontal nas prateleiras para portas com pistão a gás, freefold e outros articuladores (geralmente 3cm)",
+      "Conferir recuo do fundo das prateleiras quando for retirado o fundo",
+      "Colocar a espessura da porta no pedido do puxador; quando for A183 com ponteiras, colocar nas observações que precisa dar desconto das ponteiras"]},
+    {t:'Geladeira, tamponamentos e acabamentos', i:[
+      "Tamponamento no móvel: quando não aparece, deixar com 70mm de largura; tamponamento de geladeira com 150mm",
+      "Laminar tamponamento de geladeira engrossado (atrás), com réguas de 15cm",
+      "Colocar acabamento ao redor do fundo da geladeira (onde fica a folga, para não aparecer parede), com réguas de 15cm",
+      "Colocar prateleira solta do forno/micro e recorte na prateleira e na base para respiro (mais ou menos 400 x 400mm)",
+      "Deixar espaço para passagem de fios de um painel de TV, não deixar a régua inteira"]},
+    {t:'Serralheria, pedido e observações para a fábrica', i:[
+      "Prever furações no detalhamento para o serralheiro",
+      "Anotar no projeto, para conferência em fábrica, as prateleiras em MDF que serão colocadas ao redor de estruturas metálicas",
+      "Conferir pedido, se não falta nada (sempre divisor de talheres em cozinha e área gourmet; suporte vassoura em lavanderia)"]},
+    {t:'Agrupamento de peças', i:[
+      "Criar grupo dos tampos soltos",
+      "Renomear cada peça antes de agrupar, para os marceneiros se localizarem na montagem de forma clara e específica (ex.: painel TV, engrossamento TV, encaixe TV)",
+      "Não usar a opção de agrupar do SketchUp (vai bugar as peças). Para agrupar: selecionar as peças, botão direito, Dinabox agrupar peças",
+      "Todos os módulos prontos no Dinabox já são um grupo",
+      "Painéis com encaixes e enchimentos devem ser agrupados juntos",
+      "O que for geometria não tem como agrupar pelo Dinabox, apenas pelo “criar grupo” do SketchUp"]}
+  ];
+  const CHK_ITENS=[];
+  CHK_SECOES.forEach((s,si)=>s.i.forEach(t=>CHK_ITENS.push({id:'i'+(CHK_ITENS.length+1),s:si,t})));
+  const CHKS={};      // rascunhos em memória, por OP (não se perdem ao fechar/reabrir a tela)
+  let CHK_ATUAL=null;
+
+  function chkEstado(o){
+    if(!CHKS[o.id]){
+      let resp=''; try{ resp=(apFuncs&&apFuncs.length?apFuncs:funcsDe(o,'inicio')).join(', '); }catch(e){}
+      CHKS[o.id]={r:{},o:{},projetista:'',responsavel:resp,pecas:o.pecasProjeto!=null?String(o.pecasProjeto):'',tent:false,fechadas:{}};
+    }
+    return CHKS[o.id];
+  }
+  function abrirChecklist(id){
+    const o=OPS.find(x=>x.id===id); if(!o) return;
+    CHK_ATUAL=id;
+    const c=chkEstado(o); c.tent=false;
+    let ov=document.getElementById('chkOv');
+    if(!ov){ ov=document.createElement('div'); ov.id='chkOv'; ov.className='chk-ov'; document.body.appendChild(ov); }
+    const r0=(o.projetosLote||[])[0]||{};
+    const hoje=new Date().toLocaleDateString('pt-BR');
+    const info=(l,v)=>`<div class="chk-inf"><span>${l}</span><b>${escHtml(v)||'—'}</b></div>`;
+    const secs=CHK_SECOES.map((s,si)=>`
+      <section class="chk-sec" id="cs-${si}">
+        <button class="chk-sh" onclick="chkTogSec(${si})">
+          <span class="chk-snum">${si+1}</span><span class="chk-st">${escHtml(s.t)}</span>
+          <span class="chk-scnt" id="cc-${si}"></span>
+          <svg class="chk-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="chk-sb">${CHK_ITENS.filter(it=>it.s===si).map(it=>`
+          <div class="chk-it" id="ci-${it.id}">
+            <div class="chk-n">${it.id.slice(1)}</div>
+            <div class="chk-tx">${escHtml(it.t)}
+              <div class="chk-ob" id="co-${it.id}"><textarea rows="2" placeholder="Observação (opcional)…" oninput="chkObsTxt('${it.id}',this.value)">${escHtml(c.o[it.id]||'')}</textarea></div>
+            </div>
+            <div class="chk-acts">
+              <button class="chk-b ok" onclick="chkSet('${it.id}','ok')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Conferido</button>
+              <button class="chk-b na" onclick="chkSet('${it.id}','na')">N/A</button>
+              <button class="chk-b obs" id="cb-${it.id}" title="Adicionar observação" onclick="chkObs('${it.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg></button>
+            </div>
+          </div>`).join('')}</div>
+      </section>`).join('');
+    ov.innerHTML=`
+      <div class="chk-top">
+        <div class="chk-tl"><span class="chk-tag">Liberado do PCP</span><h2>Checklist de liberação</h2></div>
+        <div class="chk-prog"><div class="chk-bar"><i id="chkBar"></i></div><span id="chkCnt"></span></div>
+        <button class="icon-btn" title="Fechar" onclick="fecharChecklist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="chk-main" id="chkMain"><div class="chk-col">
+        <div class="chk-card chk-head">
+          <div class="chk-infs">
+            ${info('Nº da OP',o.numero)}${info('Projeto',o.projeto)}${info('Cliente',r0.cliente)}
+            ${info('Ambiente',r0.ambiente)}${info('Consultor(a)',r0.consultor)}${info('Data',hoje)}
+          </div>
+          <div class="chk-flds">
+            <label class="chk-f" id="cf-projetista"><span>Projetista <i>*</i></span>
+              <input value="${escHtml(c.projetista)}" placeholder="Quem fez o projeto" oninput="chkCampo('projetista',this.value)"></label>
+            <label class="chk-f" id="cf-responsavel"><span>Responsável pelo preenchimento <i>*</i></span>
+              <input value="${escHtml(c.responsavel)}" placeholder="Nome de quem está preenchendo" oninput="chkCampo('responsavel',this.value)"></label>
+            <label class="chk-f pc" id="cf-pecas"><span>Nº de peças do projeto <i>*</i></span>
+              <input type="number" min="1" step="1" value="${escHtml(c.pecas)}" placeholder="Ex.: 42" oninput="chkCampo('pecas',this.value)"></label>
+          </div>
+          <p class="chk-dica">Para cada item, marque <b>Conferido</b> ou <b>N/A</b> (não se aplica a este projeto). Use o lápis para anotar uma observação.</p>
+        </div>
+        ${secs}
+      </div></div>
+      <div class="chk-foot">
+        <button class="btn btn-ghost" onclick="fecharChecklist()">Voltar</button>
+        <span style="flex:1"></span>
+        <button class="btn btn-ghost" onclick="chkImprimirRascunho()">Pré-visualizar / imprimir</button>
+        <button class="btn btn-primary chk-fim" onclick="chkConcluir()">Concluir e encerrar OP</button>
+      </div>`;
+    ov.classList.add('open');
+    CHK_ITENS.forEach(it=>chkPinta(it.id));
+    CHK_SECOES.forEach((s,si)=>{ if(c.fechadas[si]) document.getElementById('cs-'+si).classList.add('closed'); });
+    chkAtualiza();
+    document.getElementById('chkMain').scrollTop=0;
+  }
+  function fecharChecklist(){ const ov=document.getElementById('chkOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; } }
+  function chkC(){ return CHKS[CHK_ATUAL]; }
+  function chkCampo(k,v){ const c=chkC(); if(!c) return; c[k]=v; chkAtualiza(); }
+  function chkSet(id,v){
+    const c=chkC(); if(!c) return;
+    if(c.r[id]===v) delete c.r[id]; else c.r[id]=v;
+    chkPinta(id); chkAtualiza();
+  }
+  function chkObs(id){
+    const box=document.getElementById('co-'+id); if(!box) return;
+    box.classList.toggle('open');
+    if(box.classList.contains('open')) box.querySelector('textarea').focus();
+  }
+  function chkObsTxt(id,v){ const c=chkC(); if(!c) return; c.o[id]=v; const b=document.getElementById('cb-'+id); if(b) b.classList.toggle('has',!!v.trim()); }
+  function chkTogSec(si){
+    const c=chkC(); const el=document.getElementById('cs-'+si);
+    el.classList.toggle('closed'); c.fechadas[si]=el.classList.contains('closed');
+  }
+  function chkPinta(id){
+    const c=chkC(), el=document.getElementById('ci-'+id); if(!el) return;
+    const r=c.r[id];
+    el.classList.toggle('is-ok',r==='ok'); el.classList.toggle('is-na',r==='na');
+    el.classList.toggle('pend',!r && c.tent);
+    el.querySelector('.chk-b.ok').classList.toggle('on',r==='ok');
+    el.querySelector('.chk-b.na').classList.toggle('on',r==='na');
+    const t=(c.o[id]||'').trim();
+    el.querySelector('.chk-b.obs').classList.toggle('has',!!t);
+    if(t) document.getElementById('co-'+id).classList.add('open');
+  }
+  function chkAtualiza(){
+    const c=chkC(); if(!c) return;
+    const feitos=CHK_ITENS.filter(it=>c.r[it.id]).length, tot=CHK_ITENS.length;
+    const bar=document.getElementById('chkBar'), cnt=document.getElementById('chkCnt');
+    if(bar) bar.style.width=(feitos/tot*100)+'%';
+    if(cnt) cnt.textContent=feitos+' de '+tot+' itens';
+    const fim=document.querySelector('.chk-fim'); if(fim) fim.classList.toggle('ready',feitos===tot);
+    CHK_SECOES.forEach((s,si)=>{
+      const its=CHK_ITENS.filter(it=>it.s===si), f=its.filter(it=>c.r[it.id]).length;
+      const e=document.getElementById('cc-'+si); if(e) e.textContent=f+'/'+its.length;
+      const sec=document.getElementById('cs-'+si); if(sec) sec.classList.toggle('done',f===its.length);
+    });
+    if(c.tent){
+      CHK_ITENS.forEach(it=>{ const el=document.getElementById('ci-'+it.id); if(el) el.classList.toggle('pend',!c.r[it.id]); });
+      const err={projetista:!c.projetista.trim(),responsavel:!c.responsavel.trim(),pecas:!(parseInt(c.pecas,10)>0)};
+      Object.keys(err).forEach(k=>{ const e=document.getElementById('cf-'+k); if(e) e.classList.toggle('err',err[k]); });
+    }
+  }
+  function chkConcluir(){
+    const c=chkC(), id=CHK_ATUAL; if(!c) return;
+    const o=OPS.find(x=>x.id===id); if(!o) return;
+    c.tent=true; chkAtualiza();
+    const pecas=parseInt(c.pecas,10);
+    if(!c.projetista.trim()||!c.responsavel.trim()||!(pecas>0)){
+      toast('Preencha projetista, responsável e nº de peças');
+      const e=document.getElementById('cf-projetista'); if(e) e.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    const falta=CHK_ITENS.filter(it=>!c.r[it.id]);
+    if(falta.length){
+      toast('Faltam '+falta.length+' item(ns) do checklist');
+      const sec=document.getElementById('cs-'+falta[0].s); if(sec){ sec.classList.remove('closed'); c.fechadas[falta[0].s]=false; }
+      const el=document.getElementById('ci-'+falta[0].id); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    const chk=chkMonta(c,true);
+    fecharChecklist();
+    _finalizarOPExec(id,pecas,chk);
+  }
+  function chkMonta(c,final){
+    return {versao:1, projetista:c.projetista.trim(), responsavel:c.responsavel.trim(),
+      pecas:parseInt(c.pecas,10)||0, dataISO:new Date().toISOString(), por:usuarioAtual(),
+      itens:CHK_ITENS.map(it=>({id:it.id,s:it.s,t:it.t,r:c.r[it.id]||'',o:(c.o[it.id]||'').trim()}))};
+  }
+
+  /* --- impressão --- */
+  function chkFolha(o,c){
+    const r0=(o.projetosLote||[])[0]||{};
+    const d=c.dataISO?new Date(c.dataISO):new Date();
+    const it=c.itens||[];
+    const ok=it.filter(x=>x.r==='ok').length, na=it.filter(x=>x.r==='na').length, pend=it.length-ok-na;
+    const info=(l,v,w)=>`<div class="cp-i${w?' w':''}"><span>${l}</span><b>${escHtml(v)||'&nbsp;'}</b></div>`;
+    let ult=-1, rows='';
+    it.forEach((x,k)=>{
+      if(x.s!==ult){ ult=x.s; rows+=`<tr class="cp-s"><td colspan="4">${escHtml((CHK_SECOES[x.s]||{}).t||'')}</td></tr>`; }
+      rows+=`<tr class="cp-r"><td class="cp-n">${k+1}</td>
+        <td>${escHtml(x.t)}${x.o?`<div class="cp-o">Obs.: ${escHtml(x.o)}</div>`:''}</td>
+        <td class="cp-c"><i class="cp-bx ${x.r==='ok'?'on':''}"></i></td>
+        <td class="cp-c"><i class="cp-bx ${x.r==='na'?'on':''}"></i></td></tr>`;
+    });
+    return `<div class="chkp">
+      <div class="cp-top">
+        <img src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
+        <div class="cp-tt"><h1>Checklist – Liberação</h1><span>Liberado do PCP · Raldi Móveis com Precisão</span></div>
+        <div class="cp-op"><span>OP</span><b>${escHtml(o.numero)}</b></div>
+      </div>
+      <div class="cp-grid">
+        ${info('Projetista',c.projetista)}${info('Cliente',r0.cliente)}${info('Ambiente',r0.ambiente)}
+        ${info('Nº da OP',o.numero)}${info('Nº do projeto',o.projeto)}${info('Data',d.toLocaleDateString('pt-BR'))}
+        ${info('Responsável pelo preenchimento',c.responsavel,1)}${info('Quantidade de peças',c.pecas)}
+      </div>
+      <table class="cp-tbl"><thead><tr><th style="width:26px">Nº</th><th>Item verificado</th><th style="width:62px">Conferido</th><th style="width:44px">N/A</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+      <div class="cp-res">${ok} conferido(s) · ${na} não se aplica · ${pend} pendente(s)</div>
+      <div class="cp-ass"><div><span>${escHtml(c.responsavel)||'&nbsp;'}</span><i>Responsável pelo preenchimento</i></div>
+        <div><span>&nbsp;</span><i>Conferência / Líder do setor</i></div></div>
+    </div>`;
+  }
+  function chkMostrarFolha(o,c){
+    const ov=document.getElementById('fichaOverlay');
+    ov.innerHTML=`<div class="ficha-actions" style="width:min(820px,100%)">
+        <button class="btn btn-ghost" style="background:#fff" onclick="chkFechaFolha()">Fechar</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir</button></div>${chkFolha(o,c)}`;
+    ov.style.zIndex='130'; ov.onclick=e=>{ if(e.target===ov) chkFechaFolha(); };
+    setPageOrientation('portrait'); ov.classList.add('open');
+  }
+  function chkFechaFolha(){ const ov=document.getElementById('fichaOverlay'); ov.style.zIndex=''; fecharFicha(); }
+  function imprimirChecklist(id){
+    const o=OPS.find(x=>x.id===id); if(!o||!o.checklistLiberacao){ toast('Esta OP não tem checklist preenchido'); return; }
+    chkMostrarFolha(o,o.checklistLiberacao);
+  }
+  function chkImprimirRascunho(){
+    const c=chkC(), o=OPS.find(x=>x.id===CHK_ATUAL); if(!c||!o) return;
+    chkMostrarFolha(o,chkMonta(c));
+  }
+
+  /* ================= LIBERAÇÃO DE LOTE ================= */
   // Todo projeto com a atividade "Liberado do PCP" encerrada aparece aqui — a quantidade
   // de peças é preenchida direto nesta tela (dá pra preencher a qualquer momento, mesmo
   // depois da OP já ter sido encerrada). Depois de agrupado em lote, o projeto sai
