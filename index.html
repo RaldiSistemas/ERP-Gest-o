@@ -177,7 +177,7 @@
   .form-actions{ display:flex; justify-content:flex-end; gap:10px; padding-top:4px; }
 
   .toast{ position:fixed; left:50%; bottom:28px; transform:translate(-50%,20px); background:var(--texto); color:#f4f4ef;
-    font-size:13px; font-weight:500; padding:11px 18px; border-radius:10px; opacity:0; pointer-events:none; transition:opacity .25s,transform .25s; z-index:60; }
+    font-size:13px; font-weight:500; padding:11px 18px; border-radius:10px; opacity:0; pointer-events:none; transition:opacity .25s,transform .25s; z-index:400; }
   .toast.show{ opacity:1; transform:translate(-50%,0); }
 
   /* Wizard / stepper */
@@ -8602,6 +8602,7 @@
       const iniISO=new Date(ini).toISOString();
       upd.inicio={func:func||'—',em:iniISO,por:usuarioAtual(),fora:!dentroExpediente(new Date(ini),o.jornada)};
       if(st==='encerrada'){
+        if((g('edAtiv')||o.atividade)==='Liberado do PCP' && !(parseInt(o.pecasProjeto,10)>0)){ toast('Informe o número de peças do projeto antes de encerrar esta ordem de produção.'); return; }
         const fim=g('edFim'); if(!fim){ toast('Informe o fim real'); return; }
         if(new Date(fim)<=new Date(ini)){ toast('O fim precisa ser depois do início'); return; }
         const fimISO=new Date(fim).toISOString();
@@ -9819,6 +9820,7 @@
   }
   function _finalizarOPExec(id, pecas, chk){
     const o=OPS.find(x=>x.id===id); if(!o) return;
+    if(o.atividade==='Liberado do PCP' && !(parseInt(pecas,10)>0)){ toast('Informe o número de peças do projeto antes de encerrar esta ordem de produção.'); return; }
     const lista=apFuncs.length?apFuncs.slice():funcsDe(o,'inicio');
     const agora=new Date(), agoraISO=agora.toISOString();
     if(!confirmaFora(o,agora)) return;
@@ -10046,9 +10048,14 @@
     const o=OPS.find(x=>x.id===id); if(!o) return;
     c.tent=true; chkAtualiza();
     const pecas=parseInt(c.pecas,10);
-    if(!c.projetista.trim()||!c.responsavel.trim()||!(pecas>0)){
-      toast('Preencha projetista, responsável e nº de peças');
-      const e=document.getElementById('cf-projetista'); if(e) e.scrollIntoView({behavior:'smooth',block:'center'});
+    if(!(pecas>0)){
+      toast('Informe o número de peças do projeto antes de encerrar esta ordem de produção.');
+      const e=document.getElementById('cf-pecas'); if(e){ e.scrollIntoView({behavior:'smooth',block:'center'}); const i=e.querySelector('input'); if(i) i.focus(); }
+      return;
+    }
+    if(!c.projetista.trim()||!c.responsavel.trim()){
+      toast('Preencha projetista e responsável');
+      const e=document.getElementById(!c.projetista.trim()?'cf-projetista':'cf-responsavel'); if(e) e.scrollIntoView({behavior:'smooth',block:'center'});
       return;
     }
     const falta=CHK_ITENS.filter(it=>!c.r[it.id]);
