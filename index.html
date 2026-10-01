@@ -1712,6 +1712,7 @@
   .st-sel:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
   .st-ro{ display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; }
   .btn-sm{ padding:6px 13px; font-size:13px; }
+  .btn-sm svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; display:block; }
   .ace-topo{ display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap; }
   .ace-topo .ficha-info{ min-width:280px; }
   .st-box{ min-width:190px; background:#faf9f5; border:1px solid var(--linha); border-radius:10px; padding:13px 15px; }
@@ -2187,7 +2188,7 @@
   const MODULES = [
     {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Cadastro de clientes'}, {label:'Cadastro de dados'}, {label:'Mapa'} ]},
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
-      {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Simulação de Estoque']},
+      {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
       {label:'Liberação de lote', children:['Projetos liberados','Lotes agrupados']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
@@ -2322,6 +2323,7 @@
     if(mod.id==='est' && name==='Cadastro de centro de custo (CC)') return renderCC();
     if(mod.id==='pcp' && name==='Solicitação Armazém (SA)') return renderSA();
     if(mod.id==='pcp' && name==='Solicitações de fita') return renderSolFitas();
+    if(mod.id==='pcp' && name==='Histórico de simulações de fita') return renderHistFitas();
     if(mod.id==='pcp' && name==='Simulação de estoque de fita') return renderFita();
     if(mod.id==='pcp' && name==='Solicitação de Compras (SC)') return renderSC();
     if(mod.id==='pcp' && name==='Simulação de Estoque') return renderSimEst();
@@ -2549,6 +2551,7 @@
   const AMBIENTES=['Aparador','Área Gourmet','Banheiro Social','Banheiro Suíte','Bar','Circulação','Closet','Complementos','Cozinha','Despensa','Dormitório','Escritório','Hall','Home office','Lavabo','Lavanderia','Retrabalho','Rouparia','Sala Comercial','Sala de Estar','Sala de Jantar','Salão de Festas'];
   let PROJETOS=[];
   let wiz=null;
+  const EYE_SVG='<svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
   const FICHA_SVG='<svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h4"/></svg>';
   const X_SVG='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   function escHtml(s){ return s==null?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -2800,7 +2803,7 @@
   ];
   const EMPRESA={ end1:'Rua Miguel Luiz Goulart, 116', end2:'São João Margem Esquerda,', end3:'Tubarão - SC, 88708-500' };
   let ACES=[]; let ace=null;
-  let SOLFITAS=[]; let solFitaCalc=null; let sfModoSel=false, sfSel=new Set();
+  let SOLFITAS=[]; let HISTFITAS=[], histFitaId=null, buscaHistFita=''; let solFitaCalc=null; let sfModoSel=false, sfSel=new Set();
   let LOTES=[]; let lbAba='lista', lbModoSel=false, lbSel=new Set();
   let fLib={busca:'',status:'',lote:'',soVerdes:false};
   let LIB_IGNORADOS={}, lbMostrarExcluidos=false;
@@ -3197,6 +3200,9 @@
     db.ref('solfitas').on('value',s=>{ SOLFITAS=objParaArray(s);
       if(TELA==='solfitas') renderSolFitas(); },
       e=>toast('Erro de leitura: '+e.message));
+    db.ref('histFitas').on('value',s=>{ HISTFITAS=Object.values(s.val()||{}).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
+      if(TELA==='histfitas') atualizarHistFitas(); else if(TELA==='histfita-det'&&histFitaId) verHistFita(histFitaId); },
+      e=>toast('Erro de leitura do histórico: '+e.message));
     db.ref('lotesAgrupados').on('value',s=>{ LOTES=objParaArray(s).reverse();
       if(TELA==='liblote') renderLiberacaoLote(lbAba); });
     db.ref('libIgnorados').on('value',s=>{ LIB_IGNORADOS=s.val()||{};
@@ -5880,6 +5886,7 @@
 
 
   /* ================= Solicitação de Compras (SC) ================= */
+  let scViewPcp=false;
   let SCS=[], scForm=null, scViewId=null, buscaSC='', fSC={status:'',cc:''}, buscaSCEst='', fSCEst={status:''};
   const ST_SC={ pendente:{label:'Pendente',cor:'#c0392b'}, comprado:{label:'Comprado',cor:'#d4930d'},
                 pronto:{label:'Pronto para reserva',cor:'#2f6fb5'} };
@@ -5929,7 +5936,7 @@
         <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:140px">Setor</th><th style="width:86px">Qtde</th>
           <th style="width:104px">Necessidade</th>
-          <th style="width:150px">Status</th><th style="width:140px"></th></tr></thead>
+          <th style="width:150px">Status</th><th style="width:200px"></th></tr></thead>
         <tbody id="scBody">${linhasSC(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.com}</svg></div>
         <h3>Nenhuma SC</h3><p>Solicite a compra de um material ao setor de compras.</p>
@@ -5955,6 +5962,7 @@
           ${st==='pendente'?`<button class="icon-btn sc-pbtn ${pr?'':'off'}" title="${pr?'Remover prioridade de compra':'Marcar prioridade de compra'}" onclick="alternarPrioridadeSC('${x.id}')">${ALERTA_SVG.replace(' class="sc-alerta"','')}</button>`:''}
           ${st==='pendente'?`<button class="icon-btn" title="Editar" onclick="editarSC('${x.id}')">${EDIT_SVG}</button>`
             :`<button class="icon-btn is-off" title="Já ${v.label.toLowerCase()} — não pode editar" disabled>${EDIT_SVG}</button>`}
+          <button class="btn btn-ghost btn-sm" title="Ver" aria-label="Ver" onclick="verSC('${x.id}',true)">${EYE_SVG}</button>
           <button class="icon-btn" title="Imprimir / PDF" onclick="imprimirSC('${x.id}')">${FICHA_SVG}</button>
           ${st==='pendente'?`<button class="icon-btn danger" title="Excluir" onclick="excluirSC('${x.id}')">${TRASH_SVG}</button>`
             :`<button class="icon-btn is-off" title="Já ${v.label.toLowerCase()} — não pode excluir" disabled>${TRASH_SVG}</button>`}
@@ -6131,7 +6139,7 @@
           ${Object.entries(ST_SC).map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('')}</select>
           ${x.entrada?'<div class="cel-sub">entrada dada</div>':''}</td>
         <td class="acoes">
-          <button class="btn btn-ghost btn-sm" onclick="verSC('${x.id}')">Ver</button>
+          <button class="btn btn-ghost btn-sm" onclick="verSC('${x.id}',false)">Ver</button>
           <button class="icon-btn" title="Imprimir / PDF" onclick="imprimirSC('${x.id}')">${FICHA_SVG}</button>
         </td></tr>`;
     }).join('');
@@ -6172,7 +6180,8 @@
     db.ref().update(upd).then(()=>toast('Status: '+ST_SC[st].label)).catch(e=>toast('Erro: '+e.message));
   }
 
-  function verSC(id){
+  function verSC(id,pcp){
+    if(pcp!==undefined) scViewPcp=!!pcp; // sem argumento (re-render em tempo real) mantém de onde veio
     const x=SCS.find(y=>y.id===id); if(!x) return;
     TELA='sc-detalhe'; scViewId=id;
     const st=stSc(x), v=ST_SC[st], s2=saldoDe(x.insumoId);
@@ -6180,9 +6189,9 @@
     const info=(k,val)=>`<div class="it"><div class="k">${k}</div><div class="v">${val||'—'}</div></div>`;
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">${escHtml(x.numero)}</h1>
-        <p class="page-sub">Estoque · Solicitações · SC</p></div>
+        <p class="page-sub">${scViewPcp?'PCP':'Estoque'} · Solicitações · SC</p></div>
         <div style="display:flex;gap:10px">
-          <button class="btn btn-ghost" onclick="renderSCEstoque()">Voltar</button>
+          <button class="btn btn-ghost" onclick="${scViewPcp?'renderSC()':'renderSCEstoque()'}">Voltar</button>
           <button class="btn btn-primary" onclick="imprimirSC('${x.id}')">Visualizar PDF</button></div></div>
       <section class="fs" style="margin-bottom:18px"><div class="ace-topo">
         <div class="ficha-info" style="flex:1">
@@ -6192,6 +6201,7 @@
           ${info('Centro de custo',escHtml(x.ccCod))}
           ${info('Setor',escHtml(x.setor))}
           ${info('Quantidade solicitada',`<b>${fmtNum(parseFloat(x.qtd)||0)} ${escHtml(x.unidade||'')}</b>`)}
+          ${(parseFloat(x.necM)||0)>0?info('Quantidade necessária',`<b>${fmtNum(parseFloat(x.necM))} M</b>`):''}
           ${info('Valor unitário',x.valorUnit?fmtBRL(x.valorUnit):'—')}
           ${info('Valor total',x.valorUnit?fmtBRL(x.valorUnit*(parseFloat(x.qtd)||0)):'—')}
           ${info('Solicitado por',escHtml(x.criadoPor))}
@@ -6204,8 +6214,8 @@
         <div class="st-box">
           <div class="k">Status</div>
           <div class="st-atual"><span class="dot dot-lg" style="background:${v.cor}"></span>${v.label}</div>
-          <select class="st-sel" onchange="mudarStatusSC('${x.id}',this.value)">
-            ${Object.entries(ST_SC).map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('')}</select>
+          ${scViewPcp?'':`<select class="st-sel" onchange="mudarStatusSC('${x.id}',this.value)">
+            ${Object.entries(ST_SC).map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('')}</select>`}
           ${x.entrada?`<div class="st-meta">Entrada no estoque<br>${fmtDataHora(x.entradaEm)}</div>`:''}
         </div></div>
         <div class="sa-saldo" style="margin-top:16px">
@@ -6213,12 +6223,49 @@
           <span>Reservado <b>${fmtNum(s2.res)}</b></span>
           <span class="${s2.disp<=0?'sd-neg':'sd-ok'}">Disponível <b>${fmtNum(s2.disp)}</b></span></div>
       </section>
+      ${fitaDetalheSC(x)}
       ${hist.length?`<section class="fs"><h3 class="fs-title">Histórico</h3><div class="hist">
         ${hist.map(h=>{const hv=ST_SC[h.status]||ST_SC.pendente;
           return `<div class="hist-l"><span class="dot" style="background:${hv.cor}"></span>
             <span class="hl-st">${hv.label}</span><span class="hl-por">${escHtml(h.por||'—')}</span>
             <span class="hl-em">${fmtDataHora(h.em)}</span></div>`;}).join('')}</div></section>`:''}
     </div>`;
+  }
+
+  // Necessidade de fita da SC: total, uso do estoque e quanto cada projeto precisa
+  function fitaDetalheSC(x){
+    const arr=v=>Array.isArray(v)?v:(v&&typeof v==='object'?Object.values(v):[]);
+    const it=arr(x.fitaItens);
+    if(!it.length){
+      return x.origem==='memorial-fita'
+        ? `<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Necessidade de fita</h3>
+            <p class="fld-hint">Esta SC foi gerada antes do registro da necessidade por projeto, por isso não há detalhamento.</p></section>`
+        : '';
+    }
+    const nec=parseFloat(x.necM)||0, est=parseFloat(x.estoqueM)||0;
+    const comprado=(parseFloat(x.rolos)||0)*(parseFloat(x.metrosRolo)||0);
+    const sobra=comprado>0?Math.max(0,+(comprado-(nec-est)).toFixed(4)):0;
+    const corpo=it.map(g=>{
+      const pj=arr(g.projetos);
+      const linhas=pj.map(p=>`<tr><td>${escHtml(p.clienteNome||'—')}</td><td>${escHtml(p.ambiente||'—')}</td>
+        <td class="ctr">${escHtml(p.numeroProjeto||'—')}</td><td class="ctr">${fmtNum(g.largura)}mm</td>
+        <td class="ctr inv-qt">${fmtNum(parseFloat(p.metros)||0)} <span class="inv-un">M</span></td></tr>`).join('');
+      const gm=parseFloat(g.metros)||0, ge=parseFloat(g.estoqueM)||0;
+      return linhas+`<tr class="row-sem"><td colspan="4" style="text-align:right"><b>Total de ${fmtNum(g.largura)}mm</b></td>
+          <td class="ctr inv-qt"><b>${fmtNum(gm)} M</b></td></tr>`
+        +(ge>0?`<tr><td colspan="4" style="text-align:right">Atendido pelo estoque (SA)</td><td class="ctr">− ${fmtNum(ge)} M</td></tr>`:'');
+    }).join('');
+    return `<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Necessidade de fita por projeto</h3>
+      <div class="sa-saldo" style="margin-bottom:14px">
+        <span>Necessária <b>${fmtNum(nec)} M</b></span>
+        <span>Do estoque <b>${fmtNum(est)} M</b></span>
+        <span>A comprar <b>${fmtNum(parseFloat(x.qtd)||0)} ${escHtml(x.unidade||'')}</b>${comprado>0?` (${fmtNum(parseFloat(x.rolos)||0)} rolo(s) de ${fmtNum(parseFloat(x.metrosRolo)||0)} M)`:''}</span>
+        ${sobra>0?`<span>Sobra após o lote <b>${fmtNum(sobra)} M</b></span>`:''}</div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th style="width:90px">Largura</th><th style="width:120px">Necessidade</th></tr></thead>
+        <tbody>${corpo}</tbody></table></div>
+      ${x.lote?`<p class="fld-hint" style="margin-top:10px">Lote ${escHtml(String(x.lote))}. A necessidade é o que o projeto realmente usa; a compra é arredondada para rolo fechado.</p>`:''}
+    </section>`;
   }
 
   function imprimirSC(id){
@@ -6245,6 +6292,7 @@
           ${info('Código',escHtml(x.codigo))}
           ${info('Unidade',escHtml(x.unidade))}
           ${info('Quantidade',fmtNum(parseFloat(x.qtd)||0))}
+          ${(parseFloat(x.necM)||0)>0?info('Quant. necessária',fmtNum(parseFloat(x.necM))+' M'):''}
           ${info('Solicitante',escHtml(x.criadoPor))}
           ${info('Necessário até',x.dataNec?fmtData(x.dataNec):'')}
           ${info('Prioridade',x.prioridade?'SIM':'')}</div>
@@ -6741,7 +6789,8 @@
         origemIds.push(r.id);
         (r.itens||[]).forEach(it=>{
           if(!it.largura||!it.metros) return;
-          pedidosBrutos.push({mat:it.mat,desc:it.descricao,codigo:it.codigo,w:it.largura,m:it.metros});
+          pedidosBrutos.push({mat:it.mat,desc:it.descricao,codigo:it.codigo,w:it.largura,m:it.metros,
+            proj:{clienteNome:g.clienteNome||'',ambiente:g.ambiente||'',numeroProjeto:g.numeroProjeto||''}});
           if(it.larguraRolo>0 && it.metragemRolo>0){
             rolosPorMat[it.mat]=rolosPorMat[it.mat]||ROLOS_FITA.map(x=>({...x}));
             if(!rolosPorMat[it.mat].some(x=>x.l===it.larguraRolo&&x.m===it.metragemRolo))
@@ -6790,6 +6839,7 @@
         const l={mat:M.mat, largura:c.largura, metrosRolo:c.metrosRolo, rolos:c.rolos, metros:c.metros, metrosEstoque:0, necM:c.metros,
           insumoId:ins?ins.id:null, codigo:ins?ins.codigo:'', descricao:ins?ins.descricao:`${M.mat} ${fmtNum(c.largura)}MM X ${fmtNum(c.metrosRolo)}M`,
           unidade:ins?ins.unidade:''};
+        l.itens=sfItensDaLinha(M,c,agreg);
         linhas.push(l); if(ins) porIns.set(ins.id,l);
       });
     });
@@ -6806,6 +6856,33 @@
     if(!linhas.length){ toast('Nada a comprar nesse agrupamento'); simFita=null; return; }
     simFita.linhas=linhas;
     pedirConversoes(0,2);
+  }
+  // Necessidade REAL (antes de arredondar para o rolo) das larguras atendidas por esta linha de compra,
+  // separada por projeto. É o que o armazém precisa entregar depois que o material chegar.
+  function sfItensDaLinha(M,c,agreg){
+    const itens=[];
+    (M.alocacoes||[]).forEach(a=>{
+      if(a.origem==='impossivel') return;
+      const r=(M.rolosUsados||[]).find(x=>x.id===a.roloId);
+      if(!r||Math.abs(r.largura-c.largura)>0.01||Math.abs(r.metragem-c.metrosRolo)>0.01) return;
+      const g=agreg.get(a.mat+'|'+a.w); if(!g) return;
+      const projs=new Map();
+      simFita.pedidosBrutos.forEach(p=>{
+        if(p.mat!==a.mat||p.w!==a.w) return;
+        const pr=p.proj||{};
+        const k=[pr.clienteNome,pr.ambiente,pr.numeroProjeto].join('|');
+        if(!projs.has(k)) projs.set(k,{clienteNome:pr.clienteNome||'',ambiente:pr.ambiente||'',numeroProjeto:pr.numeroProjeto||'',metros:0});
+        projs.get(k).metros+=p.m;
+      });
+      itens.push({largura:a.w, metros:+g.m.toFixed(4), estoqueM:+Math.max(0,g.m-a.m).toFixed(4),
+        projetos:[...projs.values()].map(x=>({...x,metros:+x.metros.toFixed(4)}))});
+    });
+    return itens;
+  }
+  function sfCamposNecessidade(l){
+    const it=l.itens||[]; if(!it.length) return {};
+    return {necM:+it.reduce((a,x)=>a+x.metros,0).toFixed(4), estoqueM:+it.reduce((a,x)=>a+x.estoqueM,0).toFixed(4),
+      rolos:l.rolos||0, metrosRolo:l.metrosRolo||0, fitaItens:it};
   }
   // pergunta a equivalência em metros para itens que não estão cadastrados em M — só faz sentido
   // agora que o rolo já foi escolhido (no agrupamento por lote)
@@ -6889,7 +6966,7 @@
 
       ${simFita.geradas?`<section class="fs" style="margin-bottom:18px">
         <div class="ger-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>
-          <div><b>Solicitações geradas</b><span>${simFita.geradas.sas.length} SA(s) e ${simFita.geradas.scs.length} SC(s) criadas.</span></div></div>
+          <div><b>Solicitações geradas</b><span>${simFita.geradas.sas.length} SA(s) e ${simFita.geradas.scs.length} SC(s) criadas. ${simFita.geradas.op?`Necessidade salva na OP ${escHtml(simFita.geradas.op)} (Laminado).`:'Sem OP de Laminado para este lote: necessidade guardada no histórico.'}</span></div></div>
         <div class="ger-list">${simFita.geradas.sas.map(n=>`<span class="ger-p ger-sa">${escHtml(n)}</span>`).join('')}
           ${simFita.geradas.scs.map(n=>`<span class="ger-p ger-sc">${escHtml(n)}</span>`).join('')}</div>
       </section>`:`
@@ -6937,36 +7014,35 @@
           <div class="sa-t">Serão criadas <b>${nSA+nSC}</b> solicitação(ões)${simFita.ccCod?` em <b>${escHtml(simFita.ccCod)} — ${escHtml(simFita.setor)}</b>`:''}</div>
           <button class="btn btn-primary" ${simFita.ccCod?'':'disabled style="opacity:.5"'} onclick="gerarSolFita()">Gerar solicitações automaticamente</button>
         </div>`:'<div style="margin-top:16px"><button class="btn btn-ghost" onclick="irSolFitas()">Concluir</button></div>'}
-        ${(()=>{ const opL=opLaminadoDoLote(simFita.lote);
-          return `<div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <button class="btn btn-ghost" ${validas.length?'':'disabled style="opacity:.5"'} onclick="salvarFitaNaOPLaminado()">Salvar necessidade na OP de Laminado</button>
-            <span class="cel-sub">${opL?`OP ${escHtml(opL.numero)} encontrada para este lote${opL.necessidadeFita?' · já tem necessidade salva':''}`
-              :`Nenhuma OP de Laminado emitida ainda para o lote ${escHtml(simFita.lote)||'—'}`}</span>
-          </div>`; })()}
+        ${simFita.geradas?'':(()=>{ const opL=opLaminadoDoLote(simFita.lote);
+          return `<div class="cel-sub" style="margin-top:10px">${opL?`OP de Laminado ${escHtml(opL.numero)} encontrada para este lote — a necessidade será salva nela ao gerar${opL.necessidadeFita?' (substitui a que já existe)':''}.`
+            :`Nenhuma OP de Laminado emitida ainda para o lote ${escHtml(simFita.lote)||'—'} — a necessidade fica guardada no histórico.`}</div>`; })()}
       </section></div>`;
   }
   function opLaminadoDoLote(lote){
     const l=String(lote||'').trim(); if(!l) return null;
     return OPS.find(o=>o.atividade==='Laminado' && String(o.lote||'').trim()===l) || null;
   }
-  function salvarFitaNaOPLaminado(){
-    const op=opLaminadoDoLote(simFita.lote);
-    if(!op){ toast('Nenhuma OP de Laminado encontrada para o lote '+(simFita.lote||'—')); return; }
-    const L=simFita.linhas.filter(l=>l.insumoId);
-    if(!L.length){ toast('Nenhum item para salvar'); return; }
-    const itens=L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',
+  function sfLimpa(o){ return JSON.parse(JSON.stringify(o)); } // Firebase não aceita undefined
+  function sfItensParaOP(L){
+    return L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',
       necessario:+(l.necM||l.metros||0).toFixed(4), estoqueUsado:+(l.metrosEstoque||0).toFixed(4),
-      comprar:+(l.metros||0).toFixed(4), rolos:l.rolos||0, metrosRolo:l.metrosRolo||0}));
-    db.ref('ops/'+op.id+'/necessidadeFita').set({itens,lote:simFita.lote||'',salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()})
-      .then(()=>{ toast('Necessidade de fita salva na OP '+op.numero+' (Laminado)'); renderSimFita(); })
-      .catch(e=>toast('Erro: '+e.message));
+      comprar:+(l.metros||0).toFixed(4), rolos:l.rolos||0, metrosRolo:l.metrosRolo||0,
+      projetos:(l.itens||[]).reduce((a,g)=>a.concat((g.projetos||[]).map(p=>({...p,largura:g.largura}))),[])}));
+  }
+  // grava a necessidade de fita na OP de Laminado do lote (chamada automaticamente ao gerar as solicitações)
+  function sfGravarNaOP(op,itens,lote){
+    return db.ref('ops/'+op.id+'/necessidadeFita').set(sfLimpa({itens,lote:lote||'',salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()}));
   }
   function simFitaCC(cod){ simFita.ccCod=cod; simFita.setor=setorDe(cod); renderSimFita(); }
   async function gerarSolFita(){
     if(!simFita.ccCod){ toast('Selecione o centro de custo'); return; }
     const L=simFita.linhas.filter(l=>l.insumoId);
     const nSA=L.filter(l=>l.qSA>0).length, nSC=L.filter(l=>l.qSC>0).length;
-    if(!confirm(`Gerar ${nSA} SA(s) e ${nSC} SC(s)?`)) return;
+    const opL=opLaminadoDoLote(simFita.lote);
+    const avisoOP=opL?`\n\nA necessidade de fita também será salva na OP de Laminado ${opL.numero}${opL.necessidadeFita?' (substitui a que já existe)':''}.`
+      :`\n\nAinda não há OP de Laminado para o lote ${simFita.lote||'—'}: a necessidade ficará guardada no histórico.`;
+    if(!confirm(`Gerar ${nSA} SA(s) e ${nSC} SC(s)?${avisoOP}`)) return;
     const btn=document.querySelector('.sim-acao .btn-primary');
     if(btn){ btn.disabled=true; btn.textContent='Gerando...'; }
     const sas=[],scs=[],agora=new Date().toISOString(),quem=usuarioAtual();
@@ -6985,7 +7061,7 @@
           const n=await prox('SC'), num='SC'+String(n).padStart(6,'0'), id='sc'+Date.now()+Math.floor(Math.random()*900+100);
           await db.ref('scs/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
             unidade:l.unidade,ccCod:simFita.ccCod,setor:simFita.setor,qtd:l.qSC,obs,lote:simFita.lote||'',
-            status:'pendente',entrada:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
+            status:'pendente',entrada:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita',...sfCamposNecessidade(l)});
           scs.push(num);
         }
       }
@@ -6995,8 +7071,24 @@
         await db.ref().update(upd);
         SOLFITAS=SOLFITAS.filter(x=>!simFita.origemIds.includes(x.id));
       }
-      simFita.geradas={sas,scs};
-      toast(`${sas.length} SA(s) e ${scs.length} SC(s) geradas`);
+      // necessidade na OP de Laminado + histórico: falha aqui não desfaz as SA/SC já criadas
+      let opNum=null, avisos=[];
+      if(opL){
+        try{ await sfGravarNaOP(opL,sfItensParaOP(L),simFita.lote); opNum=opL.numero; }
+        catch(e2){ avisos.push('não foi possível salvar na OP de Laminado ('+(e2.message||e2)+')'); }
+      }
+      try{
+        const hid='hf'+Date.now()+Math.floor(Math.random()*900+100);
+        await db.ref('histFitas/'+hid).set(sfLimpa({id:hid,lote:simFita.lote||'',criadoEm:agora,criadoPor:quem,
+          ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',ambientes:simFita.origemInfo||[],sas,scs,
+          op:opNum?{id:opL.id,numero:opNum}:null,
+          linhas:L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necM:+(l.necM||l.metros||0).toFixed(4),
+            estoqueM:+(l.metrosEstoque||0).toFixed(4),comprarM:+(l.metros||0).toFixed(4),rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
+            qSA:l.qSA||0,qSC:l.qSC||0,fitaItens:l.itens||[]}))}));
+      }catch(e3){ avisos.push('histórico não gravado ('+(e3.message||e3)+')'); }
+      simFita.geradas={sas,scs,op:opNum};
+      toast(`${sas.length} SA(s) e ${scs.length} SC(s) geradas`+(avisos.length?' — atenção: '+avisos.join('; '):''));
+      if(avisos.length) alert('As solicitações foram geradas, mas: '+avisos.join('; ')+'.');
       renderSimFita();
     }catch(e){
       if(btn){ btn.disabled=false; btn.textContent='Gerar solicitações automaticamente'; }
@@ -7004,6 +7096,100 @@
     }
   }
 
+
+  /* ===== Histórico de simulações de fita ===== */
+  const fbArr=v=>Array.isArray(v)?v:(v&&typeof v==='object'?Object.values(v):[]);
+  function filtrarHistFitas(){
+    const t=(buscaHistFita||'').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return HISTFITAS.filter(h=>{
+      if(!t.length) return true;
+      const txt=[h.lote?('lote '+h.lote):'',h.lote,h.criadoPor,h.op&&h.op.numero,...fbArr(h.sas),...fbArr(h.scs),
+        ...fbArr(h.ambientes).map(a=>[a.clienteNome,a.ambiente,a.numeroProjeto].join(' '))].filter(Boolean).join(' ').toLowerCase();
+      return t.every(y=>txt.includes(y));
+    });
+  }
+  function renderHistFitas(){
+    TELA='histfitas'; histFitaId=null;
+    view.innerHTML=`<div class="page">
+      <div class="page-head"><div><h1 class="page-title">Histórico de simulações de fita</h1>
+        <p class="page-sub">${HISTFITAS.length} simulação(ões) com solicitações geradas</p></div></div>
+      ${HISTFITAS.length?`<div class="inv-filtros">
+        <input class="search" id="buscaHFin" value="${buscaHistFita.replace(/"/g,'&quot;')}" placeholder="Buscar por lote, cliente, ambiente, nº do projeto, SA, SC ou OP..." oninput="buscaHistFita=this.value; atualizarHistFitas()"></div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th style="width:130px">Data</th><th style="width:90px">Lote</th><th>Ambientes</th><th style="width:70px">Itens</th>
+          <th style="width:70px">SA</th><th style="width:70px">SC</th><th style="width:110px">OP Laminado</th><th style="width:130px">Por</th><th style="width:80px"></th></tr></thead>
+        <tbody id="histFitaBody">${linhasHistFitas(filtrarHistFitas())}</tbody></table></div>`
+      :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.pcp}</svg></div>
+        <h3>Nenhuma simulação registrada</h3><p>Cada vez que você gerar as solicitações de um lote de fita, a simulação fica guardada aqui.</p></div>`}
+    </div>`;
+  }
+  function linhasHistFitas(lista){
+    if(!lista.length) return '<tr><td class="td-empty" colspan="9">Nenhum resultado</td></tr>';
+    return lista.map(h=>{
+      const amb=fbArr(h.ambientes);
+      const nomes=amb.map(a=>[a.clienteNome,a.ambiente].filter(Boolean).join(' · ')).join('\n');
+      return `<tr>
+        <td>${fmtDataHora(h.criadoEm)}</td>
+        <td><span class="sa-num">${escHtml(h.lote)||'—'}</span></td>
+        <td title="${escHtml(nomes)}">${amb.length} ambiente(s)<div class="cel-sub">${escHtml(amb.slice(0,2).map(a=>a.clienteNome||'—').join(', '))}${amb.length>2?'…':''}</div></td>
+        <td class="ctr">${fbArr(h.linhas).length}</td>
+        <td class="ctr">${fbArr(h.sas).length}</td><td class="ctr">${fbArr(h.scs).length}</td>
+        <td class="ctr">${h.op?escHtml(h.op.numero):'<span class="cel-sub">—</span>'}</td>
+        <td class="cel-disc">${escHtml(String(h.criadoPor||'').split('@')[0])}</td>
+        <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="verHistFita('${h.id}')">Ver</button></td></tr>`;
+    }).join('');
+  }
+  function atualizarHistFitas(){ const b=document.getElementById('histFitaBody'); if(b) b.innerHTML=linhasHistFitas(filtrarHistFitas()); }
+  function verHistFita(id){
+    const h=HISTFITAS.find(x=>x.id===id); if(!h) return;
+    TELA='histfita-det'; histFitaId=id;
+    const amb=fbArr(h.ambientes), L=fbArr(h.linhas);
+    const info=(k,val)=>`<div class="it"><div class="k">${k}</div><div class="v">${val||'—'}</div></div>`;
+    const opNova=!h.op?opLaminadoDoLote(h.lote):null;
+    const proj=[]; // necessidade por projeto, por largura
+    L.forEach(l=>fbArr(l.fitaItens).forEach(g=>fbArr(g.projetos).forEach(p=>proj.push({...p,largura:g.largura,item:l.descricao}))));
+    view.innerHTML=`<div class="page page-wide">
+      <div class="page-head"><div><h1 class="page-title">Lote ${escHtml(h.lote)||'—'}</h1>
+        <p class="page-sub">PCP · Histórico de simulações de fita</p></div>
+        <button class="btn btn-ghost" onclick="renderHistFitas()">Voltar</button></div>
+      <section class="fs" style="margin-bottom:18px"><div class="ficha-info">
+        ${info('Data',fmtDataHora(h.criadoEm))}${info('Gerada por',escHtml(String(h.criadoPor||'').split('@')[0]))}
+        ${info('Centro de custo',escHtml(h.ccCod))}${info('Setor',escHtml(h.setor))}
+        ${info('OP de Laminado',h.op?escHtml(h.op.numero)+' (necessidade salva)':'Não vinculada')}
+        ${h.obs?`<div class="it" style="grid-column:1/-1"><div class="k">Observação</div><div class="v">${escHtml(h.obs)}</div></div>`:''}
+      </div>
+      <div class="fld full" style="margin-top:12px"><label>Ambientes agrupados</label><div class="ger-list">
+        ${amb.map(o=>`<span class="ger-p ger-sa">${escHtml(o.clienteNome||'—')}${o.ambiente?' · '+escHtml(o.ambiente):''}${o.numeroProjeto?' · Nº '+escHtml(o.numeroProjeto):''}</span>`).join('')}</div></div>
+      <div class="fld full" style="margin-top:10px"><label>Solicitações geradas</label><div class="ger-list">
+        ${fbArr(h.sas).map(n=>`<span class="ger-p ger-sa">${escHtml(n)}</span>`).join('')}${fbArr(h.scs).map(n=>`<span class="ger-p ger-sc">${escHtml(n)}</span>`).join('')}</div></div>
+      ${opNova?`<div style="margin-top:12px"><button class="btn btn-ghost" onclick="sfSalvarHistNaOP('${h.id}')">Salvar na OP ${escHtml(opNova.numero)} (Laminado)</button>
+        <span class="cel-sub"> A OP deste lote foi emitida depois da simulação.</span></div>`:''}
+      </section>
+      <section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Rolos e necessidade</h3>
+        <div class="table-wrap"><table class="tbl tbl-sim">
+          <thead><tr><th style="width:112px">Código</th><th>Item</th><th style="width:52px">Un.</th><th style="width:100px">Necessário (m)</th>
+            <th style="width:100px">Do estoque (m)</th><th style="width:100px">Comprar (m)</th><th style="width:90px">Reservar</th><th style="width:90px">Comprar</th></tr></thead>
+          <tbody>${L.map(l=>`<tr><td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
+            <td><div class="cel-nome">${escHtml(l.descricao)}</div>${l.rolos?`<div class="cel-sub">${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)} m</div>`:''}</td>
+            <td class="ctr">${escHtml(l.unidade)}</td><td class="ctr sd-tot">${fmtNum(l.necM)}</td><td class="ctr">${fmtNum(l.estoqueM)}</td><td class="ctr">${fmtNum(l.comprarM)}</td>
+            <td class="ctr">${l.qSA>0?`<b class="v-sa">${fmtNum(l.qSA)}</b>`:'—'}</td><td class="ctr">${l.qSC>0?`<b class="v-sc">${fmtNum(l.qSC)}</b>`:'—'}</td></tr>`).join('')}</tbody></table></div></section>
+      ${proj.length?`<section class="fs"><h3 class="fs-title">Necessidade por projeto</h3>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Item</th><th style="width:80px">Largura</th><th style="width:110px">Necessidade</th></tr></thead>
+          <tbody>${proj.map(p=>`<tr><td>${escHtml(p.clienteNome||'—')}</td><td>${escHtml(p.ambiente||'—')}</td><td class="ctr">${escHtml(p.numeroProjeto||'—')}</td>
+            <td class="cel-disc">${escHtml(p.item)}</td><td class="ctr">${fmtNum(p.largura)}mm</td><td class="ctr inv-qt">${fmtNum(p.metros)} <span class="inv-un">M</span></td></tr>`).join('')}</tbody></table></div></section>`:''}
+    </div>`;
+  }
+  function sfSalvarHistNaOP(id){
+    const h=HISTFITAS.find(x=>x.id===id); if(!h) return;
+    const op=opLaminadoDoLote(h.lote); if(!op){ toast('Nenhuma OP de Laminado para o lote '+(h.lote||'—')); return; }
+    const itens=fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
+      comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
+      projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[])}));
+    sfGravarNaOP(op,itens,h.lote)
+      .then(()=>db.ref('histFitas/'+id+'/op').set({id:op.id,numero:op.numero}))
+      .then(()=>toast('Necessidade salva na OP '+op.numero+' (Laminado)'))
+      .catch(e=>toast('Erro: '+e.message));
+  }
 
   /* ================= Manual do sistema ================= */
   const D_FLUXO=`<svg viewBox="0 0 720 210" class="hd-svg">
@@ -11528,7 +11714,7 @@
     traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSolFita,vincAmb,
     vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
-    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,
+    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfSalvarHistNaOP,
     abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
