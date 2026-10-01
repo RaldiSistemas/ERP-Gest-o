@@ -1712,6 +1712,7 @@
   .st-sel:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
   .st-ro{ display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; }
   .btn-sm{ padding:6px 13px; font-size:13px; }
+  .btn-eye{ padding:4px 9px; border-radius:7px; }
   .btn-sm svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; display:block; }
   .ace-topo{ display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap; }
   .ace-topo .ficha-info{ min-width:280px; }
@@ -5936,7 +5937,7 @@
         <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:140px">Setor</th><th style="width:86px">Qtde</th>
           <th style="width:104px">Necessidade</th>
-          <th style="width:150px">Status</th><th style="width:200px"></th></tr></thead>
+          <th style="width:140px">Status</th><th style="width:150px"></th></tr></thead>
         <tbody id="scBody">${linhasSC(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.com}</svg></div>
         <h3>Nenhuma SC</h3><p>Solicite a compra de um material ao setor de compras.</p>
@@ -5962,7 +5963,7 @@
           ${st==='pendente'?`<button class="icon-btn sc-pbtn ${pr?'':'off'}" title="${pr?'Remover prioridade de compra':'Marcar prioridade de compra'}" onclick="alternarPrioridadeSC('${x.id}')">${ALERTA_SVG.replace(' class="sc-alerta"','')}</button>`:''}
           ${st==='pendente'?`<button class="icon-btn" title="Editar" onclick="editarSC('${x.id}')">${EDIT_SVG}</button>`
             :`<button class="icon-btn is-off" title="Já ${v.label.toLowerCase()} — não pode editar" disabled>${EDIT_SVG}</button>`}
-          <button class="btn btn-ghost btn-sm" title="Ver" aria-label="Ver" onclick="verSC('${x.id}',true)">${EYE_SVG}</button>
+          <button class="btn btn-ghost btn-sm btn-eye" title="Ver" aria-label="Ver" onclick="verSC('${x.id}',true)">${EYE_SVG}</button>
           <button class="icon-btn" title="Imprimir / PDF" onclick="imprimirSC('${x.id}')">${FICHA_SVG}</button>
           ${st==='pendente'?`<button class="icon-btn danger" title="Excluir" onclick="excluirSC('${x.id}')">${TRASH_SVG}</button>`
             :`<button class="icon-btn is-off" title="Já ${v.label.toLowerCase()} — não pode excluir" disabled>${TRASH_SVG}</button>`}
