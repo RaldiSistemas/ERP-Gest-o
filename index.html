@@ -5483,7 +5483,7 @@
 
   /* ================= Memorial de cálculo — Simulação de fita ================= */
   const ROLOS_FITA=[{l:22,m:10},{l:35,m:10},{l:45,m:10},{l:100,m:1},{l:260,m:1}];
-  let simF={perda:5, usarMetragem:true, linhas:[], resultado:null}; // usarMetragem: regra fixa (sem emenda)
+  let simF={perda:0, usarMetragem:true, linhas:[], resultado:null}; // usarMetragem: regra fixa (sem emenda)
 
   // O cadastro do insumo traz só a largura (ex.: "FITA DE BORDA ABSOLUTO 35MM PROADEC").
   // O comprimento do rolo é sempre inferido pela tabela ROLOS_FITA a partir da largura —
