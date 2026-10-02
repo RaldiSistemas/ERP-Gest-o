@@ -1709,6 +1709,18 @@
   .gsa-aviso{ margin-bottom:14px; padding:10px 14px; background:var(--surface); border:1px solid var(--linha);
     border-left:3px solid #2f8f46; border-radius:8px; font-size:13px; color:var(--muted); }
   .gsa-aviso b{ color:var(--texto); }
+  .gsa-aviso.pa{ border-left-color:#25a244; }
+  .pa-msg{ white-space:pre-wrap; background:#f3fbf5; border:1px solid #cfe9d6; border-radius:10px; padding:14px 16px; font-size:14px; line-height:1.5; margin-bottom:18px; }
+  .pa-forn{ display:flex; align-items:center; gap:14px; padding:13px 16px; background:var(--surface); border:1px solid var(--linha); border-radius:10px; margin-bottom:10px; cursor:pointer; transition:border-color .15s, box-shadow .15s; }
+  .pa-forn:hover{ border-color:#25a244; box-shadow:0 2px 10px rgba(37,162,68,.15); }
+  .pa-forn .pf-n{ font-weight:600; font-size:14.5px; }
+  .pa-forn .pf-t{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .pa-forn .pf-ac{ margin-left:auto; display:flex; gap:6px; }
+  .pa-forn .pf-b{ background:#25a244; color:#fff; border:0; border-radius:8px; padding:8px 14px; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  .fn-lista{ margin-top:18px; border-top:1px solid var(--linha); padding-top:12px; }
+  .fn-it{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--linha); font-size:14px; }
+  .fn-it .fn-n{ font-weight:600; } .fn-it .fn-t{ font-size:12.5px; color:var(--muted); }
+  .fn-it .fn-ac{ margin-left:auto; display:flex; gap:4px; }
   .gsa-chk{ width:17px; height:17px; accent-color:var(--vermelho); cursor:pointer; }
   .st-item b{ color:var(--texto); font-weight:700; }
   .st-sel{ font:inherit; font-size:12.5px; padding:3px 7px; border:1px solid var(--linha); border-radius:7px;
@@ -2268,6 +2280,7 @@
   let CLIENTES=[], clienteEditId=null;
   let TELA=null; // marca a tela aberta para re-render seguro
   let gsaMode=false, gsaOrigem='pcp', gsaSel=new Set(), gsaNec={}; // fluxo "Gerar SA" a partir de SCs
+  let paMode=false, paSel=new Set(), FORNS=[]; // fluxo "Pedido automático" (WhatsApp) + fornecedores
 
 
   /* ===== Refs ===== */
@@ -2318,7 +2331,7 @@
     setCrumb(mod,name); renderView(mod,name);
   }
   function renderView(mod,name){
-    gsaMode=false; gsaSel=new Set(); gsaNec={};
+    gsaMode=false; gsaSel=new Set(); gsaNec={}; paMode=false; paSel=new Set();
     if(mod.id==='orc' && name==='Cadastro de clientes') return renderClientes();
     if(mod.id==='orc' && name==='Cadastro de dados') return renderDados();
     if(mod.id==='orc' && name==='Mapa') return renderMapa();
@@ -3215,6 +3228,8 @@
     db.ref('libIgnorados').on('value',s=>{ LIB_IGNORADOS=s.val()||{};
       resumoCarregado.ign=true; sincronizarResumoTela();
       if(TELA==='liblote') renderLiberacaoLote(lbAba); });
+    db.ref('fornecedores').on('value',s=>{ FORNS=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'pt-BR'));
+      if(TELA==='pa') renderPedidoAuto(); });
     db.ref('scs').on('value',s=>{ SCS=Object.values(s.val()||{}).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
       if(TELA==='sc') renderSC(); else if(TELA==='sc-est') renderSCEstoque();
       else if(TELA==='sc-detalhe'&&scViewId) verSC(scViewId); });
@@ -5962,7 +5977,7 @@
     </div>`;
   }
   function linhasSC(lista){
-    if(!lista.length) return `<tr><td class="td-empty" colspan="${gsaMode?11:10}">Nenhum resultado</td></tr>`;
+    if(!lista.length) return `<tr><td class="td-empty" colspan="${(gsaMode||paMode)?11:10}">Nenhum resultado</td></tr>`;
     return lista.map(x=>{
       const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
       return `<tr class="${pr?'sc-prio':''}">
@@ -6127,22 +6142,30 @@
       .map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('');
   }
   function gsaHead(origem){
-    if(!gsaMode) return `${origem==='pcp'?'<button class="btn btn-primary" onclick="novaSC()">+ Nova SC</button>':''}<button class="btn ${origem==='pcp'?'btn-ghost':'btn-primary'}" onclick="gsaIniciar('${origem}')">Gerar SA</button>`;
+    if(paMode) return `<button class="btn btn-ghost" onclick="paCancelar()">Cancelar</button>
+      <button class="btn btn-primary" id="paCont" onclick="paContinuar()" ${paSel.size?'':'disabled style="opacity:.5"'}>Seguinte (${paSel.size})</button>`;
+    if(!gsaMode) return `${origem==='pcp'?'<button class="btn btn-primary" onclick="novaSC()">+ Nova SC</button>':''}<button class="btn btn-ghost" onclick="formFornecedores()">Cadastro de fornecedores</button><button class="btn btn-ghost" onclick="paIniciar('${origem}')">Pedido automático</button><button class="btn ${origem==='pcp'?'btn-ghost':'btn-primary'}" onclick="gsaIniciar('${origem}')">Gerar SA</button>`;
     return `<button class="btn btn-ghost" onclick="gsaCancelar()">Cancelar</button>
       <button class="btn btn-primary" id="gsaCont" onclick="gsaContinuar()" ${gsaSel.size?'':'disabled style="opacity:.5"'}>Continuar (${gsaSel.size})</button>`;
   }
   function gsaAviso(){
+    if(paMode) return `<div class="gsa-aviso pa">Marque os itens que quer pedir ao fornecedor. Só as SCs <b>Pendentes</b> (ainda não compradas) podem ser selecionadas.</div>`;
     return gsaMode?`<div class="gsa-aviso">Marque as SCs que vão gerar SA. Só as <b>Pronto para reserva</b> (com entrada já dada no estoque) podem ser selecionadas.</div>`:'';
   }
   function gsaTh(origem){
+    if(paMode) return `<th style="width:34px"><input type="checkbox" class="gsa-chk" title="Selecionar todas as pendentes da lista" onchange="paTodos(this.checked)"></th>`;
     return gsaMode?`<th style="width:34px"><input type="checkbox" class="gsa-chk" title="Selecionar todas as prontas da lista" onchange="gsaTodos(this.checked)"></th>`:'';
   }
   function gsaTd(x){
+    if(paMode){
+      const ok=stSc(x)==='pendente';
+      return `<td class="ctr">${ok?`<input type="checkbox" class="gsa-chk" ${paSel.has(x.id)?'checked':''} onchange="paToggle('${x.id}',this.checked)">`:''}</td>`;
+    }
     if(!gsaMode) return '';
     const ok=stSc(x)==='pronto';
     return `<td class="ctr">${ok?`<input type="checkbox" class="gsa-chk" ${gsaSel.has(x.id)?'checked':''} onchange="gsaToggle('${x.id}',this.checked)">`:''}</td>`;
   }
-  function gsaIniciar(origem){ gsaOrigem=origem; gsaMode=true; gsaSel=new Set(); gsaNec={}; gsaVoltarLista(); }
+  function gsaIniciar(origem){ gsaOrigem=origem; paMode=false; paSel=new Set(); gsaMode=true; gsaSel=new Set(); gsaNec={}; gsaVoltarLista(); }
   function gsaCancelar(){ gsaMode=false; gsaSel=new Set(); gsaNec={}; gsaVoltarLista(); }
   function gsaVoltarLista(){ if(gsaOrigem==='est') renderSCEstoque(); else renderSC(); }
   function gsaAtualizaCont(){
@@ -6161,6 +6184,101 @@
     if(!ids.length){ toast('Selecione ao menos uma SC pronta para reserva'); return; }
     gsaSel=new Set(ids); renderGerarSA();
   }
+  /* ===== Pedido automático (mensagem de WhatsApp ao fornecedor) ===== */
+  function saudacaoHora(){ const h=new Date().getHours(); return h<12?'Bom dia!':(h<18?'Boa tarde!':'Boa noite!'); }
+  function paIniciar(origem){ gsaOrigem=origem; gsaMode=false; gsaSel=new Set(); paMode=true; paSel=new Set(); gsaVoltarLista(); }
+  function paCancelar(){ paMode=false; paSel=new Set(); gsaVoltarLista(); }
+  function paAtualizaCont(){
+    const b=document.getElementById('paCont'); if(!b) return;
+    b.textContent='Seguinte ('+paSel.size+')'; b.disabled=!paSel.size; b.style.opacity=paSel.size?'':'.5';
+  }
+  function paToggle(id,on){ if(on) paSel.add(id); else paSel.delete(id); paAtualizaCont(); }
+  function paTodos(on){
+    const lista=gsaOrigem==='est'?filtrarSCs(SCS,buscaSCEst,fSCEst):filtrarSCs(SCS,buscaSC,fSC);
+    lista.filter(x=>stSc(x)==='pendente').forEach(x=>{ if(on) paSel.add(x.id); else paSel.delete(x.id); });
+    if(gsaOrigem==='est') atualizarSCEst(); else atualizarSC();
+    paAtualizaCont();
+  }
+  function paContinuar(){
+    if(!paItensLista().length){ toast('Selecione ao menos uma SC pendente'); return; }
+    renderPedidoAuto();
+  }
+  // junta SCs do mesmo item (mesmo código e unidade) somando as quantidades
+  function paItensLista(){
+    const mapa={};
+    [...paSel].map(id=>SCS.find(y=>y.id===id)).filter(x=>x && stSc(x)==='pendente').forEach(x=>{
+      const k=(x.codigo||x.descricao)+'|'+(x.unidade||'');
+      if(!mapa[k]) mapa[k]={descricao:x.descricao||x.codigo||'',unidade:x.unidade||'',qtd:0};
+      mapa[k].qtd+=parseFloat(x.qtd)||0;
+    });
+    return Object.values(mapa);
+  }
+  function paMensagem(){
+    const lista=paItensLista().map(i=>`• ${fmtNum(+i.qtd.toFixed(3))}${i.unidade?' '+i.unidade:''} - ${i.descricao}`).join('\n');
+    return `${saudacaoHora()}\n\nGostaria de solicitar os seguintes itens:\n\n${lista}\n\nObrigado!`;
+  }
+  function renderPedidoAuto(){
+    TELA='pa';
+    const itens=paItensLista();
+    if(!itens.length){ paCancelar(); return; }
+    view.innerHTML=`<div class="page">
+      <div class="page-head"><div><h1 class="page-title">Pedido automático</h1>
+        <p class="page-sub">${gsaOrigem==='est'?'Estoque':'PCP'} · Solicitações · SC — ${itens.length} item(ns) no pedido</p></div>
+        <div style="display:flex;gap:10px"><button class="btn btn-ghost" onclick="paVoltar()">Voltar</button>
+          <button class="btn btn-ghost" onclick="formFornecedores()">Cadastro de fornecedores</button></div></div>
+      <div class="gsa-aviso pa">Escolha o <b>fornecedor</b>. Ao clicar, o WhatsApp abre na conversa dele com a mensagem abaixo pronta (a saudação muda conforme a hora).</div>
+      <div class="pa-msg">${escHtml(paMensagem())}</div>
+      ${FORNS.length?FORNS.map(f=>`<div class="pa-forn" onclick="paEnviar('${f.id}')">
+          <div><div class="pf-n">${escHtml(f.nome)}</div><div class="pf-t">${escHtml(f.whatsapp||'')}</div></div>
+          <div class="pf-ac"><button class="btn btn-ghost btn-sm" type="button" onclick="event.stopPropagation();formFornecedores('${f.id}')">Editar</button>
+            <button class="btn btn-ghost btn-sm" type="button" style="color:#c0392b" onclick="event.stopPropagation();excluirFornecedor('${f.id}')">Excluir</button></div>
+          <button class="pf-b" type="button">Abrir WhatsApp</button></div>`).join('')
+      :`<div class="empty"><h3>Nenhum fornecedor cadastrado</h3><p>Cadastre o nome da empresa e o WhatsApp para enviar o pedido.</p>
+          <button class="btn btn-primary" onclick="formFornecedores()">Cadastro de fornecedores</button></div>`}
+    </div>`;
+  }
+  function paVoltar(){ gsaVoltarLista(); }
+  function paEnviar(id){
+    const f=FORNS.find(x=>x.id===id); if(!f) return;
+    let n=String(f.whatsapp||'').replace(/\D/g,'').replace(/^0+/,'');
+    if(n.length<=11) n='55'+n;
+    const w=window.open('https://wa.me/'+n+'?text='+encodeURIComponent(paMensagem()),'_blank');
+    if(!w) toast('O navegador bloqueou a janela — libere pop-ups para este site');
+  }
+
+  /* ===== Cadastro de fornecedores ===== */
+  function fnAttr(v){ return escHtml(v).replace(/"/g,'&quot;'); }
+  function formFornecedores(editId){
+    const f=editId?FORNS.find(x=>x.id===editId):null;
+    abrirModal(f?'Editar fornecedor':'Cadastro de fornecedores',
+      `<div class="grid">
+        <div class="fld full"><label>Empresa fornecedora<i>*</i></label><input id="fnNome" value="${f?fnAttr(f.nome):''}" placeholder="Nome da empresa"></div>
+        <div class="fld full"><label>WhatsApp<i>*</i></label><input id="fnZap" inputmode="tel" value="${f?fnAttr(f.whatsapp):''}" placeholder="(00) 00000-0000" oninput="maskFone(this)"></div>
+      </div>
+      ${FORNS.length?`<div class="fn-lista">${FORNS.map(x=>`<div class="fn-it"><div><div class="fn-n">${escHtml(x.nome)}</div><div class="fn-t">${escHtml(x.whatsapp||'')}</div></div>
+        <div class="fn-ac"><button class="btn btn-ghost btn-sm" onclick="formFornecedores('${x.id}')">Editar</button>
+        <button class="btn btn-ghost btn-sm" style="color:#c0392b" onclick="excluirFornecedor('${x.id}')">Excluir</button></div></div>`).join('')}</div>`:''}`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>
+       <button class="btn btn-primary" onclick="salvarFornecedor(${f?`'${f.id}'`:'null'})">${f?'Salvar alterações':'Salvar fornecedor'}</button>`);
+  }
+  function salvarFornecedor(id){
+    const nome=(document.getElementById('fnNome').value||'').trim();
+    const zap=(document.getElementById('fnZap').value||'').trim();
+    const dig=zap.replace(/\D/g,'');
+    if(!nome){ toast('Informe o nome da empresa'); return; }
+    if(dig.length<10){ toast('Informe o WhatsApp com DDD'); return; }
+    const novoId=id||('fn'+Date.now()+Math.floor(Math.random()*900+100));
+    const dados={id:novoId,nome,whatsapp:zap,atualizadoEm:new Date().toISOString(),atualizadoPor:usuarioAtual()};
+    db.ref('fornecedores/'+novoId).update(dados)
+      .then(()=>{ toast(id?'Fornecedor atualizado':'Fornecedor cadastrado'); formFornecedores(); })
+      .catch(e=>toast('Erro: '+e.message));
+  }
+  function excluirFornecedor(id){
+    const f=FORNS.find(x=>x.id===id); if(!f) return;
+    if(!confirm(`Excluir o fornecedor "${f.nome}"?`)) return;
+    db.ref('fornecedores/'+id).remove().then(()=>{ toast('Fornecedor excluído'); formFornecedores(); }).catch(e=>toast('Erro: '+e.message));
+  }
+
   function renderGerarSA(){
     TELA='gsa';
     const itens=[...gsaSel].map(id=>SCS.find(y=>y.id===id)).filter(x=>x && stSc(x)==='pronto');
@@ -6246,7 +6364,7 @@
     </div>`;
   }
   function linhasSCEst(lista){
-    if(!lista.length) return `<tr><td class="td-empty" colspan="${gsaMode?10:9}">Nenhum resultado</td></tr>`;
+    if(!lista.length) return `<tr><td class="td-empty" colspan="${(gsaMode||paMode)?10:9}">Nenhum resultado</td></tr>`;
     return lista.map(x=>{
       const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
       return `<tr class="${pr?'sc-prio':''}">
