@@ -1706,6 +1706,10 @@
   .st-resumo{ display:flex; gap:18px; flex-wrap:wrap; margin-bottom:14px; padding:12px 16px;
     background:var(--surface); border:1px solid var(--linha); border-radius:10px; }
   .st-item{ display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted); }
+  .gsa-aviso{ margin-bottom:14px; padding:10px 14px; background:var(--surface); border:1px solid var(--linha);
+    border-left:3px solid #2f8f46; border-radius:8px; font-size:13px; color:var(--muted); }
+  .gsa-aviso b{ color:var(--texto); }
+  .gsa-chk{ width:17px; height:17px; accent-color:var(--vermelho); cursor:pointer; }
   .st-item b{ color:var(--texto); font-weight:700; }
   .st-sel{ font:inherit; font-size:12.5px; padding:3px 7px; border:1px solid var(--linha); border-radius:7px;
     background:#fff; color:var(--texto); cursor:pointer; }
@@ -2263,6 +2267,7 @@
     .catch(e=>console.warn('Persistência:',e.message));
   let CLIENTES=[], clienteEditId=null;
   let TELA=null; // marca a tela aberta para re-render seguro
+  let gsaMode=false, gsaOrigem='pcp', gsaSel=new Set(), gsaNec={}; // fluxo "Gerar SA" a partir de SCs
 
 
   /* ===== Refs ===== */
@@ -2313,6 +2318,7 @@
     setCrumb(mod,name); renderView(mod,name);
   }
   function renderView(mod,name){
+    gsaMode=false; gsaSel=new Set(); gsaNec={};
     if(mod.id==='orc' && name==='Cadastro de clientes') return renderClientes();
     if(mod.id==='orc' && name==='Cadastro de dados') return renderDados();
     if(mod.id==='orc' && name==='Mapa') return renderMapa();
@@ -5319,8 +5325,17 @@
   function excluirSA(id){
     const x=SAS.find(y=>y.id===id); if(!x) return;
     if(stSa(x)!=='pendente'){ toast('Só é possível excluir SAs pendentes'); return; }
-    if(!confirm(`Excluir a ${x.numero} (${x.descricao})?`)) return;
-    db.ref('sas/'+id).remove().then(()=>toast('SA excluída')).catch(e=>toast('Erro: '+e.message));
+    const sc=x.scId?SCS.find(y=>y.id===x.scId):null;
+    const volta=!!(sc && stSc(sc)==='concluida' && sc.saId===id);
+    if(!confirm(`Excluir a ${x.numero} (${x.descricao})?`+(volta?`\n\nA ${sc.numero} volta para "Pronto para reserva".`:''))) return;
+    const upd={}; upd['sas/'+id]=null;
+    if(volta){
+      const quem=usuarioAtual(), quando=new Date().toISOString();
+      upd['scs/'+sc.id+'/status']='pronto'; upd['scs/'+sc.id+'/statusPor']=quem; upd['scs/'+sc.id+'/statusEm']=quando;
+      upd['scs/'+sc.id+'/saId']=null; upd['scs/'+sc.id+'/saNumero']=null; upd['scs/'+sc.id+'/saQtd']=null;
+      upd['scs/'+sc.id+'/historico/'+db.ref().push().key]={status:'pronto',por:quem,em:quando,obs:'SA '+x.numero+' excluída'};
+    }
+    db.ref().update(upd).then(()=>toast('SA excluída')).catch(e=>toast('Erro: '+e.message));
   }
 
   /* --- SA no Estoque --- */
@@ -5890,7 +5905,8 @@
   let scViewPcp=false;
   let SCS=[], scForm=null, scViewId=null, buscaSC='', fSC={status:'',cc:''}, buscaSCEst='', fSCEst={status:''};
   const ST_SC={ pendente:{label:'Pendente',cor:'#c0392b'}, comprado:{label:'Comprado',cor:'#d4930d'},
-                pronto:{label:'Pronto para reserva',cor:'#2f6fb5'} };
+                pronto:{label:'Pronto para reserva',cor:'#2f6fb5'},
+                concluida:{label:'Concluída',cor:'#2f8f46'} };
   function stSc(x){ return (x && ST_SC[x.status]) ? x.status : 'pendente'; }
   // prioridade de compra só vale enquanto a SC está pendente (depois de comprada, a urgência acabou)
   function scPrio(x){ return !!(x && x.prioridade) && stSc(x)==='pendente'; }
@@ -5912,7 +5928,7 @@
     });
   }
   function resumoSC(lista){
-    const c={pendente:0,comprado:0,pronto:0}; lista.forEach(x=>c[stSc(x)]++);
+    const c={}; Object.keys(ST_SC).forEach(k=>c[k]=0); lista.forEach(x=>c[stSc(x)]++);
     return `<div class="st-resumo">${Object.entries(ST_SC).map(([k,v])=>
       `<div class="st-item"><span class="dot" style="background:${v.cor}"></span>${v.label} <b>${c[k]}</b></div>`).join('')}</div>`;
   }
@@ -5924,7 +5940,8 @@
     view.innerHTML=`<div class="page">
       <div class="page-head">
         <div><h1 class="page-title">Solicitação de Compras (SC)</h1><p class="page-sub">${SCS.length} solicitação(ões)</p></div>
-        <button class="btn btn-primary" onclick="novaSC()">+ Nova SC</button></div>
+        <div style="display:flex;gap:10px">${gsaHead('pcp')}</div></div>
+      ${gsaAviso()}
       ${SCS.length?`${resumoSC(SCS)}
       <div class="inv-filtros">
         <input class="search" id="buscaSCin" value="${buscaSC.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SC, código, descrição ou lote..." oninput="buscaSC=this.value; atualizarSC()">
@@ -5934,7 +5951,7 @@
           ${CCS.map(c=>`<option value="${c.codigo}" ${fSC.cc===c.codigo?'selected':''}>${escHtml(c.codigo)} - ${escHtml(c.setor)}</option>`).join('')}</select>
       </div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
+        <thead><tr>${gsaTh('pcp')}<th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:140px">Setor</th><th style="width:86px">Qtde</th>
           <th style="width:104px">Necessidade</th>
           <th style="width:140px">Status</th><th style="width:150px"></th></tr></thead>
@@ -5945,10 +5962,11 @@
     </div>`;
   }
   function linhasSC(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="10">Nenhum resultado</td></tr>';
+    if(!lista.length) return `<tr><td class="td-empty" colspan="${gsaMode?11:10}">Nenhum resultado</td></tr>`;
     return lista.map(x=>{
       const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
       return `<tr class="${pr?'sc-prio':''}">
+        ${gsaTd(x)}
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td>${pr?`<span title="Prioridade de compra">${ALERTA_SVG}</span>`:''}<span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
@@ -6103,13 +6121,116 @@
     db.ref('scs/'+id).remove().then(()=>toast('SC excluída')).catch(e=>toast('Erro: '+e.message));
   }
 
+  /* ===== Gerar SA a partir de SCs (PCP e Estoque) ===== */
+  function optsStatusSC(st){
+    return Object.entries(ST_SC).filter(([k])=>k!=='concluida'||st==='concluida')
+      .map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('');
+  }
+  function gsaHead(origem){
+    if(!gsaMode) return `${origem==='pcp'?'<button class="btn btn-primary" onclick="novaSC()">+ Nova SC</button>':''}<button class="btn ${origem==='pcp'?'btn-ghost':'btn-primary'}" onclick="gsaIniciar('${origem}')">Gerar SA</button>`;
+    return `<button class="btn btn-ghost" onclick="gsaCancelar()">Cancelar</button>
+      <button class="btn btn-primary" id="gsaCont" onclick="gsaContinuar()" ${gsaSel.size?'':'disabled style="opacity:.5"'}>Continuar (${gsaSel.size})</button>`;
+  }
+  function gsaAviso(){
+    return gsaMode?`<div class="gsa-aviso">Marque as SCs que vão gerar SA. Só as <b>Pronto para reserva</b> (com entrada já dada no estoque) podem ser selecionadas.</div>`:'';
+  }
+  function gsaTh(origem){
+    return gsaMode?`<th style="width:34px"><input type="checkbox" class="gsa-chk" title="Selecionar todas as prontas da lista" onchange="gsaTodos(this.checked)"></th>`:'';
+  }
+  function gsaTd(x){
+    if(!gsaMode) return '';
+    const ok=stSc(x)==='pronto';
+    return `<td class="ctr">${ok?`<input type="checkbox" class="gsa-chk" ${gsaSel.has(x.id)?'checked':''} onchange="gsaToggle('${x.id}',this.checked)">`:''}</td>`;
+  }
+  function gsaIniciar(origem){ gsaOrigem=origem; gsaMode=true; gsaSel=new Set(); gsaNec={}; gsaVoltarLista(); }
+  function gsaCancelar(){ gsaMode=false; gsaSel=new Set(); gsaNec={}; gsaVoltarLista(); }
+  function gsaVoltarLista(){ if(gsaOrigem==='est') renderSCEstoque(); else renderSC(); }
+  function gsaAtualizaCont(){
+    const b=document.getElementById('gsaCont'); if(!b) return;
+    b.textContent='Continuar ('+gsaSel.size+')'; b.disabled=!gsaSel.size; b.style.opacity=gsaSel.size?'':'.5';
+  }
+  function gsaToggle(id,on){ if(on) gsaSel.add(id); else gsaSel.delete(id); gsaAtualizaCont(); }
+  function gsaTodos(on){
+    const lista=gsaOrigem==='est'?filtrarSCs(SCS,buscaSCEst,fSCEst):filtrarSCs(SCS,buscaSC,fSC);
+    lista.filter(x=>stSc(x)==='pronto').forEach(x=>{ if(on) gsaSel.add(x.id); else gsaSel.delete(x.id); });
+    if(gsaOrigem==='est') atualizarSCEst(); else atualizarSC();
+    gsaAtualizaCont();
+  }
+  function gsaContinuar(){
+    const ids=[...gsaSel].filter(id=>{ const x=SCS.find(y=>y.id===id); return x && stSc(x)==='pronto'; });
+    if(!ids.length){ toast('Selecione ao menos uma SC pronta para reserva'); return; }
+    gsaSel=new Set(ids); renderGerarSA();
+  }
+  function renderGerarSA(){
+    TELA='gsa';
+    const itens=[...gsaSel].map(id=>SCS.find(y=>y.id===id)).filter(x=>x && stSc(x)==='pronto');
+    view.innerHTML=`<div class="page">
+      <div class="page-head"><div><h1 class="page-title">Gerar SA</h1>
+        <p class="page-sub">${gsaOrigem==='est'?'Estoque':'PCP'} · Solicitações · SC — ${itens.length} SC(s) selecionada(s)</p></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost" onclick="gsaVoltarSelecao()">Voltar</button>
+          <button class="btn btn-primary" id="gsaConcluirBtn" onclick="gsaConcluir()">Concluído</button></div></div>
+      <div class="gsa-aviso">Informe a <b>quantidade necessária</b> de cada item. Ao concluir, é criada uma SA por SC com essa quantidade e as SCs ficam <b>Concluídas</b>.</div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
+          <th style="width:70px">CC</th><th style="width:110px">Qtde comprada</th><th style="width:190px">Quantidade necessária</th></tr></thead>
+        <tbody>${itens.map(x=>`<tr>
+          <td><span class="sa-num">${escHtml(x.numero)}</span></td>
+          <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
+          <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
+          <td class="ctr">${escHtml(x.ccCod)}</td>
+          <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
+          <td><div class="qt-row"><input type="number" step="any" min="0" value="${escHtml(String(gsaNec[x.id]??''))}" oninput="gsaNec['${x.id}']=this.value">
+            <span class="qt-un">${escHtml(x.unidade)||'—'}</span></div></td></tr>`).join('')}</tbody></table></div>
+    </div>`;
+  }
+  function gsaVoltarSelecao(){ gsaVoltarLista(); }
+  function gsaConcluir(){
+    const itens=[]; let erro=null;
+    for(const id of gsaSel){
+      const x=SCS.find(y=>y.id===id);
+      if(!x || stSc(x)!=='pronto'){ erro=`A ${x?x.numero:'SC'} não está mais como "Pronto para reserva". Volte e refaça a seleção.`; break; }
+      const q=parseFloat(gsaNec[id]);
+      if(isNaN(q)||q<=0){ erro=`Informe a quantidade necessária da ${x.numero}.`; break; }
+      if(!x.insumoId||!x.ccCod){ erro=`A ${x.numero} está sem item ou centro de custo e não pode gerar SA.`; break; }
+      itens.push({x,q});
+    }
+    if(erro){ toast(erro); return; }
+    if(!itens.length){ toast('Nenhuma SC selecionada'); return; }
+    const acima=itens.filter(i=>i.q>(parseFloat(i.x.qtd)||0));
+    if(acima.length && !confirm(`Quantidade necessária maior que a comprada em:\n\n${acima.map(i=>`${i.x.numero}: necessária ${fmtNum(i.q)} · comprada ${fmtNum(parseFloat(i.x.qtd)||0)} ${i.x.unidade||''}`).join('\n')}\n\nGerar a SA mesmo assim?`)) return;
+    const btn=document.getElementById('gsaConcluirBtn'); if(btn){ btn.disabled=true; btn.textContent='Gerando...'; }
+    const n=itens.length, quem=usuarioAtual(), agora=new Date().toISOString();
+    db.ref('contadores/SA').transaction(c=>(c||0)+n,(err,ok,snap)=>{
+      if(err||!ok){ toast('Não foi possível gerar os números das SAs'); if(btn){ btn.disabled=false; btn.textContent='Concluído'; } return; }
+      const ini=snap.val()-n+1, upd={}, nums=[];
+      itens.forEach(({x,q},i)=>{
+        const num='SA'+String(ini+i).padStart(6,'0'), id='sa'+Date.now()+i+Math.floor(Math.random()*900+100);
+        nums.push(num);
+        upd['sas/'+id]={id,numero:num,insumoId:x.insumoId,codigo:x.codigo||'',descricao:x.descricao||'',unidade:x.unidade||'',
+          ccCod:x.ccCod,setor:x.setor||setorDe(x.ccCod),qtd:q,obs:'Gerada a partir da '+x.numero+(x.obs?' — '+x.obs:''),
+          lote:x.lote||null,...vincDados(x),status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,
+          origem:'sc',scId:x.id,scNumero:x.numero};
+        upd['scs/'+x.id+'/status']='concluida'; upd['scs/'+x.id+'/statusPor']=quem; upd['scs/'+x.id+'/statusEm']=agora;
+        upd['scs/'+x.id+'/saId']=id; upd['scs/'+x.id+'/saNumero']=num; upd['scs/'+x.id+'/saQtd']=q;
+        upd['scs/'+x.id+'/historico/'+db.ref().push().key]={status:'concluida',por:quem,em:agora,sa:num};
+      });
+      db.ref().update(upd).then(()=>{
+        toast(n===1?'SA '+nums[0]+' gerada':n+' SAs geradas ('+nums[0]+' a '+nums[n-1]+')');
+        gsaMode=false; gsaSel=new Set(); gsaNec={}; gsaVoltarLista();
+      }).catch(e=>{ toast('Erro: '+e.message); if(btn){ btn.disabled=false; btn.textContent='Concluído'; } });
+    });
+  }
+
   /* --- Estoque: controla status e dá entrada --- */
   function renderSCEstoque(){
     TELA='sc-est'; scViewId=null;
     const lista=filtrarSCs(SCS,buscaSCEst,fSCEst);
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Solicitação de Compras (SC)</h1>
-        <p class="page-sub">${SCS.length} solicitação(ões) recebidas do PCP</p></div></div>
+        <p class="page-sub">${SCS.length} solicitação(ões) recebidas do PCP</p></div>
+        <div style="display:flex;gap:10px">${gsaHead('est')}</div></div>
+      ${gsaAviso()}
       ${SCS.length?`${resumoSC(SCS)}
       <div class="inv-filtros">
         <input class="search" id="buscaSCe" value="${buscaSCEst.replace(/"/g,'&quot;')}" placeholder="Buscar por nº da SC, código, descrição ou lote..." oninput="buscaSCEst=this.value; atualizarSCEst()">
@@ -6117,7 +6238,7 @@
           ${Object.entries(ST_SC).map(([k,v])=>`<option value="${k}" ${fSCEst.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
       </div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
+        <thead><tr>${gsaTh('est')}<th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
           <th style="width:140px">Setor</th><th style="width:86px">Qtde</th><th style="width:104px">Necessidade</th><th style="width:172px">Status</th><th style="width:112px"></th></tr></thead>
         <tbody id="scEstBody">${linhasSCEst(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.com}</svg></div>
@@ -6125,10 +6246,11 @@
     </div>`;
   }
   function linhasSCEst(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="9">Nenhum resultado</td></tr>';
+    if(!lista.length) return `<tr><td class="td-empty" colspan="${gsaMode?10:9}">Nenhum resultado</td></tr>`;
     return lista.map(x=>{
       const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
       return `<tr class="${pr?'sc-prio':''}">
+        ${gsaTd(x)}
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td>${pr?`<span title="Prioridade de compra">${ALERTA_SVG}</span>`:''}<span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
@@ -6136,8 +6258,8 @@
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
         <td class="ctr">${celNecSC(x)}</td>
-        <td><select class="st-sel" onchange="mudarStatusSC('${x.id}',this.value)">
-          ${Object.entries(ST_SC).map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('')}</select>
+        <td><select class="st-sel" ${st==='concluida'?'disabled title="Concluída por Gerar SA — não pode ser alterada"':''} onchange="mudarStatusSC('${x.id}',this.value)">
+          ${optsStatusSC(st)}</select>
           ${x.entrada?'<div class="cel-sub">entrada dada</div>':''}</td>
         <td class="acoes">
           <button class="btn btn-ghost btn-sm" onclick="verSC('${x.id}',false)">Ver</button>
@@ -6149,6 +6271,7 @@
 
   function mudarStatusSC(id,st){
     const x=SCS.find(y=>y.id===id); if(!x||stSc(x)===st) return;
+    if(stSc(x)==='concluida' || st==='concluida'){ toast('Status "Concluída" só é definido pelo Gerar SA'); if(TELA==='sc-est') renderSCEstoque(); else if(TELA==='sc-detalhe') verSC(id); return; }
     const quem=usuarioAtual(), quando=new Date().toISOString();
     if(st==='pronto'){
       const s2=saldoDe(x.insumoId), q=parseFloat(x.qtd)||0;
@@ -6203,6 +6326,7 @@
           ${info('Setor',escHtml(x.setor))}
           ${info('Quantidade solicitada',`<b>${fmtNum(parseFloat(x.qtd)||0)} ${escHtml(x.unidade||'')}</b>`)}
           ${(parseFloat(x.necM)||0)>0?info('Quantidade necessária',`<b>${fmtNum(parseFloat(x.necM))} M</b>`):''}
+          ${x.saNumero?info('SA gerada',`<span class="sa-num">${escHtml(x.saNumero)}</span> · <b>${fmtNum(parseFloat(x.saQtd)||0)} ${escHtml(x.unidade||'')}</b> reservado(s)`):''}
           ${info('Valor unitário',x.valorUnit?fmtBRL(x.valorUnit):'—')}
           ${info('Valor total',x.valorUnit?fmtBRL(x.valorUnit*(parseFloat(x.qtd)||0)):'—')}
           ${info('Solicitado por',escHtml(x.criadoPor))}
@@ -6215,8 +6339,8 @@
         <div class="st-box">
           <div class="k">Status</div>
           <div class="st-atual"><span class="dot dot-lg" style="background:${v.cor}"></span>${v.label}</div>
-          ${scViewPcp?'':`<select class="st-sel" onchange="mudarStatusSC('${x.id}',this.value)">
-            ${Object.entries(ST_SC).map(([k,v2])=>`<option value="${k}" ${st===k?'selected':''}>${v2.label}</option>`).join('')}</select>`}
+          ${scViewPcp?'':`<select class="st-sel" ${st==='concluida'?'disabled title="Concluída por Gerar SA — não pode ser alterada"':''} onchange="mudarStatusSC('${x.id}',this.value)">
+            ${optsStatusSC(st)}</select>`}
           ${x.entrada?`<div class="st-meta">Entrada no estoque<br>${fmtDataHora(x.entradaEm)}</div>`:''}
         </div></div>
         <div class="sa-saldo" style="margin-top:16px">
