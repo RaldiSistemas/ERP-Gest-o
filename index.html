@@ -1156,6 +1156,12 @@
   .and-pill-pausa{ font-size:9.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--muted);
     background:rgba(75,75,85,.08); padding:2px 7px; border-radius:999px; }
   @media(max-width:640px){ .and-kb-col{ flex-basis:206px; } }
+  /* Filas do Kanban de apontamento (Lotes agrupados / No rolete): só espera, nada é apontado aqui */
+  .and-kb-col.fila{ border-style:dashed; background:#eeede6; }
+  .and-fila-c{ cursor:default; }
+  .and-fila-c:hover{ box-shadow:none; }
+  .and-fila-c .ac-cli{ white-space:normal; }
+  .and-kb-col.fila .and-vazio{ font-size:12px; color:var(--muted); text-align:center; padding:14px 6px; }
   .ap-card{ background:var(--surface); border:1px solid var(--linha); border-radius:14px; padding:22px; max-width:660px; margin:0 auto; }
   .ap-h{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding-bottom:16px; border-bottom:2px solid; }
   .ap-lbl{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
@@ -10110,7 +10116,7 @@
         <input class="bip-in" id="bipIn" autocomplete="off" placeholder="287801001"
           onkeydown="if(event.key==='Enter'){event.preventDefault();lerBip(this.value);this.value='';}">
       </div>
-      ${OPS.filter(o=>['parcial','pausada'].includes(stOp(o))).length?`
+      ${(OPS.some(o=>['parcial','pausada'].includes(stOp(o)))||lotesAgrupadosFila().length||roleteFila().length)?`
       <section class="fs" style="margin-top:20px"><h3 class="fs-title">Em andamento agora</h3>
         ${andamentoPorSetor()}
       </section>`:''}
@@ -10119,9 +10125,11 @@
   }
   function andamentoPorSetor(){
     const todas=OPS.filter(o=>['parcial','pausada'].includes(stOp(o)));
+    // filas (sem apontamento) entram na ordem do fluxo: Lotes agrupados depois do APOIO, No rolete depois da Sublinha
+    const fila={APOIO:colFilaAgrupados(), SL:colFilaRolete()};
     const cols=Object.values(OP_SETORES).map(S=>{
       const doSetor=todas.filter(o=>o.setor===S.sigla);
-      if(!doSetor.length) return '';
+      if(!doSetor.length) return fila[S.sigla]||'';
       const ativs=[...new Set([...S.atividades,...doSetor.map(o=>o.atividade)])];
       return ativs.map(at=>{
         const lista=doSetor.filter(o=>o.atividade===at);
@@ -10143,9 +10151,99 @@
               </button>`;
             }).join('')}
           </div></div>`;
-      }).join('');
+      }).join('')+(fila[S.sigla]||'');
     }).join('');
     return `<div class="and-kanban">${cols}</div>`;
+  }
+
+  /* ===== Filas do Kanban (derivadas das OPs — nada é gravado, nada é apontado) ===== */
+  // LOTES AGRUPADOS: entra quando a OP "Agrupamento do lote" é encerrada; sai quando alguma OP de "Corte" do lote é iniciada.
+  // NO ROLETE: entra quando a OP "Usinagem" do lote é encerrada; o lote se desmembra em um card por projeto;
+  //            cada projeto sai quando alguma OP de "Montagem" dele é iniciada.
+  const COR_FILA='#5b7c99';
+  function filaHa(iso){
+    if(!iso) return '';
+    const m=Math.floor((Date.now()-new Date(iso).getTime())/60000);
+    if(isNaN(m)||m<0) return '';
+    if(m<60) return 'há '+m+' min';
+    if(m<1440) return 'há '+Math.floor(m/60)+' h';
+    return 'há '+Math.floor(m/1440)+' d';
+  }
+  // OPs de apoio podem ser emitidas sem lote (preenchido depois). Sem lote na OP, usa o lote de outra OP do mesmo projeto.
+  function loteDaOP(o){
+    const l=String(o.lote||'').trim(); if(l) return l;
+    const p=String(o.projeto||'').trim(); if(!p) return '';
+    const v=OPS.find(x=>String(x.projeto||'').trim()===p && String(x.lote||'').trim());
+    return v?String(v.lote).trim():'';
+  }
+  function lotesAgrupadosFila(){
+    const porLote=new Map();
+    OPS.filter(o=>o.atividade==='Agrupamento do lote').forEach(o=>{
+      const l=loteDaOP(o); if(!l) return;
+      const g=porLote.get(l)||{lote:l,total:0,feitas:0,em:null,projs:new Set()};
+      g.total++;
+      if(o.projeto) g.projs.add(String(o.projeto).trim());
+      if(stOp(o)==='encerrada'){ g.feitas++; const em=o.fim&&o.fim.em; if(em&&(!g.em||em<g.em)) g.em=em; }
+      porLote.set(l,g);
+    });
+    const corteIniciado=new Set(OPS.filter(o=>o.atividade==='Corte'&&stOp(o)!=='nao').map(o=>String(o.lote||'').trim()));
+    return [...porLote.values()].filter(g=>g.feitas>0 && !corteIniciado.has(g.lote))
+      .sort((a,b)=>String(a.em||'').localeCompare(String(b.em||'')));
+  }
+  function roleteFila(){
+    const porLote=new Map();
+    OPS.forEach(o=>{ const l=String(o.lote||'').trim(); if(!l) return;
+      if(!porLote.has(l)) porLote.set(l,[]); porLote.get(l).push(o); });
+    const montagemIniciada=new Set(OPS.filter(o=>o.atividade==='Montagem'&&stOp(o)!=='nao').map(o=>String(o.projeto||'').trim()));
+    const out=[];
+    porLote.forEach((ops,lote)=>{
+      const usin=ops.filter(o=>o.atividade==='Usinagem'&&stOp(o)==='encerrada')
+        .sort((a,b)=>String(a.fim&&a.fim.em||'').localeCompare(String(b.fim&&b.fim.em||'')))[0];
+      if(!usin) return;
+      const projs=new Map();
+      const add=r=>{ const p=String(r.projeto||'').trim(); if(!p) return;
+        const x=projs.get(p)||{projeto:p,clientes:new Set(),ambientes:new Set()};
+        if(r.cliente) x.clientes.add(r.cliente); if(r.ambiente) x.ambientes.add(r.ambiente);
+        projs.set(p,x); };
+      (usin.projetosLote||[]).forEach(add);
+      // projetos que entraram no lote depois da emissão da OP de usinagem também contam
+      ops.forEach(o=>{ const p=String(o.projeto||'').trim(); if(!p) return;
+        const rs=(o.projetosLote||[]).filter(r=>String(r.projeto||'').trim()===p);
+        if(rs.length) rs.forEach(add); else add({projeto:p}); });
+      projs.forEach(x=>{ if(!montagemIniciada.has(x.projeto)) out.push({projeto:x.projeto,lote,
+        clientes:[...x.clientes], ambientes:[...x.ambientes], em:usin.fim&&usin.fim.em}); });
+    });
+    return out.sort((a,b)=>String(a.em||'').localeCompare(String(b.em||''))||String(a.projeto).localeCompare(String(b.projeto)));
+  }
+  function colFilaHtml(titulo,lista,vazio){
+    return `<div class="and-kb-col fila" style="--sc:${COR_FILA}">
+      <div class="kb-head and-kb-head">
+        <div class="and-kb-grupo">Fila · sem apontamento</div>
+        <div class="and-kb-linha"><span class="kb-nome">${titulo}</span><span class="kb-qtd">${lista.length}</span></div>
+      </div>
+      <div class="and-kb-body">${lista.length?lista.join(''):`<div class="and-vazio">${vazio}</div>`}</div></div>`;
+  }
+  function colFilaAgrupados(){
+    return colFilaHtml('Lotes agrupados', lotesAgrupadosFila().map(g=>{
+      const projs=[...g.projs];
+      return `<div class="and-c and-fila-c" style="--sc:${COR_FILA}">
+        <div class="ac-t"><span class="op-num">Lote ${escHtml(g.lote)}</span></div>
+        <div class="ac-cli">${projs.length?projs.length+' projeto(s): '+escHtml(projs.join(', ')):'—'}</div>
+        <div class="ac-f">agrupado ${fmtHora(g.em)} · ${filaHa(g.em)}</div>
+        ${g.feitas<g.total?`<div class="ac-f">${g.feitas}/${g.total} OPs de agrupamento apontadas</div>`:''}
+      </div>`;
+    }), 'Nenhum lote aguardando o corte');
+  }
+  function colFilaRolete(){
+    return colFilaHtml('No rolete', roleteFila().map(p=>{
+      const cli=p.clientes.join(' / '), amb=p.ambientes.join(', ');
+      return `<div class="and-c and-fila-c" style="--sc:${COR_FILA}">
+        <div class="ac-t"><span class="op-num">Projeto ${escHtml(p.projeto)}</span>
+          <span class="and-pill-pausa">Lote ${escHtml(p.lote)}</span></div>
+        ${(cli||amb)?`<div class="ac-cli">${escHtml([cli,amb].filter(Boolean).join(' · '))}</div>`:''}
+        <div class="ac-f">usinado ${fmtHora(p.em)} · ${filaHa(p.em)}</div>
+      </div>`;
+    }), 'Nenhum projeto aguardando a montagem');
   }
   function lerBip(cod){
     cod=String(cod||'').trim().toUpperCase();
@@ -10782,22 +10880,101 @@
     db.ref('ops/'+id+'/pecasProjeto').set(v).catch(e=>toast('Erro: '+e.message));
     const o=OPS.find(x=>x.id===id); if(o) o.pecasProjeto=v;
   }
+  /* ----- Plano do agrupamento: o que o sistema faz sozinho ao agrupar um lote -----
+     1) aponta (encerra) as OPs "Agrupamento do lote" dos projetos do lote;
+     2) preenche o lote no Painel de Controle (só nas linhas com lote vazio);
+     3) grava o lote nas OPs do projeto que ainda estão sem lote.
+     Tudo vai num único update do Firebase: ou grava tudo, ou nada.              */
+  function lbPlanoAgrupar(itens,numero){
+    const projs=[...new Set(itens.map(o=>String(o.projeto||'').trim()).filter(Boolean))];
+    const plano={projs,apontar:[],jaApontadas:[],semOp:[],conflitoOP:[],painel:[],painelMantido:[],semPainel:[],opsLote:[]};
+    projs.forEach(pj=>{
+      const doProj=OPS.filter(o=>String(o.projeto||'').trim()===pj);
+      const ag=doProj.filter(o=>o.atividade==='Agrupamento do lote');
+      if(!ag.length) plano.semOp.push(pj);
+      ag.forEach(o=>{
+        if(stOp(o)==='encerrada'){ plano.jaApontadas.push(o); return; }
+        const l=String(o.lote||'').trim();
+        if(l && numero && l!==numero){ plano.conflitoOP.push(o); return; }   // já pertence a outro lote: não mexe
+        plano.apontar.push(o);
+      });
+      doProj.forEach(o=>{ if(!String(o.lote||'').trim()) plano.opsLote.push(o); });
+      const rows=PAINEL.filter(r=>String(r.projeto||'').trim()===pj);
+      if(!rows.length) plano.semPainel.push(pj);
+      rows.forEach(r=>{
+        const l=String(r.lote||'').trim();
+        if(!l) plano.painel.push(r);
+        else if(l!==numero) plano.painelMantido.push(r);   // já tem outro lote: nunca sobrescreve
+      });
+    });
+    return plano;
+  }
+  // Apontamento automático da OP de agrupamento. Devolve os caminhos multi-path para o update.
+  function lbApontarAuto(o,agoraISO,numero){
+    const por=usuarioAtual(), u={};
+    if(stOp(o)==='nao'){
+      u.status='encerrada';
+      u.inicio={funcs:[],func:'',em:agoraISO,por,fora:false,auto:true};
+      u.fim={funcs:[],func:'',em:agoraISO,por,fora:false,auto:true};
+      u.tempoMin=0; u.tempoNormalMin=0; u.tempoExtraMin=0; u.tempoPausaMin=0;
+    }else{
+      // OP já iniciada/pausada: encerra do mesmo jeito que o botão Finalizar (fecha pausa e hora extra abertas)
+      const lista=funcsDe(o,'inicio');
+      const pl=pausasDe(o).map(x=>(x.de&&!x.ate)?{...x,ate:agoraISO}:x);
+      const xl=extrasDe(o).map(x=>(x.de&&!x.ate)?{...x,ate:agoraISO}:x);
+      const tmp={...o,pausas:pl,extras:xl};
+      const norm=tempoNormalOP(tmp,agoraISO), ext=tempoExtraOP(tmp,agoraISO), pausado=minutosPausados(tmp,agoraISO);
+      u.status='encerrada';
+      u.fim={funcs:lista,func:lista[0]||'',em:agoraISO,por,fora:false,auto:true};
+      u.pausas=pl; u.tempoMin=norm+ext; u.tempoNormalMin=norm; u.tempoExtraMin=ext; u.tempoPausaMin=pausado;
+      if(xl.length) u.extras=xl;
+    }
+    u.apontadoAuto={por,em:agoraISO,motivo:'Agrupamento de lote',lote:numero};
+    const r={}; Object.keys(u).forEach(k=>{ r['ops/'+o.id+'/'+k]=u[k]; }); return r;
+  }
   function lbAbrirResumo(){
     const itens=opsLiberadas().filter(o=>lbSel.has(o.id));
     if(!itens.length){ toast('Selecione ao menos um projeto'); return; }
     const semPecas=itens.filter(o=>!(Number(o.pecasProjeto)>0)).length;
     const total=itens.reduce((s,o)=>s+(Number(o.pecasProjeto)||0),0);
+    const plano=lbPlanoAgrupar(itens,'');
+    const box='border:1px solid #d9d6c9;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#f7f6f1;font-size:13px';
+    const ul=arr=>`<ul style="margin:6px 0 0 18px;padding:0;max-height:140px;overflow:auto">${arr.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    const nota=(t,cor)=>`<div style="margin-top:6px;color:${cor||'#6b6a5f'}">${t}</div>`;
+    // 1) OPs de agrupamento que serão apontadas
+    const liOps=plano.apontar.map(o=>`OP ${escHtml(o.numero||'')} · projeto ${escHtml(o.projeto||'')}`
+      +(stOp(o)!=='nao'?' <i>(já iniciada — será encerrada)</i>':'')
+      +(String(o.lote||'').trim()?` <i>(já vinculada ao lote ${escHtml(o.lote)})</i>`:''));
+    const msg1=`<div style="${box}"><b>Ao agrupar este lote você apontará as OPs de Agrupamento do lote de forma automática:</b>
+      ${liOps.length?ul(liOps):nota('Nenhuma OP de agrupamento pendente para estes projetos.')}
+      ${plano.semOp.length?nota('Sem OP de Agrupamento emitida (nada a apontar): '+plano.semOp.map(escHtml).join(', '),'#b26a00'):''}
+      ${plano.jaApontadas.length?nota(plano.jaApontadas.length+' OP(s) de agrupamento já estavam apontadas.'):''}</div>`;
+    // 2) lote no Painel de Controle
+    const porProj=new Map();
+    plano.painel.forEach(r=>{ const k=String(r.projeto||'').trim(); if(!porProj.has(k)) porProj.set(k,[]); porProj.get(k).push(r); });
+    const liPainel=[...porProj.entries()].map(([pj,rs])=>{
+      const amb=[...new Set(rs.map(r=>r.ambiente).filter(Boolean))].join(', ');
+      return `Projeto ${escHtml(pj)}${amb?' · '+escHtml(amb):''} <i>(${rs.length} linha${rs.length>1?'s':''})</i>`;
+    });
+    const mant=[...new Set(plano.painelMantido.map(r=>`Projeto ${escHtml(String(r.projeto||'').trim())} já tem o lote ${escHtml(String(r.lote).trim())} no Painel — será mantido`))];
+    const msg2=`<div style="${box}"><b>Ao agrupar este lote o sistema preencherá o lote no Painel de Controle de forma automática:</b>
+      ${liPainel.length?ul(liPainel):nota('Nenhuma linha do Painel com lote vazio para estes projetos.')}
+      ${mant.length?nota(mant.join('<br>'),'#b26a00'):''}
+      ${plano.semPainel.length?nota('Sem linha no Painel de Controle (nada a preencher): '+plano.semPainel.map(escHtml).join(', '),'#b26a00'):''}</div>`;
     abrirModal('Agrupar lote',
       `<p class="page-sub" style="margin:-4px 0 12px">${itens.length} projeto(s) selecionado(s)</p>
        ${semPecas?`<p class="aviso" style="margin-bottom:12px">${semPecas} projeto(s) selecionado(s) ainda estão sem peças preenchidas — serão contados como 0.</p>`:''}
        <div class="sa-t" style="margin-bottom:14px">Quantidade total somada: <b>${fmtNum(total)} peça(s)</b></div>
-       <div class="fld"><label>Insira o número do lote<i>*</i></label>
+       <div class="fld" style="margin-bottom:14px"><label>Insira o número do lote<i>*</i></label>
          <input id="lbNumLote" type="text" placeholder="Ex.: 4521" autofocus
-           onkeydown="if(event.key==='Enter') lbConfirmarAgrupar()"></div>`,
+           onkeydown="if(event.key==='Enter') lbConfirmarAgrupar()"></div>
+       ${msg1}${msg2}`,
       `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
        <button class="btn btn-primary" onclick="lbConfirmarAgrupar()">Confirmar</button>`);
   }
+  let lbConfirmando=false;
   function lbConfirmarAgrupar(){
+    if(lbConfirmando) return;
     const el=document.getElementById('lbNumLote');
     const numero=(el&&el.value||'').trim();
     if(!numero){ toast('Informe o número do lote'); return; }
@@ -10809,15 +10986,26 @@
       const {clientes,ambientes}=clientesAmbientesDe(o);
       return {opId:o.id,projeto:o.projeto||'',lote:o.lote||'',clientes,ambientes,pecas:Number(o.pecasProjeto)||0};
     });
+    const agora=new Date().toISOString();
+    const plano=lbPlanoAgrupar(itens,numero);
     const upd={};
-    upd['lotesAgrupados/'+id]={id,numero,qtdTotal:total,itens:itensSalvos,criadoEm:new Date().toISOString(),criadoPor:usuarioAtual()};
+    upd['lotesAgrupados/'+id]={id,numero,qtdTotal:total,itens:itensSalvos,criadoEm:agora,criadoPor:usuarioAtual()};
     itens.forEach(o=>{ upd['ops/'+o.id+'/loteAgrupadoId']=id; });
+    plano.apontar.forEach(o=>Object.assign(upd,lbApontarAuto(o,agora,numero)));              // 1) aponta as OPs de agrupamento
+    plano.painel.forEach(r=>{ upd['painel/'+r.id+'/lote']=numero; });                         // 2) lote no Painel de Controle
+    plano.opsLote.forEach(o=>{ upd['ops/'+o.id+'/lote']=numero; upd['ops/'+o.id+'/loteVinculadoEm']=agora; }); // 3) OPs sem lote
+    lbConfirmando=true;
     db.ref().update(upd)
-      .then(()=>{ toast('Lote '+numero+' agrupado com '+fmtNum(total)+' peça(s)'); fecharModal();
+      .then(()=>{
+        const extra=[plano.apontar.length?plano.apontar.length+' OP(s) de agrupamento apontada(s)':'',
+                     plano.painel.length?'lote preenchido em '+plano.painel.length+' linha(s) do Painel':''].filter(Boolean).join(' · ');
+        toast('Lote '+numero+' agrupado com '+fmtNum(total)+' peça(s)'+(extra?' · '+extra:''));
+        fecharModal();
         lbModoSel=false; lbSel=new Set();
         if(typeof selectLeaf==='function' && activeMod==='pcp') selectLeaf('Lotes agrupados');
         else renderLiberacaoLote('agrupados'); })
-      .catch(e=>toast('Erro: '+e.message));
+      .catch(e=>toast('Erro: '+e.message))
+      .then(()=>{ lbConfirmando=false; });
   }
   function renderLibAgrupados(){
     const lotes=LOTES;
