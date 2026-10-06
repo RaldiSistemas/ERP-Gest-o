@@ -1161,6 +1161,27 @@
   .and-fila-c{ cursor:default; }
   .and-fila-c:hover{ box-shadow:none; }
   .and-fila-c .ac-cli{ white-space:normal; }
+  /* Setas laterais do Kanban de apontamento (ficam na altura da tela, sem precisar descer até a barra de rolagem) */
+  .and-wrap{ position:relative; }
+  .and-nav{ position:sticky; top:calc(50vh - 22px); height:0; z-index:20; pointer-events:none; }
+  .and-arr{ position:absolute; top:0; width:34px; height:34px; padding:0; border:1px solid var(--linha); border-radius:50%;
+    background:rgba(255,255,255,.92); color:var(--muted); cursor:pointer; pointer-events:auto; line-height:0;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(75,75,85,.16);
+    backdrop-filter:blur(3px); transition:background .15s, color .15s, border-color .15s, box-shadow .15s; }
+  .and-arr svg{ width:16px; height:16px; display:block; }
+  .and-arr:hover{ background:var(--vermelho); border-color:var(--vermelho); color:#fff; box-shadow:0 4px 12px rgba(152,36,36,.28); }
+  .and-arr:active{ transform:scale(.94); }
+  .and-arr.l{ left:-6px; } .and-arr.l svg{ transform:scaleX(-1); }
+  .and-arr.r{ right:-6px; }
+  .and-arr.oculta{ display:none; }
+  /* Card de lote clicável (fila Lotes agrupados) */
+  .and-fila-c.clicavel{ cursor:pointer; }
+  .and-fila-c.clicavel:hover{ box-shadow:0 6px 16px rgba(75,75,85,.18); }
+  .and-dica{ font-size:10.5px; color:var(--vermelho); font-weight:700; margin-top:6px; }
+  .lf-proj{ border:1px solid var(--linha); border-left:3px solid #5b7c99; border-radius:10px; padding:10px 12px; margin-bottom:9px; background:var(--surface); }
+  .lf-proj .lf-n{ font-family:ui-monospace,monospace; font-weight:700; font-size:14px; color:var(--vermelho); }
+  .lf-proj .lf-c{ font-weight:700; font-size:13.5px; margin-top:3px; }
+  .lf-proj ul{ margin:6px 0 0; padding-left:18px; font-size:13px; color:var(--texto); }
   .and-kb-col.fila .and-vazio{ font-size:12px; color:var(--muted); text-align:center; padding:14px 6px; }
   .ap-card{ background:var(--surface); border:1px solid var(--linha); border-radius:14px; padding:22px; max-width:660px; margin:0 auto; }
   .ap-h{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding-bottom:16px; border-bottom:2px solid; }
@@ -10213,6 +10234,7 @@
   let bipBuf='', bipT=null, apFuncs=[];
   function renderApont(){
     TELA='apont'; apontOP=null; apFuncs=[];
+    const _kOld=document.getElementById('andKanban'), _sx=_kOld?_kOld.scrollLeft:0;
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Apontamento</h1>
         <p class="page-sub">Bipe o código de barras da OP ou digite o número</p></div></div>
@@ -10229,6 +10251,8 @@
         ${andamentoPorSetor()}
       </section>`:''}
     </div>`;
+    const _kNew=document.getElementById('andKanban'); if(_kNew&&_sx) _kNew.scrollLeft=_sx;
+    andNavAtualizar(); setTimeout(andNavAtualizar,150);
     setTimeout(()=>{const i=document.getElementById('bipIn'); if(i) i.focus();},60);
   }
   function andamentoPorSetor(){
@@ -10261,8 +10285,25 @@
           </div></div>`;
       }).join('')+(fila[S.sigla]||'');
     }).join('');
-    return `<div class="and-kanban">${cols}</div>`;
+    const seta='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+    return `<div class="and-wrap">
+      <div class="and-nav">
+        <button class="and-arr l oculta" id="andSetaE" onclick="andRolar(-1)" title="Ver colunas anteriores" aria-label="Voltar">${seta}</button>
+        <button class="and-arr r oculta" id="andSetaD" onclick="andRolar(1)" title="Ver próximas colunas" aria-label="Avançar">${seta}</button>
+      </div>
+      <div class="and-kanban" id="andKanban" onscroll="andNavAtualizar()">${cols}</div></div>`;
   }
+  function andRolar(d){
+    const k=document.getElementById('andKanban'); if(!k) return;
+    k.scrollBy({left:d*Math.max(260,Math.round(k.clientWidth*0.8)),behavior:'smooth'});
+  }
+  function andNavAtualizar(){
+    const k=document.getElementById('andKanban'); if(!k) return;
+    const e=document.getElementById('andSetaE'), d=document.getElementById('andSetaD');
+    if(e) e.classList.toggle('oculta',k.scrollLeft<=2);
+    if(d) d.classList.toggle('oculta',k.scrollLeft+k.clientWidth>=k.scrollWidth-2);
+  }
+  window.addEventListener('resize',andNavAtualizar);
 
   /* ===== Filas do Kanban (derivadas das OPs — nada é gravado, nada é apontado) ===== */
   // LOTES AGRUPADOS: entra quando a OP "Agrupamento do lote" é encerrada; sai quando alguma OP de "Corte" do lote é iniciada.
@@ -10334,13 +10375,38 @@
   function colFilaAgrupados(){
     return colFilaHtml('Lotes agrupados', lotesAgrupadosFila().map(g=>{
       const projs=[...g.projs];
-      return `<div class="and-c and-fila-c" style="--sc:${COR_FILA}">
+      return `<div class="and-c and-fila-c clicavel" style="--sc:${COR_FILA}" onclick="abrirLoteFila('${escHtml(g.lote).replace(/'/g,'&#39;')}')" title="Clique para ver os clientes e ambientes do lote">
         <div class="ac-t"><span class="op-num">Lote ${escHtml(g.lote)}</span></div>
         <div class="ac-cli">${projs.length?projs.length+' projeto(s): '+escHtml(projs.join(', ')):'—'}</div>
         <div class="ac-f">agrupado ${fmtHora(g.em)} · ${filaHa(g.em)}</div>
         ${g.feitas<g.total?`<div class="ac-f">${g.feitas}/${g.total} OPs de agrupamento apontadas</div>`:''}
+        <div class="and-dica">Clique para ver clientes e ambientes</div>
       </div>`;
     }), 'Nenhum lote aguardando o corte');
+  }
+  // Detalhe do lote: todos os projetos, clientes e ambientes (Painel de Controle + dados gravados nas OPs do lote)
+  function abrirLoteFila(lote){
+    lote=String(lote||'').trim();
+    const projs=new Map();
+    const add=r=>{ const p=String(r.projeto||'').trim(); if(!p) return;
+      const x=projs.get(p)||{projeto:p,clientes:new Set(),ambientes:new Set()};
+      if(r.cliente) x.clientes.add(String(r.cliente).trim());
+      if(r.ambiente) x.ambientes.add(String(r.ambiente).trim());
+      projs.set(p,x); };
+    PAINEL.filter(r=>String(r.lote||'').trim()===lote).forEach(add);
+    OPS.filter(o=>loteDaOP(o)===lote).forEach(o=>{
+      (o.projetosLote||[]).forEach(r=>{ if(r) add(r); });
+      if(o.projeto&&!(o.projetosLote||[]).length) add({projeto:o.projeto});
+    });
+    const lista=[...projs.values()].sort((a,b)=>a.projeto.localeCompare(b.projeto,undefined,{numeric:true}));
+    const totAmb=lista.reduce((n,x)=>n+x.ambientes.size,0);
+    const corpo=lista.length?`<p class="fld-hint" style="margin:0 0 12px">${lista.length} projeto(s) · ${totAmb} ambiente(s)</p>`+
+      lista.map(x=>`<div class="lf-proj">
+        <div class="lf-n">Projeto ${escHtml(x.projeto)}</div>
+        <div class="lf-c">${escHtml([...x.clientes].join(' / ')||'Cliente não informado')}</div>
+        ${x.ambientes.size?`<ul>${[...x.ambientes].map(a=>`<li>${escHtml(a)}</li>`).join('')}</ul>`:'<div class="ac-f">Ambiente não informado</div>'}
+      </div>`).join(''):'<p>Nenhum projeto encontrado para este lote.</p>';
+    abrirModal('Lote '+escHtml(lote),corpo,'<button class="btn btn-primary" onclick="fecharModal()">Fechar</button>');
   }
   function colFilaRolete(){
     return colFilaHtml('No rolete', roleteFila().map(p=>{
@@ -12198,7 +12264,7 @@
   }
 
   // expõe ao window TODAS as funções de topo
-  Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,abrirApont,abrirCard,abrirCardDe,
+  Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,andRolar,andNavAtualizar,abrirLoteFila,abrirApont,abrirCard,abrirCardDe,
     abrirChecklist,abrirColar,abrirEmissao,abrirFeriados,abrirFormCliente,abrirImportacao,abrirMapaPin,abrirModal,
     abrirRelatorioFita,abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
     acPreencheExato,aceAddLinha,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
