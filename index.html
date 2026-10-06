@@ -1676,6 +1676,12 @@
   .cod-prev{ font-family:ui-monospace,monospace; font-size:15px; font-weight:600; color:var(--vermelho);
     background:rgba(152,36,36,.07); border:1px dashed rgba(152,36,36,.3); border-radius:8px; padding:9px 11px; }
   .fld-hint{ font-size:11.5px; color:var(--muted); margin-top:4px; display:block; }
+  .gr-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 14px; margin-bottom:10px;
+    border:1px solid var(--vermelho); border-radius:10px; background:#fff; font-size:13.5px; }
+  .gr-bar b{ color:var(--vermelho); }
+  .gr-bar .gr-sp{ flex:1; }
+  .gr-ck{ width:17px; height:17px; accent-color:var(--vermelho); cursor:pointer; }
+  .gr-ck:disabled{ cursor:not-allowed; opacity:.35; }
   .ctr{ text-align:center; }
   .cel-disc{ font-size:12.5px; color:color-mix(in srgb,var(--texto) 82%,transparent); }
 
@@ -7791,7 +7797,7 @@
   const DIAS_SEM=[['Dom',0],['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6]];
 
   let PAINEL=[], EQUIPE=[], OPS=[];
-  let painelSel=new Set(), emitOP=null, emitApoio=null, apontOP=null, buscaOps='', fOps={setor:'',status:'',tipo:'',ativ:''}, painelBusca='';
+  let grupoModo=false, grupoSel=new Set(), painelSel=new Set(), emitOP=null, emitApoio=null, apontOP=null, buscaOps='', fOps={setor:'',status:'',tipo:'',ativ:''}, painelBusca='';
 
   /* ---- tempo dentro da jornada ---- */
 
@@ -8954,12 +8960,14 @@
   function renderOPs(){
     TELA='ops'; emitOP=null;
     const lista=filtrarOps();
-    const cont={nao:0,parcial:0,encerrada:0}; OPS.forEach(o=>cont[stOp(o)]++);
+    const cont={nao:0,parcial:0,pausada:0,encerrada:0}; OPS.forEach(o=>cont[stOp(o)]=(cont[stOp(o)]||0)+1);
+    if(fOps.ativ!==GRUPO_ATIV){ grupoModo=false; grupoSel.clear(); }
     const ativsTodas=[...new Set(Object.values(OP_SETORES).flatMap(s=>s.atividades))];
     view.innerHTML=`<div class="page page-wide">
       <div class="page-head">
         <div><h1 class="page-title">Ordens de Produção</h1><p class="page-sub">${OPS.length} OP(s) emitida(s)</p></div>
         <div style="display:flex;gap:10px">
+          ${fOps.ativ===GRUPO_ATIV&&!grupoModo?`<button class="btn btn-ghost" onclick="grupoIniciar()">Apontamento por grupo</button>`:''}
           <button class="btn btn-ghost" onclick="renderImprimir()">Imprimir OPs</button>
           <button class="btn btn-ghost" onclick="emitirApoio()" title="Medição, Liberação PCP e Agrupamento do lote — não exige lote cadastrado">Emitir Área de Apoio</button>
           <button class="btn btn-primary" onclick="abrirEmissao()">Emitir OP</button></div></div>
@@ -8970,7 +8978,7 @@
         <input class="search" id="buscaOpsIn" value="${buscaOps.replace(/"/g,'&quot;')}" placeholder="Buscar por OP, projeto, lote, produto ou funcionário..." oninput="buscaOps=this.value; atualizarOps()">
         <select onchange="fOps.setor=this.value; atualizarOps()"><option value="">Todos os setores</option>
           ${Object.values(OP_SETORES).map(s=>`<option value="${s.sigla}" ${fOps.setor===s.sigla?'selected':''}>${s.sigla} — ${escHtml(s.nome)}</option>`).join('')}</select>
-        <select onchange="fOps.ativ=this.value; atualizarOps()"><option value="">Todas as atividades</option>
+        <select onchange="fOps.ativ=this.value; renderOPs()"><option value="">Todas as atividades</option>
           ${ativsTodas.map(a=>`<option value="${escHtml(a)}" ${fOps.ativ===a?'selected':''}>${escHtml(a)}</option>`).join('')}</select>
         <select onchange="fOps.status=this.value; atualizarOps()"><option value="">Todos os status</option>
           ${Object.entries(ST_OP).map(([k,v])=>`<option value="${k}" ${fOps.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
@@ -8978,8 +8986,9 @@
           ${Object.entries(TIPO_OP).map(([k,v])=>`<option value="${k}" ${fOps.tipo===k?'selected':''}>${v}</option>`).join('')}</select>
         ${(buscaOps||fOps.setor||fOps.status||fOps.tipo||fOps.ativ)?`<button class="btn btn-ghost btn-sm" onclick="buscaOps='';fOps={setor:'',status:'',tipo:'',ativ:''};renderOPs()">Limpar</button>`:''}
       </div>
+      <div id="grBar"></div>
       <div class="table-wrap table-scroll"><table class="tbl">
-        <thead><tr><th style="width:28px"></th><th style="width:118px">OP</th><th style="width:70px">Projeto</th>
+        <thead><tr>${grupoModo?'<th style="width:28px"></th>':''}<th style="width:28px"></th><th style="width:118px">OP</th><th style="width:70px">Projeto</th>
           <th style="width:64px">Lote</th><th>Cliente / Ambiente</th><th style="width:58px">Setor</th><th style="width:110px">Atividade</th>
           <th style="width:130px">Funcionário</th><th style="width:96px">Início</th><th style="width:96px">Fim</th>
           <th style="width:84px">Tempo</th><th style="width:120px">Status</th><th style="width:72px"></th></tr></thead>
@@ -8990,16 +8999,19 @@
           <button class="btn btn-ghost" onclick="emitirApoio()">Emitir Área de Apoio</button>
           <button class="btn btn-primary" onclick="abrirEmissao()">Emitir OP</button></div></div>`}
     </div>`;
+    grupoBar();
   }
   function linhasOps(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="13">Nenhum resultado</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="14">Nenhum resultado</td></tr>';
     return lista.map(o=>{
       const st=stOp(o), v=ST_OP[st], S=opSetorDe(o.setor);
       const pl=o.projetosLote||[];
       const prods=o.tipo==='lote'
         ? (pl.length?pl.length+' projeto(s): '+pl.map(r=>r.projeto).join(', '):'—')
         : (pl.length?pl.map(r=>[r.cliente,r.ambiente].filter(Boolean).join(' · ')).join(' | '):'—');
+      const podeGr=o.atividade===GRUPO_ATIV&&st==='nao';
       return `<tr>
+        ${grupoModo?`<td><input type="checkbox" class="gr-ck" ${podeGr?'':'disabled title="Só OPs não iniciadas podem entrar no apontamento em grupo"'} ${grupoSel.has(o.id)?'checked':''} onchange="grupoTog('${o.id}',this.checked)"></td>`:''}
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="op-num">${escHtml(o.numero)}</span></td>
         <td class="ctr">${escHtml(o.projeto)}</td>
@@ -9019,6 +9031,102 @@
           <button class="icon-btn danger" title="Excluir" onclick="excluirOP('${o.id}')">${TRASH_SVG}</button>
         </td></tr>`;
     }).join('');
+  }
+
+  /* ---- apontamento por grupo (só Medição técnica) ---- */
+  const GRUPO_ATIV='Medição técnica';
+  function grupoElegiveis(){ return filtrarOps().filter(o=>o.atividade===GRUPO_ATIV&&stOp(o)==='nao'); }
+  function grupoIniciar(){ grupoModo=true; grupoSel.clear(); renderOPs(); }
+  function grupoCancelar(){ grupoModo=false; grupoSel.clear(); renderOPs(); }
+  function grupoTog(id,on){ if(on) grupoSel.add(id); else grupoSel.delete(id); grupoBar(); }
+  function grupoTodas(){
+    const el=grupoElegiveis(), todas=el.length&&el.every(o=>grupoSel.has(o.id));
+    el.forEach(o=>{ if(todas) grupoSel.delete(o.id); else grupoSel.add(o.id); });
+    atualizarOps(); grupoBar();
+  }
+  function grupoBar(){
+    const b=document.getElementById('grBar'); if(!b) return;
+    if(!grupoModo){ b.innerHTML=''; return; }
+    const n=grupoSel.size, el=grupoElegiveis();
+    b.innerHTML=`<div class="gr-bar"><span>Apontamento por grupo — <b>${n}</b> OP(s) selecionada(s)</span>
+      <button class="btn btn-ghost btn-sm" onclick="grupoTodas()">${el.length&&el.every(o=>grupoSel.has(o.id))?'Desmarcar':'Marcar'} todas as visíveis (${el.length})</button>
+      <span class="gr-sp"></span>
+      <button class="btn btn-ghost btn-sm" onclick="grupoCancelar()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" ${n?'':'disabled'} onclick="grupoContinuar()">Continuar</button></div>`;
+  }
+  function grupoIds(){ return [...grupoSel].filter(id=>{ const o=OPS.find(x=>x.id===id); return o&&o.atividade===GRUPO_ATIV&&stOp(o)==='nao'; }); }
+  function grupoContinuar(){
+    const ids=grupoIds();
+    if(!ids.length){ toast('Selecione ao menos uma OP'); return; }
+    const S=opSetorDe('APOIO');
+    abrirModal('Apontamento em grupo — '+ids.length+' OP(s)',
+      `<div class="grid">
+        <div class="fld"><label>Setor</label><input value="${escHtml(S.sigla+' — '+S.nome)}" disabled></div>
+        <div class="fld"><label>Atividade</label><input value="${GRUPO_ATIV}" disabled></div>
+        <div class="fld"><label>Status</label><select id="grSt" onchange="grCampos(this.value)">
+          <option value="encerrada">Encerrada</option><option value="parcial">Parcial / Iniciada</option></select></div>
+        <div class="fld"><label>Funcionário<i>*</i></label><input id="grFunc" list="grFl">
+          <datalist id="grFl">${EQUIPE.map(f=>`<option value="${escHtml(f.nome)}">`).join('')}</datalist></div>
+        <div class="fld"><label>Início real<i>*</i></label><input id="grIni" type="datetime-local" oninput="grPrev()"></div>
+        <div class="fld" id="grWFim"><label>Fim real<i>*</i></label><input id="grFim" type="datetime-local" oninput="grPrev()"></div>
+        <div class="fld full" id="grWRat"><label class="chk-prio"><input type="checkbox" id="grRat" checked onchange="grPrev()">
+          Dividir o tempo entre as ${ids.length} OPs (recomendado)</label>
+          <span class="fld-hint" id="grPrev"></span></div>
+        <div class="fld full"><label>Observações</label><textarea id="grObs"></textarea></div>
+      </div>
+      <p class="fld-hint" style="margin-top:12px">Projeto e lote de cada OP não são alterados. Isto sobrescreve o apontamento das ${ids.length} OPs selecionadas.</p>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Voltar</button>
+       <button class="btn btn-primary" onclick="grupoSalvar()">Salvar em ${ids.length} OP(s)</button>`);
+  }
+  function grCampos(st){
+    const f=document.getElementById('grWFim'), r=document.getElementById('grWRat');
+    if(f) f.style.display=(st==='encerrada')?'flex':'none';
+    if(r) r.style.display=(st==='encerrada')?'flex':'none';
+  }
+  function grPrev(){
+    const e=document.getElementById('grPrev'); if(!e) return;
+    const ini=document.getElementById('grIni').value, fim=document.getElementById('grFim').value;
+    const n=grupoIds().length, rat=document.getElementById('grRat').checked;
+    if(!ini||!fim||new Date(fim)<=new Date(ini)){ e.textContent=''; return; }
+    const t=tempoTrabalhado(new Date(ini).toISOString(),new Date(fim).toISOString(),JORNADA_PADRAO);
+    e.textContent=rat ? `Total ${fmtMin(t)} → cerca de ${fmtMin(Math.round(t/n))} por OP`
+                      : `Atenção: cada OP receberá ${fmtMin(t)} — o total somado será ${fmtMin(t*n)}`;
+  }
+  function grupoSalvar(){
+    const g=i=>{const e=document.getElementById(i); return e?e.value:'';};
+    const ids=grupoIds(); if(!ids.length){ toast('Nenhuma OP elegível'); return; }
+    const st=g('grSt'), func=(g('grFunc')||'').trim(), ini=g('grIni');
+    if(!func){ toast('Informe o funcionário'); return; }
+    if(!ini){ toast('Informe o início real'); return; }
+    const iniISO=new Date(ini).toISOString(), agora=new Date().toISOString(), por=usuarioAtual();
+    const gid='gr'+Date.now(), rat=document.getElementById('grRat').checked;
+    let fimISO=null, total=0;
+    if(st==='encerrada'){
+      const fim=g('grFim'); if(!fim){ toast('Informe o fim real'); return; }
+      if(new Date(fim)<=new Date(iniISO)){ toast('O fim precisa ser depois do início'); return; }
+      fimISO=new Date(fim).toISOString();
+    }
+    const upd={};
+    ids.forEach((id,i)=>{
+      const o=OPS.find(x=>x.id===id);
+      const pre=id+'/';
+      const campos={obs:g('grObs')||o.obs||'',status:st,editadoEm:agora,editadoPor:por,grupoApontamento:gid,
+        inicio:{funcs:[func],func,em:iniISO,por,fora:!dentroExpediente(new Date(ini),o.jornada)},
+        pausas:null,extras:null,tempoPausaMin:null,tempoExtraMin:null};
+      if(st==='encerrada'){
+        const tot=tempoTrabalhado(iniISO,fimISO,o.jornada);
+        if(i===0) total=tot;
+        let t=tot;
+        if(rat){ const base=Math.floor(tot/ids.length), resto=tot-base*ids.length; t=base+(i<resto?1:0); }
+        Object.assign(campos,{fim:{funcs:[func],func,em:fimISO,por,fora:!dentroExpediente(new Date(g('grFim')),o.jornada)},
+          tempoMin:t,tempoNormalMin:t,tempoGrupoMin:rat?tot:null,grupoQtd:ids.length});
+      } else Object.assign(campos,{fim:null,tempoMin:null,tempoNormalMin:null,tempoGrupoMin:null,grupoQtd:ids.length});
+      Object.keys(campos).forEach(k=>{ upd[pre+k]=campos[k]; });
+    });
+    if(st==='encerrada'&&total===0&&!confirm('O intervalo informado resulta em 0 min trabalhados (fora da jornada ou dia não útil). Salvar mesmo assim?')) return;
+    db.ref('ops').update(upd)
+      .then(()=>{ fecharModal(); grupoModo=false; grupoSel.clear(); renderOPs(); toast(ids.length+' OP(s) apontada(s)'); })
+      .catch(e=>toast('Erro: '+e.message));
   }
   function atualizarOps(){ const b=document.getElementById('opsBody'); if(b) b.innerHTML=linhasOps(filtrarOps()); }
   function fmtHora(iso){
@@ -12103,7 +12211,7 @@
     clientesNoMapa,code128B,colarPainel,coletarEventos,confirmaExtra,confirmaFora,confirmarColar,confirmarImportacao,
     corpoContagem,corpoPosicao,cortar,d,dadosRendimento,definirAtividade,delFeriado,dentroExpediente,dentroJornada,
     detalheAcomp,detalheRend,diasAte,diasDe,donutRend,donutSVG,edAtivs,edCampos,editarACE,editarAtividade,
-    editarCliente,editarOP,editarProjeto,editarSetor,editarTarefa,ehDiaUtil,ehFeriado,emitSetor,emitirLote,
+    editarCliente,editarOP,grupoIniciar,grupoCancelar,grupoTog,grupoTodas,grupoContinuar,grupoSalvar,grCampos,grPrev,editarProjeto,editarSetor,editarTarefa,ehDiaUtil,ehFeriado,emitSetor,emitirLote,
     emitirTipo,emptyState,enderecoCliente,enquadrarMapa,entrarSelecao,equipeOP,erroLogin,esc,escHtml,escolherSym,
     excluirACE,excluirAtividade,excluirCC,excluirCliente,excluirDisc,excluirFunc,excluirInsumo,excluirOP,
     excluirProjeto,excluirSA,excluirSC,excluirSetor,excluirTarefa,excluirTipo,fazerLogin,fecharAjuda,fecharFicha,
