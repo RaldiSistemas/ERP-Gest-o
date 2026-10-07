@@ -2,7 +2,7 @@
 // Estratégia: rede primeiro, cache como rede de segurança offline.
 // O chão de fábrica precisa do dado mais novo; o cache só existe para o
 // caso de o Wi-Fi cair no meio do galpão.
-const CACHE = 'plataforma-v8';
+const CACHE = 'plataforma-v9';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (e) => {
@@ -29,5 +29,18 @@ self.addEventListener('fetch', (e) => {
       caches.open(CACHE).then((c) => c.put(req, clone));
       return res;
     }).catch(() => caches.match(req))
+  );
+});
+
+// Clique na notificação de SA/SC: foca o sistema e abre a tela certa
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const d = { tipo: 'notif-click', tela: (e.notification.data || {}).tela };
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((lista) => {
+      const c = lista[0];
+      if (c) { c.focus(); c.postMessage(d); }
+      else clients.openWindow('./');
+    })
   );
 });
