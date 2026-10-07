@@ -228,6 +228,15 @@
   .custom-add input{ flex:1; font:inherit; font-size:14px; padding:9px 12px; border:1px solid var(--linha); border-radius:8px; }
   .custom-add input:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
   .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .nt-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,.07)}
+  .nt-row small{display:block;color:#77777f;font-size:12.5px;margin-top:2px;font-weight:400}
+  .nt-sw{position:relative;width:42px;height:24px;flex:none}
+  .nt-sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
+  .nt-sw i{position:absolute;inset:0;background:#c9c9cf;border-radius:999px;transition:.2s}
+  .nt-sw i::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+  .nt-sw input:checked+i{background:var(--vermelho)}
+  .nt-sw input:checked+i::after{transform:translateX(18px)}
+  .nt-aviso{background:rgba(212,147,13,.12);color:#8a5d00;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:10px}
   .chip{ display:inline-flex; align-items:center; gap:6px; background:rgba(152,36,36,.09); color:var(--vermelho); font-size:13px; font-weight:600; padding:5px 8px 5px 12px; border-radius:999px; }
   .chip button{ border:0; background:transparent; color:var(--vermelho); cursor:pointer; line-height:0; padding:2px; border-radius:50%; }
   .chip button:hover{ background:rgba(152,36,36,.15); }
@@ -1161,27 +1170,6 @@
   .and-fila-c{ cursor:default; }
   .and-fila-c:hover{ box-shadow:none; }
   .and-fila-c .ac-cli{ white-space:normal; }
-  /* Setas laterais do Kanban de apontamento (ficam na altura da tela, sem precisar descer até a barra de rolagem) */
-  .and-wrap{ position:relative; }
-  .and-nav{ position:sticky; top:calc(50vh - 22px); height:0; z-index:20; pointer-events:none; }
-  .and-arr{ position:absolute; top:0; width:34px; height:34px; padding:0; border:1px solid var(--linha); border-radius:50%;
-    background:rgba(255,255,255,.92); color:var(--muted); cursor:pointer; pointer-events:auto; line-height:0;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(75,75,85,.16);
-    backdrop-filter:blur(3px); transition:background .15s, color .15s, border-color .15s, box-shadow .15s; }
-  .and-arr svg{ width:16px; height:16px; display:block; }
-  .and-arr:hover{ background:var(--vermelho); border-color:var(--vermelho); color:#fff; box-shadow:0 4px 12px rgba(152,36,36,.28); }
-  .and-arr:active{ transform:scale(.94); }
-  .and-arr.l{ left:-6px; } .and-arr.l svg{ transform:scaleX(-1); }
-  .and-arr.r{ right:-6px; }
-  .and-arr.oculta{ display:none; }
-  /* Card de lote clicável (fila Lotes agrupados) */
-  .and-fila-c.clicavel{ cursor:pointer; }
-  .and-fila-c.clicavel:hover{ box-shadow:0 6px 16px rgba(75,75,85,.18); }
-  .and-dica{ font-size:10.5px; color:var(--vermelho); font-weight:700; margin-top:6px; }
-  .lf-proj{ border:1px solid var(--linha); border-left:3px solid #5b7c99; border-radius:10px; padding:10px 12px; margin-bottom:9px; background:var(--surface); }
-  .lf-proj .lf-n{ font-family:ui-monospace,monospace; font-weight:700; font-size:14px; color:var(--vermelho); }
-  .lf-proj .lf-c{ font-weight:700; font-size:13.5px; margin-top:3px; }
-  .lf-proj ul{ margin:6px 0 0; padding-left:18px; font-size:13px; color:var(--texto); }
   .and-kb-col.fila .and-vazio{ font-size:12px; color:var(--muted); text-align:center; padding:14px 6px; }
   .ap-card{ background:var(--surface); border:1px solid var(--linha); border-radius:14px; padding:22px; max-width:660px; margin:0 auto; }
   .ap-h{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding-bottom:16px; border-bottom:2px solid; }
@@ -2281,7 +2269,8 @@
       {label:'Logística', children:['Transportadoras','Rastreamento']} ]},
     {id:'aut', label:'Automatizações', icon:I.aut, tree:[
       {label:'Integrações', children:['ERP Dinabox','Webhooks','APIs']},
-      {label:'Rotinas', children:['Agendadas','Logs de Execução']} ]}
+      {label:'Rotinas', children:['Agendadas','Logs de Execução']},
+      {label:'Alertas', children:['Notificações']} ]}
   ];
 
   /* ===== Status ===== */
@@ -2397,6 +2386,7 @@
     if(mod.id==='pcp' && name==='Dashboard de cartões') return renderDanosDash();
     if(mod.id==='pcp' && name==='Emissão de cartões') return renderCartaoEmissao();
     if(mod.id==='prod' && name==='Acompanhamento da Produção') return renderAcomp();
+    if(mod.id==='aut' && name==='Notificações') return renderNotif();
     renderPlaceholder(mod,name);
   }
   function renderPlaceholder(mod,name){
@@ -3327,10 +3317,11 @@
     if(user){
       document.getElementById('tuMail').textContent=user.email||'';
       ligarListeners();
+      notifLigar();
       if(splashPassou) mostrarTela(app);
       logado=true;
     }else{
-      logado=false;
+      logado=false; if(typeof notifDesligar==='function') notifDesligar();
       const fs=document.getElementById('loginForm'); if(fs) fs.reset();
       if(splashPassou) mostrarTela(telaLogin);
     }
@@ -10234,7 +10225,6 @@
   let bipBuf='', bipT=null, apFuncs=[];
   function renderApont(){
     TELA='apont'; apontOP=null; apFuncs=[];
-    const _kOld=document.getElementById('andKanban'), _sx=_kOld?_kOld.scrollLeft:0;
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Apontamento</h1>
         <p class="page-sub">Bipe o código de barras da OP ou digite o número</p></div></div>
@@ -10251,8 +10241,6 @@
         ${andamentoPorSetor()}
       </section>`:''}
     </div>`;
-    const _kNew=document.getElementById('andKanban'); if(_kNew&&_sx) _kNew.scrollLeft=_sx;
-    andNavAtualizar(); setTimeout(andNavAtualizar,150);
     setTimeout(()=>{const i=document.getElementById('bipIn'); if(i) i.focus();},60);
   }
   function andamentoPorSetor(){
@@ -10285,25 +10273,8 @@
           </div></div>`;
       }).join('')+(fila[S.sigla]||'');
     }).join('');
-    const seta='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
-    return `<div class="and-wrap">
-      <div class="and-nav">
-        <button class="and-arr l oculta" id="andSetaE" onclick="andRolar(-1)" title="Ver colunas anteriores" aria-label="Voltar">${seta}</button>
-        <button class="and-arr r oculta" id="andSetaD" onclick="andRolar(1)" title="Ver próximas colunas" aria-label="Avançar">${seta}</button>
-      </div>
-      <div class="and-kanban" id="andKanban" onscroll="andNavAtualizar()">${cols}</div></div>`;
+    return `<div class="and-kanban">${cols}</div>`;
   }
-  function andRolar(d){
-    const k=document.getElementById('andKanban'); if(!k) return;
-    k.scrollBy({left:d*Math.max(260,Math.round(k.clientWidth*0.8)),behavior:'smooth'});
-  }
-  function andNavAtualizar(){
-    const k=document.getElementById('andKanban'); if(!k) return;
-    const e=document.getElementById('andSetaE'), d=document.getElementById('andSetaD');
-    if(e) e.classList.toggle('oculta',k.scrollLeft<=2);
-    if(d) d.classList.toggle('oculta',k.scrollLeft+k.clientWidth>=k.scrollWidth-2);
-  }
-  window.addEventListener('resize',andNavAtualizar);
 
   /* ===== Filas do Kanban (derivadas das OPs — nada é gravado, nada é apontado) ===== */
   // LOTES AGRUPADOS: entra quando a OP "Agrupamento do lote" é encerrada; sai quando alguma OP de "Corte" do lote é iniciada.
@@ -10375,38 +10346,13 @@
   function colFilaAgrupados(){
     return colFilaHtml('Lotes agrupados', lotesAgrupadosFila().map(g=>{
       const projs=[...g.projs];
-      return `<div class="and-c and-fila-c clicavel" style="--sc:${COR_FILA}" onclick="abrirLoteFila('${escHtml(g.lote).replace(/'/g,'&#39;')}')" title="Clique para ver os clientes e ambientes do lote">
+      return `<div class="and-c and-fila-c" style="--sc:${COR_FILA}">
         <div class="ac-t"><span class="op-num">Lote ${escHtml(g.lote)}</span></div>
         <div class="ac-cli">${projs.length?projs.length+' projeto(s): '+escHtml(projs.join(', ')):'—'}</div>
         <div class="ac-f">agrupado ${fmtHora(g.em)} · ${filaHa(g.em)}</div>
         ${g.feitas<g.total?`<div class="ac-f">${g.feitas}/${g.total} OPs de agrupamento apontadas</div>`:''}
-        <div class="and-dica">Clique para ver clientes e ambientes</div>
       </div>`;
     }), 'Nenhum lote aguardando o corte');
-  }
-  // Detalhe do lote: todos os projetos, clientes e ambientes (Painel de Controle + dados gravados nas OPs do lote)
-  function abrirLoteFila(lote){
-    lote=String(lote||'').trim();
-    const projs=new Map();
-    const add=r=>{ const p=String(r.projeto||'').trim(); if(!p) return;
-      const x=projs.get(p)||{projeto:p,clientes:new Set(),ambientes:new Set()};
-      if(r.cliente) x.clientes.add(String(r.cliente).trim());
-      if(r.ambiente) x.ambientes.add(String(r.ambiente).trim());
-      projs.set(p,x); };
-    PAINEL.filter(r=>String(r.lote||'').trim()===lote).forEach(add);
-    OPS.filter(o=>loteDaOP(o)===lote).forEach(o=>{
-      (o.projetosLote||[]).forEach(r=>{ if(r) add(r); });
-      if(o.projeto&&!(o.projetosLote||[]).length) add({projeto:o.projeto});
-    });
-    const lista=[...projs.values()].sort((a,b)=>a.projeto.localeCompare(b.projeto,undefined,{numeric:true}));
-    const totAmb=lista.reduce((n,x)=>n+x.ambientes.size,0);
-    const corpo=lista.length?`<p class="fld-hint" style="margin:0 0 12px">${lista.length} projeto(s) · ${totAmb} ambiente(s)</p>`+
-      lista.map(x=>`<div class="lf-proj">
-        <div class="lf-n">Projeto ${escHtml(x.projeto)}</div>
-        <div class="lf-c">${escHtml([...x.clientes].join(' / ')||'Cliente não informado')}</div>
-        ${x.ambientes.size?`<ul>${[...x.ambientes].map(a=>`<li>${escHtml(a)}</li>`).join('')}</ul>`:'<div class="ac-f">Ambiente não informado</div>'}
-      </div>`).join(''):'<p>Nenhum projeto encontrado para este lote.</p>';
-    abrirModal('Lote '+escHtml(lote),corpo,'<button class="btn btn-primary" onclick="fecharModal()">Fechar</button>');
   }
   function colFilaRolete(){
     return colFilaHtml('No rolete', roleteFila().map(p=>{
@@ -12264,7 +12210,7 @@
   }
 
   // expõe ao window TODAS as funções de topo
-  Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,andRolar,andNavAtualizar,abrirLoteFila,abrirApont,abrirCard,abrirCardDe,
+  Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,abrirApont,abrirCard,abrirCardDe,
     abrirChecklist,abrirColar,abrirEmissao,abrirFeriados,abrirFormCliente,abrirImportacao,abrirMapaPin,abrirModal,
     abrirRelatorioFita,abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
     acPreencheExato,aceAddLinha,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
@@ -12340,6 +12286,114 @@
     ltHtmlCadastro,ltHtmlDash,ltQtdProjeto,ltResumoProjeto,ltOpDoRegistro,ltSlug,
     leadHoras,leadMinOP,leadStatus,fmtCron,tickLead,htmlLead,htmlLeadMini,htmlExtra,htmlExtraResumo,
     iniciarExtra,finalizarExtra,extrasDe,extraAberta,foraJornada});
+
+
+  /* ===== Notificações do sistema (SA / SC) — por aparelho, desligadas por padrão ===== */
+  const NOTIF_LOGO='https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png';
+  const NOTIF={ref:[],buf:[],timer:null,vistos:null};
+  const NOTIF_PADRAO={ativo:false,sa:true,sc:true};
+  function notifCfg(){ try{ return Object.assign({},NOTIF_PADRAO,JSON.parse(localStorage.getItem('raldiNotif')||'{}')); }catch(e){ return {...NOTIF_PADRAO}; } }
+  function notifSalvar(c){ try{ localStorage.setItem('raldiNotif',JSON.stringify(c)); }catch(e){} }
+  function notifPerm(){ return ('Notification' in window)?Notification.permission:'unsupported'; }
+  function notifVistos(){ if(!NOTIF.vistos){ try{ NOTIF.vistos=new Set(JSON.parse(localStorage.getItem('raldiNotifVistos')||'[]')); }catch(e){ NOTIF.vistos=new Set(); } } return NOTIF.vistos; }
+  function notifMarcar(id){ const v=notifVistos(); v.add(id); try{ localStorage.setItem('raldiNotifVistos',JSON.stringify([...v].slice(-300))); }catch(e){} }
+
+  function notifLigar(){
+    notifDesligar();
+    const c=notifCfg(); if(!c.ativo||notifPerm()!=='granted') return;
+    const desde=new Date(Date.now()-120000).toISOString(); // só o que chegou agora (2 min de folga p/ relógios diferentes)
+    [['sas','SA'],['scs','SC']].forEach(([no,tipo])=>{
+      if(!c[tipo.toLowerCase()]) return;
+      const r=db.ref(no).orderByChild('criadoEm').startAt(desde);
+      r.on('child_added',sn=>notifEntrada(tipo,sn.val()),()=>{});
+      NOTIF.ref.push(r);
+    });
+  }
+  function notifDesligar(){ NOTIF.ref.forEach(r=>r.off()); NOTIF.ref=[]; }
+  function notifEntrada(tipo,x){
+    if(!x||!x.id||notifVistos().has(x.id)) return;
+    notifMarcar(x.id);
+    if(x.criadoPor===usuarioAtual()) return; // quem criou não precisa ser avisado
+    NOTIF.buf.push({tipo,x});
+    clearTimeout(NOTIF.timer); NOTIF.timer=setTimeout(notifDespachar,2500); // espera a rajada de um lote terminar
+  }
+  function notifDespachar(){
+    const buf=NOTIF.buf.splice(0); if(!buf.length) return;
+    const grupos=new Map();
+    buf.forEach(b=>{
+      const lote=(b.x.origem==='memorial-fita'||b.x.origem==='simulacao');
+      const k=lote?(b.x.origem+'|'+(b.x.lote||'')+'|'+b.x.criadoEm):('i|'+b.x.id);
+      if(!grupos.has(k)) grupos.set(k,{lote,origem:b.x.origem,loteNum:b.x.lote,itens:[]});
+      grupos.get(k).itens.push(b);
+    });
+    const linha=x=>(x.descricao||x.codigo||'Item')+' — '+fmtNum(x.qtd)+' '+(x.unidade||'');
+    const lista=[...grupos.entries()];
+    lista.slice(0,4).forEach(([k,g])=>{
+      const its=g.itens, nSA=its.filter(i=>i.tipo==='SA').length, nSC=its.length-nSA;
+      if(!g.lote){
+        const {tipo,x}=its[0];
+        notifMostrar(x.numero+' · '+(tipo==='SA'?'Solicitação de Armazém':'Solicitação de Compras'),
+          linha(x)+(x.setor?'\n'+x.setor:''),k,tipo);
+      }else{
+        const tot={}; its.forEach(i=>{ const u=i.x.unidade||''; tot[u]=(tot[u]||0)+(parseFloat(i.x.qtd)||0); });
+        const totTxt=Object.entries(tot).map(([u,q])=>fmtNum(q)+' '+u).join(' · ');
+        const resumo=[nSA?nSA+' SA':'',nSC?nSC+' SC':''].filter(Boolean).join(' · ');
+        const titulo=g.origem==='memorial-fita'?('Fita · Lote '+(g.loteNum||'—')):'Simulação de estoque'+(g.loteNum?' · Lote '+g.loteNum:'');
+        notifMostrar(titulo,resumo+(g.origem==='memorial-fita'?' · Total '+totTxt:'')+'\n'+linha(its[0].x)+(its.length>1?' e mais '+(its.length-1):''),
+          k,nSA>=nSC?'SA':'SC');
+      }
+    });
+    if(lista.length>4) notifMostrar('Raldi · novas solicitações','Mais '+(lista.length-4)+' avisos de SA/SC — abra o sistema','resto','SA');
+  }
+  async function notifMostrar(titulo,corpo,tag,tela){
+    const op={body:corpo,icon:NOTIF_LOGO,badge:NOTIF_LOGO,tag,renotify:true,data:{tela}};
+    try{
+      if('serviceWorker' in navigator){
+        const reg=await Promise.race([navigator.serviceWorker.ready,new Promise((_,rj)=>setTimeout(()=>rj(new Error('sw')),1500))]);
+        await reg.showNotification(titulo,op); return;
+      }
+    }catch(e){}
+    try{ const n=new Notification(titulo,op); n.onclick=()=>{ window.focus(); notifIr(tela); n.close(); }; }catch(e){}
+  }
+  function notifIr(tela){ // quem recebe SA/SC é o Estoque
+    if(!logado) return;
+    if(activeMod!=='est') selectModule('est');
+    selectLeaf(tela==='SC'?'Solicitação de Compras (SC)':'Solicitação Armazém (SA)');
+  }
+  if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',e=>{ const d=e.data||{}; if(d.tipo==='notif-click') notifIr(d.tela); });
+
+  async function notifAtivar(on){
+    const c=notifCfg();
+    if(on){
+      if(notifPerm()==='unsupported'){ toast('Este navegador não suporta notificações'); return renderNotif(); }
+      let p=Notification.permission;
+      if(p==='default') p=await Notification.requestPermission();
+      if(p!=='granted'){ c.ativo=false; notifSalvar(c); notifDesligar(); toast('Permissão não concedida — libere nas configurações do navegador'); return renderNotif(); }
+      c.ativo=true;
+    }else c.ativo=false;
+    notifSalvar(c); notifLigar(); renderNotif();
+    if(on) notifTeste();
+  }
+  function notifTipo(k,on){ const c=notifCfg(); c[k]=on; notifSalvar(c); notifLigar(); }
+  function notifTeste(){ notifMostrar('SA000000 · Solicitação de Armazém','PARAFUSO TESTE — 200 un\nNotificação de teste: está funcionando','teste','SA'); }
+  function renderNotif(){
+    TELA='notif'; const c=notifCfg(), p=notifPerm();
+    const aviso=p==='unsupported'?'Este navegador não suporta notificações. No iPhone, instale o app na Tela de Início (iOS 16.4+).'
+      :p==='denied'?'As notificações estão bloqueadas neste aparelho. Libere nas configurações do navegador/app e volte aqui.':'';
+    const lin=(t,sub,chk,fn,dis)=>`<label class="nt-row"><span><b>${t}</b><small>${sub}</small></span>
+      <span class="nt-sw"><input type="checkbox" ${chk?'checked':''} ${dis?'disabled':''} onchange="${fn}(this.checked)"><i></i></span></label>`;
+    view.innerHTML=`<div class="page"><div class="page-head"><div><h1 class="page-title">Notificações</h1>
+      <p class="page-sub">Avisos de novas SA e SC no celular ou computador. A configuração vale só para este aparelho.</p></div>
+      <button class="btn btn-ghost" ${c.ativo?'':'disabled style="opacity:.5"'} onclick="notifTeste()">Enviar teste</button></div>
+      <section class="fs"><h3 class="fs-title">Este aparelho</h3>
+        ${aviso?`<div class="nt-aviso">${aviso}</div>`:''}
+        ${lin('Ativar notificações','Desligado por padrão. Ao ligar, o navegador pede permissão.',c.ativo,'notifAtivar',p==='denied'||p==='unsupported')}
+        ${lin('Solicitação de Armazém (SA)','Nova SA, ou resumo quando vier de lote/simulação.',c.sa,'notifTipo.bind(null,\'sa\')',!c.ativo)}
+        ${lin('Solicitação de Compras (SC)','Nova SC, ou resumo quando vier de lote/simulação.',c.sc,'notifTipo.bind(null,\'sc\')',!c.ativo)}
+        <p class="fld-hint" style="margin-top:12px">Você não é avisado das solicitações que você mesmo criou. Com o app fechado por completo, o aviso só chega com o app aberto ou em segundo plano.</p>
+      </section></div>`;
+  }
+  Object.assign(window,{notifAtivar,notifTipo,notifTeste,renderNotif,notifLigar,notifDesligar,notifIr});
 
   // ===== PWA: service worker (instalação e atualização automática) =====
   if('serviceWorker' in navigator){
