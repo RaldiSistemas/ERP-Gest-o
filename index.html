@@ -3242,7 +3242,9 @@
       else if(TELA==='acomp-det'&&acompDet) detalheAcomp(acompDet);
       else if(TELA==='painel') renderPainel();
       else if(TELA==='liblote') renderLiberacaoLote(lbAba);
-      else if(TELA==='lead') renderLead(); });
+      else if(TELA==='lead') renderLead();
+      else if(TELA==='histfitas') atualizarHistFitas();
+      else if(TELA==='histfita-det'&&histFitaId) verHistFita(histFitaId); });
     db.ref('cartoes').on('value',s=>{ CARTOES=Object.values(s.val()||{}).sort((a,b)=>(b.numero||0)-(a.numero||0));
       if(TELA==='danos') renderDanos(); else if(TELA==='danos-proj') renderDanosProjeto();
       else if(TELA==='danos-dash') renderDanosDash(); else if(TELA==='ct-emit') renderCartaoEmissao(); });
@@ -7242,7 +7244,7 @@
 
       ${simFita.geradas?`<section class="fs" style="margin-bottom:18px">
         <div class="ger-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>
-          <div><b>Solicitações geradas</b><span>${simFita.geradas.sas.length} SA(s) e ${simFita.geradas.scs.length} SC(s) criadas. ${simFita.geradas.op?`Necessidade salva na OP ${escHtml(simFita.geradas.op)} (Laminado).`:'Sem OP de Laminado para este lote: necessidade guardada no histórico.'}</span></div></div>
+          <div><b>Solicitações geradas</b><span>${simFita.geradas.sas.length} SA(s) e ${simFita.geradas.scs.length} SC(s) criadas. ${simFita.geradas.op?`Necessidade salva na OP ${escHtml(simFita.geradas.op)} (Laminado).`:(simFita.geradas.opPend?`A OP ${escHtml(simFita.geradas.opPend)} já tinha fita: nada foi alterado nela. Use o Histórico de simulações para Sobrescrever ou Adicionar.`:'Sem OP de Laminado para este lote: necessidade guardada no histórico.')}</span></div></div>
         <div class="ger-list">${simFita.geradas.sas.map(n=>`<span class="ger-p ger-sa">${escHtml(n)}</span>`).join('')}
           ${simFita.geradas.scs.map(n=>`<span class="ger-p ger-sc">${escHtml(n)}</span>`).join('')}</div>
       </section>`:`
@@ -7291,7 +7293,7 @@
           <button class="btn btn-primary" ${simFita.ccCod?'':'disabled style="opacity:.5"'} onclick="gerarSolFita()">Gerar solicitações automaticamente</button>
         </div>`:'<div style="margin-top:16px"><button class="btn btn-ghost" onclick="irSolFitas()">Concluir</button></div>'}
         ${simFita.geradas?'':(()=>{ const opL=opLaminadoDoLote(simFita.lote);
-          return `<div class="cel-sub" style="margin-top:10px">${opL?`OP de Laminado ${escHtml(opL.numero)} encontrada para este lote — a necessidade será salva nela ao gerar${opL.necessidadeFita?' (substitui a que já existe)':''}.`
+          return `<div class="cel-sub" style="margin-top:10px">${opL?`OP de Laminado ${escHtml(opL.numero)} encontrada para este lote — ${opL.necessidadeFita?'esta OP já tem fita gravada: ela não será alterada agora — depois, no Histórico, escolha Sobrescrever ou Adicionar à OP':'a necessidade será salva nela ao gerar'}.`
             :`Nenhuma OP de Laminado emitida ainda para o lote ${escHtml(simFita.lote)||'—'} — a necessidade fica guardada no histórico.`}</div>`; })()}
       </section></div>`;
   }
@@ -7307,8 +7309,41 @@
       projetos:(l.itens||[]).reduce((a,g)=>a.concat((g.projetos||[]).map(p=>({...p,largura:g.largura}))),[])}));
   }
   // grava a necessidade de fita na OP de Laminado do lote (chamada automaticamente ao gerar as solicitações)
-  function sfGravarNaOP(op,itens,lote){
-    return db.ref('ops/'+op.id+'/necessidadeFita').set(sfLimpa({itens,lote:lote||'',salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()}));
+  // SOBRESCREVER: a necessidade de fita da OP passa a ser só a desta simulação
+  function sfGravarNaOP(op,itens,lote,histId){
+    return db.ref('ops/'+op.id+'/necessidadeFita').set(sfLimpa({itens,lote:lote||'',simulacoes:histId?[histId]:[],salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()}));
+  }
+  // quais simulações compõem a fita gravada na OP (OPs antigas não têm a lista: usa o último histórico ligado a ela)
+  function sfSimsDaNF(nf,opId){
+    if(!nf) return [];
+    if(nf.simulacoes) return fbArr(nf.simulacoes);
+    const h=HISTFITAS.find(x=>x.op&&x.op.id===opId); return h?[h.id]:[];
+  }
+  function sfSimNaOP(h,op){ return !!(op&&op.necessidadeFita&&sfSimsDaNF(op.necessidadeFita,op.id).includes(h.id)); }
+  // junta itens iguais (mesmo código): soma as quantidades e acumula os projetos
+  function sfMesclarItens(a,b){
+    const m=new Map();
+    fbArr(a).concat(fbArr(b)).forEach(it=>{
+      const k=String(it.codigo||it.descricao||'');
+      const x=m.get(k);
+      if(!x){ m.set(k,{...it,projetos:fbArr(it.projetos).slice()}); return; }
+      ['necessario','estoqueUsado','comprar','rolos'].forEach(f=>{ x[f]=+((+x[f]||0)+(+it[f]||0)).toFixed(4); });
+      x.projetos=x.projetos.concat(fbArr(it.projetos));
+    });
+    return [...m.values()];
+  }
+  // ADICIONAR: soma esta simulação à fita que já está na OP (não duplica se já foi adicionada)
+  async function sfAdicionarNaOP(op,itens,lote,histId){
+    let jaTinha=false;
+    const r=await db.ref('ops/'+op.id+'/necessidadeFita').transaction(atual=>{
+      jaTinha=false;
+      const sims=sfSimsDaNF(atual,op.id);
+      if(atual&&sims.includes(histId)){ jaTinha=true; return; }   // aborta
+      return sfLimpa({itens:sfMesclarItens(atual&&atual.itens,itens),lote:lote||(atual&&atual.lote)||'',
+        simulacoes:sims.concat(histId),salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()});
+    });
+    if(jaTinha) throw new Error('esta simulação já está na OP');
+    if(!r.committed) throw new Error('não foi possível gravar, tente de novo');
   }
   function simFitaCC(cod){ simFita.ccCod=cod; simFita.setor=setorDe(cod); renderSimFita(); }
   async function gerarSolFita(){
@@ -7316,7 +7351,7 @@
     const L=simFita.linhas.filter(l=>l.insumoId);
     const nSA=L.filter(l=>l.qSA>0).length, nSC=L.filter(l=>l.qSC>0).length;
     const opL=opLaminadoDoLote(simFita.lote);
-    const avisoOP=opL?`\n\nA necessidade de fita também será salva na OP de Laminado ${opL.numero}${opL.necessidadeFita?' (substitui a que já existe)':''}.`
+    const avisoOP=opL?`\n\n${opL.necessidadeFita?`A OP de Laminado ${opL.numero} já tem fita gravada e NÃO será alterada agora. Depois, no Histórico de simulações, escolha Sobrescrever ou Adicionar à OP.`:`A necessidade de fita também será salva na OP de Laminado ${opL.numero}.`}`
       :`\n\nAinda não há OP de Laminado para o lote ${simFita.lote||'—'}: a necessidade ficará guardada no histórico.`;
     if(!confirm(`Gerar ${nSA} SA(s) e ${nSC} SC(s)?${avisoOP}`)) return;
     const btn=document.querySelector('.sim-acao .btn-primary');
@@ -7348,13 +7383,13 @@
         SOLFITAS=SOLFITAS.filter(x=>!simFita.origemIds.includes(x.id));
       }
       // necessidade na OP de Laminado + histórico: falha aqui não desfaz as SA/SC já criadas
-      let opNum=null, avisos=[];
-      if(opL){
-        try{ await sfGravarNaOP(opL,sfItensParaOP(L),simFita.lote); opNum=opL.numero; }
+      let opNum=null, opPend=null, avisos=[];
+      const hid='hf'+Date.now()+Math.floor(Math.random()*900+100);
+      if(opL&&!opL.necessidadeFita){
+        try{ await sfGravarNaOP(opL,sfItensParaOP(L),simFita.lote,hid); opNum=opL.numero; }
         catch(e2){ avisos.push('não foi possível salvar na OP de Laminado ('+(e2.message||e2)+')'); }
-      }
+      } else if(opL){ opPend=opL.numero; } // OP já tem fita: quem decide é o Histórico (sobrescrever ou adicionar)
       try{
-        const hid='hf'+Date.now()+Math.floor(Math.random()*900+100);
         await db.ref('histFitas/'+hid).set(sfLimpa({id:hid,lote:simFita.lote||'',criadoEm:agora,criadoPor:quem,
           ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',ambientes:simFita.origemInfo||[],sas,scs,
           op:opNum?{id:opL.id,numero:opNum}:null,
@@ -7362,7 +7397,7 @@
             estoqueM:+(l.metrosEstoque||0).toFixed(4),comprarM:+(l.metros||0).toFixed(4),rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
             qSA:l.qSA||0,qSC:l.qSC||0,fitaItens:l.itens||[]}))}));
       }catch(e3){ avisos.push('histórico não gravado ('+(e3.message||e3)+')'); }
-      simFita.geradas={sas,scs,op:opNum};
+      simFita.geradas={sas,scs,op:opNum,opPend};
       toast(`${sas.length} SA(s) e ${scs.length} SC(s) geradas`+(avisos.length?' — atenção: '+avisos.join('; '):''));
       if(avisos.length) alert('As solicitações foram geradas, mas: '+avisos.join('; ')+'.');
       renderSimFita();
@@ -7410,7 +7445,10 @@
         <td title="${escHtml(nomes)}">${amb.length} ambiente(s)<div class="cel-sub">${escHtml(amb.slice(0,2).map(a=>a.clienteNome||'—').join(', '))}${amb.length>2?'…':''}</div></td>
         <td class="ctr">${fbArr(h.linhas).length}</td>
         <td class="ctr">${fbArr(h.sas).length}</td><td class="ctr">${fbArr(h.scs).length}</td>
-        <td class="ctr">${h.op?escHtml(h.op.numero):'<span class="cel-sub">—</span>'}</td>
+        <td class="ctr">${(()=>{ const o=opLaminadoDoLote(h.lote);
+          if(o&&sfSimNaOP(h,o)) return escHtml(o.numero)+'<div class="cel-sub" style="color:#2e7d32">✓ na OP</div>';
+          if(o) return escHtml(o.numero)+'<div class="cel-sub">não gravada</div>';
+          return '<span class="cel-sub">—</span>'; })()}</td>
         <td class="cel-disc">${escHtml(String(h.criadoPor||'').split('@')[0])}</td>
         <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="verHistFita('${h.id}')">Ver</button></td></tr>`;
     }).join('');
@@ -7421,7 +7459,6 @@
     TELA='histfita-det'; histFitaId=id;
     const amb=fbArr(h.ambientes), L=fbArr(h.linhas);
     const info=(k,val)=>`<div class="it"><div class="k">${k}</div><div class="v">${val||'—'}</div></div>`;
-    const opNova=!h.op?opLaminadoDoLote(h.lote):null;
     const proj=[]; // necessidade por projeto, por largura
     L.forEach(l=>fbArr(l.fitaItens).forEach(g=>fbArr(g.projetos).forEach(p=>proj.push({...p,largura:g.largura,item:l.descricao}))));
     view.innerHTML=`<div class="page page-wide">
@@ -7438,8 +7475,18 @@
         ${amb.map(o=>`<span class="ger-p ger-sa">${escHtml(o.clienteNome||'—')}${o.ambiente?' · '+escHtml(o.ambiente):''}${o.numeroProjeto?' · Nº '+escHtml(o.numeroProjeto):''}</span>`).join('')}</div></div>
       <div class="fld full" style="margin-top:10px"><label>Solicitações geradas</label><div class="ger-list">
         ${fbArr(h.sas).map(n=>`<span class="ger-p ger-sa">${escHtml(n)}</span>`).join('')}${fbArr(h.scs).map(n=>`<span class="ger-p ger-sc">${escHtml(n)}</span>`).join('')}</div></div>
-      ${opNova?`<div style="margin-top:12px"><button class="btn btn-ghost" onclick="sfSalvarHistNaOP('${h.id}')">Salvar na OP ${escHtml(opNova.numero)} (Laminado)</button>
-        <span class="cel-sub"> A OP deste lote foi emitida depois da simulação.</span></div>`:''}
+      ${(()=>{ const o=opLaminadoDoLote(h.lote);
+        if(!o) return `<div class="cel-sub" style="margin-top:12px">Nenhuma OP de Laminado emitida para este lote ainda — quando for emitida, os botões para gravar a fita nela aparecem aqui.</div>`;
+        const nela=sfSimNaOP(h,o), tem=!!(o.necessidadeFita&&fbArr(o.necessidadeFita.itens).length);
+        const outras=tem?sfSimsDaNF(o.necessidadeFita,o.id).length:0;
+        return `<div style="margin-top:14px"><label style="font-size:12px;font-weight:600;color:#77777f">OP ${escHtml(o.numero)} (Laminado)</label>
+          <div class="cel-sub" style="margin:4px 0 8px">${nela?`✓ Esta simulação está gravada na OP${outras>1?' (junto com outras '+(outras-1)+')':''}.`
+            :(tem?'A OP já tem fita gravada de outra simulação. Escolha o que fazer com esta:':'A OP ainda não tem fita gravada.')}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            ${!tem?`<button class="btn btn-primary" onclick="sfHistParaOP('${h.id}','sobrescrever')">Marcar na OP (gravar)</button>`
+              :`<button class="btn btn-ghost" onclick="sfHistParaOP('${h.id}','sobrescrever')">Sobrescrever fita da OP</button>
+                <button class="btn btn-primary" ${nela?'disabled style="opacity:.5" title="Esta simulação já está na OP"':''} onclick="sfHistParaOP('${h.id}','adicionar')">Adicionar à OP</button>`}
+          </div></div>`; })()}
       </section>
       <section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Rolos e necessidade</h3>
         <div class="table-wrap"><table class="tbl tbl-sim">
@@ -7455,16 +7502,19 @@
             <td class="cel-disc">${escHtml(p.item)}</td><td class="ctr">${fmtNum(p.largura)}mm</td><td class="ctr inv-qt">${fmtNum(p.metros)} <span class="inv-un">M</span></td></tr>`).join('')}</tbody></table></div></section>`:''}
     </div>`;
   }
-  function sfSalvarHistNaOP(id){
+  function sfHistParaOP(id,modo){
     const h=HISTFITAS.find(x=>x.id===id); if(!h) return;
     const op=opLaminadoDoLote(h.lote); if(!op){ toast('Nenhuma OP de Laminado para o lote '+(h.lote||'—')); return; }
     const itens=fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
       comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
       projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[])}));
-    sfGravarNaOP(op,itens,h.lote)
-      .then(()=>db.ref('histFitas/'+id+'/op').set({id:op.id,numero:op.numero}))
-      .then(()=>toast('Necessidade salva na OP '+op.numero+' (Laminado)'))
-      .catch(e=>toast('Erro: '+e.message));
+    const tem=!!(op.necessidadeFita&&fbArr(op.necessidadeFita.itens).length);
+    if(modo==='sobrescrever'&&tem&&!confirm('Sobrescrever a fita da OP '+op.numero+'?\n\nO que está gravado nela hoje será SUBSTITUÍDO só pelos itens desta simulação.')) return;
+    if(modo==='adicionar'&&!confirm('Adicionar esta simulação à OP '+op.numero+'?\n\nOs itens iguais serão somados à fita que já está gravada, e os diferentes serão incluídos.')) return;
+    const gravar=modo==='adicionar'?sfAdicionarNaOP(op,itens,h.lote,h.id):sfGravarNaOP(op,itens,h.lote,h.id);
+    gravar.then(()=>db.ref('histFitas/'+id+'/op').set({id:op.id,numero:op.numero}))
+      .then(()=>toast(modo==='adicionar'?'Fita adicionada à OP '+op.numero:'Fita gravada na OP '+op.numero+(tem?' (sobrescrita)':'')))
+      .catch(e=>toast('Erro: '+(e.message||e)));
   }
 
   /* ================= Manual do sistema ================= */
@@ -12319,7 +12369,7 @@
     traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSolFita,vincAmb,
     vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
-    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfSalvarHistNaOP,
+    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfHistParaOP,
     abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
