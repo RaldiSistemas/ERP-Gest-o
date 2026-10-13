@@ -997,6 +997,111 @@
     color:var(--pl-2); margin-top:5px; }
   @media(max-width:900px){ .pl-wrap{ max-height:none; } }
 
+  /* ===== Painel de Controle — visual moderno (vale por cima do bloco acima) ===== */
+  .pl-dica{ background:rgba(47,111,181,.05); border:0; border-radius:12px; padding:9px 14px; font-size:12.5px; color:var(--muted); margin-bottom:12px; }
+  .pl-dica b{ color:var(--texto); font-weight:600; }
+  .pl-busca{ border-color:transparent; border-radius:14px; padding:12px 16px; margin-bottom:16px;
+    box-shadow:0 1px 2px rgba(40,40,50,.05),0 6px 20px rgba(40,40,50,.04); transition:box-shadow .15s,border-color .15s; }
+  .pl-busca:focus-within{ border-color:rgba(152,36,36,.45); box-shadow:0 0 0 4px rgba(152,36,36,.10); }
+  .pl-busca svg{ width:18px; height:18px; flex-basis:18px; }
+
+  .pl-status{ gap:12px; margin-bottom:14px; }
+  .pls{ border-color:transparent; border-radius:14px; padding:12px 20px 12px 16px; gap:12px; position:relative;
+    box-shadow:0 1px 2px rgba(40,40,50,.05),0 6px 20px rgba(40,40,50,.04); transition:transform .12s,box-shadow .12s; }
+  .pls:hover{ border-color:transparent; transform:translateY(-1px); box-shadow:0 2px 4px rgba(40,40,50,.06),0 10px 26px rgba(40,40,50,.09); }
+  .pls i{ width:10px; height:10px; flex-basis:10px; box-shadow:0 0 0 4px rgba(40,40,50,.06); }
+  .pls b{ font-size:24px; }
+  .pls-bar{ border-color:transparent; border-radius:14px; padding:12px 20px; gap:14px;
+    box-shadow:0 1px 2px rgba(40,40,50,.05),0 6px 20px rgba(40,40,50,.04); }
+  .pls-bar .t{ height:10px; background:#eceae2; gap:2px; }
+  .pls-bar .t u{ border-radius:999px; }
+
+  .pl-resumo{ gap:8px; margin-bottom:16px; }
+  .plr-b{ border-color:transparent; padding:7px 13px 7px 11px; box-shadow:0 1px 2px rgba(40,40,50,.07); transition:transform .12s,box-shadow .12s; }
+  .plr-b:hover{ border-color:transparent; transform:translateY(-1px); box-shadow:0 3px 10px rgba(40,40,50,.12); }
+  .plr-b span{ background:#f1efe8; }
+
+  .pl-wrap{ border:0; border-radius:18px; background:var(--surface);
+    box-shadow:0 1px 2px rgba(40,40,50,.05),0 12px 34px rgba(40,40,50,.08);
+    scrollbar-width:thin; scrollbar-color:#d3d0c4 transparent; }
+  .pl-wrap::-webkit-scrollbar{ width:11px; height:11px; }
+  .pl-wrap::-webkit-scrollbar-thumb{ background:#d3d0c4; border-radius:999px; border:3px solid #fff; }
+  .pl-wrap::-webkit-scrollbar-thumb:hover{ background:#b9b5a6; }
+  .tbl-painel thead th{ background:rgba(250,249,244,.94); backdrop-filter:blur(8px); padding:14px 10px;
+    font-size:10px; border-bottom:1px solid #e8e5da; }
+  .tbl-painel td{ border-bottom-color:#f1efe8; }
+  .tbl-painel tr.pl-novo td{ border-top:1px solid #e2dfd3; }
+  .tbl-painel tr.pl-par{ background:#fbfaf6; }
+  .tbl-painel tr.pl-par td:first-child{ box-shadow:inset 3px 0 0 rgba(152,36,36,.30); }
+  .tbl-painel tr.pl-r:hover{ background:#fcf7f4; }
+  .tbl-painel .ck{ width:15px; height:15px; }
+  .pl-td{ border-right-color:#f4f2eb; }
+
+  .tbl-painel .pl-in{ padding:12px 10px; transition:background .12s,box-shadow .12s; }
+  .tbl-painel .pl-in:hover:not(:focus){ background:rgba(40,40,50,.035); }
+  .tbl-painel .pl-in:focus{ outline:none; background:#fff; border-radius:9px;
+    box-shadow:0 0 0 2px var(--vermelho),0 6px 18px rgba(152,36,36,.14); }
+  .tbl-painel .pl-in::placeholder{ color:#d3d1c8; }
+
+  /* mesma fonte/peso/cor em todas as linhas (nada fica apagado por repetir) */
+  .tbl-painel .pl-in.pl-cliente,.tbl-painel .pl-in.pl-cliente.pl-rep{ font-weight:600; color:var(--pl-1); }
+  .tbl-painel .pl-in.pl-ambiente{ font-weight:500; color:var(--pl-1); }
+  .tbl-painel .pl-in.pl-telefone,.tbl-painel .pl-in.pl-consultor,.tbl-painel .pl-in.pl-local,.tbl-painel .pl-in.pl-dataEntrada{ font-weight:400; color:var(--pl-2); }
+  .tbl-painel .pl-in.pl-lote,.tbl-painel .pl-in.pl-lote.pl-lote-rep{ width:calc(100% - 14px); margin:5px 7px; padding:7px 4px;
+    border-radius:8px; background:rgba(47,111,181,.08); color:var(--pl-azul); font-weight:700; }
+  .tbl-painel .pl-in.pl-lote.pl-lote-rep{ background:rgba(47,111,181,.04); }
+  .tbl-painel .pl-in.pl-lote.pl-vaz{ background:transparent; }
+  .tbl-painel .pl-in.pl-projeto{ font-weight:700; color:var(--pl-1); }
+  .tbl-painel .pl-dataEntrada::-webkit-calendar-picker-indicator{ opacity:.4; cursor:pointer; }
+
+  .pl-badge{ padding:5px 12px; }
+
+  /* ===== Painel — novo layout ===== */
+  .plx-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-bottom:20px; }
+  .plx-tit h1{ font-family:'Poppins',sans-serif; font-size:26px; font-weight:700; color:var(--texto); line-height:1.15; letter-spacing:-.01em; }
+  .plx-tit p{ font-size:13px; color:var(--muted); margin-top:4px; }
+  .plx-acts{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .plx-seg{ display:inline-flex; background:var(--surface); border-radius:10px; overflow:hidden;
+    box-shadow:0 0 0 1px var(--linha); }
+  .plx-seg button{ font:inherit; font-size:13px; font-weight:600; color:var(--texto); background:transparent; border:0;
+    padding:9px 14px; cursor:pointer; transition:background .12s; }
+  .plx-seg button+button{ border-left:1px solid var(--linha); }
+  .plx-seg button:hover{ background:#f6f4ee; }
+
+  .plx-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:16px; }
+  .plk{ font:inherit; text-align:left; display:flex; align-items:center; gap:14px; padding:16px 18px; border:0; border-radius:16px;
+    background:var(--surface); cursor:pointer; position:relative; overflow:hidden;
+    box-shadow:0 1px 2px rgba(40,40,50,.05),0 8px 24px rgba(40,40,50,.05); transition:transform .12s,box-shadow .12s; }
+  button.plk:hover{ transform:translateY(-2px); box-shadow:0 2px 4px rgba(40,40,50,.06),0 14px 30px rgba(40,40,50,.10); }
+  .plk i{ width:12px; height:12px; border-radius:999px; flex:0 0 12px; background:var(--c); box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 16%,transparent); }
+  .plk div{ flex:1; min-width:0; }
+  .plk b{ display:block; font-family:'Poppins',sans-serif; font-size:30px; font-weight:700; line-height:1; color:var(--pl-1); }
+  .plk span{ display:block; font-size:10.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--pl-2); margin-top:7px; }
+  .plk em{ font-style:normal; font-size:12px; font-weight:700; color:var(--c); background:color-mix(in srgb,var(--c) 12%,transparent); padding:3px 9px; border-radius:999px; }
+  .plk-nao{ --c:#b3261e; } .plk-par{ --c:#c58f0a; } .plk-ok{ --c:#2f8f46; } .plk-vaz{ --c:#a9a79c; }
+  .plk-prog{ cursor:default; flex-direction:column; align-items:stretch; justify-content:center; gap:12px; grid-column:span 1; min-width:200px;
+    background:linear-gradient(135deg,#982424,#7f1e1e); }
+  .plk-prog .pg-top{ display:flex; align-items:baseline; gap:10px; }
+  .plk-prog .pg-top b{ color:#fff; font-size:30px; }
+  .plk-prog .pg-top span{ color:rgba(255,255,255,.78); margin:0; letter-spacing:.05em; }
+  .plk-prog .t{ height:9px; border-radius:999px; background:rgba(255,255,255,.22); display:flex; overflow:hidden; gap:2px; }
+  .plk-prog .t u{ display:block; height:100%; text-decoration:none; border-radius:999px; }
+
+  .plx-bar{ display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+  .plx-bar .pl-busca{ flex:1; margin:0; }
+  .plx-hint{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); white-space:nowrap; cursor:help; }
+  .plx-hint svg{ width:16px; height:16px; color:#2f6fb5; }
+  .plx-hint b{ color:var(--texto); font-weight:600; background:#fff; padding:2px 7px; border-radius:6px; box-shadow:0 0 0 1px var(--linha); }
+  @media(max-width:900px){ .plx-hint{ display:none; } }
+
+  .plx-lotes{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .plx-lt{ font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--pl-2); flex:0 0 auto; }
+  .plx-strip{ display:flex; gap:8px; overflow-x:auto; padding:4px 2px 8px; scrollbar-width:thin; scrollbar-color:#d3d0c4 transparent; }
+  .plx-strip .plr-b{ flex:0 0 auto; white-space:nowrap; }
+  .plx-strip .plr-b b{ font-size:12.5px; }
+
+  .plx .pl-wrap{ max-height:calc(100dvh - 330px); min-height:320px; }
+
   /* Acompanhamento / emissão em lote */
   .jor-mini{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); }
   .jor-mini input{ font:inherit; font-size:13px; padding:7px 9px; border:1px solid var(--linha); border-radius:7px; }
@@ -1146,7 +1251,8 @@
   .and-kb-head{ display:block; padding:9px 12px 10px; border-radius:11px 11px 0 0; border-bottom:2px solid var(--sc,var(--vermelho)); }
   .and-kb-grupo{ font-size:9.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--sc,var(--muted)); margin-bottom:2px; }
   .and-kb-linha{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .and-kb-linha .kb-nome{ color:var(--texto); }
+  .and-kb-linha .kb-nome{ color:var(--texto); display:flex; align-items:center; }
+  .and-ic{ width:17px; height:17px; flex:none; margin-right:7px; color:var(--sc,var(--muted)); }
   .and-kb-body{ padding:9px; display:flex; flex-direction:column; gap:8px; }
   .ac-cli{ font-size:11.5px; font-weight:600; color:var(--texto); margin-top:3px; overflow:hidden;
     text-overflow:ellipsis; white-space:nowrap; }
@@ -1232,6 +1338,87 @@
   .app-t{ font-weight:700; color:#7a6ea8; }
   .app-m{ color:var(--muted); font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .app-tot{ font-size:12px; color:var(--muted); margin-top:7px; padding-top:7px; border-top:1px solid var(--linha); }
+
+  /* ===== Apontamento da OP — visual moderno ===== */
+  .ap-card{ position:relative; max-width:720px; padding:0; border:1px solid rgba(75,75,85,.10); border-radius:22px; overflow:hidden;
+    box-shadow:0 1px 2px rgba(75,75,85,.06), 0 18px 48px -12px rgba(75,75,85,.20); background:var(--surface); }
+  .ap-card::before{ content:""; display:block; height:5px; background:var(--ap-cor,#d4930d); }
+  .ap-card > *{ margin-left:28px; margin-right:28px; }
+  .ap-card > .ap-h{ margin:0; padding:24px 28px 20px; border-bottom:0 !important;
+    background:linear-gradient(180deg, color-mix(in srgb,var(--ap-cor,#d4930d) 9%, #fff) 0%, rgba(255,255,255,0) 100%); }
+  .ap-card > .ap-obs{ margin-top:2px; }
+  .ap-card > .ap-info{ margin-top:0; }
+  .ap-card > :last-child{ margin-bottom:28px; }
+  .ap-lbl{ font-size:10.5px; letter-spacing:.12em; }
+  .ap-num{ font-size:32px; line-height:1.1; margin-top:4px; letter-spacing:.03em; }
+  .ap-st{ font-size:12.5px; padding:8px 15px; border:1px solid currentColor; border-color:color-mix(in srgb,currentColor 25%,transparent); }
+  .ap-st .dot{ width:8px; height:8px; border-radius:50%; box-shadow:0 0 0 4px color-mix(in srgb,currentColor 18%,transparent); }
+
+  /* Observação da OP (destaque) */
+  .ap-obs{ display:flex; gap:14px; align-items:flex-start; padding:15px 18px; margin-bottom:18px; border-radius:14px;
+    background:linear-gradient(135deg,#fff8dc 0%,#fff1c2 100%); border:1px solid #f0d77a; box-shadow:0 4px 14px -6px rgba(212,147,13,.45); }
+  .ap-obs-ic{ flex:0 0 34px; width:34px; height:34px; display:grid; place-items:center; }
+  .ap-obs-ic .sc-alerta{ width:34px; height:34px; margin:0; vertical-align:0; filter:drop-shadow(0 2px 3px rgba(0,0,0,.18)); }
+  .ap-obs-k{ font-size:10.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#8a5a13; }
+  .ap-obs-t{ font-size:15.5px; font-weight:600; line-height:1.45; color:#3b2d0a; margin-top:3px; white-space:pre-wrap; word-break:break-word; }
+
+  /* Grade de dados em "chips" suaves */
+  .ap-info{ gap:10px; padding:4px 0 18px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+  .ai{ background:#f7f6f1; border:1px solid #ecebe3; border-radius:12px; padding:11px 14px; min-width:0; }
+  .ai span{ font-size:9.5px; letter-spacing:.1em; }
+  .ai b{ font-size:14.5px; margin-top:4px; line-height:1.35; word-break:break-word; }
+
+  .ap-fora{ border-radius:12px; }
+
+  /* Bloco "iniciada por / início / decorrido" */
+  .ap-and{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:14px; padding:16px 18px; border-radius:14px;
+    background:linear-gradient(135deg,#fffaf0,#fdf1dc); border:1px solid #f0dfba; margin-bottom:14px; }
+  .aa-l span{ display:block; font-size:9.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#9a6a1a; }
+  .aa-l b{ display:block; font-size:15px; margin-top:4px; color:var(--texto); }
+  .aa-l b.aa-t{ font-size:24px; font-weight:800; letter-spacing:-.01em; color:#b87a0c; font-variant-numeric:tabular-nums; }
+  .ap-and.pausado{ background:linear-gradient(135deg,#f6f4fb,#efecf7); border-color:#ddd6ea; }
+
+  .ap-pausas{ border-radius:14px; background:#fbfaf7; }
+  .ap-pausado{ border-radius:14px; }
+
+  /* Seletor de funcionários */
+  .ap-l{ letter-spacing:.1em; font-size:10.5px; }
+  .func-grid{ gap:10px; }
+  .func-b{ padding:11px 18px 11px 14px; border-radius:999px; border:1.5px solid var(--linha); background:#fff;
+    transition:transform .12s, box-shadow .15s, border-color .15s, background .15s; }
+  .func-b:hover{ border-color:#b9b9ae; box-shadow:0 4px 12px -4px rgba(75,75,85,.25); transform:translateY(-1px); }
+  .func-b.on{ box-shadow:0 8px 18px -6px rgba(152,36,36,.55); }
+  .fb-ck{ border-radius:50%; }
+  .func-b.on .fb-ck::after{ left:4.6px; top:1.2px; }
+
+  /* Botões de ação */
+  .ap-btn{ border-radius:14px; padding:17px 18px; font-size:16.5px; letter-spacing:.01em;
+    transition:transform .12s, box-shadow .18s, filter .15s; box-shadow:0 10px 22px -10px rgba(0,0,0,.45); }
+  .ap-btn:not(:disabled):hover{ transform:translateY(-2px); filter:brightness(1.05); }
+  .ap-btn:not(:disabled):active{ transform:translateY(0) scale(.99); }
+  .ap-ini{ background:linear-gradient(180deg,#38a054,#2a7f3f); }
+  .ap-fim{ background:linear-gradient(180deg,#b02e2e,#8a1f1f); }
+  .ap-pau{ background:linear-gradient(180deg,#8678b8,#6f629f); }
+  .ap-ret{ background:linear-gradient(180deg,#38a054,#2a7f3f); }
+  .ap-ini:hover,.ap-fim:hover,.ap-pau:hover,.ap-ret:hover{ background-blend-mode:normal; }
+  .ap-duplo{ gap:12px; }
+  .ap-dica{ text-align:center; font-size:12px; color:var(--muted); margin:14px 0 0; }
+
+  /* Card do quadro de andamento: ícone de alerta quando a OP tem observação */
+  .and-c .ac-obs{ display:inline-flex; align-items:center; margin-left:auto; }
+  .and-c .ac-obs .sc-alerta{ width:20px; height:20px; margin:0; vertical-align:0; }
+  .and-c .ac-t{ gap:8px; justify-content:flex-start; }
+  .and-c .ac-t .and-pill-pausa{ margin-left:auto; }
+  .and-c .ac-t .ac-obs + .and-pill-pausa{ margin-left:6px; }
+  .and-c .ac-obs-t{ display:block; margin-top:6px; padding:5px 8px; border-radius:7px; background:#fff8dc; border:1px solid #f0d77a;
+    font-size:11.5px; font-weight:600; color:#6b4d0a; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+  @media(max-width:560px){
+    .ap-card > *{ margin-left:18px; margin-right:18px; }
+    .ap-card > .ap-h{ padding:20px 18px 16px; }
+    .ap-num{ font-size:26px; }
+    .ap-duplo{ grid-template-columns:1fr; }
+  }
   .app-tot b{ color:#7a6ea8; font-size:13px; }
   .ap-dica{ text-align:center; font-size:12px; color:var(--muted); margin-top:11px; }
   .ap-and{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; background:#fdf9f0;
@@ -3231,7 +3418,7 @@
       else if(TELA==='contagem') renderContagem(); });
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
-        renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus(); } } });
+        renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } });
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       if(TELA==='equipe') renderEquipe(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
@@ -8613,6 +8800,7 @@
 
   function renderPainel(){
     TELA='painel';
+    const _w0=document.querySelector('.pl-wrap'), _wy=_w0?_w0.scrollTop:0, _wx=_w0?_w0.scrollLeft:0; // rolagem interna da tabela
     const _scrollY=view.scrollTop; // preserva a rolagem: o listener do Firebase
     // re-renderiza a tela inteira a cada mudança (até uma letra digitada numa
     // célula), e trocar o innerHTML zera o scroll — sem isso a tela pula pro
@@ -8625,52 +8813,50 @@
     const cVaz=EST.filter(e=>e.nivel==='vazio').length;
     const comProj=Math.max(1,cNao+cAmr+cOk);
     const nProj=[...new Set(PAINEL.map(r=>String(r.projeto||'').trim()).filter(Boolean))].length;
-    view.innerHTML=`<div class="page page-wide">
-      <div class="page-head">
-        <div><h1 class="page-title">Painel de Controle</h1>
-          <p class="page-sub">${PAINEL.length} linha(s) · ${nProj} projeto(s) · cole direto do Excel</p></div>
-        <div style="display:flex;gap:10px">
+    const pc=n=>Math.round(n/comProj*100);
+    const lotesLista=[...new Set(PAINEL.map(r=>String(r.lote||'').trim()))].filter(Boolean);
+    view.innerHTML=`<div class="page page-wide plx">
+      <div class="plx-head">
+        <div class="plx-tit"><h1>Painel de Controle</h1>
+          <p>${PAINEL.length} linha(s) · ${nProj} projeto(s) · ${lotesLista.length} lote(s)</p></div>
+        <div class="plx-acts">
           <span id="plSelBar">${painelSel.size?`<button class="btn btn-ghost" onclick="painelExcluirSel()">Excluir ${painelSel.size} linha(s)</button>`:''}</span>
           <button class="btn btn-ghost" onclick="abrirFeriados()">Feriados</button>
-          <button class="btn btn-ghost" onclick="abrirEmissaoGrupo()">Emissão de OP por Grupo</button>
-          <button class="btn btn-ghost" onclick="painelAdd(1)">+ Linha</button>
-          <button class="btn btn-ghost" onclick="painelAdd(5)">+ 5 linhas</button>
+          <button class="btn btn-ghost" onclick="abrirEmissaoGrupo()">Emissão por grupo</button>
+          <div class="plx-seg"><button onclick="painelAdd(1)">+ Linha</button><button onclick="painelAdd(5)">+ 5</button></div>
           <button class="btn btn-primary" onclick="abrirColar()">Colar do Excel</button>
         </div>
       </div>
-      <div class="pl-dica">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-        <span>Copie as linhas no Excel e clique em <b>Colar do Excel</b> — ou clique numa célula da tabela e use <b>Ctrl+V</b>. As linhas são criadas automaticamente.</span>
+
+      ${PAINEL.length?`<div class="plx-kpis">
+        <button class="plk plk-nao" onclick="painelIrStatus('nao')" title="Nenhuma OP emitida"><i></i><div><b>${cNao}</b><span>Não emitido</span></div><em>${pc(cNao)}%</em></button>
+        <button class="plk plk-par" onclick="painelIrStatus('amarelo')" title="Emitido em parte"><i></i><div><b>${cAmr}</b><span>Parcial</span></div><em>${pc(cAmr)}%</em></button>
+        <button class="plk plk-ok" onclick="painelIrStatus('ok')" title="Todas as OPs emitidas"><i></i><div><b>${cOk}</b><span>Completo</span></div><em>${pc(cOk)}%</em></button>
+        ${cVaz?`<button class="plk plk-vaz" onclick="painelIrStatus('vazio')" title="Linha sem projeto e sem lote"><i></i><div><b>${cVaz}</b><span>Sem projeto</span></div></button>`:''}
+        <div class="plk plk-prog"><div class="pg-top"><b>${pc(cOk)}%</b><span>com OP completa</span></div>
+          <div class="t"><u style="width:${cOk/comProj*100}%;background:${PL_COR.ok}"></u><u style="width:${cAmr/comProj*100}%;background:${PL_COR.apoio}"></u><u style="width:${cNao/comProj*100}%;background:${PL_COR.nao}"></u></div></div>
+      </div>`:''}
+
+      <div class="plx-bar">
+        <div class="pl-busca">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="painelBuscaIn" placeholder="Buscar por cliente, projeto, lote, local, consultor ou ambiente…" value="${escHtml(painelBusca)}" oninput="painelBuscar(this.value)">
+          <span id="painelBuscaCont" class="pl-busca-cont"></span>
+          ${painelBusca?`<button class="icon-btn" onclick="painelBuscar('')" title="Limpar busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:''}
+        </div>
+        <div class="plx-hint" title="Copie as linhas no Excel e clique em Colar do Excel — ou clique numa célula da tabela e use Ctrl+V. As linhas são criadas automaticamente.">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+          <span>Cole do Excel com <b>Ctrl+V</b></span></div>
       </div>
-      <div class="pl-busca">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="text" id="painelBuscaIn" placeholder="Buscar por cliente, projeto, lote, local, consultor ou ambiente…" value="${escHtml(painelBusca)}" oninput="painelBuscar(this.value)">
-        <span id="painelBuscaCont" class="pl-busca-cont"></span>
-        ${painelBusca?`<button class="icon-btn" onclick="painelBuscar('')" title="Limpar busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`:''}
-      </div>
-      ${PAINEL.length?`<div class="pl-status">
-        <button class="pls" onclick="painelIrStatus('nao')" title="Nenhuma OP emitida">
-          <i style="background:${PL_COR.nao}"></i><b>${cNao}</b><span>Não emitido</span></button>
-        <button class="pls" onclick="painelIrStatus('amarelo')" title="Emitido em parte">
-          <i style="background:${PL_COR.apoio}"></i><b>${cAmr}</b><span>Parcial</span></button>
-        <button class="pls" onclick="painelIrStatus('ok')" title="Todas as OPs emitidas">
-          <i style="background:${PL_COR.ok}"></i><b>${cOk}</b><span>Completo</span></button>
-        ${cVaz?`<button class="pls" onclick="painelIrStatus('vazio')" title="Linha sem projeto e sem lote">
-          <i style="background:${PL_COR.vazio}"></i><b>${cVaz}</b><span>Sem projeto</span></button>`:''}
-        <div class="pls-bar"><div class="t">
-          <u style="width:${cOk/comProj*100}%;background:${PL_COR.ok}"></u>
-          <u style="width:${cAmr/comProj*100}%;background:${PL_COR.apoio}"></u>
-          <u style="width:${cNao/comProj*100}%;background:${PL_COR.nao}"></u>
-        </div><em>${Math.round(cOk/comProj*100)}% com OP completa</em></div>
-      </div>
-      <div class="pl-resumo">
-        ${[...new Set(PAINEL.map(r=>String(r.lote||'').trim()))].filter(Boolean).map(l=>{
+
+      ${lotesLista.length?`<div class="plx-lotes"><span class="plx-lt">Lotes</span><div class="plx-strip">
+        ${lotesLista.map(l=>{
           const rows=PAINEL.map((r,i)=>[r,EST[i]]).filter(([r])=>String(r.lote||'').trim()===l);
           const pior=rows.reduce((a,[,e])=>PL_PESO[e.nivel]<PL_PESO[a]?e.nivel:a,'vazio');
           return `<button class="plr-b" onclick="painelIrLote('${l}')" title="${rows.length} linha(s) neste lote">
-            <i style="background:${PL_COR[pior]}"></i>Lote <b>${escHtml(l)}</b><span>${rows.length}</span></button>`;
-        }).join('')}
-      </div>`:''}
+            <i style="background:${PL_COR[pior]}"></i><b>${escHtml(l)}</b><span>${rows.length}</span></button>`;
+        }).join('')}</div></div>`:''}
+
       <div class="table-wrap pl-wrap">
         <table class="tbl tbl-painel" id="tblPainel">
           <thead><tr><th class="pl-ck" style="width:34px"><input type="checkbox" class="ck" onchange="painelMarcarTodos(this.checked)"></th>
@@ -8688,6 +8874,7 @@
           <button class="btn btn-primary" onclick="abrirColar()">Colar do Excel</button></div></div>`:''}
     </div>`;
     view.scrollTop=_scrollY;
+    const _w1=document.querySelector('.pl-wrap'); if(_w1){ _w1.scrollTop=_wy; _w1.scrollLeft=_wx; }
     ligarPaste();
     if(painelBusca) painelBuscar(painelBusca);
   }
@@ -8708,7 +8895,6 @@
         ${P_COLS.map((c,ci)=>{
           const v=String(r[c.k]||'');
           let cls='pl-in pl-'+c.k;
-          if(c.k==='cliente'&&repeteCli) cls+=' pl-rep';
           if(!v) cls+=' pl-vaz';
           return `<td class="pl-td pl-td-${c.k}">${c.k==='lote'&&!novoLote
             ? `<input class="${cls} pl-lote-rep" data-r="${i}" data-c="${ci}" value="${v.replace(/"/g,'&quot;')}"
@@ -10305,6 +10491,12 @@
     andNavAtualizar(); setTimeout(andNavAtualizar,150);
     setTimeout(()=>{const i=document.getElementById('bipIn'); if(i) i.focus();},60);
   }
+  // ícones minimalistas (traço) no topo de cada coluna do Kanban de apontamento
+  const ICONES_ATIV={"medição técnica": "<path d=\"M5.5 5.5h9a2.5 2.5 0 0 1 2.5 2.5v9H5.5a2.5 2.5 0 0 1-2.5-2.5V8a2.5 2.5 0 0 1 2.5-2.5z\" transform=\"translate(0 1)\"/><circle cx=\"9.5\" cy=\"13\" r=\"2.4\"/><path d=\"M17 15.5h4.5v3H17M19.2 15.5v1.4\"/>", "liberado do pcp": "<path d=\"M12 3l8 4.5v9L12 21l-8-4.5v-9z\"/><path d=\"M12 12l8-4.5M12 12v9M12 12L4 7.5\"/>", "agrupamento do lote": "<rect x=\"5\" y=\"4.5\" width=\"14\" height=\"17\" rx=\"2\"/><rect x=\"9\" y=\"2.5\" width=\"6\" height=\"4\" rx=\"1\"/><path d=\"M8.5 11h7M8.5 15h5\"/>", "corte": "<path d=\"M12.0 4.4 L16.9 3.1 L15.9 5.5 L16.5 5.9 L21.2 7.7 L19.0 9.0 L19.2 9.7 L22.0 13.9 L19.4 13.7 L19.2 14.3 L19.0 19.5 L17.0 17.7 L16.5 18.1 L13.2 22.1 L12.7 19.6 L12.0 19.6 L7.1 20.9 L8.1 18.5 L7.5 18.1 L2.8 16.3 L5.0 15.0 L4.8 14.3 L2.0 10.1 L4.6 10.3 L4.8 9.7 L5.0 4.5 L7.0 6.3 L7.5 5.9 L10.8 1.9 L11.3 4.4Z\"/><circle cx=\"12\" cy=\"12\" r=\"2.2\"/>", "laminado": "<circle cx=\"10\" cy=\"11.5\" r=\"7\"/><circle cx=\"10\" cy=\"11.5\" r=\"2.4\"/><path d=\"M10 18.5h11\"/>", "usinagem": "<path d=\"M9 2.5h6v5H9z\"/><path d=\"M10 7.5v10l2 3.5 2-3.5v-10\"/><path d=\"M10 10.5l4 1.8M10 14l4 1.8\"/>", "montagem": "<path d=\"M19.8 12L17 14.8 9.2 7l2.8-2.8z\"/><path d=\"M13.1 10.9L4.5 19.5\"/>", "pintura": "<path d=\"M20.5 3.5L12 12\"/><path d=\"M9.5 11.5c2.8-.4 4.8 1.7 4 4.5-.8 2.8-4 4.5-8 4.5 1.2-1.2 1.4-2.5 1.2-3.7-.3-2 .6-4.8 2.8-5.3z\"/>", "expedição": "<path d=\"M5 17.5H2.5v-11h11v11M9 17.5h6M13.5 10h4l3 3.5v4H19\"/><circle cx=\"7\" cy=\"17.5\" r=\"2\"/><circle cx=\"17\" cy=\"17.5\" r=\"2\"/>", "montagem externa": "<rect x=\"3\" y=\"6\" width=\"12\" height=\"6\" rx=\"2\"/><path d=\"M15 7.5h3.5v3H15M18.5 9h3\"/><path d=\"M6.5 12l-1.2 7.5h5L11.5 12M4.5 19.5h8\"/>", "lotes agrupados": "<rect x=\"5\" y=\"4.5\" width=\"14\" height=\"17\" rx=\"2\"/><rect x=\"9\" y=\"2.5\" width=\"6\" height=\"4\" rx=\"1\"/><path d=\"M8.5 11h7M8.5 15h5\"/>"};
+  function iconeAtiv(nome){
+    const p=ICONES_ATIV[String(nome||'').trim().toLowerCase()]; if(!p) return '';
+    return `<svg class="and-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  }
   function andamentoPorSetor(){
     const todas=OPS.filter(o=>['parcial','pausada'].includes(stOp(o)));
     // filas (sem apontamento) entram na ordem do fluxo: Lotes agrupados depois do APOIO, No rolete depois da Sublinha
@@ -10319,14 +10511,16 @@
         return `<div class="and-kb-col" style="--sc:${S.cor}">
           <div class="kb-head and-kb-head">
             <div class="and-kb-grupo">${escHtml(S.nome)}</div>
-            <div class="and-kb-linha"><span class="kb-nome">${escHtml(at)}</span><span class="kb-qtd">${lista.length}</span></div>
+            <div class="and-kb-linha"><span class="kb-nome">${iconeAtiv(at)}${escHtml(at)}</span><span class="kb-qtd">${lista.length}</span></div>
           </div>
           <div class="and-kb-body">
             ${lista.map(o=>{
               const pausada=stOp(o)==='pausada';
               return `<button class="and-c${pausada?' and-c-pausada':''}" style="--sc:${S.cor}" onclick="abrirApont('${o.id}')">
                 <div class="ac-t"><span class="op-num">${escHtml(o.numero)}</span>
+                  ${(o.obs||'').trim()?`<span class="ac-obs" title="Esta OP tem observação">${ALERTA_SVG}</span>`:''}
                   ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
+                ${(o.obs||'').trim()?`<span class="ac-obs-t">${escHtml(o.obs)}</span>`:''}
                 ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
                 <div class="ac-f">${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</div>
                 <div class="ac-tm">${fmtMin(tempoLiquido(o,new Date().toISOString()))} ${htmlLeadMini(o)}</div>
@@ -10418,7 +10612,7 @@
     return `<div class="and-kb-col fila" style="--sc:${COR_FILA}">
       <div class="kb-head and-kb-head">
         <div class="and-kb-grupo">Fila · sem apontamento</div>
-        <div class="and-kb-linha"><span class="kb-nome">${titulo}</span><span class="kb-qtd">${lista.length}</span></div>
+        <div class="and-kb-linha"><span class="kb-nome">${iconeAtiv(titulo)}${titulo}</span><span class="kb-qtd">${lista.length}</span></div>
       </div>
       <div class="and-kb-body">${lista.length?lista.join(''):`<div class="and-vazio">${vazio}</div>`}</div></div>`;
   }
@@ -10497,13 +10691,18 @@
         <p class="page-sub">PCP · Ordens de Produção</p></div>
         <button class="btn btn-ghost" onclick="renderApont()">Voltar</button></div>
 
-      <div class="ap-card">
+      <div class="ap-card" style="--ap-cor:${v.cor}">
         <div class="ap-h" style="border-color:${v.cor}">
           <div><span class="ap-lbl">Ordem de Produção</span>
             <div class="ap-num">${escHtml(o.numero)}</div></div>
           <div class="ap-st" style="background:${v.cor}18;color:${v.cor}">
             <span class="dot" style="background:${v.cor}"></span>${v.label}</div>
         </div>
+        ${(o.obs||'').trim()?`<div class="ap-obs" role="note">
+          <div class="ap-obs-ic">${ALERTA_SVG}</div>
+          <div><div class="ap-obs-k">Observação da OP</div>
+            <div class="ap-obs-t">${escHtml(o.obs)}</div></div>
+        </div>`:''}
         <div class="ap-info">
           <div class="ai"><span>Projeto</span><b>${escHtml(o.projeto)}</b></div>
           <div class="ai"><span>Lote</span><b>${escHtml(o.lote)||'—'}</b></div>
@@ -10515,7 +10714,7 @@
                  ? (o.projetosLote||[]).map(r=>escHtml(r.projeto)+(r.cliente?' ('+escHtml(r.cliente)+')':'')).join(', ')
                  : (o.projetosLote||[]).map(r=>[r.cliente,r.ambiente].filter(Boolean).map(escHtml).join(' · ')).join(' | '))
               : '—'}</b></div>
-          <div class="ai"><span>Jornada</span><b>${fmtJornada(o.jornada)}</b></div>
+          <div class="ai wide"><span>Jornada</span><b>${fmtJornada(o.jornada)}</b></div>
         </div>
 
         ${fora?`<div class="ap-fora">
