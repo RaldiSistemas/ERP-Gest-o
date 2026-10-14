@@ -333,27 +333,6 @@
     .lm-mobile-brand{ display:flex; }
   }
 
-
-  /* ===== Controle de usuários: avatares ===== */
-  .rail-btn[data-id="dev"]{ display:none; }
-  .rail-btn[data-id="dev"].dev-on{ display:grid; }
-  .av{ position:relative; display:inline-grid; place-items:center; width:34px; height:34px; border-radius:50%; overflow:hidden;
-    background:#e9d6d6; color:var(--vermelho); font-size:12px; font-weight:700; flex:0 0 auto; border:2px solid #fff; box-shadow:0 0 0 1px var(--linha); }
-  .av b{ font-weight:700; letter-spacing:.3px; }
-  .av img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
-  .av-sm{ width:24px; height:24px; font-size:9.5px; border-width:1.5px; }
-  .av-lg{ width:84px; height:84px; font-size:24px; border-width:3px; }
-  .av-mais{ background:#ececef; color:var(--muted); }
-  .av-stack{ display:inline-flex; align-items:center; }
-  .av-stack .av + .av{ margin-left:-8px; }
-  .and-c .ac-fn{ display:flex; align-items:center; gap:8px; }
-  .and-c .ac-fn > span:last-child{ min-width:0; }
-  .tu-av{ display:inline-flex; }
-  .tu-av:empty{ display:none; }
-  .us-foto{ display:flex; align-items:center; gap:14px; }
-  .us-foto .us-btns{ display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
-  .us-pill{ display:inline-block; padding:2px 9px; border-radius:20px; background:rgba(152,36,36,.09); color:var(--vermelho); font-size:11.5px; font-weight:600; }
-
   .topbar-user{ margin-left:auto; display:flex; align-items:center; gap:10px; }
   .tu-mail{ font-size:12.5px; color:var(--muted); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .tu-out{ border:0; background:transparent; color:var(--muted); cursor:pointer; padding:7px; border-radius:7px; line-height:0; }
@@ -2382,7 +2361,6 @@
           <img class="brand-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
           <div class="brand-text"><span class="brand-name">raldi</span><span class="brand-sub">Plataforma</span></div>
           <div class="topbar-user">
-            <span class="tu-av" id="tuAv"></span>
             <span class="tu-mail" id="tuMail"></span>
             <button class="tu-out tu-help" onclick="abrirAjuda()" title="Manual do sistema">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.9 2.9 0 0 1 5.6 1c0 2-2.8 2.4-2.8 4"/><circle cx="12" cy="17.2" r="0.9" fill="currentColor" stroke="none"/></svg>
@@ -2438,7 +2416,6 @@
     rh:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 20 a5.5 5.5 0 0 1 11 0"/><path d="M15 4.8 a3.2 3.2 0 0 1 0 6.4"/><path d="M16.4 20 a5.5 5.5 0 0 0 4 -2.2"/>',
     qua:'<path d="M12 3 L20 6 V11 c0 5 -3.5 8 -8 10 c-4.5 -2 -8 -5 -8 -10 V6 Z"/><path d="M8.5 12 l2.5 2.5 L15.5 10"/>',
     exp:'<path d="M3 6 h11 v9 H3 Z"/><path d="M14 9 h4 l3 3 v3 h-7 Z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/>',
-    dev:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
     aut:'<rect x="5" y="8" width="14" height="11" rx="2.5"/><path d="M12 5 V8"/><circle cx="12" cy="4" r="1.2"/><circle cx="9" cy="13" r="1.1"/><circle cx="15" cy="13" r="1.1"/><path d="M9.5 16.5 h5"/>'
   };
   const EDIT_SVG='<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
@@ -2491,8 +2468,7 @@
       {label:'Logística', children:['Transportadoras','Rastreamento']} ]},
     {id:'aut', label:'Automatizações', icon:I.aut, tree:[
       {label:'Integrações', children:['ERP Dinabox','Webhooks','APIs']},
-      {label:'Rotinas', children:['Agendadas','Logs de Execução']} ]},
-    {id:'dev', label:'Desenvolvedor', icon:I.dev, tree:[ {label:'Controle de usuários'} ]}
+      {label:'Rotinas', children:['Agendadas','Logs de Execução']} ]}
   ];
 
   /* ===== Status ===== */
@@ -2576,7 +2552,6 @@
   }
   function renderView(mod,name){
     gsaMode=false; gsaSel=new Set(); gsaNec={}; paMode=false; paSel=new Set();
-    if(mod.id==='dev' && name==='Controle de usuários') return renderUsuarios();
     if(mod.id==='orc' && name==='Cadastro de clientes') return renderClientes();
     if(mod.id==='orc' && name==='Cadastro de dados') return renderDados();
     if(mod.id==='orc' && name==='Mapa') return renderMapa();
@@ -3444,9 +3419,6 @@
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } });
-    db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='apont') renderApont(); },
-      e=>console.warn('usuarios:',e.message));
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       if(TELA==='equipe') renderEquipe(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
@@ -3543,7 +3515,6 @@
   auth.onAuthStateChanged(user=>{
     if(user){
       document.getElementById('tuMail').textContent=user.email||'';
-      atualizarAcessoDev(); atualizarAvatarTopo();
       ligarListeners();
       if(splashPassou) mostrarTela(app);
       logado=true;
@@ -9160,160 +9131,6 @@
       toast('Removido'); }).catch(e=>toast('Erro: '+e.message));
   }
 
-
-  /* ================= CONTROLE DE USUÁRIOS (módulo Desenvolvedor) ================= */
-  // E-mails que enxergam o módulo Desenvolvedor. Vazio = todo usuário logado vê (preencha antes de liberar a mais gente).
-  const DEV_EMAILS=[];
-  const CLD_CLOUD='oatjfm6o', CLD_PRESET_AVATAR='avatares';   // preset unsigned
-  let USUARIOS=[], usFotoNova=null, usFotoRemover=false;
-
-  function emailChave(e){ return String(e||'').trim().toLowerCase().replace(/[.#$\[\]\/]/g,','); }
-  function normTxt(t){ return String(t||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
-  function iniciaisDe(nome){ const p=String(nome||'').trim().split(/\s+/).filter(Boolean); if(!p.length) return '?';
-    return (p[0][0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase(); }
-  function souDev(){ const e=((auth.currentUser&&auth.currentUser.email)||'').toLowerCase();
-    return !DEV_EMAILS.length || DEV_EMAILS.map(x=>x.toLowerCase()).includes(e); }
-  function atualizarAcessoDev(){ const b=document.querySelector('.rail-btn[data-id="dev"]'); if(b) b.classList.toggle('dev-on',souDev()); }
-  function usuarioLogadoReg(){ const e=((auth.currentUser&&auth.currentUser.email)||'').toLowerCase(); return e?USUARIOS.find(u=>u.email===e)||null:null; }
-  function usuarioPorFunc(nome){ const n=normTxt(nome); if(!n) return null;
-    return USUARIOS.find(u=>normTxt(u.funcEquipe)===n)||USUARIOS.find(u=>normTxt(u.nome)===n)||null; }
-  function avatarHtml(u,nomeFallback,cls){
-    const nome=(u&&u.nome)||nomeFallback||'';
-    const tip=escHtml(nome+(u&&u.funcao?' · '+u.funcao:''));
-    const img=(u&&u.foto)?`<img src="${escHtml(u.foto)}" alt="" loading="lazy" onerror="this.remove()">`:'';
-    return `<span class="av ${cls||''}" title="${tip}"><b>${escHtml(iniciaisDe(nome))}</b>${img}</span>`;
-  }
-  function bolinhasFuncs(o){
-    const l=funcsDe(o,'inicio'); if(!l.length) return '';
-    const MAX=4;
-    return `<span class="av-stack">${l.slice(0,MAX).map(n=>avatarHtml(usuarioPorFunc(n),n,'av-sm')).join('')}`+
-      `${l.length>MAX?`<span class="av av-sm av-mais" title="${escHtml(l.slice(MAX).join(', '))}"><b>+${l.length-MAX}</b></span>`:''}</span>`;
-  }
-  function atualizarAvatarTopo(){
-    const el=document.getElementById('tuAv'); if(!el) return;
-    const u=usuarioLogadoReg();
-    el.innerHTML=u?avatarHtml(u,u.nome,''):'';
-  }
-
-  // recorta o centro em quadrado 320x320 e comprime antes de enviar
-  function prepararAvatar(file){
-    return new Promise((res,rej)=>{
-      const url=URL.createObjectURL(file), img=new Image();
-      img.onload=()=>{
-        const lado=Math.min(img.naturalWidth,img.naturalHeight), L=320, c=document.createElement('canvas');
-        c.width=c.height=L;
-        c.getContext('2d').drawImage(img,(img.naturalWidth-lado)/2,(img.naturalHeight-lado)/2,lado,lado,0,0,L,L);
-        URL.revokeObjectURL(url);
-        c.toBlob(b=>b?res(b):rej(new Error('Falha ao preparar a imagem')),'image/jpeg',.85);
-      };
-      img.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('O arquivo não é uma imagem válida')); };
-      img.src=url;
-    });
-  }
-  async function enviarAvatar(file){
-    const blob=await prepararAvatar(file);
-    const fd=new FormData();
-    fd.append('file',blob,'avatar.jpg'); fd.append('upload_preset',CLD_PRESET_AVATAR);
-    const r=await fetch(`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`,{method:'POST',body:fd});
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok||!j.secure_url) throw new Error((j.error&&j.error.message)||('Cloudinary recusou o envio ('+r.status+')'));
-    return j.secure_url;
-  }
-
-  function renderUsuarios(){
-    TELA='usuarios';
-    if(!souDev()){ view.innerHTML='<div class="page"><div class="empty"><h3>Acesso restrito</h3><p>Este módulo é só para o desenvolvedor.</p></div></div>'; return; }
-    view.innerHTML=`<div class="page">
-      <div class="page-head"><div><h1 class="page-title">Controle de usuários</h1>
-        <p class="page-sub">${USUARIOS.length} usuário(s) · e-mails que já existem no Firebase Authentication</p></div>
-        <button class="btn btn-primary" onclick="formUsuario()">+ Novo usuário</button></div>
-      ${USUARIOS.length?`<div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:60px"></th><th>Nome</th><th>E-mail</th><th>Função</th><th>Vínculo na Equipe Produtiva</th><th style="width:72px"></th></tr></thead>
-        <tbody>${USUARIOS.map(u=>`<tr>
-          <td>${avatarHtml(u,u.nome,'')}</td>
-          <td class="cel-nome">${escHtml(u.nome)}</td>
-          <td>${escHtml(u.email)}</td>
-          <td>${u.funcao?`<span class="us-pill">${escHtml(u.funcao)}</span>`:'—'}</td>
-          <td>${escHtml(u.funcEquipe)||'—'}</td>
-          <td class="acoes">
-            <button class="icon-btn" title="Editar" onclick="formUsuario('${escHtml(u.chave)}')">${EDIT_SVG}</button>
-            <button class="icon-btn danger" title="Excluir" onclick="excluirUsuario('${escHtml(u.chave)}')">${TRASH_SVG}</button>
-          </td></tr>`).join('')}</tbody></table></div>`
-      :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.rh}</svg></div>
-        <h3>Nenhum usuário cadastrado</h3><p>Cadastre o e-mail de quem acessa o sistema, com foto e função.</p>
-        <button class="btn btn-primary" onclick="formUsuario()">+ Novo usuário</button></div>`}
-    </div>`;
-  }
-  function formUsuario(chave){
-    const u=chave?USUARIOS.find(x=>x.chave===chave):null;
-    usFotoNova=null; usFotoRemover=false;
-    const funcoes=[...new Set(USUARIOS.map(x=>x.funcao).filter(Boolean))];
-    abrirModal(u?'Editar usuário':'Novo usuário',
-      `<div class="fld"><label>E-mail de login<i>*</i></label>
-         <input id="usEmail" type="email" value="${u?escHtml(u.email):''}" ${u?'disabled':''} placeholder="nome@empresa.com">
-         ${u?'':'<p class="fld-hint">Precisa ser o mesmo e-mail criado no Firebase Authentication.</p>'}</div>
-       <div class="fld" style="margin-top:14px"><label>Nome<i>*</i></label><input id="usNome" value="${u?escHtml(u.nome):''}" placeholder="Ex.: Maria Souza"></div>
-       <div class="fld" style="margin-top:14px"><label>Função</label>
-         <input id="usFuncao" list="usFuncoes" value="${u?escHtml(u.funcao||''):''}" placeholder="Ex.: Montador, Projetista, PCP">
-         <datalist id="usFuncoes">${funcoes.map(f=>`<option value="${escHtml(f)}">`).join('')}</datalist></div>
-       <div class="fld" style="margin-top:14px"><label>Funcionário na Equipe Produtiva</label>
-         <select id="usEquipe"><option value="">— sem vínculo —</option>
-           ${EQUIPE.map(f=>`<option value="${escHtml(f.nome)}" ${u&&u.funcEquipe===f.nome?'selected':''}>${escHtml(f.nome)}</option>`).join('')}</select>
-         <p class="fld-hint">É por este vínculo que a foto aparece na bolinha das atividades no Apontamento.</p></div>
-       <div class="fld" style="margin-top:14px"><label>Foto de perfil</label>
-         <div class="us-foto"><span id="usPrev">${avatarHtml(u,u?u.nome:'','av-lg')}</span>
-           <div class="us-btns">
-             <input type="file" id="usArq" accept="image/*" style="display:none" onchange="usEscolheuFoto(this.files[0])">
-             <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('usArq').click()">Escolher foto</button>
-             <button type="button" class="btn btn-ghost btn-sm" onclick="usRemoverFoto()">Remover foto</button>
-           </div></div></div>`,
-      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
-       <button class="btn btn-primary" id="usSalvar" onclick="salvarUsuario(${u?`'${escHtml(u.chave)}'`:'null'})">Salvar</button>`);
-  }
-  function usEscolheuFoto(f){
-    if(!f) return;
-    if(!/^image\//.test(f.type)){ toast('Escolha um arquivo de imagem'); return; }
-    usFotoNova=f; usFotoRemover=false;
-    const url=URL.createObjectURL(f);
-    document.getElementById('usPrev').innerHTML=`<span class="av av-lg"><img src="${url}" alt=""></span>`;
-  }
-  function usRemoverFoto(){
-    usFotoNova=null; usFotoRemover=true;
-    const nome=(document.getElementById('usNome')||{}).value||'';
-    document.getElementById('usPrev').innerHTML=avatarHtml({nome},nome,'av-lg');
-    const a=document.getElementById('usArq'); if(a) a.value='';
-  }
-  async function salvarUsuario(chaveAtual){
-    const antigo=chaveAtual?USUARIOS.find(x=>x.chave===chaveAtual):null;
-    const email=(document.getElementById('usEmail').value||'').trim().toLowerCase();
-    const nome=(document.getElementById('usNome').value||'').trim();
-    const funcao=(document.getElementById('usFuncao').value||'').trim();
-    const funcEquipe=document.getElementById('usEquipe').value||'';
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('Informe um e-mail válido'); return; }
-    if(!nome){ toast('Informe o nome'); return; }
-    const chave=chaveAtual||emailChave(email);
-    if(!chaveAtual && USUARIOS.some(x=>x.chave===chave)){ toast('Este e-mail já está cadastrado'); return; }
-    const btn=document.getElementById('usSalvar'); btn.disabled=true; btn.textContent='Salvando…';
-    try{
-      let foto=antigo?(antigo.foto||''):'';
-      if(usFotoRemover) foto='';
-      if(usFotoNova){ btn.textContent='Enviando foto…'; foto=await enviarAvatar(usFotoNova); }
-      const agora=new Date().toISOString();
-      await db.ref('usuarios/'+chave).set({chave,email,nome,funcao,funcEquipe,foto,
-        criadoEm:antigo?(antigo.criadoEm||agora):agora, criadoPor:antigo?(antigo.criadoPor||usuarioAtual()):usuarioAtual(),
-        editadoEm:agora, editadoPor:usuarioAtual()});
-      fecharModal(); toast('Usuário salvo');
-    }catch(e){
-      btn.disabled=false; btn.textContent='Salvar';
-      toast('Erro: '+(e&&e.message?e.message:e));
-    }
-  }
-  function excluirUsuario(chave){
-    const u=USUARIOS.find(x=>x.chave===chave);
-    if(!confirm(`Remover ${u?u.nome:'este usuário'} do controle de usuários?\n\nIsso não apaga o login no Firebase Authentication.`)) return;
-    db.ref('usuarios/'+chave).remove().then(()=>toast('Removido')).catch(e=>toast('Erro: '+e.message));
-  }
-
   /* ================= 2. EQUIPE PRODUTIVA ================= */
   function renderEquipe(){
     TELA='equipe';
@@ -10705,7 +10522,7 @@
                   ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
                 ${(o.obs||'').trim()?`<span class="ac-obs-t">${escHtml(o.obs)}</span>`:''}
                 ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
-                <div class="ac-f ac-fn">${bolinhasFuncs(o)}<span>${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</span></div>
+                <div class="ac-f">${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</div>
                 <div class="ac-tm">${fmtMin(tempoLiquido(o,new Date().toISOString()))} ${htmlLeadMini(o)}</div>
               </button>`;
             }).join('')}
