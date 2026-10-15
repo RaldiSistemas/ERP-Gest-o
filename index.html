@@ -3079,7 +3079,7 @@
   ];
   const EMPRESA={ end1:'Rua Miguel Luiz Goulart, 116', end2:'São João Margem Esquerda,', end3:'Tubarão - SC, 88708-500' };
   let ACES=[]; let ace=null;
-  let SOLFITAS=[]; let HISTFITAS=[], histFitaId=null, buscaHistFita=''; let solFitaCalc=null; let sfModoSel=false, sfSel=new Set();
+  let SOLFITAS=[]; let HISTFITAS=[], histFitaId=null, buscaHistFita='', histEdit=null; let solFitaCalc=null; let sfModoSel=false, sfSel=new Set();
   let LOTES=[]; let lbAba='lista', lbModoSel=false, lbSel=new Set();
   let fLib={busca:'',status:'',lote:'',soVerdes:false};
   let LIB_IGNORADOS={}, lbMostrarExcluidos=false;
@@ -5348,7 +5348,8 @@
 
   /* ================= Saldos ================= */
   function reservadoDe(insumoId){
-    return SAS.filter(x=>x.insumoId===insumoId && stSa(x)!=='entregue')
+    const ign=(typeof simFita!=='undefined'&&simFita&&simFita.ignorarSAs)||null; // SAs da simulação em atualização não contam
+    return SAS.filter(x=>x.insumoId===insumoId && stSa(x)!=='entregue' && !(ign&&ign.has(x.id)))
               .reduce((a,x)=>a+(parseFloat(x.qtd)||0),0);
   }
   function saldoDe(insumoId){
@@ -7435,7 +7436,7 @@
       simFita.pend=base.filter(l=>l.unidade!=='M'&&!(simFita.conv&&simFita.conv[l.insumoId]));
     }
     const pend=simFita.pend||[];
-    if(idx>=pend.length){ if(fase===1) sfCalcular(); else renderSimFita(); return; }
+    if(idx>=pend.length){ if(fase===1) sfCalcular(); else if(simFita&&simFita.atualizarId) sfAtualizarPronto(); else renderSimFita(); return; }
     const l=pend[idx], i=INSUMOS.find(x=>x.id===l.insumoId);
     const nomeUn=(UNIDADES.find(u=>u[0]===l.unidade)||[l.unidade,l.unidade])[1];
     const ultimo=parseFloat(i&&i.metrosPorUn);
@@ -7472,9 +7473,8 @@
 
   /* ===== Agrupamento de fita -> Simulação de estoque -> SA/SC ===== */
   let simFita=null;
-  function renderSimFita(){
-    TELA='simfita';
-    // estoque já abatido e rolo do fornecedor já decidido no agrupamento — converte metros -> unidade do insumo
+  // estoque já abatido e rolo do fornecedor já decidido no agrupamento — converte metros -> unidade do insumo
+  function sfPreencherLinhas(){
     simFita.linhas.forEach(l=>{
       if(!l.insumoId){ l.qtd=null; return; }
       const mpu=metrosPorUn(l.insumoId)||1;
@@ -7487,6 +7487,10 @@
       l.qtd=emb((l.necM||l.metros)/mpu);  // necessidade total (só para exibir)
       l.tipo=l.qSC<=0?'SA':(l.qSA<=0?'SC':'AMBOS');
     });
+  }
+  function renderSimFita(){
+    TELA='simfita';
+    sfPreencherLinhas();
     const validas=simFita.linhas.filter(l=>l.insumoId);
     const semCad=simFita.linhas.filter(l=>!l.insumoId);
     const nSA=validas.filter(l=>l.qSA>0).length, nSC=validas.filter(l=>l.qSC>0).length;
@@ -7716,6 +7720,7 @@
         await db.ref('histFitas/'+hid).set(sfLimpa({id:hid,lote:simFita.lote||'',criadoEm:agora,criadoPor:quem,
           ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',ambientes:simFita.origemInfo||[],sas,scs,
           op:opNum?{id:opL.id,numero:opNum}:null,
+          pedidos:simFita.pedidosBrutos, conv:simFita.conv||{}, rolosExtra:sfRolosExtra(simFita.rolosPorMat),
           linhas:L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necM:+(l.necM||l.metros||0).toFixed(4),
             estoqueM:+(l.metrosEstoque||0).toFixed(4),comprarM:+(l.metros||0).toFixed(4),rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
             qSA:l.qSA||0,qSC:l.qSC||0,fitaItens:l.itens||[]}))}));
@@ -7731,6 +7736,214 @@
   }
 
 
+  /* ===== Editar e atualizar uma simulação de fita (Histórico) ===== */
+  // rolos extras informados nos itens (não estão na tabela padrão) — guardados para refazer o cálculo igual
+  function sfRolosExtra(rolosPorMat){
+    const out=[]; Object.entries(rolosPorMat||{}).forEach(([mat,arr])=>arr.forEach(r=>{ if(r.doItem) out.push({mat,l:r.l,m:r.m}); }));
+    return out;
+  }
+  function sfLinhasHist(L){
+    return L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necM:+(l.necM||l.metros||0).toFixed(4),
+      estoqueM:+(l.metrosEstoque||0).toFixed(4),comprarM:+(l.metros||0).toFixed(4),rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
+      qSA:l.qSA||0,qSC:l.qSC||0,fitaItens:l.itens||[]}));
+  }
+  // mesmo formato que "Marcar na OP" grava (necessidade + projetos + orientação de abertura)
+  function sfItensDoHist(h){
+    return fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
+      comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
+      projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[]),
+      abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id)}));
+  }
+  // SA/SC desta simulação que ainda existem + as que não estão Pendentes (impedem a atualização)
+  function sfStatusSolic(h){
+    const sas=[], scs=[], bloq=[];
+    fbArr(h.sas).forEach(n=>{ const x=SAS.find(y=>y.numero===n); if(!x) return; sas.push(x);
+      if(stSa(x)!=='pendente') bloq.push(n+' ('+ST_SA[stSa(x)].label+')'); });
+    fbArr(h.scs).forEach(n=>{ const x=SCS.find(y=>y.numero===n); if(!x) return; scs.push(x);
+      if(stSc(x)!=='pendente') bloq.push(n+' ('+ST_SC[stSc(x)].label+')'); });
+    return {sas,scs,bloq};
+  }
+  function sfDescComLargura(desc,w){ return String(desc||'').replace(RE_LARG,fmtNum(+w||0)+'MM'); }
+  // Simulações antigas não guardam os pedidos originais: reconstrói (largura x metros por projeto) a partir das
+  // linhas do histórico. Larguras cobertas só pelo estoque não têm projeto identificado.
+  function sfReconstruirPedidos(h){
+    const L=fbArr(h.linhas), mapa=new Map(), avisos=[], extra=[];
+    let semProjeto=0;
+    L.forEach(l=>{
+      const mat=materialDe(l.descricao), lw=larguraDe(l.descricao);
+      if(lw&&l.metrosRolo&&!ROLOS_FITA.some(r=>Math.abs(r.l-lw)<0.01&&Math.abs(r.m-l.metrosRolo)<0.01)
+         &&!extra.some(x=>x.mat===mat&&x.l===lw&&x.m===l.metrosRolo)) extra.push({mat,l:lw,m:l.metrosRolo});
+      fbArr(l.fitaItens).forEach(g=>{
+        const soma=fbArr(g.projetos).reduce((a,p)=>a+(+p.metros||0),0);
+        if(Math.abs(soma-(+g.metros||0))>0.01) avisos.push(`${fmtNum(g.largura)}mm de ${l.descricao}: soma dos projetos (${fmtNum(+soma.toFixed(3))} m) difere do total (${fmtNum(+g.metros||0)} m)`);
+        fbArr(g.projetos).forEach(p=>{
+          const k=[mat,g.largura,p.clienteNome,p.ambiente,p.numeroProjeto].join('|');
+          if(!mapa.has(k)) mapa.set(k,{mat,desc:sfDescComLargura(l.descricao,g.largura),codigo:'',w:g.largura,m:+p.metros||0,
+            proj:{clienteNome:p.clienteNome||'',ambiente:p.ambiente||'',numeroProjeto:p.numeroProjeto||''}});
+        });
+      });
+    });
+    L.forEach(l=>{
+      if(fbArr(l.fitaItens).length||!(+l.estoqueM>0)) return;   // só linhas atendidas 100% pelo estoque
+      const w=larguraDe(l.descricao), mat=materialDe(l.descricao), need=+l.necM||0;
+      if(!w||need<=0) return;
+      if([...mapa.values()].some(x=>x.mat===mat&&Math.abs(x.w-w)<0.01)) return; // já veio pelos projetos
+      mapa.set(['est',mat,w].join('|'),{mat,desc:l.descricao,codigo:l.codigo||'',w,m:need,
+        proj:{clienteNome:'(projeto não identificado — coberto pelo estoque)',ambiente:'',numeroProjeto:''}});
+      semProjeto++;
+    });
+    return {pedidos:[...mapa.values()],rolosExtra:extra,avisos,semProjeto,reconstruido:true};
+  }
+  function sfPedidosBase(h){
+    const ped=fbArr(h.pedidos);
+    if(ped.length) return {pedidos:ped,rolosExtra:fbArr(h.rolosExtra),avisos:[],semProjeto:0,reconstruido:false};
+    return sfReconstruirPedidos(h);
+  }
+  function histEditSujo(){
+    if(!histEdit) return false;
+    const h=HISTFITAS.find(x=>x.id===histEdit.id); if(!h) return false;
+    return JSON.stringify(histEdit.pedidos)!==JSON.stringify(sfPedidosBase(h).pedidos);
+  }
+  function histEditMarcar(){
+    const b=document.getElementById('hedBtn'), d=document.getElementById('hedDesf');
+    const sujo=histEditSujo();
+    if(b){ const bloq=b.dataset.bloq==='1'; b.disabled=!sujo||bloq; b.style.opacity=(!sujo||bloq)?'.5':''; }
+    if(d){ d.disabled=!sujo; d.style.opacity=sujo?'':'.5'; }
+  }
+  function histEditCampo(i,campo,valor){
+    const p=histEdit&&histEdit.pedidos[i]; if(!p) return;
+    const n=parseFloat(String(valor).replace(',','.'));
+    p[campo]=isNaN(n)?0:n;
+    if(campo==='w'){ p.desc=sfDescComLargura(p.desc,p.w); const el=document.getElementById('hedDesc'+i); if(el) el.textContent=p.desc; }
+    histEditMarcar();
+  }
+  function histEditExcluir(i){
+    if(!histEdit) return;
+    histEdit.pedidos.splice(i,1);
+    verHistFita(histEdit.id);
+  }
+  function histEditDesfazer(){
+    const id=histEdit&&histEdit.id; histEdit=null;
+    if(id) verHistFita(id);
+  }
+  // 1) valida e refaz o cálculo olhando o estoque de agora (sem contar as SAs desta própria simulação)
+  function sfAtualizarHist(id){
+    if(simFita&&simFita.executando){ toast('Atualização em andamento...'); return; }
+    const h=HISTFITAS.find(x=>x.id===id); if(!h||!histEdit||histEdit.id!==id) return;
+    const st=sfStatusSolic(h);
+    if(st.bloq.length){ alert('Não dá para atualizar: só é possível quando TODAS as SA/SC da simulação estão Pendentes.\n\nNão pendentes: '+st.bloq.join(', ')); return; }
+    const ped=histEdit.pedidos;
+    if(!ped.length){ alert('Não dá para atualizar sem nenhum item. Deixe ao menos um item na necessidade.'); return; }
+    const ruim=ped.find(p=>!(p.w>0)||!(p.m>0));
+    if(ruim){ alert('Todos os itens precisam ter largura e necessidade maiores que zero (ou exclua o item).'); return; }
+    const rolosPorMat={};
+    const base=sfPedidosBase(h);
+    base.rolosExtra.forEach(x=>{
+      rolosPorMat[x.mat]=rolosPorMat[x.mat]||ROLOS_FITA.map(r=>({...r}));
+      if(!rolosPorMat[x.mat].some(r=>r.l===x.l&&r.m===x.m)) rolosPorMat[x.mat].push({l:x.l,m:x.m,doItem:true});
+    });
+    const amb=[], vistos=new Set();
+    ped.forEach(p=>{ const pr=p.proj||{}, k=[pr.clienteNome,pr.ambiente,pr.numeroProjeto].join('|');
+      if(!vistos.has(k)){ vistos.add(k); amb.push({clienteNome:pr.clienteNome||'',ambiente:pr.ambiente||'',numeroProjeto:pr.numeroProjeto||''}); } });
+    simFita={linhas:[],ccCod:h.ccCod||'',setor:h.setor||'',obs:h.obs||'',lote:h.lote||'',geradas:null,origemIds:[],origemInfo:amb,
+      conv:{...(h.conv||{})},pedidosBrutos:JSON.parse(JSON.stringify(ped)),rolosPorMat,
+      atualizarId:id,reconstruida:base.reconstruido,ignorarSAs:new Set(st.sas.map(x=>x.id))};
+    pedirConversoes(0,1);
+  }
+  // 2) cálculo pronto: confirma com o usuário e executa
+  function sfAtualizarPronto(){
+    const h=HISTFITAS.find(x=>x.id===simFita.atualizarId);
+    if(!h){ simFita=null; return; }
+    sfPreencherLinhas();
+    const L=simFita.linhas.filter(l=>l.insumoId);
+    const semCad=simFita.linhas.filter(l=>!l.insumoId).length;
+    if(!L.length){ alert('Nenhuma solicitação seria gerada com essas alterações.'); simFita=null; return; }
+    const nSA=L.filter(l=>l.qSA>0).length, nSC=L.filter(l=>l.qSC>0).length;
+    const st=sfStatusSolic(h), opL=opLaminadoDoLote(h.lote);
+    const txtOP=opL?(!opL.necessidadeFita?`A necessidade e a orientação serão gravadas na OP ${opL.numero}.`
+      :(sfSimNaOP(h,opL)?`A necessidade e a orientação desta simulação serão atualizadas na OP ${opL.numero}.`
+        :`A OP ${opL.numero} já tem fita de outra simulação e NÃO será alterada (use "Adicionar à OP" depois).`))
+      :'Não há OP de Laminado para este lote: fica só no histórico.';
+    const ok=confirm(`Atualizar a simulação do lote ${h.lote||'—'}?\n\n`
+      +`Serão EXCLUÍDAS: ${st.sas.map(x=>x.numero).concat(st.scs.map(x=>x.numero)).join(', ')||'nenhuma'}\n`
+      +`Serão GERADAS: ${nSA} SA(s) e ${nSC} SC(s) novas (estoque conferido agora)\n\n${txtOP}`
+      +(semCad?`\n\nAtenção: ${semCad} rolo(s) sem item cadastrado ficam fora das solicitações.`:'')
+      +(simFita.reconstruida?'\n\nSimulação antiga: os pedidos foram reconstruídos do histórico. Confira se a tabela está correta antes de confirmar.':''));
+    if(!ok){ simFita=null; return; }
+    sfAtualizarExec(h,L);
+  }
+  // 3) gera as novas SA/SC, regrava o histórico, exclui as antigas e atualiza a OP
+  async function sfAtualizarExec(h,L){
+    simFita.executando=true;
+    const hid=h.id, agora=new Date().toISOString(), quem=usuarioAtual();
+    const sas=[], scs=[], antigasSA=[], antigasSC=[];
+    let etapa='gerando as novas solicitações';
+    const prox=(k)=>new Promise((res,rej)=>db.ref('contadores/'+k).transaction(n=>(n||0)+1,(e,ok,sn)=>(e||!ok)?rej(e||new Error('contador')):res(sn.val())));
+    try{
+      const st=sfStatusSolic(h);
+      if(st.bloq.length) throw new Error('alguma SA/SC deixou de estar Pendente: '+st.bloq.join(', '));
+      st.sas.forEach(x=>antigasSA.push(x)); st.scs.forEach(x=>antigasSC.push(x));
+      for(const l of L){
+        const obs=h.obs||`Gerada pelo agrupamento de fita (${fmtNum(l.metros)} m) — Lote ${h.lote||'—'}`;
+        if(l.qSA>0){
+          const n=await prox('SA'), num='SA'+String(n).padStart(6,'0'), id='sa'+Date.now()+Math.floor(Math.random()*900+100);
+          await db.ref('sas/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
+            unidade:l.unidade,ccCod:h.ccCod||'',setor:h.setor||'',qtd:l.qSA,obs,lote:h.lote||'',
+            status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita'});
+          sas.push(num);
+        }
+        if(l.qSC>0){
+          const n=await prox('SC'), num='SC'+String(n).padStart(6,'0'), id='sc'+Date.now()+Math.floor(Math.random()*900+100);
+          await db.ref('scs/'+id).set({id,numero:num,insumoId:l.insumoId,codigo:l.codigo,descricao:l.descricao,
+            unidade:l.unidade,ccCod:h.ccCod||'',setor:h.setor||'',qtd:l.qSC,obs,lote:h.lote||'',
+            status:'pendente',entrada:false,criadoEm:agora,criadoPor:quem,origem:'memorial-fita',...sfCamposNecessidade(l)});
+          scs.push(num);
+        }
+      }
+      etapa='gravando o histórico';
+      const linhas=sfLinhasHist(L);
+      const novo=sfLimpa({...h,ambientes:simFita.origemInfo,sas,scs,linhas,pedidos:simFita.pedidosBrutos,conv:simFita.conv||{},
+        rolosExtra:sfRolosExtra(simFita.rolosPorMat),reconstruidoDoHistorico:!!simFita.reconstruida||null,atualizadoEm:agora,atualizadoPor:quem});
+      await db.ref('histFitas/'+hid).set(novo);
+      etapa='excluindo as solicitações antigas';
+      const upd={}; antigasSA.forEach(x=>upd['sas/'+x.id]=null); antigasSC.forEach(x=>upd['scs/'+x.id]=null);
+      if(Object.keys(upd).length) await db.ref().update(upd);
+      etapa='atualizando a OP';
+      const msgOP=await sfAtualizarOP(novo);
+      histEdit=null; simFita=null;
+      toast(`Atualizado: ${sas.length} SA(s) e ${scs.length} SC(s) geradas`+(msgOP?' — '+msgOP:''));
+      verHistFita(hid);
+    }catch(e){
+      simFita=null;
+      alert(`Erro ao atualizar (${etapa}): ${e.message||e}\n\nConfira nas telas de SA e SC antes de tentar de novo.`
+        +(sas.length||scs.length?`\nJá criadas: ${sas.concat(scs).join(', ')}`:'')
+        +(etapa.startsWith('excluindo')?`\nAntigas a excluir manualmente: ${antigasSA.concat(antigasSC).map(x=>x.numero).join(', ')}`:''));
+      if(histEdit&&histEdit.id===hid) verHistFita(hid);
+    }
+  }
+  // grava na OP de Laminado a necessidade e a orientação já atualizadas; devolve um aviso curto (ou '')
+  async function sfAtualizarOP(h){
+    const op=opLaminadoDoLote(h.lote);
+    if(!op) return 'sem OP de Laminado no lote';
+    const nf=op.necessidadeFita, tem=!!(nf&&fbArr(nf.itens).length);
+    const meus=sfItensDoHist(h);
+    if(!tem){
+      await sfGravarNaOP(op,meus,h.lote,h.id);
+      await db.ref('histFitas/'+h.id+'/op').set({id:op.id,numero:op.numero});
+      return 'OP '+op.numero+' atualizada';
+    }
+    const sims=sfSimsDaNF(nf,op.id);
+    if(!sims.includes(h.id)) return 'a OP '+op.numero+' tem fita de outra simulação e não foi alterada';
+    let itens=[];
+    for(const sid of sims){
+      const hh=sid===h.id?h:HISTFITAS.find(x=>x.id===sid);
+      if(!hh) throw new Error('histórico da simulação '+sid+' não encontrado para refazer a fita da OP');
+      itens=sfMesclarItens(itens,sid===h.id?meus:sfItensDoHist(hh));
+    }
+    await db.ref('ops/'+op.id+'/necessidadeFita').set(sfLimpa({itens,lote:nf.lote||h.lote||'',simulacoes:sims,salvoEm:new Date().toISOString(),salvoPor:usuarioAtual()}));
+    return 'OP '+op.numero+' atualizada';
+  }
+
   /* ===== Histórico de simulações de fita ===== */
   const fbArr=v=>Array.isArray(v)?v:(v&&typeof v==='object'?Object.values(v):[]);
   function filtrarHistFitas(){
@@ -7743,7 +7956,7 @@
     });
   }
   function renderHistFitas(){
-    TELA='histfitas'; histFitaId=null;
+    TELA='histfitas'; histFitaId=null; histEdit=null;
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Histórico de simulações de fita</h1>
         <p class="page-sub">${HISTFITAS.length} simulação(ões) com solicitações geradas</p></div></div>
@@ -7786,6 +7999,37 @@
     L.forEach(l=>sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id).forEach(a=>orient.push({item:l.descricao,a})));
     const proj=[]; // necessidade por projeto, por largura
     L.forEach(l=>fbArr(l.fitaItens).forEach(g=>fbArr(g.projetos).forEach(p=>proj.push({...p,largura:g.largura,item:l.descricao}))));
+    const baseP=sfPedidosBase(h), temPed=baseP.pedidos.length>0;
+    if(temPed&&(!histEdit||histEdit.id!==id)) histEdit={id,pedidos:JSON.parse(JSON.stringify(baseP.pedidos))};
+    let secProj='';
+    if(temPed){
+      const st=sfStatusSolic(h), bloq=st.bloq.length>0, sujo=histEditSujo();
+      const inp='style="width:86px;padding:4px 6px;border:1px solid #d9d9d2;border-radius:6px;text-align:center;font:inherit"';
+      secProj=`<section class="fs"><h3 class="fs-title">Necessidade por projeto</h3>
+        <div class="cel-sub" style="margin-bottom:8px">Edite a largura ou a necessidade, ou exclua um item, e clique em <b>Atualizar</b>: o estoque é conferido de novo, as SA/SC são excluídas e geradas novamente e a OP recebe a necessidade e a orientação atualizadas.</div>
+        ${baseP.reconstruido?`<div class="cel-sub" style="margin-bottom:10px;color:#9a6a00;font-weight:600">Simulação antiga: os pedidos abaixo foram reconstruídos a partir do histórico (largura e metros por projeto). Confira antes de atualizar.${
+          baseP.semProjeto?` ${baseP.semProjeto} item(ns) atendido(s) só pelo estoque aparecem sem projeto identificado.`:''}${
+          baseP.avisos.length?' Divergências: '+escHtml(baseP.avisos.join('; '))+'.':''}</div>`:''}
+        <div class="cel-sub" style="margin-bottom:10px;${bloq?'color:#982424;font-weight:600':''}">${bloq
+          ?'Atualização bloqueada — só é possível quando todas as SA/SC estão Pendentes. Não pendentes: '+escHtml(st.bloq.join(', '))
+          :'Todas as '+(st.sas.length+st.scs.length)+' SA/SC desta simulação estão Pendentes — pode editar e atualizar.'}</div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Item</th><th style="width:110px">Largura (mm)</th><th style="width:120px">Necessidade (M)</th><th style="width:80px"></th></tr></thead>
+          <tbody>${histEdit.pedidos.map((p,i)=>{ const pr=p.proj||{}; return `<tr><td>${escHtml(pr.clienteNome||'—')}</td><td>${escHtml(pr.ambiente||'—')}</td><td class="ctr">${escHtml(pr.numeroProjeto||'—')}</td>
+            <td class="cel-disc" id="hedDesc${i}">${escHtml(p.desc||'')}</td>
+            <td class="ctr"><input type="number" step="any" min="0" value="${p.w}" ${inp} oninput="histEditCampo(${i},'w',this.value)"></td>
+            <td class="ctr"><input type="number" step="any" min="0" value="${p.m}" ${inp} oninput="histEditCampo(${i},'m',this.value)"></td>
+            <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="histEditExcluir(${i})">Excluir</button></td></tr>`; }).join('')}</tbody></table></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="hedBtn" class="btn btn-primary" data-bloq="${bloq?1:0}" ${(!sujo||bloq)?'disabled style="opacity:.5"':''} onclick="sfAtualizarHist('${id}')">Atualizar</button>
+          <button id="hedDesf" class="btn btn-ghost" ${sujo?'':'disabled style="opacity:.5"'} onclick="histEditDesfazer()">Desfazer alterações</button>
+        </div></section>`;
+    } else if(proj.length){
+      secProj=`<section class="fs"><h3 class="fs-title">Necessidade por projeto</h3>
+        <div class="cel-sub" style="margin-bottom:8px">Simulação anterior ao recurso de edição: não guarda os pedidos originais, então não pode ser editada nem atualizada.</div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Item</th><th style="width:80px">Largura</th><th style="width:110px">Necessidade</th></tr></thead>
+          <tbody>${proj.map(p=>`<tr><td>${escHtml(p.clienteNome||'—')}</td><td>${escHtml(p.ambiente||'—')}</td><td class="ctr">${escHtml(p.numeroProjeto||'—')}</td>
+            <td class="cel-disc">${escHtml(p.item)}</td><td class="ctr">${fmtNum(p.largura)}mm</td><td class="ctr inv-qt">${fmtNum(p.metros)} <span class="inv-un">M</span></td></tr>`).join('')}</tbody></table></div></section>`;
+    }
     view.innerHTML=`<div class="page page-wide">
       <div class="page-head"><div><h1 class="page-title">Lote ${escHtml(h.lote)||'—'}</h1>
         <p class="page-sub">PCP · Histórico de simulações de fita</p></div>
@@ -7827,10 +8071,7 @@
       ${orient.length?`<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Orientação para abrir a fita</h3>
         <div class="table-wrap"><table class="tbl"><thead><tr><th>Item (rolo comprado)</th><th>Como abrir</th></tr></thead>
           <tbody>${orient.map(x=>`<tr><td class="cel-disc">${escHtml(x.item)}</td><td><b>${escHtml(sfTextoAbrir(x.a))}</b></td></tr>`).join('')}</tbody></table></div></section>`:''}
-      ${proj.length?`<section class="fs"><h3 class="fs-title">Necessidade por projeto</h3>
-        <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Item</th><th style="width:80px">Largura</th><th style="width:110px">Necessidade</th></tr></thead>
-          <tbody>${proj.map(p=>`<tr><td>${escHtml(p.clienteNome||'—')}</td><td>${escHtml(p.ambiente||'—')}</td><td class="ctr">${escHtml(p.numeroProjeto||'—')}</td>
-            <td class="cel-disc">${escHtml(p.item)}</td><td class="ctr">${fmtNum(p.largura)}mm</td><td class="ctr inv-qt">${fmtNum(p.metros)} <span class="inv-un">M</span></td></tr>`).join('')}</tbody></table></div></section>`:''}
+      ${secProj}
     </div>`;
   }
   function sfHistParaOP(id,modo){
