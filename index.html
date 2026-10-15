@@ -335,7 +335,77 @@
   }
 
 
-  /* ===== Controle de usuários: avatares ===== */
+  /* ===== Tela inicial (launcher) ===== */
+.hm-ov{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;overflow:auto;
+  background:radial-gradient(1200px 600px at 15% -10%,rgba(152,36,36,.13),transparent 60%),radial-gradient(900px 500px at 100% 110%,rgba(75,75,85,.16),transparent 60%),#ECECE6;
+  font-family:'Poppins',sans-serif;color:#4B4B55}
+.hm-ov.open{display:flex;animation:hmIn .22s ease}
+@keyframes hmIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.hm-close{position:absolute;top:18px;right:22px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.7);
+  color:#4B4B55;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:.15s}
+.hm-close:hover{background:#fff;color:#982424;transform:rotate(90deg)}
+.hm-wrap{width:100%;max-width:680px;margin:auto;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:26px}
+.hm-hero{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:6px}
+.hm-name{font-family:'Poppins',sans-serif;font-weight:600;font-size:52px;letter-spacing:-.02em;color:#4B4B55;line-height:1;margin-top:-4px}
+.hm-hero{gap:10px}
+.hm-logo{height:84px;width:auto;display:block;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 4px 10px rgba(152,36,36,.15))}
+.hm-logo-t{font-family:'Archivo',sans-serif;font-weight:800;font-size:64px;letter-spacing:-2px;color:#982424;line-height:1}
+.hm-hero::after{content:'';display:block;width:44px;height:3px;border-radius:3px;background:#982424;order:3;opacity:.85}
+.hm-sub{font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:5px;text-transform:uppercase;color:#4B4B55;opacity:.7}
+.hm-box{position:relative;width:100%}
+.hm-bar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:0 18px;height:56px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 14px rgba(75,75,85,.08);border:1px solid #D6D6CE;transition:box-shadow .2s}
+.hm-bar:focus-within{box-shadow:0 0 0 3px rgba(152,36,36,.14),0 6px 20px rgba(152,36,36,.12);border-color:#982424}
+.hm-bar:focus-within svg{color:#982424;opacity:1}
+.hm-bar svg{flex:none;opacity:.55}
+.hm-bar input{flex:1;border:0;outline:0;background:transparent;font:400 15px 'Poppins',sans-serif;color:#2f2f36;min-width:0}
+.hm-bar input::placeholder{color:#9a9aa3;font-weight:400}
+.hm-kbd{font-size:11px;padding:2px 7px;border-radius:6px;background:#eee;color:#777}
+.hm-drop{position:absolute;left:0;right:0;top:62px;background:#fff;border-radius:14px;border:1px solid #D6D6CE;box-shadow:0 12px 36px rgba(75,75,85,.18);
+  padding:8px 0;display:none;max-height:380px;overflow:auto;z-index:2}
+.hm-drop.on{display:block}
+.hm-it{display:flex;align-items:center;gap:14px;padding:9px 22px;cursor:pointer}
+.hm-it{border-left:3px solid transparent}
+.hm-it.sel,.hm-it:hover{background:#F6EEEE;border-left-color:#982424}
+.hm-ic{flex:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:#888}
+.hm-ic svg{width:18px;height:18px}
+.hm-tx{flex:1;min-width:0}
+.hm-t1{font-size:14px;color:#2f2f36;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-t1 b{color:#982424;font-weight:600}
+.hm-t2{font-size:11.5px;color:#8a8a93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-x{flex:none;border:0;background:transparent;color:#999;font-size:16px;cursor:pointer;padding:2px 6px;border-radius:50%;visibility:hidden}
+.hm-it:hover .hm-x,.hm-it.sel .hm-x{visibility:visible}
+.hm-x:hover{color:#982424;background:#eee}
+.hm-vazio{padding:16px 22px;font-size:13px;color:#8a8a93}
+.hm-tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;width:100%;margin-top:8px}
+.hm-tile{width:112px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px 12px;border-radius:14px;cursor:pointer;
+  position:relative;transition:.15s;background:#fff;border:1px solid #D6D6CE;box-shadow:0 1px 3px rgba(0,0,0,.05);font-family:inherit;color:#4B4B55}
+.hm-tile:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(152,36,36,.14);border-color:#982424}
+.hm-circ{width:48px;height:48px;border-radius:12px;background:#F6EEEE;display:flex;align-items:center;
+  justify-content:center;color:#982424;font-weight:700;font-size:20px}
+.hm-circ svg{width:24px;height:24px}
+.hm-tile.add{background:transparent;border:1.5px dashed #B9B9B0;box-shadow:none}
+.hm-tile.add .hm-circ{background:#E4E4DD;color:#4B4B55;font-size:26px;font-weight:400}
+.hm-tile.add:hover{background:#fff;border-color:#982424}
+.hm-tile.add:hover .hm-circ{background:#982424;color:#fff}
+.hm-nm{font-size:12px;text-align:center;line-height:1.25;max-width:96px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hm-tile .hm-rm{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.06);
+  color:#666;cursor:pointer;font-size:13px;line-height:1;display:none}
+.hm-tile:hover .hm-rm{display:block}
+.hm-rm:hover{background:#982424!important;color:#fff!important}
+.hm-foot{font-size:11.5px;color:#8a8a93;margin-top:6px}
+.hm-modal{position:fixed;inset:0;z-index:70;background:rgba(30,30,35,.45);display:none;align-items:flex-start;justify-content:center;padding-top:12vh}
+.hm-modal.on{display:flex}
+.hm-card{width:min(460px,92vw);background:#fff;border-radius:14px;border-top:4px solid #982424;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:'Poppins',sans-serif}
+.hm-card h3{margin:0 0 4px;font-size:17px;color:#2f2f36}
+.hm-card p{margin:0 0 14px;font-size:12.5px;color:#8a8a93}
+.hm-card .hm-bar{height:46px;box-shadow:none;background:#F3F3EF;border-radius:14px}
+.hm-card .hm-res{max-height:260px;overflow:auto;margin-top:10px}
+.hm-card .hm-btns{display:flex;justify-content:flex-end;margin-top:14px}
+.hm-btn{border:0;background:#EEE;border-radius:10px;padding:9px 16px;font:500 13px 'Poppins',sans-serif;cursor:pointer;color:#4B4B55}
+.hm-btn:hover{background:#e2e2e2}
+@media(max-width:560px){.hm-name{font-size:40px}.hm-logo{height:64px}.hm-tile{width:92px}}
+/* ===== Controle de usuários: avatares ===== */
   .rail-btn[data-id="dev"]{ display:none; }
   .rail-btn[data-id="dev"].dev-on{ display:grid; }
   .av{ position:relative; display:inline-grid; place-items:center; width:34px; height:34px; border-radius:50%; overflow:hidden;
@@ -2388,7 +2458,7 @@
   <section class="screen screen--app" id="app">
     <div class="shell">
       <header class="topbar">
-        <div class="topbar-corner" title="Início"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg></div>
+        <div class="topbar-corner" title="Início (Ctrl+K)" onclick="homeToggle()" style="cursor:pointer"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg></div>
         <div class="topbar-brand">
           <img class="brand-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
           <div class="brand-text"><span class="brand-name">raldi</span><span class="brand-sub">Plataforma</span></div>
@@ -3555,12 +3625,12 @@
     if(user){
       document.getElementById('tuMail').textContent=user.email||'';
       atualizarAcessoDev(); atualizarAvatarTopo();
-      ligarListeners();
+      ligarListeners(); homeCarregar();
       if(splashPassou) mostrarTela(app);
       logado=true;
     }else{
       logado=false;
-      const fs=document.getElementById('loginForm'); if(fs) fs.reset();
+      homeLogout(); const fs=document.getElementById('loginForm'); if(fs) fs.reset();
       if(splashPassou) mostrarTela(telaLogin);
     }
   });
@@ -7344,10 +7414,11 @@
     const agreg=new Map();
     simFita.pedidosBrutos.forEach(p=>{
       const k=p.mat+'|'+p.w;
-      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0});
+      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,forcar:null});
       agreg.get(k).m+=p.m;
+      if(p.forcarRolo) agreg.get(k).forcar=p.forcarRolo;   // fita pedida editada na mesma largura: compra esse rolo direto
     });
-    const liquidos=[], usos=new Map(), restM=new Map();
+    const liquidos=[], diretas=[], usos=new Map(), restM=new Map();
     agreg.forEach(p=>{
       const opts=simFita.rolosPorMat[p.mat]||ROLOS_FITA;
       const r=opts.find(x=>Math.abs(x.l-p.w)<0.01);
@@ -7361,7 +7432,7 @@
         u.estM+=usa; u.necM+=p.m; usos.set(ins.id,u);
       }
       const liq=+(p.m-usa).toFixed(4);
-      if(liq>1e-9) liquidos.push({...p,m:liq});
+      if(liq>1e-9) (p.forcar?diretas:liquidos).push({...p,m:liq});
     });
     console.log('[fita-debug] liquidos', JSON.parse(JSON.stringify(liquidos)));
     const materiais=liquidos.length?otimizarCorte(liquidos,simFita.rolosPorMat,0):[];
@@ -7376,6 +7447,27 @@
         l.itens=sfItensDaLinha(M,c,agreg);
         linhas.push(l); if(ins) porIns.set(ins.id,l);
       });
+    });
+    diretas.forEach(d=>{
+      const f=d.forcar, ins=insumoDoRolo(d.mat,f.l,f.m);
+      const rolos=Math.ceil(+(d.m/f.m).toFixed(6)), metros=+(rolos*f.m).toFixed(4);
+      const projs=new Map();
+      simFita.pedidosBrutos.forEach(p=>{
+        if(p.mat!==d.mat||p.w!==d.w) return;
+        const pr=p.proj||{}, k=[pr.clienteNome,pr.ambiente,pr.numeroProjeto].join('|');
+        if(!projs.has(k)) projs.set(k,{clienteNome:pr.clienteNome||'',ambiente:pr.ambiente||'',numeroProjeto:pr.numeroProjeto||'',metros:0});
+        projs.get(k).metros+=p.m;
+      });
+      const tot=agreg.get(d.mat+'|'+d.w).m;
+      const item={largura:d.w,metros:+tot.toFixed(4),estoqueM:+Math.max(0,tot-d.m).toFixed(4),
+        projetos:[...projs.values()].map(x=>({...x,metros:+x.metros.toFixed(4)}))};
+      let l=ins?porIns.get(ins.id):null;
+      if(l){ l.rolos+=rolos; l.metros=+(l.metros+metros).toFixed(4); l.necM=l.metros; (l.itens=l.itens||[]).push(item); }
+      else{
+        l={mat:d.mat,largura:f.l,metrosRolo:f.m,rolos,metros,metrosEstoque:0,necM:metros,insumoId:ins?ins.id:null,
+          codigo:ins?ins.codigo:'',descricao:ins?ins.descricao:`${d.mat} ${fmtNum(f.l)}MM X ${fmtNum(f.m)}M`,unidade:ins?ins.unidade:'',itens:[item]};
+        linhas.push(l); if(ins) porIns.set(ins.id,l);
+      }
     });
     usos.forEach((u,id)=>{
       if(u.estM<=1e-9) return;
@@ -7778,7 +7870,7 @@
         if(Math.abs(soma-(+g.metros||0))>0.01) avisos.push(`${fmtNum(g.largura)}mm de ${l.descricao}: soma dos projetos (${fmtNum(+soma.toFixed(3))} m) difere do total (${fmtNum(+g.metros||0)} m)`);
         fbArr(g.projetos).forEach(p=>{
           const k=[mat,g.largura,p.clienteNome,p.ambiente,p.numeroProjeto].join('|');
-          if(!mapa.has(k)) mapa.set(k,{mat,desc:sfDescComLargura(l.descricao,g.largura),codigo:'',w:g.largura,m:+p.metros||0,
+          if(!mapa.has(k)) mapa.set(k,{mat,desc:l.descricao,codigo:'',w:g.largura,m:+p.metros||0,
             proj:{clienteNome:p.clienteNome||'',ambiente:p.ambiente||'',numeroProjeto:p.numeroProjeto||''}});
         });
       });
@@ -7810,12 +7902,68 @@
     if(b){ const bloq=b.dataset.bloq==='1'; b.disabled=!sujo||bloq; b.style.opacity=(!sujo||bloq)?'.5':''; }
     if(d){ d.disabled=!sujo; d.style.opacity=sujo?'':'.5'; }
   }
+  // fita pedida (insumo) editada: se a largura do rolo = largura da necessidade, compra esse rolo direto
+  function histEditForcar(p){
+    const d=parseDim(p.desc);
+    if(p.itemEditado&&d&&Math.abs(d.l-p.w)<0.01) p.forcarRolo={l:d.l,m:d.m}; else delete p.forcarRolo;
+  }
+  function histEditFitas(){
+    return INSUMOS.filter(i=>/FITA DE BORDA/i.test(i.descricao||'')&&parseDim(i.descricao))
+      .sort((a,b)=>String(a.descricao).localeCompare(String(b.descricao),'pt-BR'));
+  }
+  function histEditAcharFita(v){
+    const t=String(v||'').trim().toUpperCase();
+    return INSUMOS.find(x=>String(x.descricao||'').toUpperCase()===t&&parseDim(x.descricao))||null;
+  }
+  function histEditItem(i,valor){
+    const p=histEdit&&histEdit.pedidos[i]; if(!p) return;
+    const ins=histEditAcharFita(valor);
+    if(!ins){ toast('Escolha uma fita da lista'); verHistFita(histEdit.id); return; }
+    p.desc=ins.descricao; p.codigo=ins.codigo||''; p.mat=materialDe(ins.descricao); p.itemEditado=true;
+    histEditForcar(p);
+    verHistFita(histEdit.id);
+  }
   function histEditCampo(i,campo,valor){
     const p=histEdit&&histEdit.pedidos[i]; if(!p) return;
     const n=parseFloat(String(valor).replace(',','.'));
     p[campo]=isNaN(n)?0:n;
-    if(campo==='w'){ p.desc=sfDescComLargura(p.desc,p.w); const el=document.getElementById('hedDesc'+i); if(el) el.textContent=p.desc; }
+    if(campo==='w'&&p.itemEditado) histEditForcar(p);
     histEditMarcar();
+  }
+  // adicionar uma fita nova à simulação (ex.: pedido errado: excluir o item e incluir o correto)
+  function histEditProjetos(){
+    const m=new Map();
+    (histEdit?histEdit.pedidos:[]).forEach(p=>{ const pr=p.proj||{}, k=[pr.clienteNome,pr.ambiente,pr.numeroProjeto].join('|');
+      if(!m.has(k)) m.set(k,{clienteNome:pr.clienteNome||'',ambiente:pr.ambiente||'',numeroProjeto:pr.numeroProjeto||''}); });
+    return [...m.values()];
+  }
+  function histEditAdicionar(){
+    if(!histEdit) return;
+    const projs=histEditProjetos();
+    abrirModal('Adicionar fita',
+      `<div class="fld"><label>Projeto<i>*</i></label><select id="hedAdProj">${projs.map((x,i)=>`<option value="${i}">${escHtml([x.clienteNome,x.ambiente,x.numeroProjeto?'Nº '+x.numeroProjeto:''].filter(Boolean).join(' · ')||'—')}</option>`).join('')}</select></div>
+       <div class="fld" style="margin-top:12px"><label>Fita pedida (item)<i>*</i></label>
+         <input id="hedAdMat" list="hedItens" autocomplete="off" placeholder="Ex.: FITA DE BORDA CINZA COBALTO VEL 35MM PROADEC">
+         <span class="fld-hint">Digite para buscar e escolha da lista.</span></div>
+       <div class="grid" style="margin-top:12px">
+         <div class="fld"><label>Largura (mm)<i>*</i></label><input id="hedAdW" type="number" step="any" min="0"></div>
+         <div class="fld"><label>Necessidade (M)<i>*</i></label><input id="hedAdM" type="number" step="any" min="0"></div></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="histEditAdicionarOk()">Adicionar</button>`);
+  }
+  function histEditAdicionarOk(){
+    const g=id=>document.getElementById(id);
+    const proj=histEditProjetos()[parseInt(g('hedAdProj').value,10)];
+    const ins=histEditAcharFita(g('hedAdMat').value);
+    const w=parseFloat(String(g('hedAdW').value).replace(',','.')), m=parseFloat(String(g('hedAdM').value).replace(',','.'));
+    if(!proj){ toast('Selecione o projeto'); return; }
+    if(!ins){ toast('Escolha uma fita da lista'); return; }
+    if(!(w>0)||!(m>0)){ toast('Informe largura e necessidade maiores que zero'); return; }
+    const novo={mat:materialDe(ins.descricao),desc:ins.descricao,codigo:ins.codigo||'',w,m,proj:{...proj},itemEditado:true};
+    histEditForcar(novo);
+    histEdit.pedidos.push(novo);
+    fecharModal();
+    verHistFita(histEdit.id);
   }
   function histEditExcluir(i){
     if(!histEdit) return;
@@ -8006,20 +8154,22 @@
       const st=sfStatusSolic(h), bloq=st.bloq.length>0, sujo=histEditSujo();
       const inp='style="width:86px;padding:4px 6px;border:1px solid #d9d9d2;border-radius:6px;text-align:center;font:inherit"';
       secProj=`<section class="fs"><h3 class="fs-title">Necessidade por projeto</h3>
-        <div class="cel-sub" style="margin-bottom:8px">Edite a largura ou a necessidade, ou exclua um item, e clique em <b>Atualizar</b>: o estoque é conferido de novo, as SA/SC são excluídas e geradas novamente e a OP recebe a necessidade e a orientação atualizadas.</div>
+        <div class="cel-sub" style="margin-bottom:8px">Edite a fita pedida, a largura ou a necessidade, ou exclua um item, e clique em <b>Atualizar</b> (se a fita escolhida tiver a mesma largura da necessidade, ex.: fita 35MM para necessidade de 35mm, o sistema compra esse rolo direto, sem abrir rolo maior): o estoque é conferido de novo, as SA/SC são excluídas e geradas novamente e a OP recebe a necessidade e a orientação atualizadas.</div>
         ${baseP.reconstruido?`<div class="cel-sub" style="margin-bottom:10px;color:#9a6a00;font-weight:600">Simulação antiga: os pedidos abaixo foram reconstruídos a partir do histórico (largura e metros por projeto). Confira antes de atualizar.${
           baseP.semProjeto?` ${baseP.semProjeto} item(ns) atendido(s) só pelo estoque aparecem sem projeto identificado.`:''}${
           baseP.avisos.length?' Divergências: '+escHtml(baseP.avisos.join('; '))+'.':''}</div>`:''}
         <div class="cel-sub" style="margin-bottom:10px;${bloq?'color:#982424;font-weight:600':''}">${bloq
           ?'Atualização bloqueada — só é possível quando todas as SA/SC estão Pendentes. Não pendentes: '+escHtml(st.bloq.join(', '))
           :'Todas as '+(st.sas.length+st.scs.length)+' SA/SC desta simulação estão Pendentes — pode editar e atualizar.'}</div>
-        <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Item</th><th style="width:110px">Largura (mm)</th><th style="width:120px">Necessidade (M)</th><th style="width:80px"></th></tr></thead>
+        <datalist id="hedItens">${histEditFitas().map(x=>`<option value="${escHtml(x.descricao).replace(/"/g,'&quot;')}">`).join('')}</datalist>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Fita pedida (item)</th><th style="width:110px">Largura (mm)</th><th style="width:120px">Necessidade (M)</th><th style="width:80px"></th></tr></thead>
           <tbody>${histEdit.pedidos.map((p,i)=>{ const pr=p.proj||{}; return `<tr><td>${escHtml(pr.clienteNome||'—')}</td><td>${escHtml(pr.ambiente||'—')}</td><td class="ctr">${escHtml(pr.numeroProjeto||'—')}</td>
-            <td class="cel-disc" id="hedDesc${i}">${escHtml(p.desc||'')}</td>
+            <td><input list="hedItens" value="${escHtml(p.desc||'').replace(/"/g,'&quot;')}" style="width:100%;min-width:260px;padding:4px 6px;border:1px solid #d9d9d2;border-radius:6px;font:inherit" onchange="histEditItem(${i},this.value)"></td>
             <td class="ctr"><input type="number" step="any" min="0" value="${p.w}" ${inp} oninput="histEditCampo(${i},'w',this.value)"></td>
             <td class="ctr"><input type="number" step="any" min="0" value="${p.m}" ${inp} oninput="histEditCampo(${i},'m',this.value)"></td>
             <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="histEditExcluir(${i})">Excluir</button></td></tr>`; }).join('')}</tbody></table></div>
         <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-ghost" onclick="histEditAdicionar()">+ Adicionar fita</button>
           <button id="hedBtn" class="btn btn-primary" data-bloq="${bloq?1:0}" ${(!sujo||bloq)?'disabled style="opacity:.5"':''} onclick="sfAtualizarHist('${id}')">Atualizar</button>
           <button id="hedDesf" class="btn btn-ghost" ${sujo?'':'disabled style="opacity:.5"'} onclick="histEditDesfazer()">Desfazer alterações</button>
         </div></section>`;
@@ -13062,7 +13212,107 @@
     renderDanosDash();
   }
 
-  // expõe ao window TODAS as funções de topo
+  // ===== Tela inicial (launcher): busca de módulos, histórico e atalhos por usuário =====
+const HOME={aberta:false,sel:-1,lista:[],hist:[],atalhos:[],uid:null,montada:false,atRes:[],atSel:-1};
+function homeEsc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function homeIndice(){ const out=[];
+  MODULES.forEach(m=>{ if(m.id==='dev'&&!souDev()) return;
+    m.tree.forEach(g=>{
+      if(!g.children||!g.children.length){ out.push({mod:m.id,modNome:m.label,grupo:'',leaf:g.label,icon:m.icon}); return; }
+      g.children.forEach(c=>out.push({mod:m.id,modNome:m.label,grupo:g.label,leaf:c,icon:m.icon})); }); });
+  return out; }
+function homeBuscar(q){ const n=normTxt(q); if(!n) return [];
+  const res=[]; homeIndice().forEach(e=>{ const l=normTxt(e.leaf), g=normTxt(e.grupo), m=normTxt(e.modNome); let s=0;
+    if(l.startsWith(n)) s=100; else if(l.split(/[\s\-\/(]+/).some(w=>w.startsWith(n))) s=80; else if(l.includes(n)) s=60;
+    else if(g.includes(n)||m.includes(n)) s=30;
+    if(s) res.push({e,s}); });
+  res.sort((a,b)=>b.s-a.s||a.e.leaf.localeCompare(b.e.leaf)); return res.slice(0,30).map(r=>r.e); }
+function homeDestaque(txt,q){ const n=normTxt(q); const t=normTxt(txt); const i=n?t.indexOf(n):-1;
+  if(i<0) return homeEsc(txt); return homeEsc(txt.slice(0,i))+'<b>'+homeEsc(txt.slice(i,i+n.length))+'</b>'+homeEsc(txt.slice(i+n.length)); }
+const HM_CLOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+const HM_SEARCH='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+function homeMontar(){ if(HOME.montada) return; HOME.montada=true;
+  const d=document.createElement('div'); d.className='hm-ov'; d.id='hmOv';
+  d.innerHTML='<button class="hm-close" title="Fechar (Esc)" onclick="homeFechar()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+
+  '<div class="hm-wrap"><div class="hm-hero"><img class="hm-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display=\'none\'"><div class="hm-name">raldi</div><div class="hm-sub">Móveis com precisão</div></div>'+
+  '<div class="hm-box"><div class="hm-bar">'+HM_SEARCH+'<input id="hmIn" type="text" autocomplete="off" spellcheck="false" placeholder="Pesquise um módulo ou função (ex.: apontamento)"><span class="hm-kbd">Ctrl K</span></div><div class="hm-drop" id="hmDrop"></div></div>'+
+  '<div class="hm-tiles" id="hmTiles"></div><div class="hm-foot">Seus atalhos e pesquisas são exclusivos do seu usuário</div></div>';
+  document.body.appendChild(d);
+  const m=document.createElement('div'); m.className='hm-modal'; m.id='hmModal';
+  m.innerHTML='<div class="hm-card"><h3>Adicionar atalho</h3><p>Pesquise o módulo ou função e clique para salvar.</p><div class="hm-bar">'+HM_SEARCH+'<input id="hmAtIn" type="text" autocomplete="off" placeholder="Pesquisar caminho…"></div><div class="hm-res" id="hmAtRes"></div><div class="hm-btns"><button class="hm-btn" onclick="homeAtFechar()">Cancelar</button></div></div>';
+  document.body.appendChild(m);
+  m.addEventListener('mousedown',e=>{ if(e.target===m) homeAtFechar(); });
+  const inp=document.getElementById('hmIn');
+  inp.addEventListener('input',homeRender); inp.addEventListener('focus',homeRender);
+  inp.addEventListener('keydown',e=>{ const n=HOME.lista.length;
+    if(e.key==='ArrowDown'){ e.preventDefault(); if(n){HOME.sel=(HOME.sel+1)%n; homeMarca();} }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); if(n){HOME.sel=(HOME.sel-1+n)%n; homeMarca();} }
+    else if(e.key==='Enter'){ e.preventDefault(); const it=HOME.lista[HOME.sel>=0?HOME.sel:0]; if(it) homeAbrirItem(it); } });
+  document.addEventListener('mousedown',e=>{ if(HOME.aberta && !e.target.closest('.hm-box')) document.getElementById('hmDrop').classList.remove('on'); });
+  const ai=document.getElementById('hmAtIn');
+  ai.addEventListener('input',homeAtRender);
+  ai.addEventListener('keydown',e=>{ const n=HOME.atRes.length;
+    if(e.key==='ArrowDown'){ e.preventDefault(); if(n){HOME.atSel=(HOME.atSel+1)%n; homeAtRender(true);} }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); if(n){HOME.atSel=(HOME.atSel-1+n)%n; homeAtRender(true);} }
+    else if(e.key==='Enter'){ e.preventDefault(); const it=HOME.atRes[HOME.atSel>=0?HOME.atSel:0]; if(it) homeAtAdd(it); } });
+}
+function homeAbrirItem(it){ if(it.hist){ homeIr(it); } else homeIr(it); }
+function homeLinha(e,q,hist){ const sub=hist?(e.modNome+(e.grupo?' › '+e.grupo:'')):(e.modNome+(e.grupo?' › '+e.grupo:''));
+  return '<div class="hm-t1">'+(hist?homeEsc(e.leaf):homeDestaque(e.leaf,q))+'</div><div class="hm-t2">'+homeEsc(sub)+'</div>'; }
+function homeResolve(h){ return homeIndice().find(e=>e.mod===h.mod&&e.leaf===h.leaf); }
+function homeRender(){ const inp=document.getElementById('hmIn'), dr=document.getElementById('hmDrop'); const q=inp.value; let html='';
+  if(q.trim()){ HOME.lista=homeBuscar(q);
+    html=HOME.lista.map((e,i)=>'<div class="hm-it" data-i="'+i+'"><div class="hm-ic">'+(e.icon||HM_SEARCH)+'</div><div class="hm-tx">'+homeLinha(e,q,false)+'</div></div>').join('');
+    if(!html) html='<div class="hm-vazio">Nenhuma função encontrada para “'+homeEsc(q)+'”</div>';
+  }else{ HOME.lista=HOME.hist.map(homeResolve).filter(Boolean);
+    html=HOME.lista.map((e,i)=>'<div class="hm-it" data-i="'+i+'"><div class="hm-ic">'+HM_CLOCK+'</div><div class="hm-tx">'+homeLinha(e,'',true)+'</div><button class="hm-x" data-h="'+i+'" title="Remover do histórico">✕</button></div>').join(''); }
+  HOME.sel=HOME.lista.length?0:-1; dr.innerHTML=html; dr.classList.toggle('on',!!html);
+  dr.querySelectorAll('.hm-it').forEach(el=>{ el.onmousedown=ev=>{ ev.preventDefault();
+    const x=ev.target.closest('.hm-x'); if(x){ const e=HOME.lista[+x.dataset.h]; HOME.hist=HOME.hist.filter(h=>!(h.mod===e.mod&&h.leaf===e.leaf)); homeSalvar(); homeRender(); return; }
+    homeAbrirItem(HOME.lista[+el.dataset.i]); };
+    el.onmousemove=()=>{ HOME.sel=+el.dataset.i; homeMarca(); }; });
+  homeMarca(); }
+function homeMarca(){ document.querySelectorAll('#hmDrop .hm-it').forEach((el,i)=>{ el.classList.toggle('sel',i===HOME.sel); if(i===HOME.sel) el.scrollIntoView({block:'nearest'}); }); }
+function homeTiles(){ const t=document.getElementById('hmTiles'); if(!t) return;
+  let h=''; HOME.atalhos.forEach((a,i)=>{ const e=homeResolve(a); if(!e) return;
+    h+='<div class="hm-tile" data-a="'+i+'" tabindex="0" title="'+homeEsc(e.modNome+(e.grupo?' › '+e.grupo:'')+' › '+e.leaf)+'"><button class="hm-rm" data-r="'+i+'" title="Remover atalho">✕</button><div class="hm-circ">'+(e.icon||homeEsc(e.leaf[0]))+'</div><div class="hm-nm">'+homeEsc(e.leaf)+'</div></div>'; });
+  if(HOME.atalhos.length<10) h+='<button class="hm-tile add" id="hmAdd"><div class="hm-circ">+</div><div class="hm-nm">Atalho</div></button>';
+  t.innerHTML=h;
+  t.querySelectorAll('.hm-tile[data-a]').forEach(el=>{ el.onclick=ev=>{ const r=ev.target.closest('.hm-rm');
+    if(r){ ev.stopPropagation(); HOME.atalhos.splice(+r.dataset.r,1); homeSalvar(); homeTiles(); return; }
+    const e=homeResolve(HOME.atalhos[+el.dataset.a]); if(e) homeIr(e); };
+    el.onkeydown=ev=>{ if(ev.key==='Enter') el.click(); }; });
+  const add=document.getElementById('hmAdd'); if(add) add.onclick=homeAtAbrir; }
+function homeAtAbrir(){ const m=document.getElementById('hmModal'); m.classList.add('on'); const i=document.getElementById('hmAtIn'); i.value=''; homeAtRender(); setTimeout(()=>i.focus(),30); }
+function homeAtFechar(){ document.getElementById('hmModal').classList.remove('on'); const i=document.getElementById('hmIn'); if(i&&HOME.aberta) i.focus(); }
+function homeAtRender(keep){ const q=document.getElementById('hmAtIn').value, box=document.getElementById('hmAtRes');
+  if(keep!==true){ HOME.atRes=(q.trim()?homeBuscar(q):homeIndice()).filter(e=>!HOME.atalhos.some(a=>a.mod===e.mod&&a.leaf===e.leaf)).slice(0,40); HOME.atSel=HOME.atRes.length?0:-1; }
+  box.innerHTML=HOME.atRes.map((e,i)=>'<div class="hm-it'+(i===HOME.atSel?' sel':'')+'" data-i="'+i+'"><div class="hm-ic">'+(e.icon||'')+'</div><div class="hm-tx">'+homeLinha(e,q,false)+'</div></div>').join('')||'<div class="hm-vazio">Nada encontrado</div>';
+  box.querySelectorAll('.hm-it').forEach(el=>{ el.onclick=()=>homeAtAdd(HOME.atRes[+el.dataset.i]); });
+  const s=box.querySelector('.sel'); if(s) s.scrollIntoView({block:'nearest'}); }
+function homeAtAdd(e){ if(!e||HOME.atalhos.length>=10) return; HOME.atalhos.push({mod:e.mod,leaf:e.leaf}); homeSalvar(); homeAtFechar(); homeTiles(); }
+function homeIr(e){ HOME.hist=HOME.hist.filter(h=>!(h.mod===e.mod&&h.leaf===e.leaf));
+  HOME.hist.unshift({mod:e.mod,leaf:e.leaf,em:Date.now()}); HOME.hist=HOME.hist.slice(0,8);
+  homeSalvar(); homeFechar(); selectModule(e.mod); selectLeaf(e.leaf); }
+function homeSalvar(){ const uid=HOME.uid; if(!uid) return; const d={hist:HOME.hist,atalhos:HOME.atalhos};
+  try{ localStorage.setItem('raldiHome_'+uid,JSON.stringify(d)); }catch(e){}
+  try{ db.ref('inicioUsuario/'+uid).set(d).catch(()=>{}); }catch(e){} }
+function homeAplica(d){ d=d||{}; HOME.hist=Array.isArray(d.hist)?d.hist:[]; HOME.atalhos=Array.isArray(d.atalhos)?d.atalhos:[]; if(HOME.aberta){ homeTiles(); homeRender(); } }
+function homeCarregar(){ const u=auth.currentUser; if(!u) return; if(HOME.uid===u.uid) return; HOME.uid=u.uid;
+  let loc=null; try{ loc=JSON.parse(localStorage.getItem('raldiHome_'+u.uid)||'null'); }catch(e){}
+  homeAplica(loc);
+  try{ db.ref('inicioUsuario/'+u.uid).once('value').then(s=>{ if(s.val()&&HOME.uid===u.uid) homeAplica(s.val()); }).catch(()=>{}); }catch(e){} }
+function homeLogout(){ HOME.uid=null; HOME.hist=[]; HOME.atalhos=[]; if(HOME.aberta) homeFechar(); }
+function homeAbrir(){ if(!auth.currentUser) return; homeCarregar(); homeMontar(); HOME.aberta=true;
+  document.getElementById('hmOv').classList.add('open'); const i=document.getElementById('hmIn'); i.value=''; homeTiles(); homeRender(); setTimeout(()=>i.focus(),40); }
+function homeFechar(){ HOME.aberta=false; const o=document.getElementById('hmOv'); if(o) o.classList.remove('open'); const m=document.getElementById('hmModal'); if(m) m.classList.remove('on'); }
+function homeToggle(){ HOME.aberta?homeFechar():homeAbrir(); }
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&auth.currentUser){ e.preventDefault(); homeToggle(); return; }
+  if(e.key==='Escape'&&HOME.aberta){ const m=document.getElementById('hmModal'); if(m&&m.classList.contains('on')) homeAtFechar(); else homeFechar(); e.stopPropagation(); } },true);
+
+Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir});
+// expõe ao window TODAS as funções de topo
   Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,andRolar,andNavAtualizar,abrirLoteFila,abrirApont,abrirCard,abrirCardDe,
     abrirChecklist,abrirColar,abrirEmissao,abrirFeriados,abrirFormCliente,abrirImportacao,abrirMapaPin,abrirModal,
     abrirRelatorioFita,abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
