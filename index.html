@@ -1497,6 +1497,7 @@
   .opz-tbl td.mono{ font-family:ui-monospace,monospace; font-weight:700; }
   .opz-tbl td.ctr{ text-align:center; }
   .opz-tbl td.vazio{ color:#9a9aa2; }
+  .opz-tbl td.opz-abrir{ font-size:9px; line-height:1.3; }
   .opz-op{ margin-top:12px; border:1px solid #b9b9c0; }
   .opz-oph{ display:grid; grid-template-columns:1fr 1fr 260px; background:#eceae6;
     border-bottom:1px solid #2c2c33; font-size:9.5px; font-weight:700; }
@@ -7556,11 +7557,78 @@
     return OPS.find(o=>o.atividade==='Laminado' && String(o.lote||'').trim()===l) || null;
   }
   function sfLimpa(o){ return JSON.parse(JSON.stringify(o)); } // Firebase não aceita undefined
-  function sfItensParaOP(L){
+  function sfItensParaOP(L,histId){
     return L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',
       necessario:+(l.necM||l.metros||0).toFixed(4), estoqueUsado:+(l.metrosEstoque||0).toFixed(4),
       comprar:+(l.metros||0).toFixed(4), rolos:l.rolos||0, metrosRolo:l.metrosRolo||0,
-      projetos:(l.itens||[]).reduce((a,g)=>a.concat((g.projetos||[]).map(p=>({...p,largura:g.largura}))),[])}));
+      projetos:(l.itens||[]).reduce((a,g)=>a.concat((g.projetos||[]).map(p=>({...p,largura:g.largura}))),[]),
+      abrir:sfOrientarLinha({descricao:l.descricao,largura:l.largura,metrosRolo:l.metrosRolo,fitaItens:l.itens},histId)}));
+  }
+  /* ===== Orientação de abertura da fita (rolo largo -> larguras menores) =====
+     Ex.: rolo de 100mm que precisa virar 64mm + 35mm. O plano de corte não fica salvo no histórico,
+     então é recalculado aqui com o mesmo motor da simulação (otimizarCorte), usando SÓ o rolo comprado
+     e as larguras que saíram dele (fitaItens: metros - estoque = o que realmente veio deste rolo). */
+  function sfOrientarLinha(l,histId){
+    const larg=+l.largura||larguraDe(l.descricao), mRolo=+l.metrosRolo||0;
+    const itens=fbArr(l.fitaItens);
+    if(!larg||!mRolo||!itens.length) return [];
+    const porW=new Map();
+    itens.forEach(g=>{
+      const w=+g.largura, m=+((+g.metros||0)-(+g.estoqueM||0)).toFixed(4);
+      if(w>0&&m>1e-9) porW.set(w,+((porW.get(w)||0)+m).toFixed(4));
+    });
+    const pedidos=[...porW.entries()].map(([w,m])=>({mat:'x',w,m}));
+    if(!pedidos.length||pedidos.every(p=>Math.abs(p.w-larg)<0.01)) return []; // nada a abrir
+    let mats; try{ mats=otimizarCorte(pedidos,{x:[{l:larg,m:mRolo}]},0); }catch(e){ return []; }
+    const out=[];
+    ((mats[0]&&mats[0].rolosUsados)||[]).forEach(r=>{
+      const cortes=new Map(); let fimY=0;
+      (r.pecas||[]).forEach(pc=>{ cortes.set(pc.w,+((cortes.get(pc.w)||0)+pc.m).toFixed(4)); fimY=Math.max(fimY,pc.y+pc.w); });
+      if(cortes.size===1&&Math.abs([...cortes.keys()][0]-r.largura)<0.01) return; // rolo usado inteiro
+      const lista=[...cortes.entries()].map(([w,m])=>({w,m})).sort((a,b)=>b.w-a.w);
+      out.push({sim:histId||'',larguraRolo:r.largura,metrosRolo:r.metragem,rolos:r.nRolos,metros:r.totalM,
+        cortes:lista,refugoMm:+Math.max(0,r.largura-fimY).toFixed(2)});
+    });
+    return out;
+  }
+  function sfTextoAbrir(a){
+    return `Abrir ${fmtNum(a.metros)} m do rolo de ${fmtNum(a.larguraRolo)}mm`
+      +` → `+fbArr(a.cortes).map(c=>`${fmtNum(c.w)}mm (${fmtNum(c.m)} m)`).join(' + ');
+  }
+  // bloco impresso na OP: o que o operador precisa abrir antes de aplicar a fita
+  function sfHtmlOrientacao(nf){
+    const linhas=[];
+    fbArr(nf&&nf.itens).forEach(it=>fbArr(it.abrir).forEach(a=>linhas.push(`<tr>
+      <td>${escHtml(it.descricao)||'—'}</td><td><b>${escHtml(sfTextoAbrir(a))}</b></td></tr>`)));
+    if(!linhas.length) return '';
+    return `<div class="fs-title" style="margin:10px 0 6px">Orientação — abrir fita antes de usar</div>
+      <table class="opz-tbl"><thead><tr><th style="width:42%">Item (rolo comprado)</th><th>Como abrir</th></tr></thead>
+      <tbody>${linhas.join('')}</tbody></table>`;
+  }
+  // grava só a orientação de uma simulação na OP (lotes antigos / OP que já tinha a fita gravada)
+  async function sfMarcarOrientacao(id){
+    const h=HISTFITAS.find(x=>x.id===id); if(!h) return;
+    const op=opLaminadoDoLote(h.lote); if(!op){ toast('Nenhuma OP de Laminado para o lote '+(h.lote||'—')); return; }
+    const novos=new Map();
+    fbArr(h.linhas).forEach(l=>{ const o=sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},id); if(o.length) novos.set(String(l.codigo||l.descricao),o); });
+    if(!novos.size){ toast('Nenhum rolo desta simulação precisa ser aberto'); return; }
+    if(!(op.necessidadeFita&&fbArr(op.necessidadeFita.itens).length)){ toast('A OP ainda não tem fita gravada — use "Marcar na OP (gravar)"'); return; }
+    if(!sfSimNaOP(h,op)){ toast('Grave esta simulação na OP primeiro'); return; }
+    let marcou=0;
+    try{
+      const r=await db.ref('ops/'+op.id+'/necessidadeFita').transaction(atual=>{
+        if(!atual) return atual;
+        marcou=0;
+        const itens=fbArr(atual.itens).map(it=>{
+          const o=novos.get(String(it.codigo||it.descricao)); if(!o) return it;
+          marcou++;
+          return {...it,abrir:fbArr(it.abrir).filter(a=>a.sim!==id).concat(o)};
+        });
+        return sfLimpa({...atual,itens});
+      });
+      if(!r.committed||!marcou) throw new Error('nenhum item da OP corresponde ao rolo desta simulação');
+      toast('Orientação marcada na OP '+op.numero);
+    }catch(e){ toast('Erro: '+(e.message||e)); }
   }
   // grava a necessidade de fita na OP de Laminado do lote (chamada automaticamente ao gerar as solicitações)
   // SOBRESCREVER: a necessidade de fita da OP passa a ser só a desta simulação
@@ -7580,9 +7648,10 @@
     fbArr(a).concat(fbArr(b)).forEach(it=>{
       const k=String(it.codigo||it.descricao||'');
       const x=m.get(k);
-      if(!x){ m.set(k,{...it,projetos:fbArr(it.projetos).slice()}); return; }
+      if(!x){ m.set(k,{...it,projetos:fbArr(it.projetos).slice(),abrir:fbArr(it.abrir).slice()}); return; }
       ['necessario','estoqueUsado','comprar','rolos'].forEach(f=>{ x[f]=+((+x[f]||0)+(+it[f]||0)).toFixed(4); });
       x.projetos=x.projetos.concat(fbArr(it.projetos));
+      x.abrir=fbArr(x.abrir).concat(fbArr(it.abrir));
     });
     return [...m.values()];
   }
@@ -7640,7 +7709,7 @@
       let opNum=null, opPend=null, avisos=[];
       const hid='hf'+Date.now()+Math.floor(Math.random()*900+100);
       if(opL&&!opL.necessidadeFita){
-        try{ await sfGravarNaOP(opL,sfItensParaOP(L),simFita.lote,hid); opNum=opL.numero; }
+        try{ await sfGravarNaOP(opL,sfItensParaOP(L,hid),simFita.lote,hid); opNum=opL.numero; }
         catch(e2){ avisos.push('não foi possível salvar na OP de Laminado ('+(e2.message||e2)+')'); }
       } else if(opL){ opPend=opL.numero; } // OP já tem fita: quem decide é o Histórico (sobrescrever ou adicionar)
       try{
@@ -7713,6 +7782,8 @@
     TELA='histfita-det'; histFitaId=id;
     const amb=fbArr(h.ambientes), L=fbArr(h.linhas);
     const info=(k,val)=>`<div class="it"><div class="k">${k}</div><div class="v">${val||'—'}</div></div>`;
+    const orient=[]; // orientação de abertura (rolo largo -> larguras menores), recalculada do histórico
+    L.forEach(l=>sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id).forEach(a=>orient.push({item:l.descricao,a})));
     const proj=[]; // necessidade por projeto, por largura
     L.forEach(l=>fbArr(l.fitaItens).forEach(g=>fbArr(g.projetos).forEach(p=>proj.push({...p,largura:g.largura,item:l.descricao}))));
     view.innerHTML=`<div class="page page-wide">
@@ -7733,6 +7804,7 @@
         if(!o) return `<div class="cel-sub" style="margin-top:12px">Nenhuma OP de Laminado emitida para este lote ainda — quando for emitida, os botões para gravar a fita nela aparecem aqui.</div>`;
         const nela=sfSimNaOP(h,o), tem=!!(o.necessidadeFita&&fbArr(o.necessidadeFita.itens).length);
         const outras=tem?sfSimsDaNF(o.necessidadeFita,o.id).length:0;
+        const jaOrient=tem&&fbArr(o.necessidadeFita.itens).some(it=>fbArr(it.abrir).some(a=>a.sim===h.id));
         return `<div style="margin-top:14px"><label style="font-size:12px;font-weight:600;color:#77777f">OP ${escHtml(o.numero)} (Laminado)</label>
           <div class="cel-sub" style="margin:4px 0 8px">${nela?`✓ Esta simulação está gravada na OP${outras>1?' (junto com outras '+(outras-1)+')':''}.`
             :(tem?'A OP já tem fita gravada de outra simulação. Escolha o que fazer com esta:':'A OP ainda não tem fita gravada.')}</div>
@@ -7740,7 +7812,9 @@
             ${!tem?`<button class="btn btn-primary" onclick="sfHistParaOP('${h.id}','sobrescrever')">Marcar na OP (gravar)</button>`
               :`<button class="btn btn-ghost" onclick="sfHistParaOP('${h.id}','sobrescrever')">Sobrescrever fita da OP</button>
                 <button class="btn btn-primary" ${nela?'disabled style="opacity:.5" title="Esta simulação já está na OP"':''} onclick="sfHistParaOP('${h.id}','adicionar')">Adicionar à OP</button>`}
-          </div></div>`; })()}
+            ${orient.length?`<button class="btn btn-ghost" ${nela?'':'disabled style="opacity:.5" title="Grave esta simulação na OP primeiro"'} onclick="sfMarcarOrientacao('${h.id}')">${jaOrient?'Atualizar orientação na OP':'Marcar orientação na OP'}</button>`:''}
+          </div>
+          ${orient.length?`<div class="cel-sub" style="margin-top:6px">${jaOrient?'✓ Orientação de abertura já marcada na OP.':'Orientação de abertura ainda não marcada na OP.'}</div>`:''}</div>`; })()}
       </section>
       <section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Rolos e necessidade</h3>
         <div class="table-wrap"><table class="tbl tbl-sim">
@@ -7750,6 +7824,9 @@
             <td><div class="cel-nome">${escHtml(l.descricao)}</div>${l.rolos?`<div class="cel-sub">${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)} m</div>`:''}</td>
             <td class="ctr">${escHtml(l.unidade)}</td><td class="ctr sd-tot">${fmtNum(l.necM)}</td><td class="ctr">${fmtNum(l.estoqueM)}</td><td class="ctr">${fmtNum(l.comprarM)}</td>
             <td class="ctr">${l.qSA>0?`<b class="v-sa">${fmtNum(l.qSA)}</b>`:'—'}</td><td class="ctr">${l.qSC>0?`<b class="v-sc">${fmtNum(l.qSC)}</b>`:'—'}</td></tr>`).join('')}</tbody></table></div></section>
+      ${orient.length?`<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Orientação para abrir a fita</h3>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Item (rolo comprado)</th><th>Como abrir</th></tr></thead>
+          <tbody>${orient.map(x=>`<tr><td class="cel-disc">${escHtml(x.item)}</td><td><b>${escHtml(sfTextoAbrir(x.a))}</b></td></tr>`).join('')}</tbody></table></div></section>`:''}
       ${proj.length?`<section class="fs"><h3 class="fs-title">Necessidade por projeto</h3>
         <div class="table-wrap"><table class="tbl"><thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th>Item</th><th style="width:80px">Largura</th><th style="width:110px">Necessidade</th></tr></thead>
           <tbody>${proj.map(p=>`<tr><td>${escHtml(p.clienteNome||'—')}</td><td>${escHtml(p.ambiente||'—')}</td><td class="ctr">${escHtml(p.numeroProjeto||'—')}</td>
@@ -7761,7 +7838,8 @@
     const op=opLaminadoDoLote(h.lote); if(!op){ toast('Nenhuma OP de Laminado para o lote '+(h.lote||'—')); return; }
     const itens=fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
       comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
-      projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[])}));
+      projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[]),
+      abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id)}));
     const tem=!!(op.necessidadeFita&&fbArr(op.necessidadeFita.itens).length);
     if(modo==='sobrescrever'&&tem&&!confirm('Sobrescrever a fita da OP '+op.numero+'?\n\nO que está gravado nela hoje será SUBSTITUÍDO só pelos itens desta simulação.')) return;
     if(modo==='adicionar'&&!confirm('Adicionar esta simulação à OP '+op.numero+'?\n\nOs itens iguais serão somados à fita que já está gravada, e os diferentes serão incluídos.')) return;
@@ -11992,12 +12070,14 @@
       ${o.necessidadeFita&&(o.necessidadeFita.itens||[]).length?`
       <div class="opz-fita">
         <div class="fs-title" style="margin:10px 0 6px">Necessidade de fita de borda — lote ${escHtml(o.necessidadeFita.lote||o.lote)||'—'}</div>
-        <table class="opz-tbl"><thead><tr><th style="width:96px">Código</th><th>Item</th><th style="width:40px">Un.</th>
-          <th style="width:96px">Necessário</th></tr></thead>
-          <tbody>${o.necessidadeFita.itens.map(it=>`<tr>
+        ${(()=>{ const nf=o.necessidadeFita, temAbrir=nf.itens.some(it=>fbArr(it.abrir).length);
+          return `<table class="opz-tbl"><thead><tr><th style="width:96px">Código</th><th>Item</th><th style="width:40px">Un.</th>
+          <th style="width:76px">Necessário</th>${temAbrir?'<th style="width:36%">Orientação para abrir a fita</th>':''}</tr></thead>
+          <tbody>${nf.itens.map(it=>`<tr>
             <td class="mono">${escHtml(it.codigo)||'—'}</td><td>${escHtml(it.descricao)||'—'}</td><td class="ctr">${escHtml(it.unidade)}</td>
             <td class="ctr">${fmtNum(it.necessario||0)}</td>
-          </tr>`).join('')}</tbody></table>
+            ${temAbrir?`<td class="opz-abrir">${fbArr(it.abrir).map(a=>`<b>${escHtml(sfTextoAbrir(a))}</b>`).join('<br>')}</td>`:''}
+          </tr>`).join('')}</tbody></table>`; })()}
       </div>`:''}
 
       <div class="opz-op">
@@ -12797,7 +12877,7 @@
     traduzErro,trocarCliente,urg,usuarioAtual,vazioLista,verAce,verSA,verSC,verSenha,verSolFita,vincAmb,
     vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
-    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfHistParaOP,
+    sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfHistParaOP,sfMarcarOrientacao,
     abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
