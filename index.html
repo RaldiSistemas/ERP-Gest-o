@@ -381,11 +381,15 @@
 .hm-tile{width:112px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px 12px;border-radius:14px;cursor:pointer;
   position:relative;transition:.15s;background:#fff;border:1px solid #D6D6CE;box-shadow:0 1px 3px rgba(0,0,0,.05);font-family:inherit;color:#4B4B55}
 .hm-tile:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(152,36,36,.14);border-color:#982424}
-.hm-circ{width:48px;height:48px;border-radius:12px;background:#F6EEEE;display:flex;align-items:center;
-  justify-content:center;color:#982424;font-weight:700;font-size:20px}
-.hm-circ svg{width:24px;height:24px}
+.hm-circ{width:48px;height:48px;border-radius:12px;background:#982424;display:flex;align-items:center;
+  justify-content:center;color:#fff;font-weight:700;font-size:20px;box-shadow:0 2px 6px rgba(152,36,36,.28)}
+.hm-circ svg{width:26px;height:26px}
+.hm-ico{fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hm-ico .a{stroke:#fff}.hm-ico .b{stroke:#CFCFC9}.hm-ico .c{stroke:#1d1d22}
+.hm-ic.mod{width:30px;height:30px;border-radius:8px;background:#982424}
+.hm-ic.mod svg{width:19px;height:19px}
 .hm-tile.add{background:transparent;border:1.5px dashed #B9B9B0;box-shadow:none}
-.hm-tile.add .hm-circ{background:#E4E4DD;color:#4B4B55;font-size:26px;font-weight:400}
+.hm-tile.add .hm-circ{background:#E4E4DD;color:#4B4B55;font-size:26px;font-weight:400;box-shadow:none}
 .hm-tile.add:hover{background:#fff;border-color:#982424}
 .hm-tile.add:hover .hm-circ{background:#982424;color:#fff}
 .hm-nm{font-size:12px;text-align:center;line-height:1.25;max-width:96px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
@@ -13231,6 +13235,105 @@ function homeDestaque(txt,q){ const n=normTxt(q); const t=normTxt(txt); const i=
   if(i<0) return homeEsc(txt); return homeEsc(txt.slice(0,i))+'<b>'+homeEsc(txt.slice(i,i+n.length))+'</b>'+homeEsc(txt.slice(i+n.length)); }
 const HM_CLOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 const HM_SEARCH='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+/* ===== Ícones dos atalhos: um por função (branco / cinza / preto sobre vermelho) ===== */
+const HM_DOC='<path class=a d="M7 3h7l4 4v14H7z"/><path class=b d="M14 3v4h4"/>';
+const HM_CUBE='<path class=a d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path class=b d="M4 7.5L12 12l8-4.5M12 12v9"/>';
+const HM_CAL='<rect class=a x=3 y=5 width=18 height=16 rx=2 /><path class=b d="M3 10h18M8 3v4M16 3v4"/>';
+const HM_ICONS={
+ 'Cadastro de clientes':'<circle class=a cx=10 cy=8 r=3.5 /><path class=a d="M3.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path class=c d="M19 4v5M16.5 6.5h5"/>',
+ 'Cadastro de dados':'<ellipse class=a cx=12 cy=6 rx=7 ry=3 /><path class=a d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path class=c d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>',
+ 'Mapa':'<path class=a d="M12 21s-6-5.5-6-11a6 6 0 0112 0c0 5.5-6 11-6 11z"/><circle class=c cx=12 cy=10 r=2.2 />',
+ 'Solicitação Armazém (SA)':'<path class=a d="M3 10l9-6 9 6v10H3z"/><path class=b d="M8 20v-6h8v6"/><path class=c d="M8 17h8"/>',
+ 'Solicitação de Compras (SC)':'<path class=a d="M3 4h2.5l2 11h10l2-8H7"/><circle class=c cx=9.5 cy=19 r=1.4 /><circle class=c cx=16.5 cy=19 r=1.4 />',
+ 'Solicitação de Acessórios (ACE)':'<path class=a d="M12 3l7 4v8l-7 4-7-4V7z"/><circle class=c cx=12 cy=11 r=2.8 />',
+ 'Solicitações de fita':'<circle class=a cx=11 cy=11 r=7.5 /><circle class=c cx=11 cy=11 r=2.5 /><path class=b d="M17 17l4 3h-6"/>',
+ 'Histórico de simulações de fita':'<circle class=a cx=10 cy=10 r=6.5 /><circle class=c cx=10 cy=10 r=2 /><circle class=b cx=17.5 cy=17.5 r=4.5 /><path class=a d="M17.5 15.2v2.4l1.5 1"/>',
+ 'Simulação de Estoque':'<path class=a stroke-dasharray="3 2.5" d="M12 3l8 4v10l-8 4-8-4V7z"/><path class=b d="M4 7l8 4 8-4M12 11v10"/>',
+ 'Painel de Controle':'<rect class=a x=3 y=3 width=8 height=10 rx=1.5 /><rect class=b x=13 y=3 width=8 height=6 rx=1.5 /><rect class=b x=13 y=11 width=8 height=10 rx=1.5 /><rect class=c x=3 y=15 width=8 height=6 rx=1.5 />',
+ 'Emissão de OP':HM_DOC+'<path class=c d="M12.5 11v6M9.5 14h6"/>',
+ 'Apontamento':'<rect class=a x=5 y=4 width=14 height=17 rx=2 /><path class=b d="M9 4V3h6v1"/><path class=c d="M8.5 13l2.5 2.5 4.5-5"/>',
+ 'Acompanhamento da Produção':'<path class=a d="M3 12h4l3-7 4 14 3-7h4"/><circle class=c cx=21 cy=12 r=0.6 />',
+ 'Rendimento':'<path class=a d="M4 17a8 8 0 1116 0"/><path class=c d="M12 17l4-5"/><circle class=b cx=12 cy=17 r=1.3 />',
+ 'Equipe Produtiva':'<circle class=a cx=9 cy=8 r=3 /><path class=a d="M3 19c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5"/><circle class=b cx=17 cy=9 r=2.4 /><path class=b d="M17 14c2.5 0 4.5 1.6 4.5 4.5"/>',
+ 'Projetos liberados':'<path class=a d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path class=c d="M9 14l2.2 2.2L15.5 12"/>',
+ 'Lotes agrupados':'<path class=a d="M12 3l9 5-9 5-9-5z"/><path class=b d="M3 12.5l9 5 9-5"/><path class=c d="M3 17l9 5 9-5"/>',
+ 'Cadastro de Lead time':'<circle class=a cx=12 cy=13 r=8 /><path class=c d="M12 8.5V13l3 2"/><path class=b d="M9.5 3h5"/>',
+ 'Painel de Atrasos':'<path class=a d="M12 4l9.5 16.5h-19z"/><path class=c d="M12 10v4.5M12 17.4h.01"/>',
+ 'Plano Mestre':'<path class=a d="M3 4v16h18"/><path class=b d="M7 8h7"/><path class=c d="M10 12h9"/><path class=a d="M7 16h5"/>',
+ 'MRP':'<path class=a d="M20 12a8 8 0 01-14 5.3M4 12a8 8 0 0114-5.3"/><path class=b d="M18 3v4h-4M6 21v-4h4"/><rect class=c x=9.5 y=9.5 width=5 height=5 rx=1 />',
+ 'Capacidade':'<rect class=a x=3 y=8 width=16 height=8 rx=2 /><path class=b d="M21 11v2"/><path class=c d="M6.5 12h6"/>',
+ 'Ordens Abertas':'<path class=a d="M3 13l3-8h12l3 8v6H3z"/><path class=b d="M3 13h5l1 3h6l1-3h5"/>',
+ 'Backlog':'<path class=a d="M4 6h16M4 12h16"/><path class=b d="M4 18h9"/><path class=c d="M17 16.5l3 1.5-3 1.5z"/>',
+ 'Simulação de estoque de fita':'<circle class=a cx=12 cy=9 r=6 /><circle class=c cx=12 cy=9 r=2 /><path class=b d="M3 21h18M6 21v-2M10 21v-2M14 21v-2M18 21v-2"/>',
+ 'Controle de Danos e Extravios':'<path class=a d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path class=b d="M4 8l8 4 8-4"/><path class=c d="M12 12l-1.5 3 2 1.5-1.5 4.5"/>',
+ 'Dashboard de cartões':'<rect class=a x=3 y=4 width=18 height=16 rx=2 /><path class=b d="M9 4v16M15 4v16"/><path class=c d="M5.5 8h1M11.5 8h1M17.5 8h1"/>',
+ 'Emissão de cartões':'<rect class=a x=3 y=5 width=15 height=11 rx=2 /><path class=b d="M3 9h15"/><path class=c d="M18.5 15v6M15.5 18h6"/>',
+ 'Lista de Materiais (BOM)':'<rect class=a x=9 y=3 width=6 height=5 rx=1 /><rect class=b x=3 y=16 width=6 height=5 rx=1 /><rect class=b x=15 y=16 width=6 height=5 rx=1 /><path class=c d="M12 8v4M6 16v-4h12v4"/>',
+ 'Itens Fantasma':'<path class=a d="M5 21V11a7 7 0 0114 0v10l-2.5-2-2 2-2.5-2-2.5 2-2-2z"/><path class=c d="M9.5 11h.01M14.5 11h.01"/>',
+ 'Onde é Usado':'<circle class=a cx=10.5 cy=10.5 r=6.5 /><path class=b d="M15.5 15.5L21 21"/><rect class=c x=8 y=8 width=5 height=5 rx=0.8 />',
+ 'Operações':'<circle class=a cx=5 cy=12 r=2 /><circle class=b cx=12 cy=12 r=2 /><circle class=c cx=19 cy=12 r=2 /><path class=a d="M7 12h3M14 12h3"/>',
+ 'Centros de Trabalho':'<rect class=a x=3 y=10 width=18 height=8 rx=1 /><path class=b d="M7 10V5h6v5M17 18v3M7 18v3"/><circle class=c cx=15 cy=14 r=1.5 />',
+ 'Produtos':HM_CUBE,
+ 'Desenhos Técnicos':'<path class=a d="M4 4v16h16z"/><path class=b d="M8 16v-3l3 3z"/><path class=c d="M7 8h2M7 11h1"/>',
+ 'Raiz do produto':'<circle class=c cx=12 cy=5 r=2 /><path class=b d="M12 7v5M12 12c-4 0-6 2-6 5M12 12c4 0 6 2 6 5"/><circle class=a cx=6 cy=19 r=1.8 /><circle class=a cx=18 cy=19 r=1.8 />',
+ 'Cadastro simples (insumos)':'<path class=a d="M3 12V4h8l10 10-8 8z"/><circle class=c cx=7.5 cy=8.5 r=1.3 />',
+ 'Cadastro de centro de custo (CC)':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M14.8 9.3a3.5 3.5 0 100 5.4"/>',
+ 'Entradas':'<path class=b d="M4 14v6h16v-6"/><path class=a d="M12 3v12M8 11l4 4 4-4"/>',
+ 'Saídas':'<path class=b d="M4 14v6h16v-6"/><path class=a d="M12 15V3M8 7l4-4 4 4"/>',
+ 'Transferências':'<path class=a d="M4 8h16M16 4l4 4-4 4"/><path class=b d="M20 16H4M8 12l-4 4 4 4"/>',
+ 'Posição Atual':'<path class=a d="M3 3v18M21 3v18M3 12h18M3 3h18"/><rect class=b x=6 y=6 width=5 height=4 /><rect class=c x=13 y=15 width=5 height=4 />',
+ 'Kardex':'<rect class=a x=5 y=3 width=14 height=18 rx=2 /><path class=b d="M5 12h14"/><path class=c d="M10 7.5h4M10 16.5h4"/>',
+ 'Contagem':'<path class=a d="M9 6h12M9 12h12M9 18h12"/><path class=c d="M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>',
+ 'Ajustes':'<path class=a d="M4 7h16M4 17h16"/><circle class=c cx=9 cy=7 r=2.2 /><circle class=b cx=15 cy=17 r=2.2 />',
+ 'Requisições':HM_DOC+'<path class=c d="M9 14h6M13 11l3 3-3 3"/>',
+ 'Cotações':'<path class=a d="M12 4v16M7 20h10M5 8h14"/><path class=b d="M5 8l-2.5 6h5zM19 8l-2.5 6h5z"/>',
+ 'Pedidos de Compra':'<path class=a d="M5 8h14l-1 12H6z"/><path class=c d="M9 8V6a3 3 0 016 0v2"/>',
+ 'Cadastro':'<path class=a d="M3 9l1.5-5h15L21 9v1a3 3 0 01-6 0 3 3 0 01-6 0 3 3 0 01-6 0z"/><path class=b d="M5 12v8h14v-8"/><path class=c d="M10 20v-5h4v5"/>',
+ 'Avaliação':'<path class=a d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.2-.9z"/>',
+ 'Painel de Produção':'<rect class=a x=3 y=4 width=18 height=12 rx=2 /><path class=b d="M8 20h8M12 16v4"/><path class=c d="M7 13v-3M11 13V8M15 13v-4"/>',
+ 'Refugos e Perdas':'<path class=a d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/><path class=c d="M10 11v6M14 11v6"/>',
+ 'Paradas':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M10 9v6M14 9v6"/>',
+ 'Produtividade':'<path class=a d="M3 17l6-6 4 4 8-8"/><path class=b d="M15 7h6v6"/><path class=c d="M3 21h18"/>',
+ 'Eficiência':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M13 6l-4 7h5l-1 5 4-7h-5z"/>',
+ 'Visão Geral':'<path class=a d="M12 3a9 9 0 109 9h-9z"/><path class=c d="M15 3.5A9 9 0 0120.5 9H15z"/>',
+ 'Produção':'<path class=a d="M3 20V10l6 3V10l6 3V6h4v14z"/><path class=c d="M7 17h2M12 17h2"/>',
+ 'Estoque':'<rect class=a x=3 y=13 width=8 height=8 /><rect class=b x=13 y=13 width=8 height=8 /><rect class=c x=8 y=4 width=8 height=8 />',
+ 'Financeiro':'<rect class=a x=3 y=6 width=18 height=12 rx=2 /><circle class=c cx=12 cy=12 r=2.5 /><path class=b d="M6.5 12h.01M17.5 12h.01"/>',
+ 'Power BI':'<path class=b d="M6 20v-6"/><path class=a d="M12 20V5"/><path class=c d="M18 20V10"/>',
+ 'CSV / Excel':'<rect class=a x=3 y=4 width=18 height=16 rx=2 /><path class=b d="M3 10h18M3 15h18M9 4v16"/>',
+ 'Centros de Custo':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M14.5 9.3c-.6-.9-1.5-1.3-2.6-1.3-1.5 0-2.5.8-2.5 2s1 1.7 2.6 2 2.6.8 2.6 2-1 2-2.7 2c-1.2 0-2.2-.5-2.7-1.4M12 6.5V8M12 16v1.5"/>',
+ 'Rateios':'<path class=a d="M12 21v-8"/><path class=b d="M12 13L5 6M12 13l7-7"/><path class=c d="M5 10V6h4M19 10V6h-4"/>',
+ 'Ficha de Custo':HM_DOC+'<circle class=c cx=12.5 cy=15 r=2.5 />',
+ 'Apuração Mensal':HM_CAL+'<path class=c d="M9 15.5l2 2 4-4"/>',
+ 'Análise de Margem':'<path class=a d="M19 5L5 19"/><circle class=b cx=7 cy=7 r=2.5 /><circle class=c cx=17 cy=17 r=2.5 />',
+ 'Colaboradores':'<rect class=a x=3 y=5 width=18 height=14 rx=2 /><circle class=c cx=9 cy=11 r=2 /><path class=b d="M6 16c0-1.5 1.5-2.5 3-2.5s3 1 3 2.5M14.5 10h4M14.5 13.5h3"/>',
+ 'Cargos e Salários':'<rect class=a x=3 y=7 width=18 height=13 rx=2 /><path class=b d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2"/><path class=c d="M3 13h18"/>',
+ 'Ponto':'<path class=a d="M10 4H5v16h5"/><path class=c d="M9 12h11M16 8l4 4-4 4"/>',
+ 'Escalas':HM_CAL+'<path class=c d="M7 14h2M11 14h2M15 14h2M7 17.5h2M11 17.5h2"/>',
+ 'Folha Ponto':HM_DOC+'<circle class=c cx=12.5 cy=15 r=2.7 /><path class=b d="M12.5 14v1.2l.8.6"/>',
+ 'Treinamentos':'<path class=a d="M2 9l10-5 10 5-10 5z"/><path class=b d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/><path class=c d="M22 9v6"/>',
+ 'Recebimento':HM_CUBE.replace('class=b','class=b')+'<path class=c d="M8.5 13l2.5 2.5 4.5-5"/>',
+ 'Processo':'<circle class=a cx=12 cy=12 r=3 /><circle class=b cx=12 cy=12 r=6.5 /><path class=a d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>',
+ 'Final':'<path class=a d="M5 21V4"/><path class=b d="M5 4h14l-2.5 4 2.5 4H5"/><path class=c d="M10 4v8"/>',
+ 'Registro':'<path class=a d="M8 3h8l5 5v8l-5 5H8l-5-5V8z"/><path class=c d="M12 8v5M12 16.5h.01"/>',
+ 'Ações Corretivas':'<path class=a d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94z"/>',
+ 'Certificados':'<circle class=a cx=12 cy=9 r=6 /><path class=b d="M8.5 14L7 21l5-2.5 5 2.5-1.5-7"/><path class=c d="M9.5 9l2 2 3-3.5"/>',
+ 'Procedimentos':'<path class=a d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path class=b d="M4 19V5"/><path class=c d="M8 8h7M8 12h5"/>',
+ 'Romaneios':'<rect class=a x=5 y=4 width=14 height=17 rx=2 /><path class=b d="M9 4V3h6v1"/><path class=c d="M9 10h6M9 14h6M9 17.5h3"/>',
+ 'Cargas':'<path class=a d="M2 6h11v10H2zM13 9h5l3 3v4h-8"/><circle class=c cx=6.5 cy=18 r=1.8 /><circle class=c cx=17 cy=18 r=1.8 />',
+ 'Conferência':'<path class=a d="M4 8V5h3M17 4h3v4M20 16v3h-3M7 20H4v-3"/><path class=c d="M8 8v8M11 8v8M14 8v8M17 8v8"/>',
+ 'Transportadoras':'<circle class=a cx=6 cy=18 r=2 /><circle class=c cx=18 cy=6 r=2 /><path class=b d="M8 18h7a3 3 0 000-6H9a3 3 0 010-6h7"/>',
+ 'Rastreamento':'<circle class=b cx=12 cy=12 r=8 /><circle class=c cx=12 cy=12 r=2.5 /><path class=a d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/>',
+ 'ERP Dinabox':'<path class=a d="M9 3v5M15 3v5M6 8h12v4a6 6 0 01-12 0z"/><path class=c d="M12 18v3"/>',
+ 'Webhooks':'<path class=a d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1"/><path class=b d="M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/>',
+ 'APIs':'<path class=a d="M8 7l-5 5 5 5M16 7l5 5-5 5"/><path class=c d="M14 4l-4 16"/>',
+ 'Agendadas':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M12 7v5l3.5 2"/>',
+ 'Logs de Execução':'<rect class=a x=3 y=4 width=18 height=16 rx=2 /><path class=c d="M7 10l3 2.5L7 15"/><path class=b d="M12.5 15.5H17"/>',
+ 'Controle de usuários':'<circle class=a cx=9 cy=8 r=3.5 /><path class=a d="M2.5 20c0-3.5 3-6 6.5-6"/><path class=c d="M15 13l3-1.5 3 1.5v3c0 2.2-1.4 3.7-3 4.5-1.6-.8-3-2.3-3-4.5z"/>'
+};
+function homeIcon(e){ const g=HM_ICONS[e.leaf];
+  return '<svg class="hm-ico" viewBox="0 0 24 24" aria-hidden="true">'+(g||('<g class=a>'+(e.icon||'')+'</g>'))+'</svg>'; }
+
 function homeMontar(){ if(HOME.montada) return; HOME.montada=true;
   const d=document.createElement('div'); d.className='hm-ov'; d.id='hmOv';
   d.innerHTML='<button class="hm-close" title="Fechar (Esc)" onclick="homeFechar()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+
@@ -13262,7 +13365,7 @@ function homeLinha(e,q,hist){ const sub=hist?(e.modNome+(e.grupo?' › '+e.grupo
 function homeResolve(h){ return homeIndice().find(e=>e.mod===h.mod&&e.leaf===h.leaf); }
 function homeRender(){ const inp=document.getElementById('hmIn'), dr=document.getElementById('hmDrop'); const q=inp.value; let html='';
   if(q.trim()){ HOME.lista=homeBuscar(q);
-    html=HOME.lista.map((e,i)=>'<div class="hm-it" data-i="'+i+'"><div class="hm-ic">'+(e.icon||HM_SEARCH)+'</div><div class="hm-tx">'+homeLinha(e,q,false)+'</div></div>').join('');
+    html=HOME.lista.map((e,i)=>'<div class="hm-it" data-i="'+i+'"><div class="hm-ic mod">'+homeIcon(e)+'</div><div class="hm-tx">'+homeLinha(e,q,false)+'</div></div>').join('');
     if(!html) html='<div class="hm-vazio">Nenhuma função encontrada para “'+homeEsc(q)+'”</div>';
   }else{ HOME.lista=HOME.hist.map(homeResolve).filter(Boolean);
     html=HOME.lista.map((e,i)=>'<div class="hm-it" data-i="'+i+'"><div class="hm-ic">'+HM_CLOCK+'</div><div class="hm-tx">'+homeLinha(e,'',true)+'</div><button class="hm-x" data-h="'+i+'" title="Remover do histórico">✕</button></div>').join(''); }
@@ -13275,7 +13378,7 @@ function homeRender(){ const inp=document.getElementById('hmIn'), dr=document.ge
 function homeMarca(){ document.querySelectorAll('#hmDrop .hm-it').forEach((el,i)=>{ el.classList.toggle('sel',i===HOME.sel); if(i===HOME.sel) el.scrollIntoView({block:'nearest'}); }); }
 function homeTiles(){ const t=document.getElementById('hmTiles'); if(!t) return;
   let h=''; HOME.atalhos.forEach((a,i)=>{ const e=homeResolve(a); if(!e) return;
-    h+='<div class="hm-tile" data-a="'+i+'" tabindex="0" title="'+homeEsc(e.modNome+(e.grupo?' › '+e.grupo:'')+' › '+e.leaf)+'"><button class="hm-rm" data-r="'+i+'" title="Remover atalho">✕</button><div class="hm-circ">'+(e.icon||homeEsc(e.leaf[0]))+'</div><div class="hm-nm">'+homeEsc(e.leaf)+'</div></div>'; });
+    h+='<div class="hm-tile" data-a="'+i+'" tabindex="0" title="'+homeEsc(e.modNome+(e.grupo?' › '+e.grupo:'')+' › '+e.leaf)+'"><button class="hm-rm" data-r="'+i+'" title="Remover atalho">✕</button><div class="hm-circ">'+homeIcon(e)+'</div><div class="hm-nm">'+homeEsc(e.leaf)+'</div></div>'; });
   if(HOME.atalhos.length<10) h+='<button class="hm-tile add" id="hmAdd"><div class="hm-circ">+</div><div class="hm-nm">Atalho</div></button>';
   t.innerHTML=h;
   t.querySelectorAll('.hm-tile[data-a]').forEach(el=>{ el.onclick=ev=>{ const r=ev.target.closest('.hm-rm');
@@ -13287,7 +13390,7 @@ function homeAtAbrir(){ const m=document.getElementById('hmModal'); m.classList.
 function homeAtFechar(){ document.getElementById('hmModal').classList.remove('on'); const i=document.getElementById('hmIn'); if(i&&HOME.aberta) i.focus(); }
 function homeAtRender(keep){ const q=document.getElementById('hmAtIn').value, box=document.getElementById('hmAtRes');
   if(keep!==true){ HOME.atRes=(q.trim()?homeBuscar(q):homeIndice()).filter(e=>!HOME.atalhos.some(a=>a.mod===e.mod&&a.leaf===e.leaf)).slice(0,40); HOME.atSel=HOME.atRes.length?0:-1; }
-  box.innerHTML=HOME.atRes.map((e,i)=>'<div class="hm-it'+(i===HOME.atSel?' sel':'')+'" data-i="'+i+'"><div class="hm-ic">'+(e.icon||'')+'</div><div class="hm-tx">'+homeLinha(e,q,false)+'</div></div>').join('')||'<div class="hm-vazio">Nada encontrado</div>';
+  box.innerHTML=HOME.atRes.map((e,i)=>'<div class="hm-it'+(i===HOME.atSel?' sel':'')+'" data-i="'+i+'"><div class="hm-ic mod">'+homeIcon(e)+'</div><div class="hm-tx">'+homeLinha(e,q,false)+'</div></div>').join('')||'<div class="hm-vazio">Nada encontrado</div>';
   box.querySelectorAll('.hm-it').forEach(el=>{ el.onclick=()=>homeAtAdd(HOME.atRes[+el.dataset.i]); });
   const s=box.querySelector('.sel'); if(s) s.scrollIntoView({block:'nearest'}); }
 function homeAtAdd(e){ if(!e||HOME.atalhos.length>=10) return; HOME.atalhos.push({mod:e.mod,leaf:e.leaf}); homeSalvar(); homeAtFechar(); homeTiles(); }
