@@ -2682,7 +2682,7 @@
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
-      {label:'Designações de Projetos'},
+      {label:'Pasta de produção', children:['Designações de Projetos']},
       {label:'Liberação de lote', children:['Projetos liberados','Lotes agrupados']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
       {label:'Programação', children:['Plano Mestre','MRP','Capacidade']},
@@ -13695,20 +13695,28 @@ function desigConstruir(){
   const mk=p=>{
     const r=proj.get(p)||{}, rows=pl.get(p)||[], alt=opd.get(p)||{};
     const amb=[...new Set(rows.map(x=>String(x.ambiente||'').trim()).filter(Boolean))];
-    return {projeto:p, key:desigKey(p),
+    const cli=[...new Set(rows.map(x=>String(x.cliente||'').trim()).filter(Boolean))];
+    return {projeto:p, key:desigKey(p), cliente:cli.join(' / ')||alt.cliente||'',
       ambiente:amb.join(' / ')||alt.ambiente||'', telefone:rows.map(x=>x.telefone).find(Boolean)||alt.telefone||'',
       local:rows.map(x=>x.local).find(Boolean)||alt.local||'', medicao:r.medOp?desigIso(r.medOp):'',
       status:r.libOp?stOp(r.libOp):'nao', opId:r.libOp?r.libOp.id:null};
   };
   const pool=[], gav=new Map();
+  const poe=(n,f)=>{ if(!gav.has(n)) gav.set(n,[]); gav.get(n).push(f); };
   proj.forEach((r,p)=>{
-    if(DESIG[desigKey(p)]||!r.medOp) return;
+    if(DESIG[desigKey(p)]) return;
+    // Liberado do PCP já iniciado/pausado/encerrado sem designação manual: vai para a gaveta de quem apontou
+    if(r.libOp && stOp(r.libOp)!=='nao'){
+      let nomes=funcsDe(r.libOp,'inicio'); if(!nomes.length) nomes=funcsDe(r.libOp,'fim');
+      if(nomes.length){ [...new Set(nomes)].forEach(n=>{ const f=mk(p); f.func=n; f.auto=true; poe(n,f); }); return; }
+    }
+    if(!r.medOp) return;
     const f=mk(p); if(f.status==='nao'||desigMostrarIniciados) pool.push(f);
   });
   Object.values(DESIG).forEach(d=>{
     if(!d||!d.projeto||!d.func) return;
     const f=mk(String(d.projeto)); f.func=d.func; f.em=d.atribuidoEm||''; f.por=d.atribuidoPor||'';
-    if(!gav.has(d.func)) gav.set(d.func,[]); gav.get(d.func).push(f);
+    poe(d.func,f);
   });
   pool.sort((a,b)=>String(a.medicao).localeCompare(String(b.medicao)));
   gav.forEach(l=>l.sort((a,b)=>String(a.medicao).localeCompare(String(b.medicao))));
@@ -13722,7 +13730,7 @@ function desigAcha(p){
 }
 function desigFiltra(l){
   const t=normTxt(desigBusca).split(/\s+/).filter(Boolean); if(!t.length) return l;
-  return l.filter(f=>{ const s=normTxt([f.projeto,f.ambiente,f.local,f.telefone].join(' ')); return t.every(x=>s.includes(x)); });
+  return l.filter(f=>{ const s=normTxt([f.projeto,f.cliente,f.ambiente,f.local,f.telefone].join(' ')); return t.every(x=>s.includes(x)); });
 }
 
 /* ---- A PASTINHA ---- */
@@ -13738,6 +13746,7 @@ function pastaHtml(f,o){
         <div class="pst-r"><div class="l">Data da medição:</div><div class="v">${escHtml(desigDataBR(f.medicao))}</div><div class="l">Nº de projeto:</div><div class="v num">${escHtml(f.projeto)}</div></div>
         <div class="pst-r"><div class="l">Ambiente:</div><div class="v w3">${escHtml(f.ambiente||'—')}</div></div>
         <div class="pst-band">Cliente</div>
+        <div class="pst-r"><div class="l">Cliente:</div><div class="v w3">${escHtml(f.cliente||'—')}</div></div>
         <div class="pst-r"><div class="l">Telefone:</div><div class="v w3">${escHtml(f.telefone||'—')}</div></div>
         <div class="pst-r"><div class="l">Local:</div><div class="v w3">${escHtml(f.local||'—')}</div></div>
       </div>
@@ -13760,13 +13769,13 @@ function renderDesig(){
     <div class="ds-top">
       <div><h1 class="page-title">Designações de Projetos</h1>
         <p class="page-sub">${nomes.length} gaveta(s) · <span id="dsContPool">${D.pool.length}</span> projeto(s) aguardando designação</p></div>
-      <input class="search" id="dsBusca" placeholder="Buscar projeto, ambiente, local ou telefone…" value="${escHtml(desigBusca)}" oninput="desigFiltrar(this.value)">
+      <input class="search" id="dsBusca" placeholder="Buscar projeto, cliente, ambiente, local ou telefone…" value="${escHtml(desigBusca)}" oninput="desigFiltrar(this.value)">
     </div>
     <div class="ds-sec"><h2>Gavetas</h2><span>arraste uma pasta até a gaveta de quem vai liberar o projeto</span></div>
     ${nomes.length?`<div class="ds-gavs">${nomes.map(n=>desigGavetaHtml(n,D.gav.get(n)||[],!aptos.includes(n))).join('')}</div>`
       :`<div class="ds-tray ds-vazio" style="margin-bottom:30px"><b>Nenhum funcionário com acesso a “${ATIV_LIB}”</b>Marque essa atividade para alguém em <i>Equipe Produtiva</i>.</div>`}
     <div class="ds-sec"><h2>Aguardando designação</h2><span>medidos, ainda sem “${ATIV_LIB}” iniciado</span>
-      <label class="ds-tg"><input type="checkbox" ${desigMostrarIniciados?'checked':''} onchange="desigToggleIniciados(this.checked)"> incluir já iniciados sem gaveta</label></div>
+      <label class="ds-tg"><input type="checkbox" ${desigMostrarIniciados?'checked':''} onchange="desigToggleIniciados(this.checked)"> incluir já iniciados sem responsável</label></div>
     <div class="ds-tray" id="dsPool">${desigPoolCorpo(D)}</div>
   </div>`;
 }
@@ -13862,6 +13871,7 @@ function desigAbrirPasta(p){
     `<div class="dsm"><div>${pastaHtml(f,{plain:true})}</div>
       <div class="dsm-info">
         <dl><dt>Status</dt><dd><span class="dsm-st" style="--c:${S.c}">${dsSvg(S.i)}${S.t}</span></dd>
+          <dt>Cliente</dt><dd>${escHtml(f.cliente||'—')}</dd>
           <dt>Ambiente</dt><dd>${escHtml(f.ambiente||'—')}</dd>
           <dt>Medição</dt><dd>${escHtml(desigDataBR(f.medicao))}</dd>
           <dt>Telefone</dt><dd>${escHtml(f.telefone||'—')}</dd>
