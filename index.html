@@ -2384,6 +2384,153 @@
     .chkp{ width:100%; padding:0; border-radius:0; }
     .cp-tbl th,.cp-s td,.cp-bx{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
+
+  /* ================= DESIGNAÇÕES DE PROJETOS ================= */
+  .ds{ max-width:1500px; }
+  .ds-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+  .ds-sec{ display:flex; align-items:baseline; gap:10px; margin:6px 0 12px; }
+  .ds-sec h2{ font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .ds-sec span{ font-size:12px; color:var(--muted); }
+  .ds-sec .ds-tg{ margin-left:auto; display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--texto); cursor:pointer; user-select:none; }
+  .ds-sec .ds-tg input{ accent-color:var(--vermelho); width:15px; height:15px; }
+
+  /* gavetas (arquivo de pastas) */
+  .ds-gavs{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; margin-bottom:30px; }
+  .gv{ position:relative; cursor:pointer; border-radius:12px; padding:14px 14px 12px; user-select:none;
+    background:linear-gradient(180deg,#f8f8f4 0%,#e6e6df 100%); border:1px solid rgba(75,75,85,.22);
+    box-shadow:0 1px 0 #fff inset,0 -10px 14px -10px rgba(0,0,0,.18) inset,0 5px 0 -1px #cfcfc7,0 6px 0 -1px rgba(75,75,85,.28),0 12px 18px -8px rgba(0,0,0,.25);
+    transition:transform .16s,box-shadow .16s,outline-color .16s; outline:2px solid transparent; outline-offset:2px; }
+  .gv:hover{ transform:translateY(-2px); }
+  .gv.over{ transform:translateY(-4px); outline-color:var(--vermelho); background:linear-gradient(180deg,#fff7f6,#f1dcda); }
+  .gv-handle{ width:84px; height:11px; margin:0 auto 11px; border-radius:7px;
+    background:linear-gradient(180deg,#6a6b73,#3b3c42); box-shadow:0 2px 3px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.55) inset; }
+  .gv-plate{ display:flex; align-items:center; gap:11px; background:#fff; border:1px solid var(--linha); border-radius:8px; padding:9px 11px;
+    box-shadow:0 1px 2px rgba(0,0,0,.06) inset; }
+  .gv-plate .av{ width:46px; height:46px; font-size:15px; flex:none; }
+  .gv-nm{ min-width:0; }
+  .gv-nm b{ display:block; font-size:15px; font-weight:700; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .gv-nm span{ font-size:12px; color:var(--muted); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .gv-cnt{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; min-height:24px; }
+  .gv-c{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; padding:3px 8px 3px 5px; border-radius:20px;
+    background:color-mix(in srgb,var(--c) 12%,#fff); color:var(--c); border:1px solid color-mix(in srgb,var(--c) 30%,transparent); }
+  .gv-c svg{ width:13px; height:13px; }
+  .gv-vazio{ font-size:12px; color:var(--muted); align-self:center; }
+  .gv-drop{ position:absolute; inset:0; border-radius:12px; display:none; align-items:center; justify-content:center; font-weight:700; font-size:13px;
+    color:#fff; background:rgba(152,36,36,.88); letter-spacing:.02em; pointer-events:none; }
+  .gv.over .gv-drop{ display:flex; }
+  .gv-sem{ font-size:10.5px; font-weight:700; color:#8a5a13; background:#fdf1dc; border-radius:5px; padding:1px 6px; margin-left:4px; }
+
+  /* bandeja de projetos aguardando */
+  .ds-tray{ background:repeating-linear-gradient(135deg,rgba(75,75,85,.045) 0 10px,transparent 10px 20px),#e4e4dc; border:1px dashed rgba(75,75,85,.3);
+    border-radius:14px; padding:20px; min-height:150px; }
+  .ds-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(205px,1fr)); gap:30px 24px; }
+  .ds-vazio{ text-align:center; color:var(--muted); font-size:14px; padding:26px 10px; }
+  .ds-vazio b{ display:block; color:var(--texto); font-size:15px; margin-bottom:4px; }
+
+  /* gaveta aberta */
+  .dg-head{ display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+  .dg-head .av{ width:58px; height:58px; font-size:19px; }
+  .dg-head h1{ font-size:22px; font-weight:700; line-height:1.15; }
+  .dg-head p{ font-size:13px; color:var(--muted); margin-top:2px; }
+  .dg-head .dg-sp{ flex:1; }
+  .dg-sec{ margin-bottom:26px; }
+  .dg-sec > h3, .dg-sec > summary{ display:flex; align-items:center; gap:9px; font-size:14px; font-weight:700; margin-bottom:14px; cursor:default; list-style:none; }
+  .dg-sec > summary{ cursor:pointer; }
+  .dg-sec > summary::-webkit-details-marker{ display:none; }
+  .dg-sec .dg-ic{ width:24px; height:24px; border-radius:50%; display:grid; place-items:center; background:var(--c); color:#fff; flex:none; }
+  .dg-sec .dg-ic.oco{ background:#fff; border:2px solid var(--c); color:var(--c); }
+  .dg-sec .dg-ic svg{ width:13px; height:13px; }
+  .dg-sec .dg-n{ font-size:12px; font-weight:600; color:var(--muted); background:rgba(75,75,85,.1); border-radius:20px; padding:1px 9px; }
+  .dg-sec > summary::after{ content:'▾'; margin-left:auto; color:var(--muted); transition:transform .2s; }
+  .dg-sec:not([open]) > summary::after{ transform:rotate(-90deg); }
+  .dg-sec:not([open]) > summary{ margin-bottom:0; }
+
+  /* ======== A PASTINHA (desenho da capa Raldi) ======== */
+  .pst{ position:relative; container-type:inline-size; aspect-ratio:210/297; cursor:pointer; filter:drop-shadow(0 3px 5px rgba(0,0,0,.28)); transition:transform .15s; user-select:none; }
+  .pst:hover{ transform:translateY(-3px) rotate(-.4deg); }
+  .pst.dragging{ opacity:.45; }
+  .pst.plain{ cursor:default; } .pst.plain:hover{ transform:none; }
+  .pst::before,.pst::after{ content:''; position:absolute; inset:0; background:#fbfbfd; border-radius:.5cqw; }
+  .pst::before{ transform:translate(1.1cqw,-.9cqw); background:#f1f1f6; }
+  .pst::after{ transform:translate(2.2cqw,-1.8cqw); background:#fff; }
+  .pst-capa{ position:absolute; inset:0; z-index:1; overflow:hidden; border-radius:.5cqw;
+    background:linear-gradient(98deg,#d6d8e6 0%,#e6e7f0 38%,#eeeef5 70%,#e0e1ec 100%);
+    -webkit-mask-image:radial-gradient(circle 5.4cqw at 0 22%,#0000 97%,#000),radial-gradient(circle 5.4cqw at 0 66%,#0000 97%,#000);
+    -webkit-mask-composite:source-in;
+    mask-image:radial-gradient(circle 5.4cqw at 0 22%,#0000 97%,#000),radial-gradient(circle 5.4cqw at 0 66%,#0000 97%,#000);
+    mask-composite:intersect; }
+  .pst-capa::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 30%,transparent 70%,rgba(120,120,150,.12)); pointer-events:none; }
+  .pst-lv{ position:absolute; left:12.5%; top:0; bottom:0; width:.32cqw; background:#a93a49; }
+  .pst-lh{ position:absolute; left:0; right:0; top:88%; height:.32cqw; background:#a93a49; }
+  .pst-logo{ position:absolute; left:17%; top:4.2%; display:flex; align-items:center; gap:1.6cqw; color:#2b2b30; }
+  .pst-logo b{ font-family:'Poppins','Archivo',sans-serif; font-weight:700; font-size:10.5cqw; letter-spacing:-.045em; line-height:1; }
+  .pst-logo span{ font-size:2.3cqw; font-weight:700; line-height:1.05; letter-spacing:.02em; margin-top:1.2cqw; }
+  .pst-tag{ position:absolute; left:15%; top:92.6%; font-size:5.5cqw; color:#3a3a40; font-weight:400; letter-spacing:-.01em; white-space:nowrap; }
+  .pst-mark{ position:absolute; right:3.5%; top:91.5%; width:12.5cqw; }
+  .pst-tab{ position:absolute; left:7.5%; right:3.5%; top:53%; background:#fff; border:.45cqw solid #1f2d27; font-size:max(6.5px,3.1cqw); color:#1d1d20; }
+  .pst-tit{ display:flex; align-items:center; justify-content:center; position:relative; padding:1.5cqw 0 1.3cqw; font-weight:800; font-size:5.6cqw; letter-spacing:-.01em; }
+  .pst-tit i{ position:absolute; right:1.6cqw; top:50%; transform:translateY(-50%); width:5.4cqw; height:5.4cqw; border-radius:1cqw; background:#3b3d46; color:#fff;
+    font-style:normal; font-weight:800; font-size:3.8cqw; display:grid; place-items:center; border:.35cqw solid #7b7d88; }
+  .pst-band{ background:#a52a2e; color:#ffe9b3; text-align:center; font-weight:800; font-size:4.2cqw; padding:.5cqw 0; border-top:.3cqw solid #1f2d27; border-bottom:.3cqw solid #1f2d27; }
+  .pst-r{ display:grid; grid-template-columns:27% 1fr 23% 1fr; border-bottom:.3cqw solid #1f2d27; }
+  .pst-r:last-child{ border-bottom:0; }
+  .pst-r > div{ padding:.8cqw .9cqw; min-height:5.4cqw; display:flex; align-items:center; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; border-left:.3cqw solid #1f2d27; }
+  .pst-r > div:first-child{ border-left:0; }
+  .pst-r > .l{ background:linear-gradient(#cfd8d2,#b9c5bd); font-size:2.75cqw; line-height:1.1; white-space:normal; }
+  .pst-r > .v{ font-weight:600; }
+  .pst-r > .v.w3{ grid-column:span 3; }
+  .pst-r > .v.w1{ grid-column:span 1; }
+  .pst-r > .v.num{ font-family:'Caveat','Segoe Script',cursive; color:#1d2a8a; font-size:4.6cqw; font-weight:700; }
+  .pst-st{ position:absolute; z-index:3; right:-1.8cqw; top:-1.8cqw; width:13cqw; height:13cqw; border-radius:50%; display:grid; place-items:center;
+    background:var(--c); color:#fff; border:.9cqw solid #fff; box-shadow:0 2px 5px rgba(0,0,0,.35); }
+  .pst-st svg{ width:58%; height:58%; }
+  .pst-st.oco{ background:#fff; color:var(--c); border-color:var(--c); }
+  .pst-st.rodando{ animation:pstPulso 1.8s ease-in-out infinite; }
+  @keyframes pstPulso{ 0%,100%{ box-shadow:0 2px 5px rgba(0,0,0,.35),0 0 0 0 color-mix(in srgb,var(--c) 55%,transparent); } 50%{ box-shadow:0 2px 5px rgba(0,0,0,.35),0 0 0 2.2cqw transparent; } }
+  .pst-mn{ position:absolute; z-index:3; left:2.5cqw; top:2.5cqw; width:8cqw; height:8cqw; min-width:24px; min-height:24px; border:0; border-radius:50%; cursor:pointer;
+    background:rgba(255,255,255,.85); color:#3a3a40; font-size:4.6cqw; font-weight:800; line-height:1; display:grid; place-items:center; opacity:.0; transition:opacity .15s; padding:0; }
+  .pst:hover .pst-mn,.pst-mn:focus-visible{ opacity:1; }
+  @media (hover:none){ .pst-mn{ opacity:1; } }
+  .pst-sub{ position:absolute; z-index:3; left:0; right:0; bottom:-22px; text-align:center; font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pst-wrap{ position:relative; padding-bottom:20px; }
+  .pst-wrap.sub .pst-sub{ bottom:0; }
+  .pst-anx{ position:absolute; z-index:3; left:3cqw; bottom:-1.5cqw; display:none; align-items:center; gap:.8cqw; background:#3b3d46; color:#fff; font-size:3.4cqw; font-weight:700; border-radius:20px; padding:.8cqw 2.4cqw; }
+  .pst-anx.on{ display:flex; }
+
+  /* menu de contexto */
+  .ds-ctx{ position:fixed; z-index:300; min-width:210px; background:#fff; border:1px solid var(--linha); border-radius:10px; padding:5px; box-shadow:0 14px 34px rgba(0,0,0,.26); }
+  .ds-ctx button{ display:flex; width:100%; align-items:center; gap:9px; font:inherit; font-size:13.5px; text-align:left; padding:9px 11px; border:0; background:none; border-radius:7px; cursor:pointer; color:var(--texto); }
+  .ds-ctx button:hover:not(:disabled){ background:#f2f2ec; }
+  .ds-ctx button:disabled{ opacity:.42; cursor:not-allowed; }
+  .ds-ctx button.perigo{ color:var(--vermelho); }
+  .ds-ctx hr{ border:0; border-top:1px solid var(--linha); margin:4px 2px; }
+  .ds-ctx svg{ width:16px; height:16px; flex:none; }
+
+  /* modal da pasta */
+  .dsm{ display:grid; grid-template-columns:230px 1fr; gap:22px; align-items:start; }
+  .dsm .pst-wrap{ padding-bottom:0; }
+  .dsm-info dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:13.5px; margin-bottom:14px; }
+  .dsm-info dt{ color:var(--muted); } .dsm-info dd{ font-weight:600; min-width:0; overflow-wrap:anywhere; }
+  .dsm-st{ display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:12.5px; color:var(--c); background:color-mix(in srgb,var(--c) 12%,#fff); border:1px solid color-mix(in srgb,var(--c) 30%,transparent); padding:2px 10px 2px 8px; border-radius:20px; }
+  .dsm-st svg{ width:13px; height:13px; }
+  .dsm-h{ font-size:12px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin:16px 0 8px; display:flex; align-items:center; gap:8px; }
+  .dsm-up{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .dsm-up .st{ font-size:12.5px; color:var(--muted); }
+  .dsm-anx{ display:grid; grid-template-columns:repeat(auto-fill,minmax(108px,1fr)); gap:10px; }
+  .dsm-a{ position:relative; border:1px solid var(--linha); border-radius:9px; overflow:hidden; background:#faf9f5; aspect-ratio:4/3; display:block; text-decoration:none; color:var(--texto); }
+  .dsm-a img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .dsm-a.pdf{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; text-align:center; }
+  .dsm-a.pdf svg{ width:30px; height:30px; color:var(--vermelho); }
+  .dsm-a.pdf span{ font-size:11px; line-height:1.2; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; word-break:break-all; }
+  .dsm-a button{ position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; border:0; background:rgba(35,36,40,.78); color:#fff; font-size:13px; line-height:1; cursor:pointer; display:grid; place-items:center; padding:0; }
+  .dsm-vz{ font-size:13px; color:var(--muted); padding:10px 0; }
+  .ds-pick{ display:flex; flex-direction:column; gap:8px; }
+  .ds-pick button{ display:flex; align-items:center; gap:12px; font:inherit; text-align:left; padding:10px 12px; border:1px solid var(--linha); border-radius:10px; background:#fff; cursor:pointer; color:var(--texto); }
+  .ds-pick button:hover{ border-color:var(--vermelho); background:#fdf6f5; }
+  .ds-pick .av{ width:38px; height:38px; font-size:13px; }
+  .ds-pick b{ display:block; font-size:14.5px; } .ds-pick span.f{ font-size:12px; color:var(--muted); }
+  .ds-pick em{ margin-left:auto; font-style:normal; font-size:12px; color:var(--muted); }
+  @media (max-width:640px){ .dsm{ grid-template-columns:1fr; } .dsm .pst-wrap{ max-width:230px; margin:0 auto; } .ds-gavs{ grid-template-columns:1fr 1fr; gap:12px; } .gv{ padding:11px 10px 10px; } .gv-plate{ padding:7px; gap:8px; } .gv-plate .av{ width:36px; height:36px; font-size:12px; } .gv-nm b{ font-size:13.5px; } .ds-grid{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:22px 14px; } }
 </style>
 </head>
 <body>
@@ -2535,6 +2682,7 @@
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
+      {label:'Designações de Projetos'},
       {label:'Liberação de lote', children:['Projetos liberados','Lotes agrupados']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
       {label:'Programação', children:['Plano Mestre','MRP','Capacidade']},
@@ -2685,6 +2833,7 @@
     if(mod.id==='pcp' && name==='Rendimento') return renderRendimento();
     if(mod.id==='pcp' && name==='Cadastro de Lead time') return renderLead('cad');
     if(mod.id==='pcp' && name==='Painel de Atrasos') return renderLead('dash');
+    if(mod.id==='pcp' && name==='Designações de Projetos') return renderDesig();
     if(mod.id==='pcp' && name==='Projetos liberados') return renderLiberacaoLote('lista');
     if(mod.id==='pcp' && name==='Lotes agrupados') return renderLiberacaoLote('agrupados');
     if(mod.id==='est' && name==='Solicitação de Compras (SC)') return renderSCEstoque();
@@ -3500,6 +3649,7 @@
   let listenersAtivos=false;
   function ligarListeners(){
     if(listenersAtivos) return; listenersAtivos=true;
+    ligarListenersDesig();
     db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') renderClientes(); else if(TELA==='mapa') atualizarMapa(); },
       e=>toast('Erro de leitura: '+e.message));
     db.ref('projetos').on('value',s=>{ PROJETOS=objParaArray(s); if(TELA==='projetos') renderDados(); },
@@ -3528,12 +3678,12 @@
       else if(TELA==='contagem') renderContagem(); });
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
-        renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } });
+        renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
+      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      if(TELA==='equipe') renderEquipe(); });
+      if(TELA==='equipe') renderEquipe(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
       resumoCarregado.ops=true; sincronizarResumoTela();
       if(TELA==='ops') renderOPs(); else if(TELA==='apont') renderApont();
@@ -3543,6 +3693,7 @@
       else if(TELA==='painel') renderPainel();
       else if(TELA==='liblote') renderLiberacaoLote(lbAba);
       else if(TELA==='lead') renderLead();
+      else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar();
       else if(TELA==='histfitas') atualizarHistFitas();
       else if(TELA==='histfita-det'&&histFitaId) verHistFita(histFitaId); });
     db.ref('cartoes').on('value',s=>{ CARTOES=Object.values(s.val()||{}).sort((a,b)=>(b.numero||0)-(a.numero||0));
@@ -13255,6 +13406,7 @@ const HM_ICONS={
  'Acompanhamento da Produção':'<path class=a d="M3 12h4l3-7 4 14 3-7h4"/><circle class=c cx=21 cy=12 r=0.6 />',
  'Rendimento':'<path class=a d="M4 17a8 8 0 1116 0"/><path class=c d="M12 17l4-5"/><circle class=b cx=12 cy=17 r=1.3 />',
  'Equipe Produtiva':'<circle class=a cx=9 cy=8 r=3 /><path class=a d="M3 19c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5"/><circle class=b cx=17 cy=9 r=2.4 /><path class=b d="M17 14c2.5 0 4.5 1.6 4.5 4.5"/>',
+ 'Designações de Projetos':'<path class=a d="M3 8a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle class=c cx=12 cy=12.2 r=1.9 /><path class=b d="M8.6 17c.4-2 1.8-3 3.4-3s3 1 3.4 3"/>',
  'Projetos liberados':'<path class=a d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path class=c d="M9 14l2.2 2.2L15.5 12"/>',
  'Lotes agrupados':'<path class=a d="M12 3l9 5-9 5-9-5z"/><path class=b d="M3 12.5l9 5 9-5"/><path class=c d="M3 17l9 5 9-5"/>',
  'Cadastro de Lead time':'<circle class=a cx=12 cy=13 r=8 /><path class=c d="M12 8.5V13l3 2"/><path class=b d="M9.5 3h5"/>',
@@ -13492,6 +13644,362 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
     ltHtmlCadastro,ltHtmlDash,ltQtdProjeto,ltResumoProjeto,ltOpDoRegistro,ltSlug,
     leadHoras,leadMinOP,leadStatus,fmtCron,tickLead,htmlLead,htmlLeadMini,htmlExtra,htmlExtraResumo,
     iniciarExtra,finalizarExtra,extrasDe,extraAberta,foraJornada});
+
+
+/* ================= DESIGNAÇÕES DE PROJETOS (PCP) =================
+   Gaveta por funcionário com acesso a "Liberado do PCP". Projetos medidos e ainda não
+   liberados ficam numa bandeja e são arrastados para a gaveta de quem vai cuidar deles.
+   Firebase:  designacoes/{projeto} -> {projeto, func, atribuidoEm, atribuidoPor}
+              pastaAnexos/{projeto}/{id} -> {id, projeto, nome, url, tipo:'img'|'pdf', tam, em, por}  */
+const ATIV_MED='Medição técnica', ATIV_LIB='Liberado do PCP';
+const CLD_PRESETS_PASTA=['pastas',CLD_PRESET_AVATAR];   // tenta "pastas" (unsigned) e cai para "avatares"
+let DESIG={}, PANEXOS={}, desigGav=null, desigBusca='', desigMostrarIniciados=false, desigEncAberto=false,
+    desigDrag=null, desigD=null, desigPastaAberta=null;
+
+const DS_ICO={
+  check:'<path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>',
+  play:'<path d="M8 5.2v13.6L19.5 12z" fill="currentColor"/>',
+  pause:'<path d="M7.5 5h3.2v14H7.5zM13.3 5h3.2v14h-3.2z" fill="currentColor"/>',
+  nao:'<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>'
+};
+const DS_ST={   // cores = as mesmas de ST_OP, para não criar um segundo código de cores
+  parcial:{t:'Em execução',  c:ST_OP.parcial.cor,   i:'play',  oco:false, anim:true},
+  pausada:{t:'Pausado',      c:ST_OP.pausada.cor,   i:'pause', oco:false},
+  nao:    {t:'Não iniciado', c:ST_OP.nao.cor,       i:'nao',   oco:true},
+  encerrada:{t:'Encerrado',  c:ST_OP.encerrada.cor, i:'check', oco:false}
+};
+const DS_ORDEM=['parcial','pausada','nao','encerrada'];
+function dsSvg(i){ return `<svg viewBox="0 0 24 24" aria-hidden="true">${DS_ICO[i]}</svg>`; }
+function desigKey(p){ return String(p||'').trim().replace(/[.#$\[\]\/]/g,'_'); }
+function desigIso(o){ return (o&&o.fim&&o.fim.em)||(o&&o.inicio&&o.inicio.em)||''; }
+function desigDataBR(iso){ if(!iso) return '—'; const d=new Date(iso); return isNaN(d)?'—':d.toLocaleDateString('pt-BR'); }
+function desigAnexos(p){ return Object.values(PANEXOS[desigKey(p)]||{}).sort((a,b)=>String(a.em||'').localeCompare(String(b.em||''))); }
+function desigAptos(){ return aptosPara(ATIV_LIB,'APOIO').map(f=>f.nome).filter(Boolean); }
+
+/* ---- monta o que aparece na tela: bandeja + pastas por funcionário ---- */
+function desigConstruir(){
+  const proj=new Map(), opd=new Map(), pl=new Map();
+  const rank={nao:0,pausada:1,parcial:2,encerrada:3};
+  const get=p=>{ let r=proj.get(p); if(!r){ r={medOp:null,libOp:null}; proj.set(p,r); } return r; };
+  PAINEL.forEach(r=>{ const p=String(r.projeto||'').trim(); if(!p) return; if(!pl.has(p)) pl.set(p,[]); pl.get(p).push(r); });
+  OPS.forEach(o=>{
+    (Array.isArray(o.projetosLote)?o.projetosLote:Object.values(o.projetosLote||{})).forEach(r=>{
+      const p=String(r&&r.projeto||'').trim(); if(p&&!opd.has(p)) opd.set(p,r); });
+    const p=String(o.projeto||'').trim(); if(!p) return;
+    if(o.atividade===ATIV_MED && stOp(o)==='encerrada'){
+      const r=get(p); if(!r.medOp||desigIso(o)>desigIso(r.medOp)) r.medOp=o;
+    } else if(o.atividade===ATIV_LIB){
+      const r=get(p); if(!r.libOp||rank[stOp(o)]>rank[stOp(r.libOp)]) r.libOp=o;
+    }
+  });
+  const mk=p=>{
+    const r=proj.get(p)||{}, rows=pl.get(p)||[], alt=opd.get(p)||{};
+    const amb=[...new Set(rows.map(x=>String(x.ambiente||'').trim()).filter(Boolean))];
+    return {projeto:p, key:desigKey(p),
+      ambiente:amb.join(' / ')||alt.ambiente||'', telefone:rows.map(x=>x.telefone).find(Boolean)||alt.telefone||'',
+      local:rows.map(x=>x.local).find(Boolean)||alt.local||'', medicao:r.medOp?desigIso(r.medOp):'',
+      status:r.libOp?stOp(r.libOp):'nao', opId:r.libOp?r.libOp.id:null};
+  };
+  const pool=[], gav=new Map();
+  proj.forEach((r,p)=>{
+    if(DESIG[desigKey(p)]||!r.medOp) return;
+    const f=mk(p); if(f.status==='nao'||desigMostrarIniciados) pool.push(f);
+  });
+  Object.values(DESIG).forEach(d=>{
+    if(!d||!d.projeto||!d.func) return;
+    const f=mk(String(d.projeto)); f.func=d.func; f.em=d.atribuidoEm||''; f.por=d.atribuidoPor||'';
+    if(!gav.has(d.func)) gav.set(d.func,[]); gav.get(d.func).push(f);
+  });
+  pool.sort((a,b)=>String(a.medicao).localeCompare(String(b.medicao)));
+  gav.forEach(l=>l.sort((a,b)=>String(a.medicao).localeCompare(String(b.medicao))));
+  return {pool,gav};
+}
+function desigAcha(p){
+  const D=desigD||(desigD=desigConstruir());
+  let f=D.pool.find(x=>x.projeto===p); if(f) return f;
+  for(const l of D.gav.values()){ f=l.find(x=>x.projeto===p); if(f) return f; }
+  return null;
+}
+function desigFiltra(l){
+  const t=normTxt(desigBusca).split(/\s+/).filter(Boolean); if(!t.length) return l;
+  return l.filter(f=>{ const s=normTxt([f.projeto,f.ambiente,f.local,f.telefone].join(' ')); return t.every(x=>s.includes(x)); });
+}
+
+/* ---- A PASTINHA ---- */
+function pastaHtml(f,o){
+  o=o||{}; const S=DS_ST[f.status]||DS_ST.nao, nx=desigAnexos(f.projeto).length;
+  return `<div class="pst-wrap"><div class="pst${o.plain?' plain':''}" ${o.plain?'':`data-p="${escHtml(f.projeto)}" draggable="${o.drag===false?'false':'true'}"`} style="--c:${S.c}" title="${escHtml(S.t)}">
+    <div class="pst-capa">
+      <i class="pst-lv"></i><i class="pst-lh"></i>
+      <div class="pst-logo"><b>Raldi</b><span>MÓVEIS COM<br>PRECISÃO</span></div>
+      <div class="pst-tab">
+        <div class="pst-tit">Dados importantes:<i>R</i></div>
+        <div class="pst-band">Atendimento</div>
+        <div class="pst-r"><div class="l">Data da medição:</div><div class="v">${escHtml(desigDataBR(f.medicao))}</div><div class="l">Nº de projeto:</div><div class="v num">${escHtml(f.projeto)}</div></div>
+        <div class="pst-r"><div class="l">Ambiente:</div><div class="v w3">${escHtml(f.ambiente||'—')}</div></div>
+        <div class="pst-band">Cliente</div>
+        <div class="pst-r"><div class="l">Telefone:</div><div class="v w3">${escHtml(f.telefone||'—')}</div></div>
+        <div class="pst-r"><div class="l">Local:</div><div class="v w3">${escHtml(f.local||'—')}</div></div>
+      </div>
+      <div class="pst-tag">Seu móvel, sua medida.</div>
+      <svg class="pst-mark" viewBox="0 0 82 56" fill="#a93a49" aria-hidden="true"><path d="M0 4C20 4 26 16 26 28S20 52 0 52z"/><path d="M28 7C44 7 49 17 49 28S44 49 28 49z"/><path d="M51 11C63 11 67 19 67 28S63 45 51 45z"/><path d="M69 15C77 15 80 21 80 28S77 41 69 41z"/></svg>
+    </div>
+    <span class="pst-st${S.oco?' oco':''}${S.anim?' rodando':''}">${dsSvg(S.i)}</span>
+    ${o.plain?'':'<button type="button" class="pst-mn" title="Opções" aria-label="Opções da pasta">⋯</button>'}
+    <span class="pst-anx${nx?' on':''}">📎 ${nx}</span>
+  </div></div>`;
+}
+
+/* ---- tela principal ---- */
+function renderDesig(){
+  TELA='desig'; desigGav=null;
+  const D=desigD=desigConstruir(), aptos=desigAptos();
+  const extras=[...D.gav.keys()].filter(n=>!aptos.includes(n));
+  const nomes=[...aptos.slice().sort((a,b)=>a.localeCompare(b,'pt-BR')),...extras];
+  view.innerHTML=`<div class="page page-wide ds">
+    <div class="ds-top">
+      <div><h1 class="page-title">Designações de Projetos</h1>
+        <p class="page-sub">${nomes.length} gaveta(s) · <span id="dsContPool">${D.pool.length}</span> projeto(s) aguardando designação</p></div>
+      <input class="search" id="dsBusca" placeholder="Buscar projeto, ambiente, local ou telefone…" value="${escHtml(desigBusca)}" oninput="desigFiltrar(this.value)">
+    </div>
+    <div class="ds-sec"><h2>Gavetas</h2><span>arraste uma pasta até a gaveta de quem vai liberar o projeto</span></div>
+    ${nomes.length?`<div class="ds-gavs">${nomes.map(n=>desigGavetaHtml(n,D.gav.get(n)||[],!aptos.includes(n))).join('')}</div>`
+      :`<div class="ds-tray ds-vazio" style="margin-bottom:30px"><b>Nenhum funcionário com acesso a “${ATIV_LIB}”</b>Marque essa atividade para alguém em <i>Equipe Produtiva</i>.</div>`}
+    <div class="ds-sec"><h2>Aguardando designação</h2><span>medidos, ainda sem “${ATIV_LIB}” iniciado</span>
+      <label class="ds-tg"><input type="checkbox" ${desigMostrarIniciados?'checked':''} onchange="desigToggleIniciados(this.checked)"> incluir já iniciados sem gaveta</label></div>
+    <div class="ds-tray" id="dsPool">${desigPoolCorpo(D)}</div>
+  </div>`;
+}
+function desigGavetaHtml(nome,lista,semAcesso){
+  const u=usuarioPorFunc(nome), eq=EQUIPE.find(f=>f.nome===nome);
+  const cont=DS_ORDEM.map(s=>[s,lista.filter(f=>f.status===s).length]).filter(x=>x[1]);
+  return `<div class="gv" data-f="${escHtml(nome)}" title="Abrir a gaveta de ${escHtml(nome)}">
+    <div class="gv-handle"></div>
+    <div class="gv-plate">${avatarHtml(u,nome,'')}<div class="gv-nm"><b>${escHtml(nome)}</b><span>${escHtml((u&&u.funcao)||'')}${semAcesso?'<em class="gv-sem">sem acesso à atividade</em>':''}</span></div></div>
+    <div class="gv-cnt">${cont.length?cont.map(([s,n])=>`<span class="gv-c" style="--c:${DS_ST[s].c}" title="${DS_ST[s].t}">${dsSvg(DS_ST[s].i)}${n}</span>`).join(''):'<span class="gv-vazio">gaveta vazia</span>'}</div>
+    <div class="gv-drop">Solte para designar</div></div>`;
+}
+function desigPoolCorpo(D){
+  const l=desigFiltra(D.pool);
+  if(!l.length) return `<div class="ds-vazio"><b>${D.pool.length?'Nenhum projeto encontrado':'Nenhum projeto aguardando'}</b>${D.pool.length?'Ajuste a busca.':'Projetos aparecem aqui quando a Medição técnica é encerrada.'}</div>`;
+  return `<div class="ds-grid">${l.map(f=>pastaHtml(f)).join('')}</div>`;
+}
+function desigToggleIniciados(v){ desigMostrarIniciados=!!v; desigD=desigConstruir(); const el=document.getElementById('dsPool'); if(el) el.innerHTML=desigPoolCorpo(desigD);
+  const c=document.getElementById('dsContPool'); if(c) c.textContent=desigD.pool.length; }
+function desigFiltrar(v){
+  desigBusca=v||'';
+  if(TELA==='desig'){ const el=document.getElementById('dsPool'); if(el&&desigD) el.innerHTML=desigPoolCorpo(desigD); }
+  else if(TELA==='desig-gav'){ const el=document.getElementById('dgBody'); if(el) el.innerHTML=desigGavCorpo(desigGav); }
+}
+
+/* ---- gaveta aberta ---- */
+function renderDesigGav(nome){
+  TELA='desig-gav'; desigGav=nome; desigD=desigConstruir();
+  const u=usuarioPorFunc(nome), lista=desigD.gav.get(nome)||[];
+  view.innerHTML=`<div class="page page-wide ds">
+    <div class="dg-head">
+      <button class="btn btn-ghost" onclick="renderDesig()">← Gavetas</button>
+      ${avatarHtml(u,nome,'')}
+      <div><h1>${escHtml(nome)}</h1><p>${escHtml((u&&u.funcao)||'')}${u&&u.funcao?' · ':''}${lista.length} projeto(s) na gaveta</p></div>
+      <span class="dg-sp"></span>
+      <input class="search" id="dsBusca" placeholder="Buscar nesta gaveta…" value="${escHtml(desigBusca)}" oninput="desigFiltrar(this.value)">
+    </div>
+    <div id="dgBody">${desigGavCorpo(nome)}</div></div>`;
+}
+function desigGavCorpo(nome){
+  const D=desigD||(desigD=desigConstruir()), todas=D.gav.get(nome)||[], lista=desigFiltra(todas);
+  if(!todas.length) return `<div class="ds-tray ds-vazio"><b>Gaveta vazia</b>Volte e arraste projetos da bandeja até esta gaveta.</div>`;
+  if(!lista.length) return `<div class="ds-vazio"><b>Nenhum projeto encontrado</b>Ajuste a busca.</div>`;
+  return DS_ORDEM.map(s=>{
+    const l=lista.filter(f=>f.status===s); if(!l.length) return '';
+    const S=DS_ST[s], cab=`<span class="dg-ic${S.oco?' oco':''}" style="--c:${S.c}">${dsSvg(S.i)}</span>${S.t}<span class="dg-n">${l.length}</span>`;
+    const grid=`<div class="ds-grid">${l.map(f=>pastaHtml(f)).join('')}</div>`;
+    return s==='encerrada'
+      ?`<details class="dg-sec" ${desigEncAberto?'open':''} ontoggle="desigEncAberto=this.open"><summary>${cab}</summary>${grid}</details>`
+      :`<section class="dg-sec"><h3>${cab}</h3>${grid}</section>`;
+  }).join('');
+}
+
+/* ---- ações ---- */
+function desigAtribuir(p,nome){
+  const k=desigKey(p), ja=DESIG[k], agora=new Date().toISOString();
+  return db.ref('designacoes/'+k).update({projeto:p,func:nome,atribuidoEm:(ja&&ja.atribuidoEm)||agora,atribuidoPor:usuarioAtual(),movidoEm:agora})
+    .then(()=>toast(ja?`Projeto ${p} movido para ${nome}`:`Projeto ${p} designado para ${nome}`))
+    .catch(e=>toast('Não foi possível gravar: '+(e&&e.message?e.message:e)));
+}
+function desigDevolver(p){
+  const f=desigAcha(p); if(!f) return;
+  if(f.status!=='nao'){ toast('Projeto já iniciado — use “Mover para…” em vez de devolver'); return; }
+  db.ref('designacoes/'+desigKey(p)).remove()
+    .then(()=>{ toast(`Projeto ${p} voltou para a bandeja`); fecharModal(); })
+    .catch(e=>toast('Erro: '+(e&&e.message?e.message:e)));
+}
+function desigEscolher(p){
+  const f=desigAcha(p); if(!f) return;
+  const aptos=desigAptos(), nomes=[...new Set([...aptos,...(desigD?[...desigD.gav.keys()]:[])])].sort((a,b)=>a.localeCompare(b,'pt-BR')).filter(n=>n!==f.func);
+  abrirModal(`${f.func?'Mover':'Designar'} projeto ${escHtml(p)}`,
+    nomes.length?`<div class="ds-pick">${nomes.map(n=>{ const u=usuarioPorFunc(n), q=(desigD&&desigD.gav.get(n)||[]).length;
+      return `<button type="button" data-p="${escHtml(p)}" data-f="${escHtml(n)}" onclick="desigPick(this)">${avatarHtml(u,n,'')}<div><b>${escHtml(n)}</b><span class="f">${escHtml((u&&u.funcao)||'')}</span></div><em>${q} na gaveta</em></button>`; }).join('')}</div>`
+      :'<p class="dsm-vz">Nenhum outro funcionário com acesso a “'+ATIV_LIB+'”.</p>',
+    '<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>');
+}
+function desigPick(el){ fecharModal(); desigAtribuir(el.dataset.p,el.dataset.f); }
+function desigAbrirApont(opId){
+  if(!opId){ toast('A OP de “'+ATIV_LIB+'” deste projeto ainda não foi emitida'); return; }
+  fecharModal();
+  document.querySelectorAll('.leaf.active').forEach(l=>l.classList.remove('active'));
+  const el=tree.querySelector('.leaf[data-leaf="Apontamento"]');
+  if(el){ el.classList.add('active'); const g=el.closest('.tree-group'); if(g) g.classList.add('open'); }
+  const m=MODULES.find(x=>x.id===activeMod); if(m) setCrumb(m,'Apontamento');
+  abrirApont(opId);
+}
+
+/* ---- pasta aberta (modal) ---- */
+function desigAbrirPasta(p){
+  const f=desigAcha(p); if(!f){ toast('Projeto não encontrado'); return; }
+  desigPastaAberta=p; const S=DS_ST[f.status]||DS_ST.nao, u=f.func?usuarioPorFunc(f.func):null;
+  abrirModal(`Projeto ${escHtml(p)}`,
+    `<div class="dsm"><div>${pastaHtml(f,{plain:true})}</div>
+      <div class="dsm-info">
+        <dl><dt>Status</dt><dd><span class="dsm-st" style="--c:${S.c}">${dsSvg(S.i)}${S.t}</span></dd>
+          <dt>Ambiente</dt><dd>${escHtml(f.ambiente||'—')}</dd>
+          <dt>Medição</dt><dd>${escHtml(desigDataBR(f.medicao))}</dd>
+          <dt>Telefone</dt><dd>${escHtml(f.telefone||'—')}</dd>
+          <dt>Local</dt><dd>${escHtml(f.local||'—')}</dd>
+          <dt>Gaveta</dt><dd>${f.func?escHtml(f.func):'— (aguardando designação)'}</dd></dl>
+        <button class="btn btn-primary" ${f.opId?'':'disabled title="OP ainda não emitida"'} onclick="desigAbrirApont('${escHtml(f.opId||'')}')">Abrir apontamento</button>
+        ${f.opId?'':'<span class="dsm-vz" style="margin-left:8px">OP de “'+ATIV_LIB+'” ainda não emitida</span>'}
+        <div class="dsm-h">Fotos e PDFs</div>
+        <div class="dsm-up">
+          <input type="file" id="dsArq" multiple accept="image/*,application/pdf" style="display:none" onchange="desigEnviar(this.files,'${escHtml(p)}');this.value=''">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dsArq').click()">+ Anexar fotos / PDF</button>
+          <span class="st" id="dsUpSt"></span></div>
+        <div id="dsAnexos">${desigAnexosHtml(p)}</div>
+      </div></div>`,
+    (f.func?`<button class="btn btn-ghost" onclick="desigDevolver('${escHtml(p)}')" ${f.status==='nao'?'':'disabled title="Projeto já iniciado"'}>Devolver à bandeja</button>
+             <button class="btn btn-ghost" onclick="desigEscolher('${escHtml(p)}')">Mover para…</button>`
+           :`<button class="btn btn-primary" onclick="desigEscolher('${escHtml(p)}')">Designar a…</button>`)
+    +'<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>');
+  const bx=document.querySelector('#modalOv .rx-box'); if(bx) bx.style.width='min(780px,100%)';
+}
+function desigThumb(u){ return String(u).replace('/upload/','/upload/w_320,h_240,c_fill,q_auto,f_auto/'); }
+function desigAnexosHtml(p){
+  const l=desigAnexos(p); if(!l.length) return '<div class="dsm-vz">Nenhum arquivo anexado.</div>';
+  return `<div class="dsm-anx">${l.map(a=>a.tipo==='pdf'
+    ?`<a class="dsm-a pdf" href="${escHtml(a.url)}" target="_blank" rel="noopener" title="${escHtml(a.nome)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg><span>${escHtml(a.nome)}</span><button type="button" title="Remover" onclick="event.preventDefault();event.stopPropagation();desigRemoverAnexo('${escHtml(p)}','${escHtml(a.id)}')">×</button></a>`
+    :`<a class="dsm-a" href="${escHtml(a.url)}" target="_blank" rel="noopener" title="${escHtml(a.nome)}"><img src="${escHtml(desigThumb(a.url))}" alt="" loading="lazy"><button type="button" title="Remover" onclick="event.preventDefault();event.stopPropagation();desigRemoverAnexo('${escHtml(p)}','${escHtml(a.id)}')">×</button></a>`).join('')}</div>`;
+}
+function desigRemoverAnexo(p,id){
+  if(!confirm('Remover este anexo da pasta?')) return;
+  db.ref('pastaAnexos/'+desigKey(p)+'/'+id).remove().catch(e=>toast('Erro: '+(e&&e.message?e.message:e)));
+}
+function desigPrepararFoto(file){   // lado maior até 1800 px, JPEG 82%
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{ const esc=Math.min(1,1800/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
+      c.width=Math.round(img.naturalWidth*esc); c.height=Math.round(img.naturalHeight*esc);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error('Falha ao preparar a foto')),'image/jpeg',.82); };
+    img.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('Arquivo de imagem inválido')); };
+    img.src=url; });
+}
+async function desigCloud(blob,nome){
+  let erro='';
+  for(const preset of CLD_PRESETS_PASTA){
+    const fd=new FormData(); fd.append('file',blob,nome); fd.append('upload_preset',preset);
+    const r=await fetch(`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/auto/upload`,{method:'POST',body:fd});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.secure_url) return j.secure_url;
+    erro=(j.error&&j.error.message)||('Cloudinary recusou o envio ('+r.status+')');
+    if(!/preset/i.test(erro)) break;     // só tenta o próximo preset se este não existir
+  }
+  throw new Error(erro);
+}
+async function desigEnviar(files,p){
+  const lista=[...(files||[])]; if(!lista.length) return;
+  const st=()=>document.getElementById('dsUpSt'); let ok=0;
+  for(let i=0;i<lista.length;i++){
+    const f=lista[i]; if(st()) st().textContent=`Enviando ${i+1} de ${lista.length}…`;
+    const img=/^image\//.test(f.type), pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
+    if(!img&&!pdf){ toast(`“${f.name}”: só fotos e PDF`); continue; }
+    if(pdf&&f.size>10*1024*1024){ toast(`“${f.name}” passa de 10 MB`); continue; }
+    try{
+      const blob=img?await desigPrepararFoto(f):f, url=await desigCloud(blob,img?'foto.jpg':f.name);
+      const id='an'+Date.now()+Math.floor(Math.random()*900+100);
+      await db.ref('pastaAnexos/'+desigKey(p)+'/'+id).set({id,projeto:p,nome:f.name,url,tipo:img?'img':'pdf',tam:blob.size,em:new Date().toISOString(),por:usuarioAtual()});
+      ok++;
+    }catch(e){ toast(`Erro em “${f.name}”: `+(e&&e.message?e.message:e)); }
+  }
+  if(st()) st().textContent=''; if(ok) toast(ok+' arquivo(s) anexado(s)');
+}
+
+/* ---- menu do botão direito ---- */
+function desigFecharMenu(){ const m=document.getElementById('dsCtx'); if(m) m.remove(); }
+function desigMenu(x,y,p){
+  desigFecharMenu(); const f=desigAcha(p); if(!f) return;
+  const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const m=document.createElement('div'); m.className='ds-ctx'; m.id='dsCtx';
+  const it=(t,i,fn,o)=>{ o=o||{}; return `<button type="button" ${o.dis?'disabled':''} ${o.tip?`title="${o.tip}"`:''} class="${o.perigo?'perigo':''}" data-fn="${fn}">${ic(i)}${t}</button>`; };
+  m.innerHTML=it('Abrir pasta','<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>','abrir')
+    +(f.func?it('Abrir apontamento','<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M8.5 13l2.5 2.5 4.5-5"/>','apont',{dis:!f.opId,tip:f.opId?'':'OP ainda não emitida'})
+      +'<hr>'+it('Mover para…','<path d="M5 12h14M13 6l6 6-6 6"/>','mover')
+      +it('Devolver à bandeja','<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>','devolver',{perigo:true,dis:f.status!=='nao',tip:f.status!=='nao'?'Projeto já iniciado — use Mover para…':''})
+     :'<hr>'+it('Designar a…','<path d="M5 12h14M13 6l6 6-6 6"/>','mover'));
+  document.body.appendChild(m);
+  const w=m.offsetWidth, h=m.offsetHeight;
+  m.style.left=Math.max(6,Math.min(x,innerWidth-w-6))+'px'; m.style.top=Math.max(6,Math.min(y,innerHeight-h-6))+'px';
+  m.onclick=e=>{ const b=e.target.closest('button[data-fn]'); if(!b||b.disabled) return; desigFecharMenu();
+    ({abrir:()=>desigAbrirPasta(p),apont:()=>desigAbrirApont(f.opId),mover:()=>desigEscolher(p),devolver:()=>desigDevolver(p)})[b.dataset.fn](); };
+}
+
+/* ---- eventos (delegados no #view; registrados uma única vez) ---- */
+(function desigLigar(){
+  const noDesig=()=>TELA==='desig'||TELA==='desig-gav';
+  view.addEventListener('click',e=>{
+    if(!noDesig()) return;
+    const mn=e.target.closest('.pst-mn');
+    if(mn){ e.stopPropagation(); const r=mn.getBoundingClientRect(); desigMenu(r.left,r.bottom+4,mn.closest('.pst').dataset.p); return; }
+    const gv=e.target.closest('.gv[data-f]'); if(gv){ renderDesigGav(gv.dataset.f); return; }
+    const ps=e.target.closest('.pst[data-p]'); if(ps) desigAbrirPasta(ps.dataset.p);
+  });
+  view.addEventListener('contextmenu',e=>{
+    if(!noDesig()) return; const ps=e.target.closest('.pst[data-p]'); if(!ps) return;
+    e.preventDefault(); desigMenu(e.clientX,e.clientY,ps.dataset.p);
+  });
+  view.addEventListener('dragstart',e=>{
+    if(TELA!=='desig') return; const ps=e.target.closest('.pst[data-p]'); if(!ps) return;
+    const f=desigAcha(ps.dataset.p); if(!f||f.func){ e.preventDefault(); return; }   // só arrasta da bandeja
+    desigDrag=ps.dataset.p; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',desigDrag);
+    setTimeout(()=>ps.classList.add('dragging'),0); desigFecharMenu();
+  });
+  view.addEventListener('dragend',()=>{ desigDrag=null; document.querySelectorAll('.pst.dragging,.gv.over').forEach(x=>x.classList.remove('dragging','over')); });
+  view.addEventListener('dragover',e=>{ const g=e.target.closest('.gv[data-f]'); if(!g||!desigDrag) return; e.preventDefault(); e.dataTransfer.dropEffect='move'; g.classList.add('over'); });
+  view.addEventListener('dragleave',e=>{ const g=e.target.closest('.gv[data-f]'); if(g&&!g.contains(e.relatedTarget)) g.classList.remove('over'); });
+  view.addEventListener('drop',e=>{
+    const g=e.target.closest('.gv[data-f]'); if(!g||!desigDrag) return; e.preventDefault();
+    const p=desigDrag; desigDrag=null; g.classList.remove('over'); desigAtribuir(p,g.dataset.f);
+  });
+  document.addEventListener('click',e=>{ if(!e.target.closest('#dsCtx')) desigFecharMenu(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') desigFecharMenu(); });
+  window.addEventListener('blur',desigFecharMenu); view.addEventListener('scroll',desigFecharMenu);
+})();
+
+/* ---- reação aos dados do Firebase (sem perder foco da busca nem a rolagem) ---- */
+function desigAtualizar(){
+  if(TELA!=='desig'&&TELA!=='desig-gav') return;
+  const sy=view.scrollTop, f=document.activeElement, foco=f&&f.id==='dsBusca', pos=foco?f.selectionStart:null;
+  if(TELA==='desig-gav'&&desigGav) renderDesigGav(desigGav); else renderDesig();
+  view.scrollTop=sy;
+  if(foco){ const e2=document.getElementById('dsBusca'); if(e2){ e2.focus(); try{ e2.setSelectionRange(pos,pos); }catch(_){} } }
+}
+function ligarListenersDesig(){
+  db.ref('designacoes').on('value',s=>{ DESIG=s.val()||{}; desigD=null; desigAtualizar(); },
+    e=>toast('Designações: sem permissão de leitura ('+e.message+')'));
+  db.ref('pastaAnexos').on('value',s=>{ PANEXOS=s.val()||{};
+    const a=document.getElementById('dsAnexos'); if(a&&desigPastaAberta) a.innerHTML=desigAnexosHtml(desigPastaAberta);
+    if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); },
+    e=>console.warn('pastaAnexos:',e.message));
+}
 
   // ===== PWA: service worker (instalação e atualização automática) =====
   if('serviceWorker' in navigator){
