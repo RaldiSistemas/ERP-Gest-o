@@ -1442,6 +1442,26 @@
   .app-h{ color:var(--texto); font-family:ui-monospace,monospace; font-size:11.5px; }
   .app-t{ font-weight:700; color:#7a6ea8; }
   .app-m{ color:var(--muted); font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .app-l{ display:grid; grid-template-columns:18px auto auto 1fr; align-items:center; column-gap:10px; row-gap:2px; font-size:12.5px; padding:6px 0; }
+  .app-l + .app-l{ border-top:1px dashed var(--linha); }
+  .app-h,.app-t{ white-space:nowrap; }
+  .app-m{ grid-column:2/-1; color:var(--muted); font-style:italic; white-space:normal; overflow:visible; text-overflow:clip; line-height:1.35; }
+  .lt-box{ grid-column:1/-1; border:1px solid var(--linha); border-radius:10px; overflow:hidden; background:#fff; }
+  .lt-box-h{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:10px 14px; background:#faf9f5; border-bottom:1px solid var(--linha); }
+  .lt-box-h b{ font-size:14px; margin:0; display:inline; }
+  .lt-chip{ font-size:11px; font-weight:700; color:var(--muted); background:#fff; border:1px solid var(--linha); border-radius:999px; padding:2px 10px; }
+  .lt-tb{ width:100%; border-collapse:collapse; font-size:13px; }
+  .lt-tb th{ text-align:left; font-size:10px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); padding:7px 14px; border-bottom:1px solid var(--linha); }
+  .lt-tb td{ padding:8px 14px; border-bottom:1px solid #f0efe8; vertical-align:top; }
+  .lt-tb tr:last-child td{ border-bottom:0; }
+  .lt-tb .mono{ font-family:ui-monospace,monospace; font-weight:700; white-space:nowrap; }
+  .lt-tb .ctr{ text-align:center; white-space:nowrap; }
+  @media (max-width:560px){ .lt-tb th:nth-child(4),.lt-tb td:nth-child(4){ display:none; } }
+  .ac-amb{ margin:4px 0 0; padding:0; list-style:none; font-size:11px; color:var(--muted); }
+  .ac-amb li{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.45; }
+  .ac-amb li b{ color:var(--texto); font-family:ui-monospace,monospace; font-weight:700; margin-right:4px; }
+  .ac-amb li.mais{ font-style:italic; }
+  .and-c .ac-fn{ flex-wrap:wrap; row-gap:2px; }
   .app-tot{ font-size:12px; color:var(--muted); margin-top:7px; padding-top:7px; border-top:1px solid var(--linha); }
 
   /* ===== Apontamento da OP — visual moderno ===== */
@@ -1853,6 +1873,148 @@
   .fs-p{ font-size:12px; color:var(--muted); background:rgba(75,75,85,.07); padding:3px 9px; border-radius:6px; }
   .fs-p.util{ color:#2f6b39; background:#e9f2ea; font-weight:600; }
   .fs-obs{ font-size:11.5px; color:var(--muted); margin-top:9px; }
+
+  /* Simulação de fita — v3 */
+  .ft-page{ --ft-novo:#982424; --ft-sobra:#3b7f4b; --ft-wash:#f4f3ee; --ft-edge:rgba(75,75,85,.12);
+    --ft-sombra:0 1px 2px rgba(35,36,40,.05),0 10px 28px rgba(35,36,40,.06); }
+  .ft-top{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; }
+  .ft-title{ font-family:'Poppins',sans-serif; font-weight:600; font-size:27px; letter-spacing:-.018em; color:var(--texto); line-height:1.15; }
+  .ft-sub{ font-size:13.5px; color:var(--muted); margin-top:6px; max-width:62ch; line-height:1.5; }
+  .ft-icbtn{ width:46px; height:46px; border-radius:14px; border:1px solid var(--ft-edge); background:var(--surface); color:var(--texto);
+    display:grid; place-items:center; cursor:pointer; box-shadow:var(--ft-sombra); transition:background .15s,color .15s,transform .08s; flex:0 0 auto; }
+  .ft-icbtn svg{ width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .ft-icbtn:hover{ background:#fbfbf8; }
+  .ft-icbtn:active{ transform:scale(.96); }
+  .ft-icbtn.on{ background:var(--ft-novo); border-color:var(--ft-novo); color:#fff; }
+
+  .ft-card{ background:var(--surface); border-radius:20px; box-shadow:var(--ft-sombra); border:1px solid var(--ft-edge); padding:24px 26px 22px; }
+  .ft-card-h{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .ft-card-h h2{ font-size:17px; font-weight:700; color:var(--texto); letter-spacing:-.005em; }
+  .ft-card-h p{ font-size:13px; color:var(--muted); margin-top:3px; }
+  .ft-cfg-perda{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .ft-cfg-perda .btn{ border-radius:11px; background:var(--ft-wash); border-color:transparent; padding:8px 14px; font-size:13px; }
+  .ft-cfg-perda .btn:hover{ background:#eceae3; }
+  .ft-strip{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin:18px 0 6px; padding:10px 14px; background:var(--ft-wash); border-radius:12px; }
+  .ft-strip .fr-t{ text-transform:none; letter-spacing:0; font-size:12px; margin-right:2px; }
+  .ft-strip .fr-p{ background:#fff; box-shadow:0 0 0 1px var(--ft-edge); }
+  .ft-strip .fr-obs{ margin-left:auto; }
+
+  .ft-tw{ overflow-x:auto; margin:0 -8px; padding:0 8px; }
+  .ft-tbl{ width:100%; min-width:900px; border-collapse:separate; border-spacing:0 7px; }
+  .ft-tbl th{ text-align:left; font-weight:600; font-size:12px; color:var(--muted); padding:0 4px 2px; white-space:nowrap; }
+  .ft-tbl tr.ft-grp th{ padding:6px 4px 0; font-size:11.5px; }
+  .ft-tbl tr.ft-grp th span{ display:block; text-align:center; padding:5px 10px; border-radius:8px; background:var(--ft-wash); color:var(--muted); font-weight:700; }
+  .ft-tbl tr.ft-grp th.g-nec span{ background:rgba(152,36,36,.09); color:var(--ft-novo); }
+  .ft-tbl td{ padding:0 4px; vertical-align:middle; }
+  .ft-tbl th.sep-l,.ft-tbl td.sep-l{ padding-left:16px; }
+  .ft-tbl .cell-in{ height:42px; font-size:14px; padding:0 13px; border:1.5px solid transparent; border-radius:11px; background:var(--ft-wash);
+    min-width:0; transition:background .12s,border-color .12s,box-shadow .12s; }
+  .ft-tbl .cell-in:hover:not(:focus){ background:#eeede6; }
+  .ft-tbl .cell-in:focus{ outline:none; background:#fff; border-color:var(--ft-novo); box-shadow:0 0 0 4px rgba(152,36,36,.11); }
+  .ft-tbl .cell-in::placeholder{ color:#b3b2aa; }
+  .ft-tbl .fita-auto{ background:#ebeae3; color:var(--muted); font-weight:600; }
+  .ft-tbl input[type=number]{ -moz-appearance:textfield; appearance:textfield; }
+  .ft-tbl input[type=number]::-webkit-inner-spin-button,.ft-tbl input[type=number]::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
+  .ft-tbl .acoes{ width:40px; text-align:center; }
+  @media(hover:hover){ .ft-tbl .acoes .icon-btn{ opacity:0; } .ft-tbl tr:hover .acoes .icon-btn,.ft-tbl tr:focus-within .acoes .icon-btn{ opacity:1; } }
+  .ft-add{ display:flex; gap:8px; margin-top:6px; }
+  .ft-add .btn{ border-radius:11px; font-size:13px; padding:8px 14px; }
+
+  .ft-plano{ margin-top:34px; }
+  .ft-plano-h{ display:flex; align-items:center; gap:12px; margin:0 4px 14px; }
+  .ft-plano-h h2{ font-family:'Poppins',sans-serif; font-weight:600; font-size:20px; letter-spacing:-.01em; color:var(--texto); }
+  .ft-live{ display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:600; color:var(--ft-sobra); background:#e6f1e8; padding:4px 11px 4px 9px; border-radius:999px; }
+  .ft-live::before{ content:""; width:7px; height:7px; border-radius:50%; background:var(--ft-sobra); }
+
+  .ft-vazio{ background:var(--surface); border:1.5px dashed rgba(75,75,85,.24); border-radius:20px; padding:44px 20px 40px; text-align:center; color:var(--muted); font-size:14px; line-height:1.6; }
+  .ft-vazio svg{ width:132px; height:auto; margin-bottom:10px; }
+  .ft-vazio b{ display:block; color:var(--texto); font-size:16px; margin-bottom:3px; }
+
+  .ft-mat{ background:var(--surface); border:1px solid var(--ft-edge); border-radius:20px; box-shadow:var(--ft-sombra); padding:24px 26px 24px; margin-bottom:18px; }
+  .ft-mat-top{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(190px,240px); gap:10px 36px; align-items:center; }
+  .ft-mat-top h3{ font-size:15.5px; font-weight:700; color:var(--texto); letter-spacing:.005em; line-height:1.3; }
+  .ft-chips{ display:flex; gap:6px; flex-wrap:wrap; margin-top:9px; }
+  .ft-chips span{ font-size:12px; font-weight:600; color:var(--texto); background:var(--ft-wash); padding:4px 10px; border-radius:8px; }
+  .ft-buy{ text-align:right; line-height:1.1; }
+  .ft-buy b{ display:block; font-family:'Poppins',sans-serif; font-weight:600; font-size:32px; letter-spacing:-.02em; color:var(--ft-novo); }
+  .ft-buy span{ font-size:12.5px; color:var(--muted); }
+  .ft-meter span{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin-bottom:7px; }
+  .ft-meter span b{ color:var(--texto); font-size:14px; }
+  .ft-meter-bar{ height:8px; border-radius:99px; background:#ebeae3; overflow:hidden; }
+  .ft-meter-bar i{ display:block; height:100%; border-radius:99px; }
+  .ft-meter.ok i{ background:var(--ft-sobra); } .ft-meter.mid i{ background:#d4930d; } .ft-meter.low i{ background:var(--ft-novo); }
+  .ft-perda{ margin-top:14px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); }
+  .ft-perda .fr-p{ background:rgba(47,111,181,.09); color:#2f6fb5; }
+  .ft-aviso{ margin-top:14px; font-size:13px; color:#8a5a13; background:#fdf1dc; border-radius:12px; padding:11px 14px; }
+
+  .ft-rolo{ margin-top:18px; background:var(--ft-wash); border-radius:16px; padding:16px 18px 14px; }
+  .ft-rolo-t{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .ft-rolo-t b{ font-size:14px; font-weight:700; color:var(--texto); }
+  .ft-rolo-t span{ font-size:13px; color:var(--muted); font-weight:600; }
+  .ft-rolo-t i{ font-style:normal; font-size:12px; color:var(--muted); margin-left:auto; }
+  .ft-svgw{ overflow-x:auto; margin:0 -4px; padding:0 4px; }
+  .ft-rolo .pc-svg{ margin:8px 0 4px; min-width:700px; }
+  .ft-pt{ width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; background:#fff; border-radius:12px; overflow:hidden; }
+  .ft-pt th{ text-align:left; font-size:11.5px; font-weight:600; color:var(--muted); padding:9px 14px; background:#fbfbf8; border-bottom:1px solid var(--ft-edge); }
+  .ft-pt td{ padding:9px 14px; border-bottom:1px solid rgba(75,75,85,.07); color:var(--texto); }
+  .ft-pt tr:last-child td{ border-bottom:0; }
+  .ft-sob{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:11px; font-size:12.5px; color:var(--muted); }
+  .ft-leg{ display:flex; gap:18px; flex-wrap:wrap; margin-top:16px; font-size:12px; color:var(--muted); }
+  .ft-leg span{ display:inline-flex; align-items:center; gap:7px; }
+  .ft-leg i{ width:14px; height:14px; border-radius:4px; display:inline-block; }
+
+  .ft-bar{ position:sticky; bottom:16px; z-index:30; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-top:26px; padding:11px 11px 11px 26px; background:rgba(35,36,40,.96); backdrop-filter:blur(12px); color:#fff;
+    border-radius:20px; box-shadow:0 14px 38px rgba(20,20,24,.34); }
+  .ft-bar-info{ display:flex; align-items:center; gap:0; flex-wrap:wrap; font-size:12.5px; color:#a9a9b2; }
+  .ft-bar-info > span{ padding:0 22px; border-left:1px solid rgba(255,255,255,.13); line-height:1.25; }
+  .ft-bar-info > span:first-child{ padding-left:0; border-left:0; }
+  .ft-bar-info b{ display:block; font-family:'Poppins',sans-serif; font-weight:600; font-size:17px; color:#fff; letter-spacing:-.01em; }
+  .ft-bar-info .vazio{ font-size:13.5px; color:#a9a9b2; }
+  .ft-bar .btn{ display:inline-flex; align-items:center; gap:9px; padding:13px 24px; font-size:14.5px; border-radius:14px; }
+  .ft-bar .btn svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .ft-bar .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .ft-bar .btn:disabled:hover{ background:var(--vermelho); }
+
+  @media(max-width:820px){
+    .ft-mat-top{ grid-template-columns:1fr; }
+    .ft-buy{ text-align:left; }
+    .ft-card,.ft-mat{ padding:18px 16px; border-radius:16px; }
+    .ft-bar-info > span{ padding:0 14px; }
+    .ft-bar{ padding-left:18px; }
+  }
+
+  /* Calculadora */
+  .ft-calc{ position:fixed; right:28px; bottom:112px; width:292px; z-index:60; background:var(--surface); border:1px solid var(--linha);
+    border-radius:18px; box-shadow:0 18px 50px rgba(35,36,40,.28); overflow:hidden; user-select:none; touch-action:none; }
+  .ft-calc-h{ display:flex; align-items:center; justify-content:space-between; padding:10px 10px 10px 16px; cursor:grab; background:var(--rail); color:#c9c9d1; font-size:12.5px; font-weight:600; letter-spacing:.02em; }
+  .ft-calc-h:active{ cursor:grabbing; }
+  .ft-calc-h button{ border:0; background:transparent; color:#c9c9d1; width:28px; height:28px; border-radius:8px; cursor:pointer; display:grid; place-items:center; }
+  .ft-calc-h button:hover{ background:rgba(255,255,255,.1); color:#fff; }
+  .ft-calc-h svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+  .ft-calc-d{ background:var(--rail); color:#fff; padding:2px 16px 16px; text-align:right; min-height:92px; display:flex; flex-direction:column; justify-content:flex-end; }
+  .ft-calc-ex{ font-size:14px; color:#9a9aa6; min-height:20px; word-break:break-all; line-height:1.3; }
+  .ft-calc-rs{ display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:2px; }
+  .ft-calc-rs span{ font-family:'Poppins',sans-serif; font-weight:600; font-size:32px; line-height:1.15; letter-spacing:-.01em; word-break:break-all; }
+  .ft-calc-rs span.err{ font-size:15px; font-family:'Archivo',sans-serif; color:#f0a6a6; font-weight:500; }
+  .ft-calc-rs button{ border:0; background:rgba(255,255,255,.09); color:#c9c9d1; width:28px; height:28px; border-radius:8px; cursor:pointer; display:grid; place-items:center; flex:0 0 28px; }
+  .ft-calc-rs button:hover{ background:rgba(255,255,255,.18); color:#fff; }
+  .ft-calc-rs svg{ width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .ft-calc-k{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:14px; background:#f4f4ee; }
+  .ft-calc-k button{ font:inherit; font-size:18px; font-weight:600; height:48px; border-radius:12px; border:0; cursor:pointer; background:#fff; color:var(--texto);
+    box-shadow:0 1px 0 rgba(75,75,85,.14); transition:transform .06s, background .12s; }
+  .ft-calc-k button:hover{ background:#fbfbf8; }
+  .ft-calc-k button:active{ transform:translateY(1px) scale(.97); box-shadow:none; }
+  .ft-calc-k .fn{ background:#e9e9e2; color:var(--muted); font-size:16px; }
+  .ft-calc-k .op{ background:rgba(152,36,36,.1); color:var(--vermelho); font-size:21px; }
+  .ft-calc-k .op:hover{ background:rgba(152,36,36,.17); }
+  .ft-calc-k .eq{ background:var(--vermelho); color:#fff; box-shadow:0 1px 0 var(--vermelho-2); }
+  .ft-calc-k .eq:hover{ background:var(--vermelho-2); }
+  @media(max-width:640px){
+    .ft-calc{ left:12px !important; right:12px !important; width:auto; bottom:136px; top:auto !important; }
+    .ft-cfg .fita-rolos{ margin-left:0; }
+    .ft-bar{ bottom:10px; }
+  }
 
   /* SA / saldos */
   .sa-num{ font-family:ui-monospace,monospace; font-size:12.5px; font-weight:700; color:var(--vermelho); white-space:nowrap; }
@@ -3663,7 +3825,7 @@
       else if(TELA==='ace-detalhe' && aceViewId) verAce(aceViewId); },
       e=>toast('Erro de leitura: '+e.message));
     db.ref('setores').on('value',s=>{ SETORES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
-    db.ref('configFita/perdas').on('value',s=>{ perdaFitaDeFirebase(s.val()); const c=document.getElementById('fitaPerdaChips'); if(c) c.innerHTML=perdaFitaChips(); },
+    db.ref('configFita/perdas').on('value',s=>{ perdaFitaDeFirebase(s.val()); const c=document.getElementById('fitaPerdaChips'); if(c) c.innerHTML=perdaFitaChips(); if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
       e=>console.warn('configFita:',e.message));
     db.ref('atividades').on('value',s=>{ ATIVIDADES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('producao').on('value',s=>{ PRODUCAO=s.val()||{}; if(TELA==='acomp') renderAba(); });
@@ -6103,58 +6265,74 @@
   function linhaFitaVazia(){ return {insumoId:null,codigo:'',descricao:'',larguraRolo:'',metragemRolo:'',larguraNec:'',metragemNec:'',qtd:1}; }
   if(!simF.linhas.length) simF.linhas=[linhaFitaVazia()];
 
+  const ICO_CALC='<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="3.5" rx=".8"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/></svg>';
+  const ICO_ENGR='<svg viewBox="0 0 24 24" style="width:15px;height:15px;vertical-align:-3px;margin-right:6px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+  const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ICO_COPY='<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  const ICO_VAZIO='<svg viewBox="0 0 132 84" fill="none"><rect x="6" y="52" width="120" height="14" rx="4" fill="#f4f3ee" stroke="#d9d7cd"/><rect x="6" y="52" width="46" height="14" rx="4" fill="#982424" opacity=".9"/><rect x="56" y="52" width="26" height="14" rx="4" fill="#3b7f4b" opacity=".85"/><path d="M88 52v14M100 52v14M112 52v14" stroke="#d9d7cd" stroke-dasharray="2 3"/><circle cx="30" cy="26" r="20" fill="#fff" stroke="#d9d7cd" stroke-width="2"/><circle cx="30" cy="26" r="13" stroke="#e4e2d8" stroke-width="2"/><circle cx="30" cy="26" r="5" fill="#f4f3ee" stroke="#d9d7cd" stroke-width="2"/><path d="M48 33c10 4 14 12 26 12" stroke="#982424" stroke-width="6" stroke-linecap="round" opacity=".85"/></svg>';
+  const ICO_DOC='<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11.5v5M9.5 14h5"/></svg>';
+  const ICO_PLUS='<svg viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><path d="M12 5v14M5 12h14"/></svg>';
+
   function renderFita(){
     TELA='fita';
+    const esc=v=>String(v==null?'':v).replace(/"/g,'&quot;');
     const rows=simF.linhas.map((r,i)=>`<tr>
-      <td><input class="cell-in" data-fr="${i}" data-fac="cod" value="${(r.codigo||'').replace(/"/g,'&quot;')}" autocomplete="off"
+      <td style="width:140px"><input class="cell-in" data-fr="${i}" data-fac="cod" value="${esc(r.codigo)}" autocomplete="off"
         placeholder="1.01.000..." oninput="fitaBusca(this,'cod')" onblur="setTimeout(fitaFecha,140)"></td>
-      <td><input class="cell-in" data-fr="${i}" data-fac="desc" value="${(r.descricao||'').replace(/"/g,'&quot;')}" autocomplete="off"
+      <td><input class="cell-in" data-fr="${i}" data-fac="desc" value="${esc(r.descricao)}" autocomplete="off"
         placeholder="Busque pela descrição..." oninput="fitaBusca(this,'desc')" onblur="setTimeout(fitaFecha,140)"></td>
-      <td><input class="cell-in ctr fita-auto" type="number" step="any" min="0" value="${r.larguraRolo}" placeholder="mm"
-        oninput="simF.linhas[${i}].larguraRolo=this.value; simF.resultado=null"></td>
-      <td><input class="cell-in ctr fita-auto" type="number" step="any" min="0" value="${r.metragemRolo}" placeholder="m"
-        oninput="simF.linhas[${i}].metragemRolo=this.value; simF.resultado=null"></td>
-      <td><input class="cell-in ctr" type="number" step="any" min="0" value="${r.larguraNec}" placeholder="mm" oninput="simF.linhas[${i}].larguraNec=this.value"></td>
-      <td><input class="cell-in ctr" type="number" step="any" min="0" value="${r.metragemNec}" placeholder="total" title="Total de metros necessários nesta largura" oninput="simF.linhas[${i}].metragemNec=this.value"></td>
-      <td><input class="cell-in ctr" type="number" step="1" min="1" value="${r.qtd}" oninput="simF.linhas[${i}].qtd=this.value"></td>
-      <td class="acoes"><button class="icon-btn danger" title="Remover" onclick="fitaRem(${i})">${TRASH_SVG}</button></td>
+      <td class="sep-l" style="width:108px"><input class="cell-in ctr fita-auto" type="number" step="any" min="0" value="${esc(r.larguraRolo)}" placeholder="mm"
+        oninput="simF.linhas[${i}].larguraRolo=this.value; fitaLive()"></td>
+      <td style="width:92px"><input class="cell-in ctr fita-auto" type="number" step="any" min="0" value="${esc(r.metragemRolo)}" placeholder="m"
+        oninput="simF.linhas[${i}].metragemRolo=this.value; fitaLive()"></td>
+      <td class="sep-l" style="width:116px"><input class="cell-in ctr" type="number" step="any" min="0" value="${esc(r.larguraNec)}" placeholder="mm" oninput="simF.linhas[${i}].larguraNec=this.value; fitaLive()"></td>
+      <td style="width:112px"><input class="cell-in ctr" type="number" step="any" min="0" value="${esc(r.metragemNec)}" placeholder="m" title="Total de metros necessários nesta largura" oninput="simF.linhas[${i}].metragemNec=this.value; fitaLive()"></td>
+      <td style="width:72px"><input class="cell-in ctr" type="number" step="1" min="1" value="${esc(r.qtd)}" oninput="simF.linhas[${i}].qtd=this.value; fitaLive()"></td>
+      <td class="acoes"><button class="icon-btn danger" title="Remover linha" onclick="fitaRem(${i})">${TRASH_SVG}</button></td>
     </tr>`).join('');
 
-    view.innerHTML=`<div class="page page-wide">
-      <div class="page-head"><div><h1 class="page-title">Simulação de estoque de fita</h1>
-        <p class="page-sub">PCP · Memorial de cálculo</p></div></div>
+    view.innerHTML=`<div class="page page-wide ft-page">
+      <div class="ft-top"><div><h1 class="ft-title">Simulação de estoque de fita</h1>
+        <p class="ft-sub">Informe a fita e os metros de cada largura. O plano de corte de cada rolo é montado enquanto você preenche.</p></div>
+        <button class="ft-icbtn ${fitaCalcOn?'on':''}" id="fitaCalcBtn" title="Calculadora" aria-label="Calculadora" onclick="fitaCalcToggle()">${ICO_CALC}</button></div>
 
-      <section class="fs" style="margin-bottom:18px">
-        <div class="fita-cfg">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-ghost" onclick="abrirConfigPerdaFita()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurar perda</button>
+      <section class="ft-card">
+        <div class="ft-card-h">
+          <div><h2>Necessidades do projeto</h2><p>Uma linha para cada largura de fita que o projeto pede.</p></div>
+          <div class="ft-cfg-perda">
+            <button class="btn btn-ghost" onclick="abrirConfigPerdaFita()">${ICO_ENGR}Configurar perda</button>
             <span id="fitaPerdaChips" style="display:contents">${perdaFitaChips()}</span>
           </div>
-          <div class="fita-rolos"><span class="fr-t">Rolos do fornecedor</span>
-            ${ROLOS_FITA.map(r=>`<span class="fr-p">${r.l}mm × ${r.m}m</span>`).join('')}
-            <span class="fr-obs">+ as dimensões dos itens que você lançar</span></div>
+        </div>
+        <div class="ft-strip"><span class="fr-t">Rolos do fornecedor</span>
+          ${ROLOS_FITA.map(r=>`<span class="fr-p">${r.l}mm × ${r.m}m</span>`).join('')}
+          <span class="fr-obs">+ as dimensões dos itens que você lançar</span></div>
+        <div class="ft-tw"><table class="ft-tbl">
+          <thead>
+            <tr class="ft-grp"><th colspan="2"></th><th colspan="2" class="g-rolo sep-l"><span>Rolo do fornecedor</span></th><th colspan="3" class="g-nec sep-l"><span>Necessidade</span></th><th></th></tr>
+            <tr><th>Código</th><th>Descrição</th>
+              <th class="sep-l">Largura</th><th>Metragem</th>
+              <th class="sep-l">Largura (mm)</th><th>Total (m)</th>
+              <th>Qtde</th><th></th></tr></thead>
+          <tbody>${rows}</tbody></table></div>
+        <div class="ft-add">
+          <button class="btn btn-ghost" onclick="fitaAdd(1)">${ICO_PLUS}Adicionar linha</button>
+          <button class="btn btn-ghost" onclick="fitaAdd(5)">${ICO_PLUS}5 linhas</button>
         </div>
       </section>
 
-      <section class="fs"><h3 class="fs-title">Necessidades do projeto</h3>
-        <div class="table-wrap table-scroll"><table class="tbl tbl-fita">
-          <thead><tr><th style="width:120px">Código</th><th>Descrição</th>
-            <th style="width:92px">Largura rolo</th><th style="width:92px">Metragem rolo</th>
-            <th style="width:100px">Largura nec. (mm)</th><th style="width:104px">Metragem total (m)</th>
-            <th style="width:64px">Qtde</th><th style="width:44px"></th></tr></thead>
-          <tbody>${rows}</tbody></table></div>
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn btn-ghost" onclick="fitaAdd(1)">+ Adicionar linha</button>
-          <button class="btn btn-ghost" onclick="fitaAdd(5)">+ 5 linhas</button>
-          <button class="btn btn-primary" style="margin-left:auto" onclick="calcularFita()">Calcular aproveitamento</button>
-        </div>
-      </section>
-      <div id="fitaRes">${simF.resultado?htmlResultadoFita():''}</div>
+      <div class="ft-plano">
+        <div class="ft-plano-h"><h2>Plano de corte</h2><span class="ft-live">Ao vivo</span></div>
+        <div id="fitaRes"></div>
+      </div>
+      <div class="ft-bar" id="fitaBar"></div>
       <div id="fitaAc"></div>
+      ${fitaCalcOn?fitaCalcHTML():''}
     </div>`;
+    fitaLive(true);
   }
   function fitaAdd(n){ for(let i=0;i<n;i++) simF.linhas.push(linhaFitaVazia()); renderFita(); }
-  function fitaRem(i){ simF.linhas.splice(i,1); if(!simF.linhas.length) simF.linhas.push(linhaFitaVazia()); simF.resultado=null; renderFita(); }
+  function fitaRem(i){ simF.linhas.splice(i,1); if(!simF.linhas.length) simF.linhas.push(linhaFitaVazia()); renderFita(); }
   function fitaFecha(){ const b=document.getElementById('fitaAc'); if(b) b.innerHTML=''; }
   function fitaBusca(input,modo){
     const i=parseInt(input.dataset.fr,10), q=(input.value||'').trim().toLowerCase();
@@ -6179,7 +6357,7 @@
     const d=parseDim(x.descricao);
     simF.linhas[i]={...simF.linhas[i], insumoId:x.id, codigo:x.codigo, descricao:x.descricao,
       larguraRolo:d?d.l:'', metragemRolo:d?d.m:''};
-    simF.resultado=null; fitaFecha(); renderFita();
+    fitaFecha(); renderFita();
     if(!d) toast('Não identifiquei as dimensões na descrição — preencha a largura necessária manualmente');
   }
 
@@ -6272,7 +6450,17 @@
     });
     return materiais;
   }
-  function calcularFita(){
+  // Cálculo ao vivo: monta os pedidos das linhas preenchidas e redesenha só o plano (a tabela de entrada não é tocada).
+  let _fitaRaf=0;
+  function fitaLive(agora){
+    if(agora===true){ fitaAtualizar(); return; }
+    cancelAnimationFrame(_fitaRaf);
+    _fitaRaf=requestAnimationFrame(fitaAtualizar);
+  }
+  function calcularFita(){ fitaLive(true); }
+  function fitaAtualizar(){
+    const box=document.getElementById('fitaRes'), bar=document.getElementById('fitaBar');
+    if(!box||!bar) return;
     const pedidosBrutos=[];
     simF.linhas.forEach(r=>{
       const w=parseFloat(r.larguraNec), m=parseFloat(r.metragemNec), q=Math.max(1,parseInt(r.qtd,10)||1);
@@ -6280,9 +6468,13 @@
       const base=m*q, pct=perdaFitaPct(w);
       pedidosBrutos.push({mat:materialDe(r.descricao),desc:r.descricao,codigo:r.codigo,w,m:+(base*(1+pct/100)).toFixed(3),mBase:base,pct});
     });
-    if(!pedidosBrutos.length){ toast('Preencha ao menos uma linha com descrição, largura e metragem'); return; }
-    const perdasUsadas={};
-    pedidosBrutos.forEach(p=>{ if(p.pct>0) perdasUsadas[p.w]=p.pct; });
+    if(!pedidosBrutos.length){
+      simF.resultado=null;
+      box.innerHTML=`<div class="ft-vazio">${ICO_VAZIO}<b>Nenhum plano ainda</b>Escolha a fita, informe a largura e o total de metros necessários.<br>O corte de cada rolo aparece aqui na hora.</div>`;
+      bar.innerHTML=`<div class="ft-bar-info"><span class="vazio">Preencha ao menos uma linha para gerar a solicitação.</span></div>
+        <button class="btn btn-primary" disabled>${ICO_DOC}Gerar solicitação de fita</button>`;
+      return;
+    }
     const rolosPorMat={};
     simF.linhas.forEach(r=>{
       if(!r.descricao) return;
@@ -6293,9 +6485,17 @@
         rolosPorMat[mat].push({l:L,m:M,doItem:true});
     });
     const materiais=otimizarCorte(pedidosBrutos,rolosPorMat,0);
+    const perdasUsadas={}; pedidosBrutos.forEach(p=>{ if(p.pct>0) perdasUsadas[p.w]=p.pct; });
     simF.resultado={materiais, geradoEm:new Date().toISOString(), perdas:perdasUsadas};
-    renderFita();
-    setTimeout(()=>{ const el=document.getElementById('fitaRes'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },60);
+    box.innerHTML=htmlResultadoFita();
+    const tot=materiais.reduce((a,M)=>({rolos:a.rolos+Object.values(M.compras).reduce((x,y)=>x+y,0), metros:a.metros+M.totalMetros, usada:a.usada+M.areaUsada, comprada:a.comprada+M.areaComprada}),{rolos:0,metros:0,usada:0,comprada:0});
+    const ap=tot.comprada?Math.min(100,tot.usada/tot.comprada*100):0;
+    bar.innerHTML=`<div class="ft-bar-info">
+        <span><b>${fmtNum(+tot.metros.toFixed(2))} m</b>a comprar</span>
+        <span><b>${tot.rolos}</b>rolo${tot.rolos===1?'':'s'}</span>
+        <span><b>${materiais.length}</b>material${materiais.length===1?'':'is'}</span>
+        <span><b>${ap.toFixed(1).replace('.',',')}%</b>de aproveitamento</span></div>
+      <button class="btn btn-primary" onclick="verSolFita()">${ICO_DOC}Gerar solicitação de fita</button>`;
   }
   // corte guilhotinado com coordenadas: tira lateral + ponta da tira usada
   function cortar(sobras,W,M,x,y,wUsado,mUsado,roloId){
@@ -6307,172 +6507,222 @@
   function gerarSobras(sobras,W,M,wUsado,mUsado,origemRolo){ cortar(sobras,W,M,0,0,wUsado,mUsado,origemRolo); }
 
 
-  /* ===== Relatório de aproveitamento ===== */
+  /* ===== Desenho do plano de corte ===== */
+  let _ftSvgN=0;
   function planoCorteSVG(r){
-    const W=760, H=Math.max(78, Math.min(150, r.largura*0.6+40));
-    const pad={l:52,r:14,t:20,b:22};
-    const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
-    const ex=m=>pad.l+(m/r.totalM)*iw, ey=mm=>pad.t+(mm/r.largura)*ih;
-    let g='';
-    // moldura do rolo
-    g+=`<rect x="${pad.l}" y="${pad.t}" width="${iw}" height="${ih}" fill="#f6f5f0" stroke="#8d8d95" stroke-width="1"/>`;
-    // divisao dos rolos fisicos
-    if(r.nRolos>1){ for(let k=1;k<r.nRolos;k++){ const xx=ex(k*r.metragem);
-      g+=`<line x1="${xx}" y1="${pad.t}" x2="${xx}" y2="${pad.t+ih}" stroke="#b9b9c0" stroke-width="1" stroke-dasharray="3 3"/>`; } }
-    // pecas
+    const W=980, pl=62, pr=18, pt=10, pb=32, uid='ft'+(++_ftSvgN);
+    const ih=Math.max(46,Math.min(140,r.largura*0.5+24)), H=pt+ih+pb, iw=W-pl-pr;
+    const ex=m=>pl+(m/r.totalM)*iw, ey=mm=>pt+(mm/r.largura)*ih;
+    const T=(x,y,t,o={})=>`<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.s||11}" font-weight="${o.w||600}" fill="${o.c||'#8a8a93'}">${t}</text>`;
+    const cabe=(txt,wpx,hpx)=>wpx>txt.length*6.6+16 && hpx>=17;
+    let g=`<defs>
+      <pattern id="${uid}s" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#e9f2eb"/><line x1="0" y1="0" x2="0" y2="8" stroke="#a9cfb3" stroke-width="2.2"/></pattern>
+      <pattern id="${uid}r" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#eeede7"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d6d4ca" stroke-width="2.2"/></pattern>
+      <clipPath id="${uid}c"><rect x="${pl}" y="${pt}" width="${iw}" height="${ih}" rx="8"/></clipPath></defs>`;
+    g+=`<rect x="${pl}" y="${pt}" width="${iw}" height="${ih}" rx="8" fill="#fff" stroke="#d3d1c6"/>`;
+    g+=`<g clip-path="url(#${uid}c)">`;
+    (r.sobras||[]).forEach(sb=>{
+      const x=ex(sb.x), y=ey(sb.y), w=Math.max(1,ex(sb.x+sb.m)-x), h=Math.max(2,ey(sb.y+sb.w)-y), util=sb.w>=22;
+      g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${uid}${util?'s':'r'})"/>`;
+      const t=`sobra ${fmtNum(+sb.w.toFixed(2))} × ${fmtNum(+sb.m.toFixed(2))}`;
+      if(cabe(t,w,h)) g+=T(x+w/2,y+h/2+4,t,{s:10.5,c:util?'#2f6b39':'#8d8d95'});
+    });
     (r.pecas||[]).forEach(pc=>{
       const x=ex(pc.x), y=ey(pc.y), w=Math.max(1,ex(pc.x+pc.m)-x), h=Math.max(3,ey(pc.y+pc.w)-y);
-      const cor=pc.origem==='sobra'?'#cfe3d3':'#f0cfcf', bd=pc.origem==='sobra'?'#2f6b39':'#982424';
-      g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cor}" stroke="${bd}" stroke-width="1"/>`;
-      if(w>52&&h>13) g+=`<text x="${x+w/2}" y="${y+h/2+3.5}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${bd}">${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m</text>`;
-      // faixa de perda de corte
-      if(pc.gasto>pc.w+1e-9){ const y2=ey(pc.y+pc.w), h2=Math.max(1,ey(pc.y+pc.gasto)-y2);
-        g+=`<rect x="${x}" y="${y2}" width="${w}" height="${h2}" fill="#d4930d" opacity=".55"/>`; }
+      const cor=pc.origem==='sobra'?'#3b7f4b':'#982424';
+      g+=`<rect x="${x+.5}" y="${y+.5}" width="${Math.max(1,w-1)}" height="${Math.max(2,h-1)}" rx="4" fill="${cor}"/>`;
+      const t=`${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m`;
+      if(cabe(t,w,h)) g+=T(x+w/2,y+h/2+4,t,{s:12,w:700,c:'#fff'});
     });
-    // sobras
-    (r.sobras||[]).forEach(sb=>{
-      const x=ex(sb.x), y=ey(sb.y), w=Math.max(1,ex(sb.x+sb.m)-x), h=Math.max(3,ey(sb.y+sb.w)-y);
-      const util=sb.w>=22;
-      g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${util?'#e6f0e8':'#f1f1ec'}" stroke="${util?'#5a9169':'#c2c2b8'}" stroke-width="1" stroke-dasharray="4 3"/>`;
-      if(w>60&&h>13) g+=`<text x="${x+w/2}" y="${y+h/2+3.5}" text-anchor="middle" font-size="9" font-weight="600" fill="${util?'#2f6b39':'#9a9aa2'}">sobra ${fmtNum(sb.w)}×${fmtNum(sb.m)}</text>`;
-    });
-    // eixos
-    g+=`<text x="${pad.l-8}" y="${pad.t+5}" text-anchor="end" font-size="9" fill="#77777f">0</text>`;
-    g+=`<text x="${pad.l-8}" y="${pad.t+ih}" text-anchor="end" font-size="9" fill="#77777f">${fmtNum(r.largura)}mm</text>`;
-    g+=`<text x="${pad.l}" y="${H-7}" font-size="9" fill="#77777f">0 m</text>`;
-    g+=`<text x="${pad.l+iw}" y="${H-7}" text-anchor="end" font-size="9" fill="#77777f">${fmtNum(r.totalM)} m</text>`;
-    return `<svg viewBox="0 0 ${W} ${H}" class="pc-svg">${g}</svg>`;
-  }
-
-  function abrirRelatorioFita(){
-    const R=simF.resultado; if(!R) return;
-    const tot=R.materiais.reduce((a,M)=>({
-      rolos:a.rolos+Object.values(M.compras).reduce((x,y)=>x+y,0),
-      metros:a.metros+M.totalMetros, usada:a.usada+M.areaUsada,
-      comprada:a.comprada+M.areaComprada, util:a.util+M.areaSobraUtil, refugo:a.refugo+M.areaRefugo
-    }),{rolos:0,metros:0,usada:0,comprada:0,util:0,refugo:0});
-    const pct=v=>tot.comprada?(v/tot.comprada*100):0;
-    const m2=v=>fmtNum(+(v/1000).toFixed(2)); // mm·m -> m²/1000
-
-    const ov=document.getElementById('fichaOverlay');
-    ov.innerHTML=`<div class="ficha-actions" style="width:min(920px,100%)">
-        <button class="btn btn-ghost" style="background:#fff" onclick="fecharFicha()">Fechar</button>
-        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button></div>
-      <div class="folha rel-folha" style="width:min(920px,100%)">
-        <div class="folha-head">
-          <img class="fl-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
-          <h1 class="fl-title">Memorial de Aproveitamento</h1>
-          <div class="fl-date">${new Date().toLocaleDateString('pt-BR')}</div></div>
-        <div class="fl-band">
-          <div class="fb"><b>Materiais:</b> ${R.materiais.length}</div>
-          <div class="fb"><b>Rolos:</b> ${tot.rolos}</div>
-          <div class="fb"><b>Metros:</b> ${fmtNum(tot.metros)} m</div>
-          <div class="fb"><b>Perda de metragem:</b> ${Object.entries(R.perdas||{}).map(([w,p])=>fmtNum(+w)+'mm '+fmtNum(p)+'%').join(' · ')||'nenhuma'}</div>
-        </div>
-
-        <div class="rel-kpis">
-          <div class="kpi"><span class="kv">${pct(tot.usada).toFixed(1)}%</span><span class="kl">Aproveitado</span></div>
-          <div class="kpi"><span class="kv verde">${pct(tot.util).toFixed(1)}%</span><span class="kl">Sobra reutilizável</span></div>
-          <div class="kpi"><span class="kv amarelo">${pct(tot.refugo).toFixed(1)}%</span><span class="kl">Refugo</span></div>
-        </div>
-        <div class="rel-barra">
-          <div class="rb-seg rb-uso" style="width:${pct(tot.usada)}%" title="Aproveitado"></div>
-          <div class="rb-seg rb-util" style="width:${pct(tot.util)}%" title="Sobra reutilizável"></div>
-          <div class="rb-seg rb-ref" style="width:${pct(tot.refugo)}%" title="Refugo"></div>
-        </div>
-        <div class="rel-leg">
-          <span><i class="lg-uso"></i>Peças do projeto</span>
-          <span><i class="lg-util"></i>Sobra ≥ 22mm (serve em outro projeto)</span>
-          <span><i class="lg-ref"></i>Refugo e perda de corte</span>
-        </div>
-
-        ${R.materiais.map(M=>{
-          const nr=Object.values(M.compras).reduce((a,b)=>a+b,0);
-          return `<div class="rel-mat">
-            <div class="rm-h"><b>${escHtml(M.mat)||'(sem material)'}</b>
-              <span class="aprov ${M.aprov>=80?'ap-alto':(M.aprov>=55?'ap-medio':'ap-baixo')}">${M.aprov.toFixed(1)}%</span></div>
-            <div class="rm-compra">Comprar <b>${fmtNum(M.totalMetros)} m</b> · ${nr} rolo(s) ·
-              ${M.linhasCompra.map(c=>`${c.rolos}× ${fmtNum(c.largura)}mm×${fmtNum(c.metrosRolo)}m`).join(' · ')}</div>
-            ${(M.rolosUsados||[]).map((r,n)=>`<div class="rm-rolo">
-              <div class="rr-t"><b>Rolo ${n+1}</b> — ${fmtNum(r.largura)}mm × ${fmtNum(r.totalM)}m
-                ${r.nRolos>1?`<span class="rr-n">${r.nRolos} rolos de ${fmtNum(r.metragem)}m emendados na sequência</span>`:''}</div>
-              ${planoCorteSVG(r)}
-              <table class="rr-tbl"><thead><tr><th>Peça</th><th>Posição na largura</th><th>Trecho</th><th>Origem</th></tr></thead>
-                <tbody>${(r.pecas||[]).map(pc=>`<tr>
-                  <td><b>${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m</b></td>
-                  <td>${fmtNum(+pc.y.toFixed(2))} → ${fmtNum(+(pc.y+pc.w).toFixed(2))} mm</td>
-                  <td>${fmtNum(+pc.x.toFixed(2))} → ${fmtNum(+(pc.x+pc.m).toFixed(2))} m</td>
-                  <td>${pc.origem==='sobra'?'<span class="or-sobra">Sobra</span>':'<span class="or-novo">Rolo novo</span>'}</td>
-                </tr>`).join('')}</tbody></table>
-              ${(r.sobras||[]).length?`<div class="rr-sob">Sobras: ${r.sobras.sort((a,b)=>b.w-a.w).map(sb=>
-                `<span class="fs-p ${sb.w>=22?'util':''}">${fmtNum(+sb.w.toFixed(2))}mm × ${fmtNum(+sb.m.toFixed(2))}m</span>`).join('')}</div>`:''}
-            </div>`).join('')}
-          </div>`;
-        }).join('')}
-
-        <div class="folha-foot">
-          <div class="ff-l"><svg class="ff-mark" viewBox="0 0 60 26"><path d="M2 24 C2 10 8 2 14 2 C20 2 26 10 26 24 Z"/><path d="M16 24 C16 10 22 2 28 2 C34 2 40 10 40 24 Z"/><path d="M30 24 C30 10 36 2 42 2 C48 2 54 10 54 24 Z"/></svg>
-            <div class="ff-end">${EMPRESA.end1}<br>${EMPRESA.end2}<br>${EMPRESA.end3}</div></div>
-          <div class="ff-r">Emitido em ${new Date().toLocaleDateString('pt-BR')}</div></div>
-      </div>`;
-    ov.onclick=e=>{ if(e.target===ov) fecharFicha(); };
-    setPageOrientation('portrait'); ov.classList.add('open');
+    g+=`</g>`;
+    if(r.nRolos>1){ for(let k=1;k<r.nRolos;k++){ const xx=ex(k*r.metragem);
+      g+=`<line x1="${xx}" y1="${pt-3}" x2="${xx}" y2="${pt+ih+6}" stroke="#7d7d86" stroke-width="1" stroke-dasharray="3 3"/>`; } }
+    // eixo (metros)
+    const yb=pt+ih+8;
+    g+=`<line x1="${pl}" y1="${yb}" x2="${pl+iw}" y2="${yb}" stroke="#cfcdc2"/>`;
+    const alvo=Math.max(1,r.totalM/8), pw=Math.pow(10,Math.floor(Math.log10(alvo)));
+    const passo=[1,2,2.5,5,10].map(f=>f*pw).find(v=>v>=alvo)||10*pw;
+    for(let v=0; v<r.totalM-1e-9; v+=passo){
+      const xx=ex(v); if(xx>ex(r.totalM)-34 && v>0) break;
+      g+=`<line x1="${xx}" y1="${yb}" x2="${xx}" y2="${yb+4}" stroke="#bdbbb0"/>`+T(xx,yb+17,fmtNum(+v.toFixed(2)),{s:11,w:500,a:v===0?'start':'middle'});
+    }
+    g+=`<line x1="${pl+iw}" y1="${yb}" x2="${pl+iw}" y2="${yb+4}" stroke="#bdbbb0"/>`+T(pl+iw,yb+17,fmtNum(r.totalM)+' m',{s:11,a:'end',w:700,c:'#5c5c65'});
+    g+=T(pl-12,pt+ih/2+4,fmtNum(r.largura)+' mm',{a:'end',s:11,w:700,c:'#5c5c65'});
+    return `<div class="ft-svgw"><svg viewBox="0 0 ${W} ${H}" class="pc-svg" role="img" aria-label="Plano de corte do rolo de ${fmtNum(r.largura)}mm">${g}</svg></div>`;
   }
 
   function htmlResultadoFita(){
     const R=simF.resultado; if(!R) return '';
+    const leg=`<div class="ft-leg">
+      <span><i style="background:#982424"></i>Peça em rolo novo</span>
+      <span><i style="background:#3b7f4b"></i>Peça em sobra reaproveitada</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#e9f2eb 0 3px,#a9cfb3 3px 5px)"></i>Sobra ≥ 22mm (reutilizável)</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#eeede7 0 3px,#d6d4ca 3px 5px)"></i>Sobra pequena</span></div>`;
     return R.materiais.map(M=>{
-      const totalRolos=Object.values(M.compras).reduce((a,b)=>a+b,0);
+      const nr=Object.values(M.compras).reduce((a,b)=>a+b,0);
       const imposs=M.alocacoes.filter(a=>a.origem==='impossivel');
-      return `<section class="fs" style="margin-top:18px">
-        <div class="fs-head"><h3 class="fs-title" style="margin:0">${escHtml(M.mat)||'(sem material identificado)'}</h3>
-          <span class="aprov ${M.aprov>=80?'ap-alto':(M.aprov>=55?'ap-medio':'ap-baixo')}">Aproveitamento ${M.aprov.toFixed(1)}%</span></div>
-
-        <div class="fita-rolos" style="margin-bottom:12px;margin-left:0">
-          <span class="fr-t">Rolos considerados</span>
-          ${M.rolos.sort((a,b)=>a.l-b.l||a.m-b.m).map(r=>`<span class="fr-p ${r.doItem?'fr-item':''}">${fmtNum(r.l)}mm × ${fmtNum(r.m)}m</span>`).join('')}
+      const comPerda=M.alocacoes.filter(a=>a.pct>0);
+      const cls=M.aprov>=80?'ok':(M.aprov>=55?'mid':'low');
+      return `<section class="ft-mat">
+        <div class="ft-mat-top">
+          <div><h3>${escHtml(M.mat)||'(sem material identificado)'}</h3>
+            <div class="ft-chips">${M.linhasCompra.length?M.linhasCompra.map(c=>`<span>${c.rolos}× ${fmtNum(c.largura)}mm × ${fmtNum(c.metrosRolo)}m</span>`).join(''):''}</div></div>
+          <div class="ft-buy"><b>${fmtNum(M.totalMetros)} m</b><span>${nr} rolo${nr===1?'':'s'} para comprar</span></div>
+          <div class="ft-meter ${cls}"><span>Aproveitamento <b>${M.aprov.toFixed(1).replace('.',',')}%</b></span><div class="ft-meter-bar"><i style="width:${Math.max(2,M.aprov).toFixed(1)}%"></i></div></div>
         </div>
-        <div class="fita-compra">
-          <div class="fc-t">Comprar <b>${fmtNum(M.totalMetros)} m</b> <span class="fc-sub">(${totalRolos} rolo${totalRolos===1?'':'s'})</span></div>
-          <div class="fc-l">${M.linhasCompra.length?M.linhasCompra.map(c=>
-            `<span class="fc-p"><b>${fmtNum(c.metros)} m</b> de ${fmtNum(c.largura)}mm
-              <i>${c.rolos}× rolo de ${fmtNum(c.metrosRolo)}m</i></span>`).join('')
-            :'<span class="fc-p">—</span>'}</div>
-          <div class="fc-nec">${fmtNum(M.metrosCortados)} m lineares de fita serão cortados destes rolos
-            (as peças saem lado a lado ao longo do rolo, por isso a metragem cortada pode superar a comprada).</div>
-        </div>
-
-        ${imposs.length?`<p class="aviso" style="margin-bottom:14px"><b>${imposs.length} peça(s) sem rolo compatível:</b>
+        ${comPerda.length?`<div class="ft-perda">Perda somada à metragem:${comPerda.map(a=>`<span class="fr-p fr-item">${fmtNum(a.w)}mm · ${fmtNum(+a.mBase.toFixed(2))} m + ${fmtNum(a.pct)}% = ${fmtNum(+a.m.toFixed(2))} m</span>`).join('')}</div>`:''}
+        ${imposs.length?`<div class="ft-aviso"><b>${imposs.length} peça(s) sem rolo compatível:</b>
           ${imposs.slice(0,3).map(a=>`${fmtNum(a.w)}mm × ${fmtNum(a.m)}m`).join(', ')}${imposs.length>3?'…':''}.
-          Nenhum rolo atende essa largura.</p>`:''}
-
-        <div class="table-wrap"><table class="tbl">
-          <thead><tr><th>Peça necessária</th><th style="width:100px">Origem</th><th style="width:150px">Cortada de</th><th>Observação</th></tr></thead>
-          <tbody>${M.alocacoes.map(a=>`<tr>
-            <td class="cel-nome">${fmtNum(a.w)}mm × ${fmtNum(a.m)}m
-              ${a.pct>0?`<div class="cel-sub">${fmtNum(+a.mBase.toFixed(2))} m pedidos + ${fmtNum(a.pct)}% de perda</div>`:''}</td>
-            <td>${a.origem==='novo'?'<span class="or-novo">Rolo novo</span>':(a.origem==='sobra'?'<span class="or-sobra">Aproveitamento</span>':'<span class="or-erro">Sem rolo</span>')}</td>
-            <td class="cel-disc">${escHtml(a.usou||'—')}</td>
-            <td class="cel-disc">${a.origem==='sobra'?'Reaproveitou sobra do rolo '+escHtml(a.de||'')
-              :(a.origem==='novo'?(a.nRolos>1?`${a.nRolos} rolos para os ${fmtNum(a.m)}m necessários`:'Consumiu rolo novo')
-              :'Nenhum rolo atende essa largura')}</td>
-          </tr>`).join('')}</tbody></table></div>
-
-        <div class="fita-acao">
-          <div class="fa-t">Relatório completo com o plano de corte de cada rolo</div>
-          <button class="btn btn-ghost" onclick="abrirRelatorioFita()">Ver relatório</button>
-          <button class="btn btn-primary" onclick="verSolFita()">Gerar solicitação de fita</button>
-        </div>
-        <div class="fita-sobras">
-          <div class="fs-t">Sobras remanescentes (${M.sobras.length})</div>
-          <div class="fs-l">${M.sobras.length?M.sobras.sort((a,b)=>b.w-a.w).map(s=>
-            `<span class="fs-p ${s.w>=22?'util':''}">${fmtNum(s.w)}mm × ${fmtNum(s.m)}m</span>`).join('')
-            :'<span class="fs-p">Nenhuma sobra</span>'}</div>
-          <p class="fs-obs">Sobras a partir de 22mm ainda podem virar fita útil em outro projeto.</p>
-        </div>
+          Nenhum rolo atende essa largura.</div>`:''}
+        ${(M.rolosUsados||[]).map((r,n)=>`<div class="ft-rolo">
+          <div class="ft-rolo-t"><b>Rolo ${n+1}</b><span>${fmtNum(r.largura)}mm × ${fmtNum(r.totalM)}m</span>
+            ${r.nRolos>1?`<i>${r.nRolos} rolos de ${fmtNum(r.metragem)}m emendados na sequência</i>`:''}</div>
+          ${planoCorteSVG(r)}
+          <table class="ft-pt"><thead><tr><th>Peça</th><th>Posição na largura</th><th>Trecho</th><th>Origem</th></tr></thead>
+            <tbody>${(r.pecas||[]).map(pc=>`<tr>
+              <td><b>${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m</b></td>
+              <td>${fmtNum(+pc.y.toFixed(2))} → ${fmtNum(+(pc.y+pc.w).toFixed(2))} mm</td>
+              <td>${fmtNum(+pc.x.toFixed(2))} → ${fmtNum(+(pc.x+pc.m).toFixed(2))} m</td>
+              <td>${pc.origem==='sobra'?'<span class="or-sobra">Sobra</span>':'<span class="or-novo">Rolo novo</span>'}</td>
+            </tr>`).join('')}</tbody></table>
+          ${(r.sobras||[]).length?`<div class="ft-sob">Sobras:${r.sobras.slice().sort((a,b)=>b.w-a.w).map(sb=>
+            `<span class="fs-p ${sb.w>=22?'util':''}">${fmtNum(+sb.w.toFixed(2))}mm × ${fmtNum(+sb.m.toFixed(2))}m</span>`).join('')}</div>`:''}
+        </div>`).join('')}
+        ${leg}
       </section>`;
     }).join('');
   }
+
+
+  /* ===== Calculadora flutuante ===== */
+  let fitaCalcOn=false, fitaCalcPos=null, fitaCalcSt={ex:'',fin:false};
+  const _cxFmt=t=>t.replace(/\*/g,'×').replace(/\//g,'÷').replace(/-/g,'−').replace(/\./g,',');
+  function fitaCalcEval(src){
+    let t=src.replace(/\s+/g,''); if(!t) return null;
+    let abre=(t.match(/\(/g)||[]).length, fecha=(t.match(/\)/g)||[]).length;
+    t=t.replace(/[+\-*/.]+$/,''); t+=')'.repeat(Math.max(0,abre-fecha));
+    if(!t) return null;
+    const tk=t.match(/\d+(?:\.\d+)?|\.\d+|[-+*/()%]/g)||[]; if(tk.join('')!==t) throw new Error('x');
+    let i=0;
+    const prim=()=>{ const k=tk[i++]; if(k==='('){ const v=exp().v; if(tk[i++]!==')') throw new Error('x'); return v; }
+      if(k===undefined||!/[\d.]/.test(k[0])) throw new Error('x'); return parseFloat(k); };
+    const fat=()=>{ if(tk[i]==='-'){ i++; const f=fat(); return {v:-f.v,pct:false}; } if(tk[i]==='+'){ i++; return fat(); }
+      let v=prim(), pct=false; while(tk[i]==='%'){ i++; v=v/100; pct=true; } return {v,pct}; };
+    const ter=()=>{ let a=fat(); while(tk[i]==='*'||tk[i]==='/'){ const o=tk[i++]; const b=fat();
+        if(o==='/'&&b.v===0) throw new Error('div0'); a={v:o==='*'?a.v*b.v:a.v/b.v,pct:false}; } return a; };
+    function exp(){ let a=ter(); while(tk[i]==='+'||tk[i]==='-'){ const o=tk[i++]; const b=ter();
+        const bv=b.pct?a.v*b.v:b.v; a={v:o==='+'?a.v+bv:a.v-bv,pct:false}; } return a; }
+    const r=exp().v; if(i<tk.length) throw new Error('x');
+    if(!isFinite(r)) throw new Error('x');
+    return r;
+  }
+  const _cxNum=v=>Number(v.toPrecision(12));
+  const _cxFmtRes=v=>_cxNum(v).toLocaleString('pt-BR',{maximumFractionDigits:8});
+  function fitaCalcHTML(){
+    const K=(t,a,c)=>`<button tabindex="-1" class="${c||''}" onmousedown="event.preventDefault()" onclick="fitaCalcKey('${a}')">${t}</button>`;
+    const pos=fitaCalcPos?`style="left:${fitaCalcPos.x}px;top:${fitaCalcPos.y}px;right:auto;bottom:auto"`:'';
+    return `<div class="ft-calc" id="fitaCalc" ${pos} role="dialog" aria-label="Calculadora">
+      <div class="ft-calc-h" id="fitaCalcH"><span>Calculadora</span><button tabindex="-1" title="Fechar" onmousedown="event.stopPropagation()" onclick="fitaCalcToggle()">${ICO_X}</button></div>
+      <div class="ft-calc-d"><div class="ft-calc-ex" id="fitaCalcEx"></div>
+        <div class="ft-calc-rs"><button tabindex="-1" id="fitaCalcCp" title="Copiar resultado" onmousedown="event.preventDefault()" onclick="fitaCalcCopiar()">${ICO_COPY}</button><span id="fitaCalcRs">0</span></div></div>
+      <div class="ft-calc-k">
+        ${K('C','C','fn')}${K('⌫','B','fn')}${K('%','%','fn')}${K('÷','/','op')}
+        ${K('7','7')}${K('8','8')}${K('9','9')}${K('×','*','op')}
+        ${K('4','4')}${K('5','5')}${K('6','6')}${K('−','-','op')}
+        ${K('1','1')}${K('2','2')}${K('3','3')}${K('+','+','op')}
+        ${K('( )','P','fn')}${K('0','0')}${K(',','.')}${K('=','=','eq')}
+      </div></div>`;
+  }
+  function fitaCalcDraw(){
+    const ex=document.getElementById('fitaCalcEx'), rs=document.getElementById('fitaCalcRs'); if(!ex||!rs) return;
+    let txt='0', err=false, prev='';
+    try{ const v=fitaCalcEval(fitaCalcSt.ex); if(v!=null){ txt=_cxFmtRes(v); } }catch(e){ if(e.message==='div0'){ txt='Não dá para dividir por zero'; err=true; } }
+    if(fitaCalcSt.fin){ prev=_cxFmt(fitaCalcSt.prev||''); ex.textContent=prev+' ='; }
+    else ex.textContent=_cxFmt(fitaCalcSt.ex);
+    rs.textContent=txt; rs.className=err?'err':'';
+  }
+  function fitaCalcKey(k){
+    const st=fitaCalcSt, ops='+-*/', ult=st.ex.slice(-1);
+    if(k==='C'){ st.ex=''; st.fin=false; }
+    else if(k==='B'){ if(st.fin){ st.fin=false; } st.ex=st.ex.slice(0,-1); }
+    else if(k==='='){
+      try{ const v=fitaCalcEval(st.ex); if(v!=null){ st.prev=st.ex; st.ex=String(_cxNum(v)); st.fin=true; } }catch(e){}
+    }
+    else {
+      if(st.fin){ // depois do "=": número novo recomeça; operador continua a conta
+        if(/[\d.(]/.test(k)||k==='P'){ st.ex=''; } st.fin=false; }
+      if(k==='P'){
+        const ab=(st.ex.match(/\(/g)||[]).length, fe=(st.ex.match(/\)/g)||[]).length;
+        k=(ab>fe && /[\d)%]/.test(ult))?')':'('; }
+      if(ops.includes(k)){
+        if(!st.ex){ if(k==='-') st.ex='-'; }
+        else if(ops.includes(ult)) st.ex=st.ex.slice(0,-1)+k;
+        else if(ult==='(' ){ if(k==='-') st.ex+=k; }
+        else st.ex+=k;
+      } else if(k==='.'){
+        const ult_n=(st.ex.match(/[\d.]*$/)||[''])[0];
+        if(!ult_n.includes('.')) st.ex+=(ult_n===''?'0.':'.');
+      } else if(k==='%'){ if(/[\d)%]/.test(ult)) st.ex+='%'; }
+      else if(k==='('){ if(/[\d)%]/.test(ult)) st.ex+='*('; else st.ex+='('; }
+      else if(k===')'){ const ab=(st.ex.match(/\(/g)||[]).length, fe=(st.ex.match(/\)/g)||[]).length; if(ab>fe && /[\d)%]/.test(ult)) st.ex+=')'; }
+      else { // dígito
+        if(ult===')'||ult==='%') st.ex+='*';
+        st.ex+=k; }
+    }
+    fitaCalcDraw();
+  }
+  function fitaCalcCopiar(){
+    let v=null; try{ v=fitaCalcEval(fitaCalcSt.ex); }catch(e){}
+    if(v==null){ toast('Nada para copiar'); return; }
+    const txt=String(_cxNum(v));
+    const ok=()=>toast('Resultado copiado: '+_cxFmtRes(v));
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok,()=>toast('Não consegui copiar'));
+    else { const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); try{document.execCommand('copy');ok();}catch(e){toast('Não consegui copiar');} t.remove(); }
+  }
+  function fitaCalcToggle(){
+    fitaCalcOn=!fitaCalcOn;
+    const old=document.getElementById('fitaCalc'), btn=document.getElementById('fitaCalcBtn');
+    if(btn) btn.classList.toggle('on',fitaCalcOn);
+    if(old) old.remove();
+    if(fitaCalcOn){
+      const pg=view.querySelector('.page'); if(!pg) return;
+      pg.insertAdjacentHTML('beforeend',fitaCalcHTML()); fitaCalcDraw(); fitaCalcArrastar();
+    }
+  }
+  // arrastar pelo cabeçalho
+  function fitaCalcArrastar(){
+    const h=document.getElementById('fitaCalcH'), box=document.getElementById('fitaCalc'); if(!h||!box) return;
+    h.addEventListener('pointerdown',e=>{
+      if(e.target.closest('button')) return;
+      const r=box.getBoundingClientRect(), dx=e.clientX-r.left, dy=e.clientY-r.top;
+      h.setPointerCapture(e.pointerId);
+      const mv=ev=>{
+        const x=Math.min(Math.max(0,ev.clientX-dx),innerWidth-r.width), y=Math.min(Math.max(0,ev.clientY-dy),innerHeight-60);
+        box.style.left=x+'px'; box.style.top=y+'px'; box.style.right='auto'; box.style.bottom='auto'; fitaCalcPos={x,y}; };
+      const up=()=>{ h.removeEventListener('pointermove',mv); h.removeEventListener('pointerup',up); };
+      h.addEventListener('pointermove',mv); h.addEventListener('pointerup',up);
+    });
+  }
+  // teclado: só quando a calculadora está aberta e o foco NÃO está num campo
+  document.addEventListener('keydown',e=>{
+    if(!fitaCalcOn||TELA!=='fita'||!document.getElementById('fitaCalc')) return;
+    const mo=document.getElementById('modalOv'); if(mo&&mo.classList.contains('open')) return;
+    if(e.key==='Escape'){ fitaCalcToggle(); return; }
+    const t=e.target; if(t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable)) return;
+    if(e.ctrlKey||e.metaKey||e.altKey) return;
+    const k=e.key; let a=null;
+    if(/^[0-9]$/.test(k)) a=k;
+    else if(k===','||k==='.') a='.';
+    else if('+-*/'.includes(k)) a=k;
+    else if(k==='x'||k==='X') a='*';
+    else if(k==='%') a='%';
+    else if(k==='('||k===')') a=k;
+    else if(k==='Enter'||k==='=') a='=';
+    else if(k==='Backspace') a='B';
+    else if(k==='Delete'||k==='c'||k==='C') a='C';
+    if(a==null) return;
+    e.preventDefault(); fitaCalcKey(a);
+  });
 
 
   /* ================= Solicitação de Compras (SC) ================= */
@@ -8640,10 +8890,10 @@
         <ol><li>Em <b>Configurar perda</b>, defina a % de perda de cada largura de fita. Ela é somada à metragem: com 5% em 22 mm, 10 m pedidos viram 10,5 m.</li>
         <li>Busque a fita pelo código ou descrição. As dimensões do rolo saem da própria descrição ("22MM X 50M") — e você pode corrigir.</li>
         <li>Informe a <b>largura necessária</b>, a <b>metragem</b> e quantas peças.</li>
-        <li><b>Calcular aproveitamento</b>.</li></ol>
+        <li>O <b>plano de corte</b> aparece na hora, enquanto você preenche. Quando estiver certo, clique em <b>Gerar solicitação de fita</b>.</li></ol>
         <h4>O resultado</h4>
         <ul><li><b>Quantos metros comprar</b>, já arredondado para o múltiplo do rolo. Se o rolo é de 10 m e você precisa de 25, ele pede 30.</li>
-        <li>Peça por peça: se saiu de rolo novo ou de sobra.</li>
+        <li>Para cada rolo: o desenho do corte, quais peças saem dele (rolo novo ou sobra) e o que sobra.</li>
         <li>As sobras que restaram — as acima de 22 mm ficam em verde, ainda dão fita.</li></ul>
         <div class="hc-box hc-warn"><b>A % de perda aumenta a metragem</b>
         <p>A perda é aplicada por largura sobre os metros pedidos, antes de calcular rolos e sobras. A tela mostra, em cada linha, quantos metros foram pedidos e a % somada. Ao <b>gerar a solicitação de fita</b> a perda já entra na necessidade (10 m + 5% = 10,5 m), <b>uma única vez</b>. No agrupamento por lote e no histórico o valor é usado como está, sem somar de novo.</p></div>
@@ -9232,13 +9482,33 @@
     </div>`;
   }
 
+  function htmlProjLote(o){
+    const pl=(Array.isArray(o.projetosLote)?o.projetosLote:Object.values(o.projetosLote||{})).filter(Boolean);
+    if(!pl.length) return '<div class="ai wide"><span>Projetos do lote</span><b>—</b></div>';
+    const nAmb=pl.filter(r=>String(r.ambiente||'').trim()).length;
+    return `<div class="lt-box"><div class="lt-box-h"><b>Lote ${escHtml(o.lote)||'—'}</b>
+      <span class="lt-chip">${pl.length} projeto${pl.length>1?'s':''}</span>
+      <span class="lt-chip">${nAmb} ambiente${nAmb===1?'':'s'}</span></div>
+      <table class="lt-tb"><thead><tr><th>Projeto</th><th>Cliente</th><th>Ambiente</th><th class="ctr">Peças</th></tr></thead><tbody>
+      ${pl.map(r=>{ const n=pecasDoProjeto(o.lote,r.projeto);
+        return `<tr><td class="mono">${escHtml(r.projeto)||'—'}</td><td>${escHtml(r.cliente)||'—'}</td>
+          <td>${escHtml(r.ambiente)||'—'}</td><td class="ctr">${n!=null?fmtNum(n):'—'}</td></tr>`; }).join('')}
+      </tbody></table></div>`;
+  }
+  function htmlAmbLote(o){
+    if(o.tipo!=='lote') return '';
+    const pl=(o.projetosLote||[]).filter(Boolean); if(pl.length<2) return '';
+    const max=4;
+    return '<ul class="ac-amb">'+pl.slice(0,max).map(r=>`<li><b>${escHtml(r.projeto)}</b>${escHtml([r.cliente,r.ambiente].filter(Boolean).join(' · '))}</li>`).join('')
+      +(pl.length>max?`<li class="mais">+ ${pl.length-max} projeto(s)</li>`:'')+'</ul>';
+  }
   function opSetorDe(sig){ return OP_SETORES[sig]||OP_SETORES.SL; }
   function opClienteAmbiente(o){
     const pl=o.projetosLote||[];
     if(!pl.length) return '';
     if(o.tipo==='lote'){
       if(pl.length===1) return [pl[0].cliente,pl[0].ambiente].filter(Boolean).join(' · ');
-      return pl.length+' projetos do lote';
+      return 'Lote '+(o.lote||'')+' · '+pl.length+' projetos';
     }
     return [pl[0].cliente,pl[0].ambiente].filter(Boolean).join(' · ');
   }
@@ -11420,6 +11690,7 @@
                   ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
                 ${(o.obs||'').trim()?`<span class="ac-obs-t">${escHtml(o.obs)}</span>`:''}
                 ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
+                ${htmlAmbLote(o)}
                 <div class="ac-f ac-fn">${bolinhasFuncs(o)}<span>${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</span></div>
                 <div class="ac-tm">${fmtMin(tempoLiquido(o,new Date().toISOString()))} ${htmlLeadMini(o)}</div>
               </button>`;
@@ -11602,16 +11873,12 @@
             <div class="ap-obs-t">${escHtml(o.obs)}</div></div>
         </div>`:''}
         <div class="ap-info">
-          <div class="ai"><span>Projeto</span><b>${escHtml(o.projeto)}</b></div>
+          <div class="ai"><span>${o.tipo==='lote'?'Projetos':'Projeto'}</span><b>${o.tipo==='lote'?((o.projetosLote||[]).length+' no lote'):escHtml(o.projeto)}</b></div>
           <div class="ai"><span>Lote</span><b>${escHtml(o.lote)||'—'}</b></div>
           <div class="ai"><span>Setor</span><b style="color:${S.cor}">${escHtml(o.setor)} — ${escHtml(S.nome)}</b></div>
           <div class="ai"><span>Atividade</span><b>${escHtml(o.atividade)}</b></div>
-          <div class="ai wide"><span>${o.tipo==='lote'?'Projetos do lote':'Cliente / Ambiente'}</span>
-            <b>${(o.projetosLote||[]).length
-              ? (o.tipo==='lote'
-                 ? (o.projetosLote||[]).map(r=>escHtml(r.projeto)+(r.cliente?' ('+escHtml(r.cliente)+')':'')).join(', ')
-                 : (o.projetosLote||[]).map(r=>[r.cliente,r.ambiente].filter(Boolean).map(escHtml).join(' · ')).join(' | '))
-              : '—'}</b></div>
+          ${o.tipo==='lote'?htmlProjLote(o):`<div class="ai wide"><span>Cliente / Ambiente</span>
+            <b>${(o.projetosLote||[]).length?(o.projetosLote||[]).map(r=>[r.cliente,r.ambiente].filter(Boolean).map(escHtml).join(' · ')).join(' | '):'—'}</b></div>`}
           <div class="ai wide"><span>Jornada</span><b>${fmtJornada(o.jornada)}</b></div>
         </div>
 
@@ -13615,7 +13882,7 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
 // expõe ao window TODAS as funções de topo
   Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,andRolar,andNavAtualizar,abrirLoteFila,abrirApont,abrirCard,abrirCardDe,
     abrirChecklist,abrirColar,abrirEmissao,abrirFeriados,abrirFormCliente,abrirImportacao,abrirMapaPin,abrirModal,
-    abrirRelatorioFita,abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
+    abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
     acPreencheExato,aceAddLinha,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
     agHoje,agMover,ambientesDoCliente,aptosPara,ativDe,ativsDoSetor,atualizaAtivsFunc,atualizarContagem,
     emitirApoio,renderEmissaoApoio,salvarApoio,toggleDiaApoio,
@@ -13669,7 +13936,8 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
     vincBusca,vincDados,vincFecha,vincSel,vincSub,vincTrocar,wizGo,wizStep1,wizStep2,wizStep3,
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
     sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfHistParaOP,sfMarcarOrientacao,
-    abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem});
+    abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem,
+    fitaLive,fitaAtualizar,fitaCalcToggle,fitaCalcKey,fitaCalcCopiar});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
   Object.defineProperty(window,'fDan',{get:()=>fDan,set:v=>fDan=v});
