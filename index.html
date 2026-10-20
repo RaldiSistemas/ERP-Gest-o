@@ -1442,26 +1442,6 @@
   .app-h{ color:var(--texto); font-family:ui-monospace,monospace; font-size:11.5px; }
   .app-t{ font-weight:700; color:#7a6ea8; }
   .app-m{ color:var(--muted); font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .app-l{ display:grid; grid-template-columns:18px auto auto 1fr; align-items:center; column-gap:10px; row-gap:2px; font-size:12.5px; padding:6px 0; }
-  .app-l + .app-l{ border-top:1px dashed var(--linha); }
-  .app-h,.app-t{ white-space:nowrap; }
-  .app-m{ grid-column:2/-1; color:var(--muted); font-style:italic; white-space:normal; overflow:visible; text-overflow:clip; line-height:1.35; }
-  .lt-box{ grid-column:1/-1; border:1px solid var(--linha); border-radius:10px; overflow:hidden; background:#fff; }
-  .lt-box-h{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:10px 14px; background:#faf9f5; border-bottom:1px solid var(--linha); }
-  .lt-box-h b{ font-size:14px; margin:0; display:inline; }
-  .lt-chip{ font-size:11px; font-weight:700; color:var(--muted); background:#fff; border:1px solid var(--linha); border-radius:999px; padding:2px 10px; }
-  .lt-tb{ width:100%; border-collapse:collapse; font-size:13px; }
-  .lt-tb th{ text-align:left; font-size:10px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); padding:7px 14px; border-bottom:1px solid var(--linha); }
-  .lt-tb td{ padding:8px 14px; border-bottom:1px solid #f0efe8; vertical-align:top; }
-  .lt-tb tr:last-child td{ border-bottom:0; }
-  .lt-tb .mono{ font-family:ui-monospace,monospace; font-weight:700; white-space:nowrap; }
-  .lt-tb .ctr{ text-align:center; white-space:nowrap; }
-  @media (max-width:560px){ .lt-tb th:nth-child(4),.lt-tb td:nth-child(4){ display:none; } }
-  .ac-amb{ margin:4px 0 0; padding:0; list-style:none; font-size:11px; color:var(--muted); }
-  .ac-amb li{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.45; }
-  .ac-amb li b{ color:var(--texto); font-family:ui-monospace,monospace; font-weight:700; margin-right:4px; }
-  .ac-amb li.mais{ font-style:italic; }
-  .and-c .ac-fn{ flex-wrap:wrap; row-gap:2px; }
   .app-tot{ font-size:12px; color:var(--muted); margin-top:7px; padding-top:7px; border-top:1px solid var(--linha); }
 
   /* ===== Apontamento da OP — visual moderno ===== */
@@ -1769,6 +1749,48 @@
     .help-nav{ width:190px; flex:0 0 190px; }
     .help-cont{ padding:20px 18px 34px; }
   }
+
+
+  /* --- Conferência de lote (SA/SC) --- */
+  .cf-box .rx-box{ width:min(780px,100%); }
+  .cf-top{ display:flex; gap:10px; align-items:center; }
+  .cf-top input{ flex:1; font:inherit; font-size:15px; font-weight:700; padding:10px 12px; border:1px solid var(--linha); border-radius:8px; background:#fff; color:var(--texto); }
+  .cf-top input:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .cf-stat{ display:none; margin-top:16px; font-size:13px; font-weight:600; color:var(--muted); }
+  .cf-stat.on{ display:flex; align-items:center; gap:10px; }
+  .cf-bar{ display:none; height:5px; border-radius:99px; background:rgba(75,75,85,.1); overflow:hidden; margin-top:8px; position:relative; }
+  .cf-bar.on{ display:block; }
+  .cf-bar i{ display:block; height:100%; width:0; background:var(--vermelho); border-radius:99px; transition:width .35s ease; }
+  .cf-list{ margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+  .cf-row{ display:grid; grid-template-columns:30px 1fr auto; gap:12px; align-items:center; padding:9px 12px; border:1px solid var(--linha); border-radius:10px; background:#fff; opacity:0; transform:translateY(6px); animation:cfIn .3s ease forwards; transition:background .25s, border-color .25s; }
+  .cf-row.run{ border-color:var(--vermelho); background:rgba(152,36,36,.04); box-shadow:0 0 0 3px rgba(152,36,36,.08); }
+  .cf-row.run::after{ content:''; }
+  .cf-row.ok{ border-color:rgba(47,143,70,.35); background:rgba(47,143,70,.05); }
+  .cf-row.bad{ border-color:rgba(192,57,43,.45); background:rgba(192,57,43,.06); }
+  .cf-ic{ width:26px; height:26px; display:flex; align-items:center; justify-content:center; }
+  .cf-ic svg{ width:24px; height:24px; }
+  .cf-dot{ width:9px; height:9px; border-radius:50%; background:rgba(75,75,85,.25); }
+  .cf-spin{ width:18px; height:18px; border-radius:50%; border:2.5px solid rgba(152,36,36,.2); border-top-color:var(--vermelho); animation:cfSpin .7s linear infinite; }
+  .cf-d b{ display:block; font-size:13px; font-weight:700; line-height:1.25; }
+  .cf-d small{ display:block; font-size:11px; color:var(--muted); margin-top:2px; font-family:ui-monospace,monospace; }
+  .cf-d em{ display:block; font-style:normal; font-size:12px; font-weight:700; color:#c0392b; margin-top:3px; }
+  .cf-q{ display:flex; gap:12px; font-size:12px; color:var(--muted); text-align:right; min-width:150px; justify-content:flex-end; }
+  .cf-q span{ white-space:nowrap; opacity:0; }
+  .cf-row.ok .cf-q span,.cf-row.bad .cf-q span{ animation:cfFade .35s ease forwards; }
+  .cf-q b{ color:var(--texto); }
+  .cf-q .x b{ color:#c0392b; }
+  .cf-res{ margin-top:16px; padding:14px 16px; border-radius:10px; font-size:14px; font-weight:700; display:flex; gap:12px; align-items:flex-start; animation:cfPop .4s cubic-bezier(.2,1.4,.4,1); }
+  .cf-res.ok{ background:rgba(47,143,70,.1); color:#256f38; border:1px solid rgba(47,143,70,.35); }
+  .cf-res.bad{ background:rgba(192,57,43,.09); color:#982424; border:1px solid rgba(192,57,43,.4); }
+  .cf-res.warn{ background:rgba(212,147,13,.1); color:#8a5f00; border:1px solid rgba(212,147,13,.4); }
+  .cf-res small{ display:block; font-weight:500; font-size:12.5px; margin-top:4px; line-height:1.45; }
+  .cf-res svg{ width:26px; height:26px; flex:none; }
+  @keyframes cfIn{ to{ opacity:1; transform:none; } }
+  @keyframes cfSpin{ to{ transform:rotate(360deg); } }
+  @keyframes cfFade{ to{ opacity:1; } }
+  @keyframes cfPop{ from{ opacity:0; transform:scale(.96); } to{ opacity:1; transform:none; } }
+  @keyframes cfDraw{ from{ stroke-dashoffset:30; } to{ stroke-dashoffset:0; } }
+  .cf-ic path{ stroke-dasharray:30; animation:cfDraw .35s ease forwards; }
 
   /* Simulação de estoque */
   .fita-acao{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
@@ -6040,7 +6062,8 @@
     const cont={pendente:0,separado:0,entregue:0}; SAS.forEach(x=>cont[stSa(x)]++);
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Solicitação Armazém (SA)</h1>
-        <p class="page-sub">${SAS.length} solicitação(ões) recebidas do PCP</p></div></div>
+        <p class="page-sub">${SAS.length} solicitação(ões) recebidas do PCP</p></div>
+        <div style="display:flex;gap:10px">${cfBtn()}</div></div>
       ${SAS.length?`
       <div class="st-resumo">${Object.entries(ST_SA).map(([k,v])=>`<div class="st-item"><span class="dot" style="background:${v.cor}"></span>${v.label} <b>${cont[k]}</b></div>`).join('')}</div>
       <div class="inv-filtros">
@@ -7149,6 +7172,100 @@
     });
   }
 
+
+  /* ================= Conferência de lote (SA / SC) ================= */
+  // Compara o que a(s) simulação(ões) de fita do lote mandou pedir (histFitas) com as SA/SC que existem hoje.
+  let cfTok=0;
+  function cfNorm(v){ return String(v==null?'':v).trim().toLowerCase(); }
+  function cfBtn(){ return (typeof paMode!=='undefined'&&paMode)||(typeof gsaMode!=='undefined'&&gsaMode)?'':'<button class="btn btn-ghost" onclick="abrirConferencia()">Conferência</button>'; }
+  function cfCalcular(lote){
+    const L=cfNorm(lote), eps=0.0001;
+    const hs=HISTFITAS.filter(h=>cfNorm(h.lote)===L);
+    const mapa=new Map();
+    const get=(cod,desc,un)=>{ const k=cfNorm(cod||desc);
+      if(!mapa.has(k)) mapa.set(k,{cod:cod||'',desc:desc||'',un:un||'',eSA:0,eSC:0,aSA:0,aSC:0,previsto:false});
+      const r=mapa.get(k); if(!r.desc&&desc) r.desc=desc; if(!r.cod&&cod) r.cod=cod; return r; };
+    hs.forEach(h=>fbArr(h.linhas).forEach(l=>{ const r=get(l.codigo,l.descricao,l.unidade); r.previsto=true; r.eSA+=(+l.qSA||0); r.eSC+=(+l.qSC||0); }));
+    // só conta o que veio da simulação de fita: ignora SA geradas a partir de uma SC ("Gerar SA", origem 'sc') e as da Simulação de Estoque
+    const daSim=x=>x.origem!=='sc'&&x.origem!=='simulacao'&&!x.scId;
+    const sas=SAS.filter(x=>cfNorm(x.lote)===L&&daSim(x)), scs=SCS.filter(x=>cfNorm(x.lote)===L&&daSim(x));
+    const derivadas=SAS.filter(x=>cfNorm(x.lote)===L&&!daSim(x)).length;
+    sas.forEach(x=>{ get(x.codigo,x.descricao,x.unidade).aSA+=(+x.qtd||0); });
+    scs.forEach(x=>{ get(x.codigo,x.descricao,x.unidade).aSC+=(+x.qtd||0); });
+    const linhas=[...mapa.values()].map(r=>{
+      const probs=[];
+      const cmp=(t,e,a)=>{ if(e<=eps&&a<=eps) return;
+        if(!r.previsto){ probs.push(t+' existe, mas essa fita não está na simulação'); return; }
+        if(a<=eps) probs.push(t+' não encontrada (excluída?)');
+        else if(a<e-eps) probs.push(t+' com quantidade menor que a simulada');
+        else if(a>e+eps) probs.push(t+' com quantidade maior que a simulada'); };
+      cmp('SA',r.eSA,r.aSA); cmp('SC',r.eSC,r.aSC);
+      return {...r,probs,ok:!probs.length};
+    }).filter(r=>r.eSA>eps||r.eSC>eps||r.aSA>eps||r.aSC>eps)
+      .sort((a,b)=>String(a.desc).localeCompare(String(b.desc)));
+    const sumiram=[];
+    hs.forEach(h=>{ fbArr(h.sas).forEach(n=>{ if(!SAS.some(y=>y.numero===n)) sumiram.push(n); });
+                    fbArr(h.scs).forEach(n=>{ if(!SCS.some(y=>y.numero===n)) sumiram.push(n); }); });
+    return {hs,linhas,sumiram,derivadas,nSA:sas.length,nSC:scs.length};
+  }
+  function abrirConferencia(){
+    abrirModal('Conferência de lote',
+      `<div class="cf-top"><input id="cfLote" type="text" placeholder="Nº do lote (ex.: 10525)" autocomplete="off" onkeydown="if(event.key==='Enter') cfRodar()"></div>
+       <div class="cf-stat" id="cfStat"></div><div class="cf-bar" id="cfBar"><i></i></div>
+       <div class="cf-list" id="cfList"></div><div id="cfRes"></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>
+       <button class="btn btn-primary" id="cfGo" onclick="cfRodar()">Conferir</button>`);
+    const b=document.querySelector('#modalOv .rx-box'); if(b) b.style.width='min(780px,100%)';
+  }
+  const CF_OK='<svg viewBox="0 0 24 24" fill="none" stroke="#2f8f46" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke-width="1.8" opacity=".35"/><path d="M7 12.5l3.2 3.2L17 8.8"/></svg>';
+  const CF_BAD='<svg viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke-width="1.8" opacity=".35"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7"/></svg>';
+  const CF_WARN='<svg viewBox="0 0 24 24" fill="none" stroke="#d4930d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.4v.1"/></svg>';
+  async function cfRodar(){
+    const inp=document.getElementById('cfLote'); const lote=(inp&&inp.value||'').trim();
+    if(!lote){ toast('Informe o número do lote'); return; }
+    const tok=++cfTok, vivo=()=>tok===cfTok&&document.getElementById('cfList');
+    const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+    const stat=document.getElementById('cfStat'), bar=document.getElementById('cfBar'), list=document.getElementById('cfList'), res=document.getElementById('cfRes'), go=document.getElementById('cfGo');
+    const prog=pct=>{ const i=bar.querySelector('i'); if(i) i.style.width=pct+'%'; };
+    const msg=t=>{ stat.innerHTML='<span class="cf-spin"></span>'+escHtml(t); };
+    list.innerHTML=''; res.innerHTML=''; stat.classList.add('on'); bar.classList.add('on'); prog(4); go.disabled=true;
+    const d=cfCalcular(lote);
+    msg(`Lendo as simulações do lote ${lote}…`); await sleep(600); if(!vivo()) return; prog(20);
+    msg('Lendo as SA e SC registradas…'); await sleep(600); if(!vivo()) return; prog(36);
+    if(!d.hs.length){
+      stat.classList.remove('on'); bar.classList.remove('on'); go.disabled=false;
+      res.innerHTML=`<div class="cf-res warn">${CF_WARN}<div>Nenhuma simulação de fita no histórico para o lote ${escHtml(lote)}.<small>Sem simulação não há como saber o que deveria ter sido pedido. Hoje existem ${d.nSA} SA(s) e ${d.nSC} SC(s) com esse lote. Confira se o número do lote está certo.</small></div></div>`;
+      return;
+    }
+    list.innerHTML=d.linhas.map((r,i)=>`<div class="cf-row" id="cfr${i}" style="animation-delay:${Math.min(i*40,600)}ms">
+      <div class="cf-ic"><span class="cf-dot"></span></div>
+      <div class="cf-d"><b>${escHtml(r.desc||'—')}</b><small>${escHtml(r.cod||'')}</small></div><div class="cf-q"></div></div>`).join('');
+    msg('Batendo fita por fita…');
+    const passo=Math.max(90,Math.min(380,2600/Math.max(d.linhas.length,1)));
+    await sleep(350); if(!vivo()) return;
+    const fq=(t,e,a)=>{ if(e<=0.0001&&a<=0.0001) return ''; const bom=Math.abs(e-a)<=0.0001;
+      return `<span class="${bom?'':'x'}">${t} <b>${fmtNum(+e.toFixed(4))}</b> → <b>${fmtNum(+a.toFixed(4))}</b></span>`; };
+    for(let i=0;i<d.linhas.length;i++){
+      if(!vivo()) return;
+      const r=d.linhas[i], el=document.getElementById('cfr'+i); if(!el) return;
+      el.classList.add('run'); el.querySelector('.cf-ic').innerHTML='<span class="cf-spin"></span>';
+      el.scrollIntoView({block:'nearest',behavior:'smooth'});
+      await sleep(passo); if(!vivo()) return;
+      el.classList.remove('run'); el.classList.add(r.ok?'ok':'bad');
+      el.querySelector('.cf-ic').innerHTML=r.ok?CF_OK:CF_BAD;
+      el.querySelector('.cf-q').innerHTML=fq('SA',r.eSA,r.aSA)+fq('SC',r.eSC,r.aSC);
+      if(!r.ok) el.querySelector('.cf-d').insertAdjacentHTML('beforeend','<em>'+escHtml(r.probs.join(' · '))+'</em>');
+      prog(36+Math.round(((i+1)/d.linhas.length)*64));
+    }
+    await sleep(250); if(!vivo()) return;
+    stat.classList.remove('on'); bar.classList.remove('on'); go.disabled=false;
+    const bad=d.linhas.filter(r=>!r.ok);
+    const extra=d.sumiram.length?`<small>Números da simulação que não existem mais: <b>${escHtml(d.sumiram.join(', '))}</b>.</small>`:'';
+    res.innerHTML=bad.length
+      ?`<div class="cf-res bad">${CF_BAD}<div>${bad.length} divergência(s) em ${d.linhas.length} fita(s) conferida(s) no lote ${escHtml(lote)}.<small>Corrija pelas telas de SA/SC ou refaça pelo Histórico de simulações de fita.</small>${extra}</div></div>`
+      :`<div class="cf-res ok">${CF_OK}<div>Sem divergências: ${d.linhas.length} fita(s) do lote ${escHtml(lote)} batem com a simulação.${d.hs.length>1?`<small>${d.hs.length} simulações do lote foram somadas.</small>`:''}${d.derivadas?`<small>${d.derivadas} SA(s) geradas a partir de SC foram ignoradas.</small>`:''}${extra}</div></div>`;
+  }
+
   /* --- Estoque: controla status e dá entrada --- */
   function renderSCEstoque(){
     TELA='sc-est'; scViewId=null;
@@ -7156,7 +7273,7 @@
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Solicitação de Compras (SC)</h1>
         <p class="page-sub">${SCS.length} solicitação(ões) recebidas do PCP</p></div>
-        <div style="display:flex;gap:10px">${gsaHead('est')}</div></div>
+        <div style="display:flex;gap:10px">${cfBtn()}${gsaHead('est')}</div></div>
       ${gsaAviso()}
       ${SCS.length?`${resumoSC(SCS)}
       <div class="inv-filtros">
@@ -9482,33 +9599,13 @@
     </div>`;
   }
 
-  function htmlProjLote(o){
-    const pl=(Array.isArray(o.projetosLote)?o.projetosLote:Object.values(o.projetosLote||{})).filter(Boolean);
-    if(!pl.length) return '<div class="ai wide"><span>Projetos do lote</span><b>—</b></div>';
-    const nAmb=pl.filter(r=>String(r.ambiente||'').trim()).length;
-    return `<div class="lt-box"><div class="lt-box-h"><b>Lote ${escHtml(o.lote)||'—'}</b>
-      <span class="lt-chip">${pl.length} projeto${pl.length>1?'s':''}</span>
-      <span class="lt-chip">${nAmb} ambiente${nAmb===1?'':'s'}</span></div>
-      <table class="lt-tb"><thead><tr><th>Projeto</th><th>Cliente</th><th>Ambiente</th><th class="ctr">Peças</th></tr></thead><tbody>
-      ${pl.map(r=>{ const n=pecasDoProjeto(o.lote,r.projeto);
-        return `<tr><td class="mono">${escHtml(r.projeto)||'—'}</td><td>${escHtml(r.cliente)||'—'}</td>
-          <td>${escHtml(r.ambiente)||'—'}</td><td class="ctr">${n!=null?fmtNum(n):'—'}</td></tr>`; }).join('')}
-      </tbody></table></div>`;
-  }
-  function htmlAmbLote(o){
-    if(o.tipo!=='lote') return '';
-    const pl=(o.projetosLote||[]).filter(Boolean); if(pl.length<2) return '';
-    const max=4;
-    return '<ul class="ac-amb">'+pl.slice(0,max).map(r=>`<li><b>${escHtml(r.projeto)}</b>${escHtml([r.cliente,r.ambiente].filter(Boolean).join(' · '))}</li>`).join('')
-      +(pl.length>max?`<li class="mais">+ ${pl.length-max} projeto(s)</li>`:'')+'</ul>';
-  }
   function opSetorDe(sig){ return OP_SETORES[sig]||OP_SETORES.SL; }
   function opClienteAmbiente(o){
     const pl=o.projetosLote||[];
     if(!pl.length) return '';
     if(o.tipo==='lote'){
       if(pl.length===1) return [pl[0].cliente,pl[0].ambiente].filter(Boolean).join(' · ');
-      return 'Lote '+(o.lote||'')+' · '+pl.length+' projetos';
+      return pl.length+' projetos do lote';
     }
     return [pl[0].cliente,pl[0].ambiente].filter(Boolean).join(' · ');
   }
@@ -11690,7 +11787,6 @@
                   ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
                 ${(o.obs||'').trim()?`<span class="ac-obs-t">${escHtml(o.obs)}</span>`:''}
                 ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
-                ${htmlAmbLote(o)}
                 <div class="ac-f ac-fn">${bolinhasFuncs(o)}<span>${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</span></div>
                 <div class="ac-tm">${fmtMin(tempoLiquido(o,new Date().toISOString()))} ${htmlLeadMini(o)}</div>
               </button>`;
@@ -11873,12 +11969,16 @@
             <div class="ap-obs-t">${escHtml(o.obs)}</div></div>
         </div>`:''}
         <div class="ap-info">
-          <div class="ai"><span>${o.tipo==='lote'?'Projetos':'Projeto'}</span><b>${o.tipo==='lote'?((o.projetosLote||[]).length+' no lote'):escHtml(o.projeto)}</b></div>
+          <div class="ai"><span>Projeto</span><b>${escHtml(o.projeto)}</b></div>
           <div class="ai"><span>Lote</span><b>${escHtml(o.lote)||'—'}</b></div>
           <div class="ai"><span>Setor</span><b style="color:${S.cor}">${escHtml(o.setor)} — ${escHtml(S.nome)}</b></div>
           <div class="ai"><span>Atividade</span><b>${escHtml(o.atividade)}</b></div>
-          ${o.tipo==='lote'?htmlProjLote(o):`<div class="ai wide"><span>Cliente / Ambiente</span>
-            <b>${(o.projetosLote||[]).length?(o.projetosLote||[]).map(r=>[r.cliente,r.ambiente].filter(Boolean).map(escHtml).join(' · ')).join(' | '):'—'}</b></div>`}
+          <div class="ai wide"><span>${o.tipo==='lote'?'Projetos do lote':'Cliente / Ambiente'}</span>
+            <b>${(o.projetosLote||[]).length
+              ? (o.tipo==='lote'
+                 ? (o.projetosLote||[]).map(r=>escHtml(r.projeto)+(r.cliente?' ('+escHtml(r.cliente)+')':'')).join(', ')
+                 : (o.projetosLote||[]).map(r=>[r.cliente,r.ambiente].filter(Boolean).map(escHtml).join(' · ')).join(' | '))
+              : '—'}</b></div>
           <div class="ai wide"><span>Jornada</span><b>${fmtJornada(o.jornada)}</b></div>
         </div>
 
