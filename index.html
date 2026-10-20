@@ -1761,6 +1761,9 @@
   .cf-bar{ display:none; height:5px; border-radius:99px; background:rgba(75,75,85,.1); overflow:hidden; margin-top:8px; position:relative; }
   .cf-bar.on{ display:block; }
   .cf-bar i{ display:block; height:100%; width:0; background:var(--vermelho); border-radius:99px; transition:width .35s ease; }
+  .cf-info{ margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(75,75,85,.05); font-size:12px; color:var(--muted); line-height:1.6; }
+  .cf-info b{ display:block; color:var(--texto); font-size:12px; margin-bottom:2px; }
+  .cf-info .off{ text-decoration:line-through; opacity:.75; }
   .cf-list{ margin-top:14px; display:flex; flex-direction:column; gap:6px; }
   .cf-row{ display:grid; grid-template-columns:30px 1fr auto; gap:12px; align-items:center; padding:9px 12px; border:1px solid var(--linha); border-radius:10px; background:#fff; opacity:0; transform:translateY(6px); animation:cfIn .3s ease forwards; transition:background .25s, border-color .25s; }
   .cf-row.run{ border-color:var(--vermelho); background:rgba(152,36,36,.04); box-shadow:0 0 0 3px rgba(152,36,36,.08); }
@@ -7180,7 +7183,20 @@
   function cfBtn(){ return (typeof paMode!=='undefined'&&paMode)||(typeof gsaMode!=='undefined'&&gsaMode)?'':'<button class="btn btn-ghost" onclick="abrirConferencia()">Conferência</button>'; }
   function cfCalcular(lote){
     const L=cfNorm(lote), eps=0.0001;
-    const hs=HISTFITAS.filter(h=>cfNorm(h.lote)===L);
+    // HISTFITAS já vem da simulação mais nova para a mais antiga.
+    // Uma simulação "substituída" = nenhuma das suas SA/SC existe mais E uma simulação mais nova e viva cobre os mesmos ambientes
+    // (foi regerada). Se uma simulação perdeu TODAS as SA/SC e nada mais novo a substitui, ela continua valendo (foi excluída por engano).
+    const todas=HISTFITAS.filter(h=>cfNorm(h.lote)===L);
+    const chaveAmb=a=>[a.clienteNome,a.ambiente,a.numeroProjeto].map(cfNorm).join('|');
+    const viva=h=>fbArr(h.sas).some(n=>SAS.some(y=>y.numero===n))||fbArr(h.scs).some(n=>SCS.some(y=>y.numero===n));
+    const hs=[], descartadas=[];
+    todas.forEach((h,i)=>{
+      if(viva(h)){ hs.push(h); return; }
+      const ch=fbArr(h.ambientes).map(chaveAmb);
+      const maisNovas=todas.slice(0,i).filter(viva);
+      const subst=ch.length?maisNovas.some(n=>fbArr(n.ambientes).some(a=>ch.includes(chaveAmb(a)))):maisNovas.length>0;
+      (subst?descartadas:hs).push(h);
+    });
     const mapa=new Map();
     const get=(cod,desc,un)=>{ const k=cfNorm(cod||desc);
       if(!mapa.has(k)) mapa.set(k,{cod:cod||'',desc:desc||'',un:un||'',eSA:0,eSC:0,aSA:0,aSC:0,previsto:false});
@@ -7206,12 +7222,12 @@
     const sumiram=[];
     hs.forEach(h=>{ fbArr(h.sas).forEach(n=>{ if(!SAS.some(y=>y.numero===n)) sumiram.push(n); });
                     fbArr(h.scs).forEach(n=>{ if(!SCS.some(y=>y.numero===n)) sumiram.push(n); }); });
-    return {hs,linhas,sumiram,derivadas,nSA:sas.length,nSC:scs.length};
+    return {hs,descartadas,linhas,sumiram,derivadas,nSA:sas.length,nSC:scs.length};
   }
   function abrirConferencia(){
     abrirModal('Conferência de lote',
       `<div class="cf-top"><input id="cfLote" type="text" placeholder="Nº do lote (ex.: 10525)" autocomplete="off" onkeydown="if(event.key==='Enter') cfRodar()"></div>
-       <div class="cf-stat" id="cfStat"></div><div class="cf-bar" id="cfBar"><i></i></div>
+       <div class="cf-stat" id="cfStat"></div><div class="cf-bar" id="cfBar"><i></i></div><div id="cfInfo"></div>
        <div class="cf-list" id="cfList"></div><div id="cfRes"></div>`,
       `<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>
        <button class="btn btn-primary" id="cfGo" onclick="cfRodar()">Conferir</button>`);
@@ -7228,7 +7244,7 @@
     const stat=document.getElementById('cfStat'), bar=document.getElementById('cfBar'), list=document.getElementById('cfList'), res=document.getElementById('cfRes'), go=document.getElementById('cfGo');
     const prog=pct=>{ const i=bar.querySelector('i'); if(i) i.style.width=pct+'%'; };
     const msg=t=>{ stat.innerHTML='<span class="cf-spin"></span>'+escHtml(t); };
-    list.innerHTML=''; res.innerHTML=''; stat.classList.add('on'); bar.classList.add('on'); prog(4); go.disabled=true;
+    list.innerHTML=''; res.innerHTML=''; document.getElementById('cfInfo').innerHTML=''; stat.classList.add('on'); bar.classList.add('on'); prog(4); go.disabled=true;
     const d=cfCalcular(lote);
     msg(`Lendo as simulações do lote ${lote}…`); await sleep(600); if(!vivo()) return; prog(20);
     msg('Lendo as SA e SC registradas…'); await sleep(600); if(!vivo()) return; prog(36);
@@ -7237,6 +7253,9 @@
       res.innerHTML=`<div class="cf-res warn">${CF_WARN}<div>Nenhuma simulação de fita no histórico para o lote ${escHtml(lote)}.<small>Sem simulação não há como saber o que deveria ter sido pedido. Hoje existem ${d.nSA} SA(s) e ${d.nSC} SC(s) com esse lote. Confira se o número do lote está certo.</small></div></div>`;
       return;
     }
+    document.getElementById('cfInfo').innerHTML=`<div class="cf-info"><b>Simulações do lote usadas na conferência</b>${
+      d.hs.map(h=>`<div>${escHtml(fmtDataHora(h.criadoEm))} · ${fbArr(h.linhas).length} fita(s) · ${fbArr(h.sas).length} SA / ${fbArr(h.scs).length} SC previstas</div>`).join('')}${
+      d.descartadas.map(h=>`<div class="off">${escHtml(fmtDataHora(h.criadoEm))} · ignorada (substituída por uma simulação mais nova)</div>`).join('')}</div>`;
     list.innerHTML=d.linhas.map((r,i)=>`<div class="cf-row" id="cfr${i}" style="animation-delay:${Math.min(i*40,600)}ms">
       <div class="cf-ic"><span class="cf-dot"></span></div>
       <div class="cf-d"><b>${escHtml(r.desc||'—')}</b><small>${escHtml(r.cod||'')}</small></div><div class="cf-q"></div></div>`).join('');
