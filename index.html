@@ -2174,6 +2174,21 @@
   .cod-next{ font-family:ui-monospace,monospace; font-size:12.5px; color:var(--muted); }
   .cod-mono{ font-family:ui-monospace,monospace; font-size:12.5px; font-weight:600; color:var(--texto); white-space:nowrap; }
   .tp-pill{ font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:999px; background:rgba(75,75,85,.09); color:var(--texto); }
+  /* Cadastro de Cores (fitas de borda) */
+  .cor-grupo{ background:var(--surface); border:1px solid var(--linha); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+  .cor-gh{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(75,75,85,.05); border-bottom:1px solid var(--linha); }
+  .cor-gh b{ font-size:13px; flex:1; min-width:0; }
+  .cor-gh small{ color:var(--muted); font-size:11.5px; white-space:nowrap; }
+  .cor-row{ display:grid; grid-template-columns:118px 64px 76px 130px 1fr; gap:10px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--linha); }
+  .cor-row:last-child{ border-bottom:0; }
+  .cor-sw{ width:72px; height:44px; border-radius:7px; border:1px solid rgba(0,0,0,.22); background:repeating-conic-gradient(#e7e7e1 0 25%,#fff 0 50%) 50%/10px 10px; display:block; }
+  .cor-acoes{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .cor-drop{ border:2px dashed var(--linha); border-radius:12px; padding:18px; text-align:center; font-size:13px; color:var(--muted); outline:none; cursor:pointer; }
+  .cor-drop:focus,.cor-drop.over{ border-color:#982424; background:rgba(152,36,36,.04); }
+  #corCv{ display:none; max-width:100%; margin:10px auto 0; border-radius:8px; border:1px solid var(--linha); cursor:crosshair; }
+  .cor-prev{ width:96px; height:64px; border-radius:8px; border:1px solid rgba(0,0,0,.25); flex:none; background:#fff; }
+  @media(max-width:640px){ .cor-row{ grid-template-columns:1fr auto; } .cor-row .cod-mono{ grid-column:1/-1; } .cor-acoes{ grid-column:1/-1; justify-content:flex-start; } }
+
   .cod-prev{ font-family:ui-monospace,monospace; font-size:15px; font-weight:600; color:var(--vermelho);
     background:rgba(152,36,36,.07); border:1px dashed rgba(152,36,36,.3); border-radius:8px; padding:9px 11px; }
   .fld-hint{ font-size:11.5px; color:var(--muted); margin-top:4px; display:block; }
@@ -2881,7 +2896,7 @@
       {label:'Roteiros', children:['Operações','Centros de Trabalho']},
       {label:'Cadastros', children:['Produtos','Desenhos Técnicos'], badgeOn:'Produtos'} ]},
     {id:'est', label:'Estoque', icon:I.est, tree:[
-      {label:'Cadastro', children:['Raiz do produto','Cadastro simples (insumos)','Cadastro de centro de custo (CC)']},
+      {label:'Cadastro', children:['Raiz do produto','Cadastro simples (insumos)','Cadastro de Cores','Cadastro de centro de custo (CC)']},
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)']},
       {label:'Movimentações', children:['Entradas','Saídas','Transferências']},
       {label:'Saldos', children:['Posição Atual','Kardex']},
@@ -3005,6 +3020,7 @@
     if(mod.id==='est' && name==='Raiz do produto') return renderRaiz();
     if(mod.id==='est' && name==='Cadastro simples (insumos)') return renderInsumos();
     if(mod.id==='est' && name==='Contagem') return renderContagem();
+    if(mod.id==='est' && name==='Cadastro de Cores') return renderCores();
     if(mod.id==='est' && name==='Cadastro de centro de custo (CC)') return renderCC();
     if(mod.id==='pcp' && name==='Solicitação Armazém (SA)') return renderSA();
     if(mod.id==='pcp' && name==='Solicitações de fita') return renderSolFitas();
@@ -3864,7 +3880,12 @@
       if(TELA==='insumos'){ const f=document.getElementById('buscaIns'), pos=f&&document.activeElement===f?f.selectionStart:null;
         renderInsumos(); if(pos!==null){ const e2=document.getElementById('buscaIns'); if(e2){ e2.focus(); e2.setSelectionRange(pos,pos); } } }
       else if(TELA==='raiz') renderRaiz();
-      else if(TELA==='contagem') renderContagem(); });
+      else if(TELA==='contagem') renderContagem();
+      else if(TELA==='cores') atualizarCores(); });
+    db.ref('coresFita').on('value',s=>{ CORES_FITA=s.val()||{}; precarregarTexturasFita();
+      if(TELA==='cores') atualizarCores();
+      else if(TELA==='fita'&&typeof fitaLive==='function'&&document.getElementById('fitaRes')) fitaLive(true); },
+      e=>console.warn('coresFita:',e.message));
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
@@ -5183,6 +5204,220 @@
     const it=INSUMOS.find(x=>x.id===id); if(!it) return;
     if(!confirm(`Excluir o insumo ${it.codigo} — ${it.descricao}?\n\nO código NÃO será reaproveitado. Esta ação não pode ser desfeita.`)) return;
     db.ref('insumos/'+id).remove().then(()=>toast('Insumo excluído')).catch(e=>toast('Erro: '+e.message));
+  }
+
+
+  /* ================= Cadastro de Cores (fitas de borda) ================= */
+  // coresFita/{insumoId} = {hex, img?, em, por}. img = miniatura da textura (Cloudinary); hex = cor média (reserva).
+  // Fica fora de /insumos para não mexer no cadastro. "Mesmo material" = descrição sem a largura (materialDe);
+  // a marca faz parte do texto, então PROADEC e outra marca nunca se misturam.
+  let CORES_FITA={}, buscaCor='', soSemCor=false, corBase=null;
+  let corSel={blob:null,prevUrl:null,atual:null,usa:true};
+  function fitasBorda(){ return INSUMOS.filter(i=>/^\s*fita de borda/i.test(i.descricao||'')); }
+  function gruposFita(){
+    const m={};
+    fitasBorda().forEach(i=>{ const k=materialDe(i.descricao); (m[k]=m[k]||[]).push(i); });
+    return Object.keys(m).sort((a,b)=>a.localeCompare(b)).map(k=>({nome:k,
+      itens:m[k].sort((a,b)=>(larguraDe(a.descricao)||0)-(larguraDe(b.descricao)||0)||String(a.codigo).localeCompare(String(b.codigo)))}));
+  }
+  function irmaosFita(id){
+    const it=INSUMOS.find(x=>x.id===id); if(!it) return [];
+    const k=materialDe(it.descricao);
+    return fitasBorda().filter(x=>x.id!==id && materialDe(x.descricao)===k);
+  }
+  function corDe(id){ const c=CORES_FITA[id]; return c&&/^#[0-9a-f]{6}$/i.test(c.hex||'')?c.hex.toLowerCase():null; }
+  function imgDe(id){ const c=CORES_FITA[id]; return c&&c.img&&/^https:\/\/[^\s'"()]+$/.test(c.img)?c.img:null; }
+  // ---- Cor/textura da fita no plano de corte ----
+  function precarregarTexturasFita(){ Object.keys(CORES_FITA).forEach(k=>{ const u=imgDe(k); if(u){ const im=new Image(); im.src=u; } }); }
+  // acha a cor/textura do material (descrição sem a largura); prefere a mesma largura da peça, senão qualquer medida com textura
+  function visualFita(mat,w){
+    const c=INSUMOS.filter(i=>temCor(i.id)&&materialDe(i.descricao)===mat);
+    if(!c.length) return null;
+    const it=c.find(i=>larguraDe(i.descricao)===w)||c.find(i=>imgDe(i.id))||c[0];
+    const img=imgDe(it.id), hex=corDe(it.id)||'#999999';
+    return {img,hex,estilo:img?`background:url('${img}') center/cover`:`background:${hex}`};
+  }
+  function estiloCor(id){ const im=imgDe(id), h=corDe(id); return im?`background:url('${im}') center/cover`:(h?`background:${h}`:''); }
+  function temCor(id){ return !!(corDe(id)||imgDe(id)); }
+
+  function renderCores(){
+    TELA='cores';
+    view.innerHTML=`<div class="page">
+      <div class="page-head"><div><h1 class="page-title">Cadastro de Cores</h1><p class="page-sub" id="corSub"></p></div></div>
+      <div class="toolbar" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input class="search" id="buscaCorIn" value="${escHtml(buscaCor).replace(/"/g,'&quot;')}" placeholder="Buscar fita por código, nome, marca..." oninput="buscaCor=this.value; atualizarCores()">
+        <label style="display:flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap;cursor:pointer">
+          <input type="checkbox" class="ck" ${soSemCor?'checked':''} onchange="soSemCor=this.checked; atualizarCores()"> Só sem cor</label>
+      </div>
+      <div id="corBody"></div></div>`;
+    atualizarCores();
+  }
+  function atualizarCores(){
+    const b=document.getElementById('corBody'); if(!b) return;
+    const todas=fitasBorda(), com=todas.filter(i=>temCor(i.id)).length;
+    const sub=document.getElementById('corSub'); if(sub) sub.textContent=`${todas.length} fita(s) de borda · ${com} com cor · ${todas.length-com} sem cor`;
+    const q=(buscaCor||'').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const grupos=gruposFita().map(g=>({nome:g.nome,total:g.itens.length,itens:g.itens.filter(i=>{
+      if(soSemCor&&temCor(i.id)) return false;
+      const txt=(i.codigo+' '+i.descricao).toLowerCase(); return q.every(x=>txt.includes(x)); })})).filter(g=>g.itens.length);
+    if(!todas.length){ b.innerHTML=`<div class="empty"><h3>Nenhuma fita de borda encontrada</h3><p>Só aparecem insumos cuja descrição começa com "FITA DE BORDA".</p></div>`; return; }
+    if(!grupos.length){ b.innerHTML=`<div class="empty"><p>Nenhum resultado.</p></div>`; return; }
+    b.innerHTML=grupos.slice(0,150).map(g=>`<div class="cor-grupo">
+      <div class="cor-gh"><b>${escHtml(g.nome)}</b><small>${g.total} medida(s)</small></div>
+      ${g.itens.map(i=>{ const h=corDe(i.id), im=imgDe(i.id), l=larguraDe(i.descricao), n=irmaosFita(i.id).length, tem=temCor(i.id);
+        return `<div class="cor-row">
+          <span class="cod-mono">${escHtml(i.codigo)}</span>
+          <span>${l!=null?l+' mm':'—'}</span>
+          <span class="cor-sw" style="${estiloCor(i.id).replace(/"/g,'&quot;')}" title="${im?'Textura':(h||'Sem cor')}"></span>
+          <span class="cod-mono" style="font-weight:500">${h?h.toUpperCase():'—'}${im?' <small style="color:var(--muted);font-family:inherit">textura</small>':''}</span>
+          <span class="cor-acoes">
+            <button class="btn btn-ghost" onclick="formCor('${i.id}')">${tem?'Trocar':'Cadastrar cor'}</button>
+            ${tem&&n?`<button class="btn btn-ghost" title="Copia esta cor/textura para as outras ${n} medida(s) deste material" onclick="aplicarCorTodas('${i.id}')">Aplicar às outras ${n}</button>`:''}
+          </span></div>`; }).join('')}
+    </div>`).join('')+(grupos.length>150?`<p class="aviso">Mostrando 150 de ${grupos.length} materiais. Use a busca.</p>`:'');
+  }
+
+  function medianaPixels(cx,x,y,r){
+    const w=cx.canvas.width,h=cx.canvas.height;
+    const x0=Math.max(0,Math.round(x-r)), y0=Math.max(0,Math.round(y-r));
+    const x1=Math.min(w,Math.round(x+r)), y1=Math.min(h,Math.round(y+r));
+    const d=cx.getImageData(x0,y0,Math.max(1,x1-x0),Math.max(1,y1-y0)).data, R=[],G=[],B=[];
+    for(let i=0;i<d.length;i+=4){ if(d[i+3]<200) continue; R.push(d[i]); G.push(d[i+1]); B.push(d[i+2]); }
+    if(!R.length) return null;
+    const med=a=>{ a.sort((p,q)=>p-q); return a[a.length>>1]; };
+    return '#'+[med(R),med(G),med(B)].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+  function atualizarPrevCor(){
+    const v=document.getElementById('corPrev'); if(!v) return;
+    const row=document.getElementById('corUsaRow'), ck=document.getElementById('corUsaImg');
+    const src=corSel.blob?corSel.prevUrl:corSel.atual;
+    if(row) row.style.display=src?'flex':'none';
+    if(ck) ck.checked=corSel.usa;
+    if(corSel.usa&&src){ v.style.background=`url('${src}') center/cover`; return; }
+    const hx=(document.getElementById('corHex').value||'').trim(), h=hx[0]==='#'?hx:'#'+hx;
+    v.style.background=/^#[0-9a-f]{6}$/i.test(h)?h:'#fff';
+  }
+  function setCorForm(hex){
+    const t=document.getElementById('corHex'), p=document.getElementById('corPick');
+    if(t) t.value=hex.toUpperCase(); if(p) p.value=hex;
+    atualizarPrevCor();
+  }
+  function corManual(hex){ corSel.usa=false; setCorForm(hex); }   // digitou/escolheu: passa a ser cor lisa
+  function corHexInput(el){
+    let h=el.value.trim(); if(h&&h[0]!=='#') h='#'+h;
+    if(/^#[0-9a-f]{6}$/i.test(h)){ corSel.usa=false; const p=document.getElementById('corPick'); if(p) p.value=h.toLowerCase(); atualizarPrevCor(); }
+  }
+  function carregarImagemCor(file){
+    if(!file||!/^image\//.test(file.type)){ toast('Isso não é uma imagem'); return; }
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const cv=document.getElementById('corCv'); if(!cv) return;
+      // miniatura que será enviada (textura inteira, lado maior 320px)
+      const L=Math.min(1,320/Math.max(img.width,img.height)), tc=document.createElement('canvas');
+      tc.width=Math.max(1,Math.round(img.width*L)); tc.height=Math.max(1,Math.round(img.height*L));
+      tc.getContext('2d').drawImage(img,0,0,tc.width,tc.height);
+      // canvas de visualização (permite clicar para cor lisa)
+      const esc=Math.min(1,420/img.width); cv.width=Math.max(1,Math.round(img.width*esc)); cv.height=Math.max(1,Math.round(img.height*esc));
+      const cx=cv.getContext('2d',{willReadFrequently:true}); cx.drawImage(img,0,0,cv.width,cv.height);
+      corBase=cx.getImageData(0,0,cv.width,cv.height); cv.style.display='block';
+      const hint=document.getElementById('corHint'); if(hint) hint.style.display='block';
+      const h=medianaPixels(cx,cv.width/2,cv.height/2,Math.max(cv.width,cv.height)); // cor média da imagem toda
+      tc.toBlob(b=>{
+        if(!b){ toast('Falha ao preparar a imagem'); return; }
+        if(corSel.prevUrl) URL.revokeObjectURL(corSel.prevUrl);
+        corSel.blob=b; corSel.prevUrl=URL.createObjectURL(b); corSel.usa=true;
+        if(h) setCorForm(h); else atualizarPrevCor();
+      },'image/jpeg',.85);
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(url); toast('Não consegui abrir a imagem'); };
+    img.src=url;
+  }
+  function cliqueImagemCor(ev){
+    const cv=ev.currentTarget, r=cv.getBoundingClientRect(), cx=cv.getContext('2d',{willReadFrequently:true});
+    const x=(ev.clientX-r.left)*cv.width/r.width, y=(ev.clientY-r.top)*cv.height/r.height;
+    if(corBase) cx.putImageData(corBase,0,0);
+    const h=medianaPixels(cx,x,y,3); if(!h) return;
+    cx.save(); cx.lineWidth=2; cx.strokeStyle='#fff'; cx.beginPath(); cx.arc(x,y,9,0,7); cx.stroke();
+    cx.strokeStyle='#000'; cx.lineWidth=1; cx.beginPath(); cx.arc(x,y,10.5,0,7); cx.stroke(); cx.restore();
+    corManual(h);
+  }
+  document.addEventListener('paste',ev=>{
+    if(!document.getElementById('corCv')) return; // só quando o modal de cor está aberto
+    const its=(ev.clipboardData&&ev.clipboardData.items)||[];
+    for(const it of its){ if(it.type&&it.type.indexOf('image/')===0){ ev.preventDefault(); carregarImagemCor(it.getAsFile()); return; } }
+  });
+
+  function formCor(id){
+    const it=INSUMOS.find(x=>x.id===id); if(!it) return;
+    const h=corDe(id), irm=irmaosFita(id);
+    const dif=irm.filter(x=>temCor(x.id)&&(corDe(x.id)!==h||imgDe(x.id)!==imgDe(id))).length;
+    if(corSel.prevUrl) URL.revokeObjectURL(corSel.prevUrl);
+    corSel={blob:null,prevUrl:null,atual:imgDe(id),usa:true}; corBase=null;
+    abrirModal('Cor da fita',
+      `<p style="margin:0 0 12px;font-weight:600;font-size:13px">${escHtml(it.codigo)} — ${escHtml(it.descricao)}</p>
+       <div class="cor-drop" id="corDrop" tabindex="0" onclick="document.getElementById('corFile').click()">
+         <b>Cole o print aqui (Ctrl+V)</b><br>ou clique para escolher a imagem</div>
+       <input type="file" id="corFile" accept="image/*" style="display:none" onchange="carregarImagemCor(this.files[0])">
+       <canvas id="corCv" onclick="cliqueImagemCor(event)"></canvas>
+       <span class="fld-hint" id="corHint" style="display:none">A imagem inteira é guardada como textura. Só clique nela se quiser uma cor lisa de um ponto específico.</span>
+       <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
+         <div class="cor-prev" id="corPrev"></div>
+         <div class="fld" style="margin:0;flex:1"><label>Cor média (hex)</label>
+           <input id="corHex" value="${h?h.toUpperCase():''}" placeholder="#6B4A32" oninput="corHexInput(this)"></div>
+         <input type="color" id="corPick" value="${h||'#ffffff'}" oninput="corManual(this.value)" title="Escolher cor lisa manualmente" style="width:44px;height:44px;border:0;background:none;padding:0;cursor:pointer">
+       </div>
+       <label id="corUsaRow" style="display:none;gap:8px;align-items:center;margin-top:12px;font-size:13px;cursor:pointer">
+         <input type="checkbox" class="ck" id="corUsaImg" checked onchange="corSel.usa=this.checked; atualizarPrevCor()"> Usar a imagem (textura) em vez de cor lisa</label>
+       ${irm.length?`<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px;cursor:pointer">
+         <input type="checkbox" class="ck" id="corTodas" ${dif?'':'checked'}> Aplicar a todas as medidas deste material (+${irm.length})</label>
+         ${dif?`<span class="fld-hint" style="color:#982424">${dif} dessas medidas já têm outra cor; marcando, serão substituídas.</span>`:''}`:''}`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       ${temCor(id)?`<button class="btn btn-ghost" onclick="removerCor('${id}')">Remover cor</button>`:''}
+       <button class="btn btn-primary" id="btnSalvarCor" onclick="salvarCor('${id}')">Salvar</button>`);
+    atualizarPrevCor();
+    const dz=document.getElementById('corDrop');
+    if(dz){ dz.focus();
+      dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('over'); });
+      dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+      dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('over'); const f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) carregarImagemCor(f); }); }
+  }
+  async function enviarTexturaFita(blob){
+    let erro='';
+    for(const preset of ['pastas',CLD_PRESET_AVATAR]){   // mesmos presets unsigned já usados no sistema
+      const fd=new FormData(); fd.append('file',blob,'cor-fita.jpg'); fd.append('upload_preset',preset);
+      const r=await fetch(`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`,{method:'POST',body:fd});
+      const j=await r.json().catch(()=>({}));
+      if(r.ok&&j.secure_url) return j.secure_url;
+      erro=(j.error&&j.error.message)||('Cloudinary recusou o envio ('+r.status+')');
+    }
+    throw new Error(erro);
+  }
+  async function salvarCor(id){
+    let h=(document.getElementById('corHex').value||'').trim(); if(h&&h[0]!=='#') h='#'+h; h=h.toLowerCase();
+    if(!/^#[0-9a-f]{6}$/.test(h)){ toast('Cole um print ou informe um hex válido'); return; }
+    const btn=document.getElementById('btnSalvarCor'); if(btn){ btn.disabled=true; btn.textContent='Salvando...'; }
+    let img=null;
+    try{
+      if(corSel.usa) img=corSel.blob?await enviarTexturaFita(corSel.blob):(corSel.atual||null);
+    }catch(e){ if(btn){ btn.disabled=false; btn.textContent='Salvar'; } toast('Falha ao enviar a imagem: '+e.message); return; }
+    const ids=[id], chk=document.getElementById('corTodas');
+    if(chk&&chk.checked) irmaosFita(id).forEach(x=>ids.push(x.id));
+    const meta={hex:h,img:img,em:new Date().toISOString(),por:usuarioAtual()}, upd={};
+    ids.forEach(x=>upd[x]=meta);
+    db.ref('coresFita').update(upd).then(()=>{ fecharModal(); toast(ids.length>1?`Cor salva em ${ids.length} medidas`:'Cor salva'); })
+      .catch(e=>{ if(btn){ btn.disabled=false; btn.textContent='Salvar'; } toast('Erro: '+e.message); });
+  }
+  function removerCor(id){
+    db.ref('coresFita/'+id).remove().then(()=>{ fecharModal(); toast('Cor removida'); }).catch(e=>toast('Erro: '+e.message));
+  }
+  function aplicarCorTodas(id){
+    const h=corDe(id), im=imgDe(id), irm=irmaosFita(id); if(!(h||im)||!irm.length) return;
+    const dif=irm.filter(x=>temCor(x.id)&&(corDe(x.id)!==h||imgDe(x.id)!==im)).length;
+    if(dif && !confirm(`${dif} das outras medidas já têm outra cor/textura. Substituir todas por esta?`)) return;
+    const meta={hex:h||'#ffffff',img:im,em:new Date().toISOString(),por:usuarioAtual()}, upd={};
+    irm.forEach(x=>upd[x.id]=meta);
+    db.ref('coresFita').update(upd).then(()=>toast(`Aplicado a ${irm.length} medida(s)`)).catch(e=>toast('Erro: '+e.message));
   }
 
   /* --- Importação de Excel --- */
@@ -6535,7 +6770,9 @@
 
   /* ===== Desenho do plano de corte ===== */
   let _ftSvgN=0;
-  function planoCorteSVG(r){
+  function planoCorteSVG(r,mat){
+    const vc={}, vis=w=>(w in vc)?vc[w]:(vc[w]=mat?visualFita(mat,w):null), pats={}; let pn=0;
+    const patFor=v=>{ if(!v.img) return null; if(!pats[v.img]) pats[v.img]='ft'+_ftSvgN+'t'+(pn++); return pats[v.img]; };
     const W=980, pl=62, pr=18, pt=10, pb=32, uid='ft'+(++_ftSvgN);
     const ih=Math.max(46,Math.min(140,r.largura*0.5+24)), H=pt+ih+pb, iw=W-pl-pr;
     const ex=m=>pl+(m/r.totalM)*iw, ey=mm=>pt+(mm/r.largura)*ih;
@@ -6555,12 +6792,25 @@
     });
     (r.pecas||[]).forEach(pc=>{
       const x=ex(pc.x), y=ey(pc.y), w=Math.max(1,ex(pc.x+pc.m)-x), h=Math.max(3,ey(pc.y+pc.w)-y);
-      const cor=pc.origem==='sobra'?'#3b7f4b':'#982424';
-      g+=`<rect x="${x+.5}" y="${y+.5}" width="${Math.max(1,w-1)}" height="${Math.max(2,h-1)}" rx="4" fill="${cor}"/>`;
-      const t=`${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m`;
-      if(cabe(t,w,h)) g+=T(x+w/2,y+h/2+4,t,{s:12,w:700,c:'#fff'});
+      const sobraPc=pc.origem==='sobra', v=vis(pc.w), t=`${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m`;
+      const rx=x+.5, ry=y+.5, rw=Math.max(1,w-1), rh=Math.max(2,h-1);
+      if(v){
+        const pid=patFor(v), fill=pid?`url(#${pid})`:v.hex;
+        g+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="4" fill="${fill}"/>`;
+        g+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="4" fill="url(#${uid}g)"/>`;   // brilho suave de fita
+        g+=sobraPc?`<rect x="${rx+1}" y="${ry+1}" width="${Math.max(1,rw-2)}" height="${Math.max(2,rh-2)}" rx="3.5" fill="none" stroke="#3b7f4b" stroke-width="2.5"/>`
+                  :`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="4" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/>`;
+        if(w>t.length*6.9+34 && h>=24){ const tw=t.length*6.9+20;
+          g+=`<rect x="${x+w/2-tw/2}" y="${y+h/2-10}" width="${tw}" height="20" rx="10" fill="rgba(20,20,24,.64)"/>`+T(x+w/2,y+h/2+4,t,{s:12,w:700,c:'#fff'}); }
+      } else {
+        g+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="4" fill="${sobraPc?'#3b7f4b':'#982424'}"/>`;
+        if(cabe(t,w,h)) g+=T(x+w/2,y+h/2+4,t,{s:12,w:700,c:'#fff'});
+      }
     });
     g+=`</g>`;
+    // texturas: a imagem tem os veios na vertical; gira 90° para acompanhar o comprimento da fita e estica para cobrir cada peça
+    g+=`<defs><linearGradient id="${uid}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".24"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".24"/></linearGradient>`
+      +Object.keys(pats).map(u=>`<pattern id="${pats[u]}" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" width="1" height="1" viewBox="0 0 1 1" preserveAspectRatio="none"><image href="${u}" x="0" y="0" width="1" height="1" preserveAspectRatio="none" transform="rotate(90 .5 .5)"/></pattern>`).join('')+`</defs>`;
     if(r.nRolos>1){ for(let k=1;k<r.nRolos;k++){ const xx=ex(k*r.metragem);
       g+=`<line x1="${xx}" y1="${pt-3}" x2="${xx}" y2="${pt+ih+6}" stroke="#7d7d86" stroke-width="1" stroke-dasharray="3 3"/>`; } }
     // eixo (metros)
@@ -6579,11 +6829,14 @@
 
   function htmlResultadoFita(){
     const R=simF.resultado; if(!R) return '';
-    const leg=`<div class="ft-leg">
-      <span><i style="background:#982424"></i>Peça em rolo novo</span>
-      <span><i style="background:#3b7f4b"></i>Peça em sobra reaproveitada</span>
+    const legFn=mat=>{ const v=mat?visualFita(mat,null):null;
+      const a=v?`<span><i style="${v.estilo};box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)"></i>Peça em rolo novo</span>
+      <span><i style="${v.estilo};box-shadow:inset 0 0 0 2px #3b7f4b"></i>Peça em sobra reaproveitada (contorno verde)</span>`
+        :`<span><i style="background:#982424"></i>Peça em rolo novo</span>
+      <span><i style="background:#3b7f4b"></i>Peça em sobra reaproveitada</span>`;
+      return `<div class="ft-leg">${a}
       <span><i style="background:repeating-linear-gradient(45deg,#e9f2eb 0 3px,#a9cfb3 3px 5px)"></i>Sobra ≥ 22mm (reutilizável)</span>
-      <span><i style="background:repeating-linear-gradient(45deg,#eeede7 0 3px,#d6d4ca 3px 5px)"></i>Sobra pequena</span></div>`;
+      <span><i style="background:repeating-linear-gradient(45deg,#eeede7 0 3px,#d6d4ca 3px 5px)"></i>Sobra pequena</span></div>`; };
     return R.materiais.map(M=>{
       const nr=Object.values(M.compras).reduce((a,b)=>a+b,0);
       const imposs=M.alocacoes.filter(a=>a.origem==='impossivel');
@@ -6603,7 +6856,7 @@
         ${(M.rolosUsados||[]).map((r,n)=>`<div class="ft-rolo">
           <div class="ft-rolo-t"><b>Rolo ${n+1}</b><span>${fmtNum(r.largura)}mm × ${fmtNum(r.totalM)}m</span>
             ${r.nRolos>1?`<i>${r.nRolos} rolos de ${fmtNum(r.metragem)}m emendados na sequência</i>`:''}</div>
-          ${planoCorteSVG(r)}
+          ${planoCorteSVG(r,M.mat)}
           <table class="ft-pt"><thead><tr><th>Peça</th><th>Posição na largura</th><th>Trecho</th><th>Origem</th></tr></thead>
             <tbody>${(r.pecas||[]).map(pc=>`<tr>
               <td><b>${fmtNum(pc.w)}mm × ${fmtNum(pc.m)}m</b></td>
@@ -6614,7 +6867,7 @@
           ${(r.sobras||[]).length?`<div class="ft-sob">Sobras:${r.sobras.slice().sort((a,b)=>b.w-a.w).map(sb=>
             `<span class="fs-p ${sb.w>=22?'util':''}">${fmtNum(+sb.w.toFixed(2))}mm × ${fmtNum(+sb.m.toFixed(2))}m</span>`).join('')}</div>`:''}
         </div>`).join('')}
-        ${leg}
+        ${legFn(M.mat)}
       </section>`;
     }).join('');
   }
@@ -13860,6 +14113,7 @@ const HM_ICONS={
  'Desenhos Técnicos':'<path class=a d="M4 4v16h16z"/><path class=b d="M8 16v-3l3 3z"/><path class=c d="M7 8h2M7 11h1"/>',
  'Raiz do produto':'<circle class=c cx=12 cy=5 r=2 /><path class=b d="M12 7v5M12 12c-4 0-6 2-6 5M12 12c4 0 6 2 6 5"/><circle class=a cx=6 cy=19 r=1.8 /><circle class=a cx=18 cy=19 r=1.8 />',
  'Cadastro simples (insumos)':'<path class=a d="M3 12V4h8l10 10-8 8z"/><circle class=c cx=7.5 cy=8.5 r=1.3 />',
+ 'Cadastro de Cores':'<path class=a d="M12 3a9 9 0 100 18c1.4 0 2-.9 2-1.8 0-1.3-1-1.6-1-2.7 0-1 .8-1.5 1.8-1.5H17a4 4 0 004-4c0-4-4-8-9-8z"/><circle class=c cx=7.5 cy=11 r=1.2 /><circle class=c cx=10.5 cy=7 r=1.2 /><circle class=c cx=15 cy=7.5 r=1.2 />',
  'Cadastro de centro de custo (CC)':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M14.8 9.3a3.5 3.5 0 100 5.4"/>',
  'Entradas':'<path class=b d="M4 14v6h16v-6"/><path class=a d="M12 3v12M8 11l4 4 4-4"/>',
  'Saídas':'<path class=b d="M4 14v6h16v-6"/><path class=a d="M12 15V3M8 7l4-4 4 4"/>',
