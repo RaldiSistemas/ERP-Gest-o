@@ -1315,6 +1315,57 @@
   .op-num{ font-family:ui-monospace,monospace; font-size:12.5px; font-weight:700; color:var(--vermelho); white-space:nowrap; }
   .op-tempo{ font-weight:700; }
   .op-fora{ color:#8a5a13 !important; font-weight:600; }
+  /* ===== Emissão de OP — visual ===== */
+  .opx .page-head{ margin-bottom:18px; }
+  .opx-kpis{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+  .opx-k{ --c:#4b4b55; position:relative; text-align:left; font:inherit; background:var(--surface); border:1px solid var(--linha);
+    border-radius:12px; padding:12px 14px 11px 18px; cursor:pointer; overflow:hidden; transition:transform .12s, box-shadow .15s, background .15s, border-color .15s; }
+  .opx-k::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--c); }
+  .opx-k:hover{ transform:translateY(-1px); box-shadow:0 8px 18px rgba(75,75,85,.10); }
+  .opx-k.on{ background:color-mix(in srgb,var(--c) 8%,#fff); border-color:color-mix(in srgb,var(--c) 55%,transparent); box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 40%,transparent); }
+  .opx-k span{ display:block; font-size:12px; font-weight:600; color:var(--muted); }
+  .opx-k b{ display:block; font-family:'Poppins',sans-serif; font-size:26px; font-weight:600; color:var(--texto); line-height:1.15; margin-top:3px; }
+  .opx-k i{ display:block; font-style:normal; font-size:11px; font-weight:600; color:var(--c); margin-top:1px; }
+  .opx-filtros{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--surface); border:1px solid var(--linha);
+    border-radius:12px; padding:10px; margin-bottom:12px; }
+  .opx-busca{ position:relative; flex:1 1 300px; min-width:240px; margin:0; }
+  .opx-busca svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:17px; height:17px; color:var(--muted);
+    fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; pointer-events:none; }
+  .opx-busca input{ width:100%; font:inherit; font-size:13.5px; padding:9px 12px 9px 38px; border:1px solid var(--linha); border-radius:9px; background:#faf9f5; color:var(--texto); }
+  .opx-busca input:focus{ outline:2px solid var(--vermelho); outline-offset:1px; background:#fff; border-color:transparent; }
+  .opx-filtros select{ appearance:none; -webkit-appearance:none; font:inherit; font-size:13px; padding:9px 32px 9px 12px; border:1px solid var(--linha); border-radius:9px;
+    background:#faf9f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%234B4B55' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center/12px;
+    color:var(--texto); cursor:pointer; max-width:200px; }
+  .opx-filtros select:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .opx-filtros select.on{ border-color:rgba(152,36,36,.5); background-color:rgba(152,36,36,.06); color:var(--vermelho); font-weight:600; }
+  .opx-cont{ margin-left:auto; font-size:12.5px; font-weight:600; color:var(--muted); white-space:nowrap; padding:0 6px; }
+  .opx .table-wrap{ border-radius:14px; box-shadow:0 1px 2px rgba(75,75,85,.06); }
+  .opx .table-scroll{ max-height:calc(100vh - 370px); min-height:320px; overflow:auto; }
+  .opx .tbl th{ position:sticky; top:0; z-index:2; background:#f6f5f0; padding:11px 12px; font-size:10.5px; border-bottom:0; box-shadow:0 1px 0 var(--linha); }
+  .opx .tbl td{ padding:11px 12px; border-bottom:1px solid #efede6; }
+  .opx .tbl tbody tr:hover td{ background:#fbf8f6; }
+  .opx-r td:first-child{ box-shadow:inset 4px 0 0 var(--c); padding-left:16px; }
+  .opx .op-num{ display:inline-block; background:rgba(152,36,36,.07); padding:3px 9px; border-radius:6px; }
+  .opx-pj{ font-weight:700; font-variant-numeric:tabular-nums; }
+  .opx-lt{ display:inline-block; font-size:12px; font-weight:600; color:var(--muted); background:rgba(75,75,85,.07); padding:2px 8px; border-radius:6px; font-variant-numeric:tabular-nums; }
+  .opx-cli{ max-width:min(34vw,420px); }
+  .opx-cli b,.opx-cli small{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .opx-cli b{ font-weight:600; font-size:13px; color:var(--texto); }
+  .opx-cli small{ font-size:12px; color:var(--muted); margin-top:1px; }
+  .opx-ativ{ line-height:1.3; }
+  .opx-dt{ white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .opx-dt b{ display:block; font-size:12.5px; font-weight:600; color:var(--texto); }
+  .opx-dt small{ display:block; font-size:11.5px; color:var(--muted); }
+  .opx-nil{ color:#c6c4bb; }
+  .opx-tp{ display:inline-block; font-weight:700; font-size:12.5px; background:rgba(75,75,85,.07); padding:3px 10px; border-radius:999px; }
+  .opx-st{ display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700; padding:4px 11px; border-radius:999px;
+    background:color-mix(in srgb,var(--c) 12%,#fff); color:var(--c); white-space:nowrap; }
+  .opx-st i{ width:7px; height:7px; border-radius:50%; background:var(--c); flex:0 0 7px; }
+  .opx .acoes .icon-btn{ opacity:.45; transition:opacity .12s, background .12s; padding:6px; }
+  .opx .tbl tbody tr:hover .acoes .icon-btn{ opacity:1; }
+  @media (hover:none){ .opx .acoes .icon-btn{ opacity:1; } }
+  @media (max-width:980px){ .opx-kpis{ grid-template-columns:repeat(2,minmax(0,1fr)); } .opx-cont{ margin-left:0; } }
+
   .tipo-grid{ display:grid; gap:10px; }
   .tipo-c{ display:flex; align-items:center; gap:14px; text-align:left; font:inherit; padding:15px 17px;
     border:1px solid var(--linha); border-radius:11px; background:#fff; cursor:pointer; transition:border-color .15s,background .15s; }
@@ -10757,7 +10808,7 @@
     const cont={nao:0,parcial:0,pausada:0,encerrada:0}; OPS.forEach(o=>cont[stOp(o)]=(cont[stOp(o)]||0)+1);
     if(fOps.ativ!==GRUPO_ATIV){ grupoModo=false; grupoSel.clear(); }
     const ativsTodas=[...new Set(Object.values(OP_SETORES).flatMap(s=>s.atividades))];
-    view.innerHTML=`<div class="page page-wide">
+    view.innerHTML=`<div class="page page-wide opx">
       <div class="page-head">
         <div><h1 class="page-title">Ordens de Produção</h1><p class="page-sub">${OPS.length} OP(s) emitida(s)</p></div>
         <div style="display:flex;gap:10px">
@@ -10766,25 +10817,26 @@
           <button class="btn btn-ghost" onclick="emitirApoio()" title="Medição, Liberação PCP e Agrupamento do lote — não exige lote cadastrado">Emitir Área de Apoio</button>
           <button class="btn btn-primary" onclick="abrirEmissao()">Emitir OP</button></div></div>
       ${OPS.length?`
-      <div class="st-resumo">${Object.entries(ST_OP).map(([k,v])=>
-        `<div class="st-item"><span class="dot" style="background:${v.cor}"></span>${v.label} <b>${cont[k]}</b></div>`).join('')}</div>
-      <div class="inv-filtros">
-        <input class="search" id="buscaOpsIn" value="${buscaOps.replace(/"/g,'&quot;')}" placeholder="Buscar por OP, projeto, lote, produto ou funcionário..." oninput="buscaOps=this.value; atualizarOps()">
-        <select onchange="fOps.setor=this.value; atualizarOps()"><option value="">Todos os setores</option>
+      <div class="opx-kpis">${[['','Todas',OPS.length,'#4b4b55'],...Object.entries(ST_OP).map(([k,v])=>[k,v.label,cont[k]||0,v.cor])].map(([k,l,n,c])=>
+        `<button class="opx-k ${(fOps.status||'')===k?'on':''}" style="--c:${c}" onclick="opsStatus('${k}')" title="${k?'Filtrar por '+l:'Mostrar todas'}">
+          <span>${l}</span><b>${n}</b>${k&&OPS.length?`<i>${Math.round(n/OPS.length*100)}% do total</i>`:'<i>OPs emitidas</i>'}</button>`).join('')}</div>
+      <div class="opx-filtros">
+        <label class="opx-busca"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="buscaOpsIn" value="${buscaOps.replace(/"/g,'&quot;')}" placeholder="Buscar por OP, projeto, lote, produto ou funcionário..." oninput="buscaOps=this.value; atualizarOps()"></label>
+        <select class="${fOps.setor?'on':''}" onchange="fOps.setor=this.value; renderOPs()"><option value="">Todos os setores</option>
           ${Object.values(OP_SETORES).map(s=>`<option value="${s.sigla}" ${fOps.setor===s.sigla?'selected':''}>${s.sigla} — ${escHtml(s.nome)}</option>`).join('')}</select>
-        <select onchange="fOps.ativ=this.value; renderOPs()"><option value="">Todas as atividades</option>
+        <select class="${fOps.ativ?'on':''}" onchange="fOps.ativ=this.value; renderOPs()"><option value="">Todas as atividades</option>
           ${ativsTodas.map(a=>`<option value="${escHtml(a)}" ${fOps.ativ===a?'selected':''}>${escHtml(a)}</option>`).join('')}</select>
-        <select onchange="fOps.status=this.value; atualizarOps()"><option value="">Todos os status</option>
-          ${Object.entries(ST_OP).map(([k,v])=>`<option value="${k}" ${fOps.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
-        <select onchange="fOps.tipo=this.value; atualizarOps()"><option value="">Todos os tipos</option>
+        <select class="${fOps.tipo?'on':''}" onchange="fOps.tipo=this.value; renderOPs()"><option value="">Todos os tipos</option>
           ${Object.entries(TIPO_OP).map(([k,v])=>`<option value="${k}" ${fOps.tipo===k?'selected':''}>${v}</option>`).join('')}</select>
-        ${(buscaOps||fOps.setor||fOps.status||fOps.tipo||fOps.ativ)?`<button class="btn btn-ghost btn-sm" onclick="buscaOps='';fOps={setor:'',status:'',tipo:'',ativ:''};renderOPs()">Limpar</button>`:''}
+        ${(buscaOps||fOps.setor||fOps.status||fOps.tipo||fOps.ativ)?`<button class="btn btn-ghost btn-sm" onclick="buscaOps='';fOps={setor:'',status:'',tipo:'',ativ:''};renderOPs()">Limpar filtros</button>`:''}
+        <span class="opx-cont" id="opsCont">${contOpsTxt(lista.length)}</span>
       </div>
       <div id="grBar"></div>
       <div class="table-wrap table-scroll"><table class="tbl">
-        <thead><tr>${grupoModo?'<th style="width:28px"></th>':''}<th style="width:28px"></th><th style="width:118px">OP</th><th style="width:70px">Projeto</th>
-          <th style="width:64px">Lote</th><th>Cliente / Ambiente</th><th style="width:58px">Setor</th><th style="width:110px">Atividade</th>
-          <th style="width:130px">Funcionário</th><th style="width:96px">Início</th><th style="width:96px">Fim</th>
+        <thead><tr>${grupoModo?'<th style="width:28px"></th>':''}<th style="width:118px">OP</th><th style="width:70px">Projeto</th>
+          <th style="width:64px">Lote</th><th>Cliente / Ambiente</th><th style="width:58px">Setor</th><th style="width:150px">Atividade</th>
+          <th style="width:130px">Funcionário</th><th style="width:78px">Início</th><th style="width:78px">Fim</th>
           <th style="width:84px">Tempo</th><th style="width:120px">Status</th><th style="width:72px"></th></tr></thead>
         <tbody id="opsBody">${linhasOps(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.prod}</svg></div>
@@ -10795,29 +10847,40 @@
     </div>`;
     grupoBar();
   }
+  function opsStatus(k){ fOps.status=(fOps.status===k?'':k); renderOPs(); }
+  function contOpsTxt(n){ return n===OPS.length?`${n} OP${n===1?'':'s'}`:`${n} de ${OPS.length} OPs`; }
+  function dtOpHtml(iso){
+    if(!iso) return '<span class="opx-nil">—</span>';
+    const t=fmtHora(iso); if(t==='—') return '<span class="opx-nil">—</span>';
+    const [d,h]=t.split(' ');
+    return `<span class="opx-dt"><b>${d}</b><small>${h||''}</small></span>`;
+  }
   function linhasOps(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="14">Nenhum resultado</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="13">Nenhuma OP encontrada com esses filtros</td></tr>';
     return lista.map(o=>{
       const st=stOp(o), v=ST_OP[st], S=opSetorDe(o.setor);
       const pl=o.projetosLote||[];
       const prods=o.tipo==='lote'
         ? (pl.length?pl.length+' projeto(s): '+pl.map(r=>r.projeto).join(', '):'—')
         : (pl.length?pl.map(r=>[r.cliente,r.ambiente].filter(Boolean).join(' · ')).join(' | '):'—');
+      const cli=(o.tipo!=='lote'&&pl.length===1)
+        ? `<b>${escHtml(pl[0].cliente||'—')}</b>${pl[0].ambiente?`<small>${escHtml(pl[0].ambiente)}</small>`:''}`
+        : `<b>${escHtml(prods)||'—'}</b>`;
+      const fn=funcResumo(o,'inicio');
       const podeGr=o.atividade===GRUPO_ATIV&&st==='nao';
-      return `<tr>
+      return `<tr class="opx-r" style="--c:${v.cor}">
         ${grupoModo?`<td><input type="checkbox" class="gr-ck" ${podeGr?'':'disabled title="Só OPs não iniciadas podem entrar no apontamento em grupo"'} ${grupoSel.has(o.id)?'checked':''} onchange="grupoTog('${o.id}',this.checked)"></td>`:''}
-        <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="op-num">${escHtml(o.numero)}</span></td>
-        <td class="ctr">${escHtml(o.projeto)}</td>
-        <td class="ctr">${escHtml(o.lote)||'—'}</td>
-        <td class="cel-disc" title="${escHtml(prods)}">${escHtml(prods)||'—'}</td>
+        <td class="ctr"><span class="opx-pj">${escHtml(o.projeto)}</span></td>
+        <td class="ctr">${o.lote?`<span class="opx-lt">${escHtml(o.lote)}</span>`:'<span class="opx-nil">—</span>'}</td>
+        <td><div class="opx-cli" title="${escHtml(prods)}">${cli}</div></td>
         <td><span class="set-pill" style="background:${S.cor}22;color:${S.cor}">${escHtml(o.setor)}</span></td>
-        <td class="cel-nome">${escHtml(o.atividade)}</td>
-        <td class="cel-disc">${escHtml(funcResumo(o,'inicio'))||'—'}</td>
-        <td class="cel-disc">${o.inicio?fmtHora(o.inicio.em):'—'}</td>
-        <td class="cel-disc">${o.fim?fmtHora(o.fim.em):'—'}</td>
-        <td class="ctr op-tempo">${o.tempoMin?fmtMin(o.tempoMin):'—'}</td>
-        <td><span class="st-ro" style="color:${v.cor}"><span class="dot" style="background:${v.cor}"></span>${v.label}</span>
+        <td class="cel-nome opx-ativ">${escHtml(o.atividade)}</td>
+        <td class="cel-disc">${fn?escHtml(fn):'<span class="opx-nil">—</span>'}</td>
+        <td>${dtOpHtml(o.inicio&&o.inicio.em)}</td>
+        <td>${dtOpHtml(o.fim&&o.fim.em)}</td>
+        <td class="ctr">${o.tempoMin?`<span class="opx-tp">${fmtMin(o.tempoMin)}</span>`:'<span class="opx-nil">—</span>'}</td>
+        <td><span class="opx-st"><i></i>${v.label}</span>
           ${o.foraExpediente?'<div class="cel-sub op-fora">fora do expediente</div>':''}</td>
         <td class="acoes">
           <button class="icon-btn" title="Imprimir OP" onclick="imprimirOP('${o.id}')">${FICHA_SVG}</button>
@@ -10922,7 +10985,8 @@
       .then(()=>{ fecharModal(); grupoModo=false; grupoSel.clear(); renderOPs(); toast(ids.length+' OP(s) apontada(s)'); })
       .catch(e=>toast('Erro: '+e.message));
   }
-  function atualizarOps(){ const b=document.getElementById('opsBody'); if(b) b.innerHTML=linhasOps(filtrarOps()); }
+  function atualizarOps(){ const b=document.getElementById('opsBody'); if(!b) return; const l=filtrarOps(); b.innerHTML=linhasOps(l);
+    const c=document.getElementById('opsCont'); if(c) c.textContent=contOpsTxt(l.length); }
   function fmtHora(iso){
     if(!iso) return '—';
     const d=new Date(iso); if(isNaN(d)) return '—';
