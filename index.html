@@ -1315,6 +1315,18 @@
   .op-num{ font-family:ui-monospace,monospace; font-size:12.5px; font-weight:700; color:var(--vermelho); white-space:nowrap; }
   .op-tempo{ font-weight:700; }
   .op-fora{ color:#8a5a13 !important; font-weight:600; }
+  /* Amostra de cor da fita (SA / SC) */
+  .amo{ display:inline-block; width:56px; height:34px; border-radius:7px; border:1px solid rgba(0,0,0,.22); vertical-align:middle;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 1px 2px rgba(0,0,0,.08); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .amo.vazio{ background:repeating-conic-gradient(#e7e7e1 0 25%,#fff 0 50%) 50%/10px 10px; border:1.5px dashed #b4b2a8; box-shadow:none; cursor:pointer; transition:border-color .12s, box-shadow .12s; }
+  .amo.vazio:hover,.amo.vazio:focus-visible{ border-color:#982424; box-shadow:0 0 0 3px rgba(152,36,36,.14); outline:none; }
+  .amo-lg{ width:96px; height:58px; border-radius:9px; }
+  .amo-info{ display:flex; align-items:center; gap:12px; }
+  .amo-info span:last-child{ font-weight:600; font-size:13px; font-family:ui-monospace,Consolas,monospace; }
+  .amo-info span.amo-nil:last-child{ color:var(--muted); font-family:inherit; font-weight:500; }
+  .amo-pr{ display:flex; align-items:center; gap:14px; }
+  @media print{ .amo.vazio{ cursor:default; } }
+
   /* ===== Emissão de OP — visual ===== */
   .opx .page-head{ margin-bottom:18px; }
   .opx-kpis{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
@@ -3927,15 +3939,18 @@
     db.ref('tipos').on('value',s=>{ TIPOS=Object.values(s.val()||{}).sort((a,b)=>a.codigo.localeCompare(b.codigo)); if(TELA==='raiz') renderRaiz(); });
     db.ref('disciplinas').on('value',s=>{ DISCIPLINAS=Object.values(s.val()||{}).sort((a,b)=>a.codigo.localeCompare(b.codigo)); if(TELA==='raiz') renderRaiz(); });
     db.ref('contadores').on('value',s=>{ CONTADORES=s.val()||{}; if(TELA==='raiz') renderRaiz(); });
-    db.ref('insumos').on('value',s=>{ INSUMOS=Object.values(s.val()||{}).sort((a,b)=>String(a.codigo).localeCompare(String(b.codigo)));
+    db.ref('insumos').on('value',s=>{ INSUMOS=Object.values(s.val()||{}).sort((a,b)=>String(a.codigo).localeCompare(String(b.codigo))); _idxCor=null;
       if(TELA==='insumos'){ const f=document.getElementById('buscaIns'), pos=f&&document.activeElement===f?f.selectionStart:null;
         renderInsumos(); if(pos!==null){ const e2=document.getElementById('buscaIns'); if(e2){ e2.focus(); e2.setSelectionRange(pos,pos); } } }
       else if(TELA==='raiz') renderRaiz();
       else if(TELA==='contagem') renderContagem();
       else if(TELA==='cores') atualizarCores(); });
-    db.ref('coresFita').on('value',s=>{ CORES_FITA=s.val()||{}; precarregarTexturasFita();
+    db.ref('coresFita').on('value',s=>{ CORES_FITA=s.val()||{}; _idxCor=null; precarregarTexturasFita();
       if(TELA==='cores') atualizarCores();
-      else if(TELA==='fita'&&typeof fitaLive==='function'&&document.getElementById('fitaRes')) fitaLive(true); },
+      else if(TELA==='fita'&&typeof fitaLive==='function'&&document.getElementById('fitaRes')) fitaLive(true);
+      else if(TELA==='sa') atualizarSA(); else if(TELA==='sa-est') atualizarSAEst();
+      else if(TELA==='sc') atualizarSC(); else if(TELA==='sc-est') atualizarSCEst();
+      else if(TELA==='sa-detalhe'&&saViewId) verSA(saViewId); else if(TELA==='sc-detalhe'&&scViewId) verSC(scViewId); },
       e=>console.warn('coresFita:',e.message));
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
@@ -5281,12 +5296,43 @@
   // ---- Cor/textura da fita no plano de corte ----
   function precarregarTexturasFita(){ Object.keys(CORES_FITA).forEach(k=>{ const u=imgDe(k); if(u){ const im=new Image(); im.src=u; } }); }
   // acha a cor/textura do material (descrição sem a largura); prefere a mesma largura da peça, senão qualquer medida com textura
+  let _idxCor=null;   // material -> insumos que têm cor/textura (zera quando cores ou insumos mudam)
+  function idxCores(){
+    if(_idxCor) return _idxCor;
+    const byId={}; INSUMOS.forEach(i=>byId[i.id]=i); const m={};
+    Object.keys(CORES_FITA).forEach(id=>{ const it=byId[id]; if(!it||!temCor(id)) return; const k=materialDe(it.descricao); (m[k]=m[k]||[]).push(it); });
+    return (_idxCor=m);
+  }
   function visualFita(mat,w){
-    const c=INSUMOS.filter(i=>temCor(i.id)&&materialDe(i.descricao)===mat);
-    if(!c.length) return null;
+    const c=idxCores()[mat]; if(!c||!c.length) return null;
     const it=c.find(i=>larguraDe(i.descricao)===w)||c.find(i=>imgDe(i.id))||c[0];
     const img=imgDe(it.id), hex=corDe(it.id)||'#999999';
     return {img,hex,estilo:img?`background:url('${img}') center/cover`:`background:${hex}`};
+  }
+  // ---- Amostra de cor nas solicitações (SA/SC) ----
+  // undefined = o item não é fita de borda (sem amostra) · null = fita sem cor cadastrada · objeto = cor/textura
+  function visualItemFita(x){
+    const d=(x&&x.descricao)||''; if(!/fita de borda/i.test(d)) return undefined;
+    const id=x.insumoId;
+    if(id&&temCor(id)){ const img=imgDe(id), hex=corDe(id)||'#999999'; return {img,hex,estilo:img?`background:url('${img}') center/cover`:`background:${hex}`}; }
+    return visualFita(materialDe(d),larguraDe(d));   // outra medida do mesmo material com cor
+  }
+  function amostraFita(x,flags){
+    const v=visualItemFita(x); if(v===undefined) return '';
+    const f=flags||'', cls='amo'+(f.includes('lg')?' amo-lg':'');
+    if(v) return `<span class="${cls}" style="${v.estilo}" title="${v.img?'Textura cadastrada':'Cor '+v.hex.toUpperCase()}"></span>`;
+    const id=x.insumoId, clic=id&&!f.includes('static');
+    return `<span class="${cls} vazio" title="Sem cor cadastrada${clic?' — clique para cadastrar':''}"${clic?` role="button" tabindex="0" onclick="event.stopPropagation();amoCadastrar('${id}')"`:''}></span>`;
+  }
+  function amoCadastrar(id){ if(INSUMOS.some(i=>i.id===id)) formCor(id); }
+  function amostraInfo(x){
+    const v=visualItemFita(x); if(v===undefined) return '';
+    const t=v?(v.img?'Textura cadastrada':v.hex.toUpperCase()):'Sem cor cadastrada';
+    return `<div class="it"><div class="k">Cor da fita</div><div class="v"><div class="amo-info">${amostraFita(x,'lg')}<span class="${v?'':'amo-nil'}">${t}</span></div></div></div>`;
+  }
+  function descComAmostra(x){
+    const a=amostraFita(x,'lg static');
+    return a?`<span class="amo-pr">${a}<span>${escHtml(x.descricao)}</span></span>`:escHtml(x.descricao);
   }
   function estiloCor(id){ const im=imgDe(id), h=corDe(id); return im?`background:url('${im}') center/cover`:(h?`background:${h}`:''); }
   function temCor(id){ return !!(corDe(id)||imgDe(id)); }
@@ -6208,7 +6254,7 @@
           ${CCS.map(c=>`<option value="${c.codigo}" ${fSA.cc===c.codigo?'selected':''}>${escHtml(c.codigo)} - ${escHtml(c.setor)}</option>`).join('')}</select>
       </div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SA</th><th style="width:112px">Código</th><th>Descrição</th>
+        <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SA</th><th style="width:112px">Código</th><th style="width:76px">Cor</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:150px">Setor</th><th style="width:86px">Qtde</th><th>Observação</th><th style="width:72px"></th></tr></thead>
         <tbody id="saBody">${linhasSA(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.pcp}</svg></div>
@@ -6217,13 +6263,14 @@
     </div>`;
   }
   function linhasSA(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="9">Nenhum resultado</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="10">Nenhum resultado</td></tr>';
     return lista.map(x=>{
       const st=stSa(x), v=ST_SA[st];
       return `<tr>
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
+        <td class="ctr">${amostraFita(x)}</td>
         <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="ctr">${escHtml(x.ccCod)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
@@ -6361,7 +6408,7 @@
           ${Object.entries(ST_SA).map(([k,v])=>`<option value="${k}" ${fSAEst.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
       </div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SA</th><th style="width:112px">Código</th><th>Descrição</th>
+        <thead><tr><th style="width:28px"></th><th style="width:104px">Nº SA</th><th style="width:112px">Código</th><th style="width:76px">Cor</th><th>Descrição</th>
           <th style="width:150px">Setor</th><th style="width:86px">Qtde</th><th style="width:148px">Status</th><th style="width:112px"></th></tr></thead>
         <tbody id="saEstBody">${linhasSAEst(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.est}</svg></div>
@@ -6369,13 +6416,14 @@
     </div>`;
   }
   function linhasSAEst(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="8">Nenhum resultado</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="9">Nenhum resultado</td></tr>';
     return lista.map(x=>{
       const st=stSa(x), v=ST_SA[st];
       return `<tr>
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td><span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
+        <td class="ctr">${amostraFita(x)}</td>
         <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
@@ -6437,6 +6485,7 @@
         <div class="ficha-info" style="flex:1">
           ${info('Código',`<span class="cod-mono">${escHtml(x.codigo)}</span>`)}
           ${info('Descrição',escHtml(x.descricao))}
+          ${amostraInfo(x)}
           ${info('Unidade',escHtml(x.unidade))}
           ${info('Centro de custo',escHtml(x.ccCod))}
           ${info('Setor',escHtml(x.setor))}
@@ -6497,7 +6546,7 @@
           ${info('Quantidade',fmtNum(parseFloat(x.qtd)||0))}
           ${info('Solicitante',escHtml(x.criadoPor))}
         </div>
-        <div class="sf-desc"><div class="sf-k">Descrição do item</div><div class="sf-d">${escHtml(x.descricao)}</div></div>
+        <div class="sf-desc"><div class="sf-k">Descrição do item</div><div class="sf-d">${descComAmostra(x)}</div></div>
         <div class="sf-obs"><div class="sf-k">Observação</div><div class="sf-o">${escHtml(x.obs)||'—'}</div></div>
         <div class="sf-ass"><div><span></span>Solicitante</div><div><span></span>Almoxarifado</div><div><span></span>Recebedor</div></div>
         <div class="folha-foot">
@@ -7105,7 +7154,7 @@
           ${CCS.map(c=>`<option value="${c.codigo}" ${fSC.cc===c.codigo?'selected':''}>${escHtml(c.codigo)} - ${escHtml(c.setor)}</option>`).join('')}</select>
       </div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr>${gsaTh('pcp')}<th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
+        <thead><tr>${gsaTh('pcp')}<th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th style="width:76px">Cor</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:140px">Setor</th><th style="width:86px">Qtde</th>
           <th style="width:104px">Necessidade</th>
           <th style="width:140px">Status</th><th style="width:150px"></th></tr></thead>
@@ -7116,7 +7165,7 @@
     </div>`;
   }
   function linhasSC(lista){
-    if(!lista.length) return `<tr><td class="td-empty" colspan="${(gsaMode||paMode)?11:10}">Nenhum resultado</td></tr>`;
+    if(!lista.length) return `<tr><td class="td-empty" colspan="${(gsaMode||paMode)?12:11}">Nenhum resultado</td></tr>`;
     return lista.map(x=>{
       const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
       return `<tr class="${pr?'sc-prio':''}">
@@ -7124,6 +7173,7 @@
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td>${pr?`<span title="Prioridade de compra">${ALERTA_SVG}</span>`:''}<span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
+        <td class="ctr">${amostraFita(x)}</td>
         <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="ctr">${escHtml(x.ccCod)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
@@ -7605,7 +7655,7 @@
           ${Object.entries(ST_SC).map(([k,v])=>`<option value="${k}" ${fSCEst.status===k?'selected':''}>${v.label}</option>`).join('')}</select>
       </div>
       <div class="table-wrap"><table class="tbl">
-        <thead><tr>${gsaTh('est')}<th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
+        <thead><tr>${gsaTh('est')}<th style="width:28px"></th><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th style="width:76px">Cor</th><th>Descrição</th>
           <th style="width:140px">Setor</th><th style="width:86px">Qtde</th><th style="width:104px">Necessidade</th><th style="width:172px">Status</th><th style="width:112px"></th></tr></thead>
         <tbody id="scEstBody">${linhasSCEst(lista)}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.com}</svg></div>
@@ -7613,7 +7663,7 @@
     </div>`;
   }
   function linhasSCEst(lista){
-    if(!lista.length) return `<tr><td class="td-empty" colspan="${(gsaMode||paMode)?10:9}">Nenhum resultado</td></tr>`;
+    if(!lista.length) return `<tr><td class="td-empty" colspan="${(gsaMode||paMode)?11:10}">Nenhum resultado</td></tr>`;
     return lista.map(x=>{
       const st=stSc(x), v=ST_SC[st], pr=scPrio(x);
       return `<tr class="${pr?'sc-prio':''}">
@@ -7621,6 +7671,7 @@
         <td><span class="dot dot-lg" style="background:${v.cor}" title="${v.label}"></span></td>
         <td>${pr?`<span title="Prioridade de compra">${ALERTA_SVG}</span>`:''}<span class="sa-num">${escHtml(x.numero)}</span></td>
         <td><span class="cod-mono">${escHtml(x.codigo)}</span></td>
+        <td class="ctr">${amostraFita(x)}</td>
         <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
         <td class="cel-disc">${escHtml(x.setor)}</td>
         <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
@@ -7688,6 +7739,7 @@
         <div class="ficha-info" style="flex:1">
           ${info('Código',`<span class="cod-mono">${escHtml(x.codigo)}</span>`)}
           ${info('Descrição',escHtml(x.descricao))}
+          ${amostraInfo(x)}
           ${info('Unidade',escHtml(x.unidade))}
           ${info('Centro de custo',escHtml(x.ccCod))}
           ${info('Setor',escHtml(x.setor))}
@@ -7788,7 +7840,7 @@
           ${info('Solicitante',escHtml(x.criadoPor))}
           ${info('Necessário até',x.dataNec?fmtData(x.dataNec):'')}
           ${info('Prioridade',x.prioridade?'SIM':'')}</div>
-        <div class="sf-desc"><div class="sf-k">Descrição do item</div><div class="sf-d">${escHtml(x.descricao)}</div></div>
+        <div class="sf-desc"><div class="sf-k">Descrição do item</div><div class="sf-d">${descComAmostra(x)}</div></div>
         <div class="sf-obs"><div class="sf-k">Observação</div><div class="sf-o">${escHtml(x.obs)||'—'}</div></div>
         <div class="sf-ass"><div><span></span>Solicitante</div><div><span></span>Compras</div><div><span></span>Recebimento</div></div>
         <div class="folha-foot">
