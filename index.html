@@ -2473,6 +2473,27 @@
     .fl-band,.fl-tbl th,.fl-tbl tbody tr:nth-child(even) td,.ff-mark{
       -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
+
+  /* Requisição de fita faltante: 2 vias por folha A4, linha pontilhada para cortar */
+  .rff-folha{ padding:10px 28px !important; }
+  .rff-via{ height:137mm; display:flex; flex-direction:column; padding:3mm 2mm 0; box-sizing:border-box; }
+  .rff-via .folha-head{ padding-bottom:9px; margin-bottom:11px; }
+  .rff-info{ display:grid; grid-template-columns:1fr 170px; gap:14px; margin-bottom:12px; }
+  .rff-campo{ display:flex; align-items:flex-end; gap:8px; border-bottom:1.5px solid #8d8d95; padding:0 2px 3px; min-height:26px; }
+  .rff-campo b{ font-size:11.5px; color:#9E1B1B; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
+  .rff-tbl{ width:100%; border-collapse:collapse; table-layout:fixed; flex:1; }
+  .rff-tbl th{ border:1px solid #7d7d86; border-bottom:2px solid #9E1B1B; background:#f6f1ef; color:#7a1717; font-size:10px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:6px 4px; text-align:center; height:7mm; }
+  .rff-tbl td{ border:1px solid #8d8d95; }
+  .rff-tbl tbody tr:nth-child(even) td{ background:#faf7f6; }
+  .rff-via .folha-foot{ margin-top:10px; padding-top:8px; }
+  .rff-corte{ position:relative; height:7mm; display:flex; align-items:center; }
+  .rff-corte::before{ content:''; flex:1; border-top:2px dashed #8d8d95; }
+  .rff-corte span{ position:absolute; left:6px; top:50%; transform:translateY(-52%); background:#fff; padding:0 6px; font-size:15px; color:#6b6b74; line-height:1; }
+  @media print{
+    .rff-folha{ padding:0 !important; }
+    .rff-tbl th,.rff-tbl tbody tr:nth-child(even) td{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
   @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
   @keyframes fade{ to{ opacity:1; } }
   @keyframes shimmer{ to{ transform:translateX(100%); } }
@@ -3986,6 +4007,56 @@
       </div>`;
     ov.onclick=(e)=>{ if(e.target===ov) fecharFicha(); };
     setPageOrientation('landscape');
+    ov.classList.add('open');
+  }
+
+
+  /* ================= Requisição de fita faltante (impressão, 2 vias por folha) ================= */
+  function folhaFitaFaltante(){
+    const cols=[['Fita','30%'],['Cor','22%'],['Espessura','14%'],['Metragem','14%'],['Lote','20%']];
+    const N=9;
+    const hoje=new Date().toLocaleDateString('pt-BR');
+    const via=`
+        <div class="rff-via">
+          <div class="folha-head">
+            <img class="fl-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
+            <h1 class="fl-title" style="font-size:21px">Requisição de Fita Faltante</h1>
+            <div class="fl-date" style="font-size:16px">${hoje}</div>
+          </div>
+          <div class="rff-info">
+            <div class="rff-campo"><b>Solicitante:</b></div>
+            <div class="rff-campo"><b>Data:</b></div>
+          </div>
+          <table class="rff-tbl">
+            <colgroup>${cols.map(c=>`<col style="width:${c[1]}">`).join('')}</colgroup>
+            <thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead>
+            <tbody>${Array.from({length:N}).map(()=>`<tr>${cols.map(()=>'<td></td>').join('')}</tr>`).join('')}</tbody>
+          </table>
+          <div class="folha-foot">
+            <div class="ff-l">
+              <svg class="ff-mark" viewBox="0 0 60 26" aria-hidden="true">
+                <path d="M2 24 C2 10 8 2 14 2 C20 2 26 10 26 24 Z"/>
+                <path d="M16 24 C16 10 22 2 28 2 C34 2 40 10 40 24 Z"/>
+                <path d="M30 24 C30 10 36 2 42 2 C48 2 54 10 54 24 Z"/>
+              </svg>
+              <div class="ff-end">${EMPRESA.end1}<br>${EMPRESA.end2}<br>${EMPRESA.end3}</div>
+            </div>
+            <div class="ff-r">Raldi · Móveis com precisão</div>
+          </div>
+        </div>`;
+    const ov=document.getElementById('fichaOverlay');
+    ov.innerHTML=`
+      <div class="ficha-actions folha-actions" style="width:min(780px,100%)">
+        <button class="btn btn-ghost" style="background:#fff" onclick="fecharFicha()">Fechar</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button>
+      </div>
+      <div class="folha rff-folha" style="width:min(780px,100%)">
+        ${via}
+        <div class="rff-corte"><span>✂</span></div>
+        ${via}
+      </div>`;
+    ov.onclick=(e)=>{ if(e.target===ov) fecharFicha(); };
+    setPageOrientation('portrait');
     ov.classList.add('open');
   }
 
@@ -7735,7 +7806,7 @@
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Solicitação de Compras (SC)</h1>
         <p class="page-sub">${SCS.length} solicitação(ões) recebidas do PCP</p></div>
-        <div style="display:flex;gap:10px">${cfBtn()}${gsaHead('est')}</div></div>
+        <div style="display:flex;gap:10px">${cfBtn()}${(paMode||gsaMode)?'':'<button class="btn btn-ghost" onclick="folhaFitaFaltante()">Requisição de fita faltante</button>'}${gsaHead('est')}</div></div>
       ${gsaAviso()}
       ${SCS.length?`${resumoSC(SCS)}
       <div class="inv-filtros">
