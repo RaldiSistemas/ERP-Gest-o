@@ -9875,8 +9875,21 @@
     if(!l.length) return '';
     return l.length===1?l[0]:(l[0]+' +'+(l.length-1));
   }
+  // Quem entrou para ajudar DEPOIS do início: o.entradas = [{func, em, por}] (gravado na hora, no Firebase)
+  function entradasDe(o){
+    const e=o&&o.entradas; if(!e) return [];
+    return (Array.isArray(e)?e:Object.values(e)).filter(x=>x&&x.func);
+  }
+  // Equipe atual da OP = quem iniciou + quem entrou depois
+  function funcsAtivos(o){
+    return [...new Set([...funcsDe(o,'inicio'),...entradasDe(o).map(x=>x.func)])];
+  }
+  function ativosResumo(o){
+    const l=funcsAtivos(o); if(!l.length) return '';
+    return l.length===1?l[0]:(l[0]+' +'+(l.length-1));
+  }
   function equipeOP(o){
-    const s=new Set([...funcsDe(o,'inicio'),...funcsDe(o,'fim')]);
+    const s=new Set([...funcsDe(o,'inicio'),...entradasDe(o).map(x=>x.func),...funcsDe(o,'fim')]);
     return [...s];
   }
 
@@ -10073,7 +10086,7 @@
     if(!foraJornada(agora,o.jornada) &&
        !confirm('Agora está DENTRO da jornada ('+fmtJornada(o.jornada)+').\n\nIniciar hora extra mesmo assim?')) return;
     const l=extrasDe(o).slice();
-    l.push({de:agora.toISOString(),ate:null,por:usuarioAtual(),funcs:funcsDe(o,'inicio')});
+    l.push({de:agora.toISOString(),ate:null,por:usuarioAtual(),funcs:funcsAtivos(o)});
     db.ref('ops/'+id).update({extras:l, extra:true, foraExpediente:true})
       .then(()=>toast('Hora extra iniciada às '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})))
       .catch(e=>toast('Erro: '+e.message));
@@ -10794,7 +10807,7 @@
     return `<span class="av ${cls||''}" title="${tip}"><b>${escHtml(iniciaisDe(nome))}</b>${img}</span>`;
   }
   function bolinhasFuncs(o){
-    const l=funcsDe(o,'inicio'); if(!l.length) return '';
+    const l=funcsAtivos(o); if(!l.length) return '';
     const MAX=4;
     return `<span class="av-stack">${l.slice(0,MAX).map(n=>avatarHtml(usuarioPorFunc(n),n,'av-sm')).join('')}`+
       `${l.length>MAX?`<span class="av av-sm av-mais" title="${escHtml(l.slice(MAX).join(', '))}"><b>+${l.length-MAX}</b></span>`:''}</span>`;
@@ -12336,7 +12349,7 @@
                   ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
                 ${(o.obs||'').trim()?`<span class="ac-obs-t">${escHtml(o.obs)}</span>`:''}
                 ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
-                <div class="ac-f ac-fn">${bolinhasFuncs(o)}<span>${escHtml(funcResumo(o,'inicio'))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</span></div>
+                <div class="ac-f ac-fn">${bolinhasFuncs(o)}<span>${escHtml(ativosResumo(o))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</span></div>
                 <div class="ac-tm">${fmtMin(tempoLiquido(o,new Date().toISOString()))} ${htmlLeadMini(o)}</div>
               </button>`;
             }).join('')}
@@ -12495,8 +12508,12 @@
     apontOP=id; TELA='apont-op';
     const st=stOp(o), v=ST_OP[st], S=opSetorDe(o.setor);
     const aptos=aptosPara(o.atividade,o.setor);
-    apListaAtual=(st==='nao')?aptos:(aptos.length?aptos:equipeOP(o).map(n=>({nome:n})));
-    if(st!=='nao'&&!apFuncs.length) apFuncs=funcsDe(o,'inicio').slice();
+    if(st==='nao') apListaAtual=aptos;
+    else{
+      apListaAtual=aptos.slice();
+      equipeOP(o).forEach(n=>{ if(!apListaAtual.some(a=>a.nome===n)) apListaAtual.push({nome:n}); });
+    }
+    if(st!=='nao'&&!apFuncs.length) apFuncs=funcsAtivos(o).slice();
     const agora=new Date();
     const fora=!dentroExpediente(agora,o.jornada);
     const decorrido=o.inicio&&!o.fim?tempoLiquido(o,agora.toISOString()):0;
@@ -12558,6 +12575,13 @@
             <div class="aa-l"><span>${st==='pausada'?'Tempo até a pausa':'Decorrido na jornada'}</span>
               <b class="aa-t">${fmtMin(decorrido)}</b></div>
           </div>
+          ${entradasDe(o).length?`<div class="ap-pausas">
+            ${entradasDe(o).map(e=>`<div class="app-l">
+              <span class="app-n">+</span>
+              <span class="app-h"><b>${escHtml(e.func)}</b> entrou às ${fmtHora(e.em)}</span>
+              ${e.por?`<span class="app-m">por ${escHtml(e.por)}</span>`:''}
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto;padding:2px 8px" title="Remover (entrou por engano)" onclick="removerEntrada('${o.id}','${escHtml(e.em)}')">✕</button></div>`).join('')}
+          </div>`:''}
           ${totalPausas(o)?`<div class="ap-pausas">
             ${pausasEfetivas(o).map((pp,pi)=>`<div class="app-l">
               <span class="app-n">${pi+1}</span>
@@ -12569,12 +12593,11 @@
           ${st==='pausada'?`
             <div class="ap-pausado"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
               <div><b>OP pausada</b><span>O tempo parou. Retome para continuar a contagem.</span></div></div>
+            <div class="ap-sec"><label class="ap-l">Equipe da OP</label>${apGridEquipe(o)}</div>
             <button class="ap-btn ap-ret" onclick="retomarOP('${o.id}')">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Retomar OP</button>`
           :`<div class="ap-sec"><label class="ap-l">Quem está encerrando?</label>
-            <div class="func-grid">${apListaAtual.map((f,i)=>
-              `<button class="func-b ${apFuncs.includes(f.nome)?'on':''}" onclick="togFunc(${i})">
-                 <span class="fb-ck"></span>${avatarHtml(usuarioPorFunc(f.nome),f.nome,'av-sm')}${escHtml(f.nome)}</button>`).join('')}</div></div>
+            ${apGridEquipe(o)}</div>
           <div class="ap-duplo">
             <button class="ap-btn ap-pau" onclick="pausarOP('${o.id}')">
               <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Pausar</button>
@@ -12595,8 +12618,39 @@
     </div>`;
   }
   let apListaAtual=[];
+  // Grade de funcionários da OP em andamento/pausada
+  function apGridEquipe(o){
+    return `<div class="func-grid">${apListaAtual.map((f,i)=>
+      `<button class="func-b ${apFuncs.includes(f.nome)?'on':''}" onclick="togFunc(${i})">
+         <span class="fb-ck"></span>${avatarHtml(usuarioPorFunc(f.nome),f.nome,'av-sm')}${escHtml(f.nome)}</button>`).join('')}</div>
+      <p class="fld-hint" style="margin-top:8px">Alguém entrou para ajudar? Toque no nome dele: ele é incluído na OP na hora, com o horário de entrada.</p>`;
+  }
+  // Alguém que não estava na OP foi tocado: entra na equipe agora (grava no Firebase)
+  function entrarNaOP(id,nome){
+    const o=OPS.find(x=>x.id===id); if(!o) return;
+    if(funcsAtivos(o).includes(nome)) return;
+    const agora=new Date().toISOString();
+    const l=entradasDe(o).concat([{func:nome,em:agora,por:usuarioAtual()}]);
+    if(!apFuncs.includes(nome)) apFuncs.push(nome);
+    db.ref('ops/'+id).update({entradas:l})
+      .then(()=>{ toast(nome+' entrou na OP às '+fmtHora(agora)); abrirApont(id); })
+      .catch(e=>toast('Erro: '+e.message));
+  }
+  function removerEntrada(id,em){
+    const o=OPS.find(x=>x.id===id); if(!o) return;
+    const alvo=entradasDe(o).find(e=>e.em===em); if(!alvo) return;
+    if(!confirm('Remover '+alvo.func+' da equipe desta OP?\n\nUse só se foi incluído por engano.')) return;
+    const l=entradasDe(o).filter(e=>e.em!==em);
+    const aindaTem=funcsAtivos({...o,entradas:l}).includes(alvo.func);
+    if(!aindaTem) apFuncs=apFuncs.filter(n=>n!==alvo.func);
+    db.ref('ops/'+id).update({entradas:l.length?l:null})
+      .then(()=>{ toast(alvo.func+' removido da OP'); abrirApont(id); })
+      .catch(e=>toast('Erro: '+e.message));
+  }
   function togFunc(i){
     const f=apListaAtual[i]; if(!f) return;
+    const _o=OPS.find(x=>x.id===apontOP);
+    if(_o && ['parcial','pausada'].includes(stOp(_o)) && !funcsAtivos(_o).includes(f.nome)){ entrarNaOP(_o.id,f.nome); return; }
     const k=apFuncs.indexOf(f.nome);
     if(k>=0) apFuncs.splice(k,1); else apFuncs.push(f.nome);
     abrirApont(apontOP);
@@ -12647,7 +12701,7 @@
   function _finalizarOPExec(id, pecas, chk){
     const o=OPS.find(x=>x.id===id); if(!o) return;
     if(o.atividade==='Liberado do PCP' && !(parseInt(pecas,10)>0)){ toast('Informe o número de peças do projeto antes de encerrar esta ordem de produção.'); return; }
-    const lista=apFuncs.length?apFuncs.slice():funcsDe(o,'inicio');
+    const lista=apFuncs.length?apFuncs.slice():funcsAtivos(o);
     const agora=new Date(), agoraISO=agora.toISOString();
     if(!confirmaFora(o,agora)) return;
     const fora=!dentroExpediente(agora,o.jornada);
@@ -12752,7 +12806,7 @@
 
   function chkEstado(o){
     if(!CHKS[o.id]){
-      let resp=''; try{ resp=(apFuncs&&apFuncs.length?apFuncs:funcsDe(o,'inicio')).join(', '); }catch(e){}
+      let resp=''; try{ resp=(apFuncs&&apFuncs.length?apFuncs:funcsAtivos(o)).join(', '); }catch(e){}
       CHKS[o.id]={r:{},o:{},projetista:'',responsavel:resp,pecas:o.pecasProjeto!=null?String(o.pecasProjeto):'',tent:false,fechadas:{}};
     }
     return CHKS[o.id];
@@ -13156,7 +13210,7 @@
       u.tempoMin=0; u.tempoNormalMin=0; u.tempoExtraMin=0; u.tempoPausaMin=0;
     }else{
       // OP já iniciada/pausada: encerra do mesmo jeito que o botão Finalizar (fecha pausa e hora extra abertas)
-      const lista=funcsDe(o,'inicio');
+      const lista=funcsAtivos(o);
       const pl=pausasDe(o).map(x=>(x.de&&!x.ate)?{...x,ate:agoraISO}:x);
       const xl=extrasDe(o).map(x=>(x.de&&!x.ate)?{...x,ate:agoraISO}:x);
       const tmp={...o,pausas:pl,extras:xl};
