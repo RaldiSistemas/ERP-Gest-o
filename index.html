@@ -908,6 +908,149 @@
   .tag-he{ font-style:normal; font-size:9px; font-weight:800; color:#c77d1a; background:rgba(199,125,26,.13);
     padding:1px 5px; border-radius:4px; margin-left:7px; }
 
+
+  /* Rendimento v2 */
+  .rx .fs{ border-radius:16px; box-shadow:0 10px 26px -20px rgba(75,75,85,.45); }
+  .rx-hero{ display:grid; grid-template-columns:1.7fr 1fr; gap:14px; margin-bottom:14px; }
+  @media(max-width:1000px){ .rx-hero{ grid-template-columns:1fr; } }
+  .rx-main{ position:relative; overflow:hidden; border-radius:18px; padding:24px 28px; color:#fff;
+    background:linear-gradient(135deg,#ad2c2c 0%,#7f1e1e 58%,#5a1313 100%); box-shadow:0 14px 30px -14px rgba(127,30,30,.6); }
+  .rx-main::after{ content:""; position:absolute; right:-70px; top:-80px; width:260px; height:260px; border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%); pointer-events:none; }
+  .rx-main .rb-l{ color:rgba(255,255,255,.72); }
+  .rx-main .rb-v{ color:#fff; font-size:46px; letter-spacing:-.5px; }
+  .rx-main .rb-split{ color:rgba(255,255,255,.75); } .rx-main .rb-split b{ color:#fff; }
+  .rx-main .rb-bar{ background:rgba(255,255,255,.2); height:10px; }
+  .rx-gauges{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .rx-g{ background:var(--surface); border:1px solid var(--linha); border-radius:18px; display:grid; place-items:center; padding:10px; }
+  .rx-g .dn-s{ width:128px; height:128px; }
+  .rx-kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+  @media(max-width:900px){ .rx-kpis{ grid-template-columns:1fr 1fr; } }
+  .rx-k{ background:var(--surface); border:1px solid var(--linha); border-radius:16px; padding:15px 16px; display:flex; gap:13px; align-items:center; }
+  .rx-k i{ width:40px; height:40px; flex:0 0 40px; border-radius:12px; display:grid; place-items:center; background:rgba(152,36,36,.09); color:var(--vermelho); }
+  .rx-k svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .rx-k b{ display:block; font-family:'Poppins',sans-serif; font-size:21px; line-height:1.1; color:var(--texto); }
+  .rx-k span{ font-size:11.5px; color:var(--muted); }
+  .rx .gd{ height:150px; background-image:linear-gradient(var(--linha) 1px,transparent 1px); background-size:100% 25%; }
+  .rx .gd-b{ background:linear-gradient(180deg,#bb3a3a,var(--vermelho)); border-radius:6px 6px 0 0; }
+  .rx .gd-b.fds{ background:#d4d2c9; }
+  .rx .rf-bar,.rx .set-bar{ border-radius:999px; } .rx .rf-bar span{ border-radius:999px; }
+  .rx .rd-bar{ height:14px; border-radius:999px; } .rx .rb-n{ background:linear-gradient(90deg,#b83535,var(--vermelho)); }
+  .rx .rd-l{ padding:11px 8px; border-radius:12px; transition:background .12s; } .rx .rd-l:hover{ background:rgba(152,36,36,.045); }
+  .rx .rd-pos.p2{ background:#d9d7ce; color:var(--texto); } .rx .rd-pos.p3{ background:#e6c9a4; color:#7a4a14; }
+  .av-md{ width:40px; height:40px; font-size:13px; }
+  /* Média por ambiente */
+  .am-top{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+  .am-in{ display:flex; gap:8px; flex:1; min-width:280px; }
+  .am-in input{ flex:1; font:inherit; font-size:13.5px; padding:9px 12px; border:1px solid var(--linha); border-radius:10px; background:#fff; color:var(--texto); }
+  .am-in input:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .am-tg{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); cursor:pointer; }
+  .am-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(235px,1fr)); gap:12px; }
+  .am-c{ position:relative; border:1px solid var(--linha); border-radius:16px; padding:16px 17px 15px; cursor:pointer; background:linear-gradient(180deg,#fff,#faf9f5); transition:border-color .12s,box-shadow .12s; }
+  .am-c:hover{ border-color:rgba(152,36,36,.5); } .am-c.on{ border-color:var(--vermelho); box-shadow:0 0 0 3px rgba(152,36,36,.12); }
+  .am-n{ font-size:12.5px; font-weight:700; color:var(--vermelho); text-transform:capitalize; padding-right:20px; }
+  .am-v{ font-family:'Poppins',sans-serif; font-size:28px; font-weight:700; color:var(--texto); line-height:1.1; margin:6px 0 4px; }
+  .am-s{ font-size:11.5px; color:var(--muted); line-height:1.5; }
+  .am-b{ height:6px; border-radius:999px; background:#eceae4; margin:11px 0 9px; overflow:hidden; }
+  .am-b span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#c77d1a,var(--vermelho)); }
+  .am-x{ position:absolute; right:9px; top:7px; border:0; background:none; color:var(--muted); cursor:pointer; font-size:18px; line-height:1; padding:2px 5px; border-radius:6px; }
+  .am-x:hover{ background:rgba(152,36,36,.1); color:var(--vermelho); }
+  .am-det{ margin-top:16px; padding-top:14px; border-top:1px solid var(--linha); }
+  .am-row{ display:flex; align-items:center; gap:12px; padding:8px 4px; border-bottom:1px solid var(--linha); font-size:13px; }
+  .am-row:last-child{ border-bottom:0; } .am-row .am-a{ flex:1; min-width:0; } .am-row .am-a i{ display:block; font-style:normal; font-size:11px; color:var(--muted); }
+  .am-row .am-t{ font-weight:700; width:92px; text-align:right; }
+
+
+  /* Rendimento v3 — visual moderno */
+  .rx .page-head{ align-items:center; margin-bottom:20px; }
+  .rx .page-title{ font-family:'Poppins',sans-serif; font-size:26px; letter-spacing:-.4px; }
+  .rx .page-head .btn{ display:inline-flex; align-items:center; gap:8px; border-radius:12px; font-weight:600; background:var(--surface); }
+  .rx .page-head .btn svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .rx .fs-head{ margin-bottom:18px; }
+  .fs-sub{ font-size:12px; font-weight:500; letter-spacing:0; text-transform:none; color:var(--muted); }
+
+  .rx-filtros{ background:var(--surface); border:1px solid var(--linha); border-radius:18px; padding:16px 18px 18px;
+    margin-bottom:16px; box-shadow:0 10px 26px -20px rgba(75,75,85,.45); }
+  .rxf-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; min-height:26px; }
+  .rxf-t{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--vermelho); }
+  .rxf-t svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .rxf-clear{ font:inherit; font-size:12px; font-weight:700; color:var(--vermelho); background:rgba(152,36,36,.08);
+    border:0; border-radius:999px; padding:5px 13px; cursor:pointer; transition:background .12s; }
+  .rxf-clear:hover{ background:rgba(152,36,36,.16); }
+  .rxf-grid{ display:grid; grid-template-columns:minmax(330px,1.5fr) repeat(3,minmax(0,1fr)); gap:14px 16px; align-items:start; }
+  @media(max-width:1100px){ .rxf-grid{ grid-template-columns:1fr 1fr; } .rxf-per{ grid-column:1/-1; } }
+  @media(max-width:600px){ .rxf-grid{ grid-template-columns:1fr; } }
+  .rxf-range{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; }
+  .rxf-range span{ font-size:12px; color:var(--muted); }
+  .rx .rf-c input,.rx .rf-c select{ height:42px; padding:0 12px; border-radius:12px; background-color:#faf9f5;
+    border:1px solid var(--linha); transition:border-color .12s, box-shadow .12s, background-color .12s; }
+  .rx .rf-c select{ appearance:none; -webkit-appearance:none; padding-right:34px; cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B4B55' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat; background-position:right 12px center; background-size:14px; }
+  .rx .rf-c input:hover,.rx .rf-c select:hover{ border-color:rgba(152,36,36,.4); background-color:#fff; }
+  .rx .rf-c input:focus,.rx .rf-c select:focus{ outline:none; background-color:#fff; border-color:var(--vermelho); box-shadow:0 0 0 3px rgba(152,36,36,.14); }
+  .rx .rf-at{ margin-top:2px; }
+  .rx .rf-b{ padding:5px 12px; transition:all .12s; }
+  .rx .rf-b.on{ background:var(--vermelho); border-color:var(--vermelho); color:#fff; }
+
+  .rx-hero{ grid-template-columns:1.8fr 1fr; gap:16px; margin-bottom:16px; }
+  .rx-main{ border-radius:22px; padding:24px 28px 22px; display:flex; flex-direction:column; }
+  .rxm-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .rxm-chip{ background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); border-radius:999px;
+    font-size:11.5px; font-weight:600; padding:4px 12px; color:#fff; }
+  .rx-main .rb-v{ display:block; font-size:54px; margin:10px 0 18px; }
+  .rx-main .rb-bar{ margin-top:0; height:10px; }
+  .rxm-leg{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:16px; }
+  @media(max-width:600px){ .rxm-leg{ grid-template-columns:1fr; } .rx-main .rb-v{ font-size:40px; } }
+  .rxm-i{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:10px 13px; }
+  .rxm-i span{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:600; color:rgba(255,255,255,.78); }
+  .rxm-i span i{ width:9px; height:9px; border-radius:3px; display:inline-block; }
+  .rxm-i b{ display:block; font-family:'Poppins',sans-serif; font-size:16px; margin-top:4px; color:#fff; }
+  .rxm-i em{ font-style:normal; font-size:11px; font-weight:500; color:rgba(255,255,255,.7); margin-left:4px; }
+
+  .rx-g{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:16px 12px; text-align:center;
+    border-radius:22px; box-shadow:0 10px 26px -20px rgba(75,75,85,.45); }
+  .rx-g .dn-s{ width:112px; height:112px; }
+  .rxg-t b{ display:block; font-size:13px; font-weight:700; color:var(--texto); }
+  .rxg-t span{ display:block; font-size:11.5px; color:var(--muted); margin-top:2px; line-height:1.4; }
+
+  .rx-kpis{ gap:14px; margin-bottom:16px; }
+  .rx-k{ border-radius:18px; box-shadow:0 10px 26px -22px rgba(75,75,85,.5); transition:transform .15s, box-shadow .15s; }
+  .rx-k:hover{ transform:translateY(-2px); box-shadow:0 14px 28px -18px rgba(75,75,85,.5); }
+  .rx-k i{ width:44px; height:44px; flex:0 0 44px; border-radius:14px; }
+  .rx-k:nth-child(2) i{ background:rgba(47,111,181,.11); color:#2f6fb5; }
+  .rx-k:nth-child(3) i{ background:rgba(199,125,26,.13); color:#c77d1a; }
+  .rx-k:nth-child(4) i{ background:rgba(122,110,168,.15); color:#7a6ea8; }
+  .rx-k b{ font-size:22px; }
+
+  .rx .gd{ height:180px; gap:4px; padding-top:14px; }
+  .rx .gd-c{ position:relative; }
+  .rx .gd-c::after{ content:attr(data-tip); position:absolute; bottom:calc(100% + 4px); left:50%; transform:translateX(-50%);
+    background:var(--texto); color:#fff; font-size:11px; font-weight:600; white-space:nowrap; padding:4px 9px; border-radius:8px;
+    opacity:0; pointer-events:none; transition:opacity .12s; z-index:5; }
+  .rx .gd-c:hover::after{ opacity:1; }
+  .rx .gd-c:hover .gd-b{ opacity:1; filter:brightness(1.12); }
+  .rx .gd-x{ font-size:9.5px; }
+  .gd-pico{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:var(--vermelho);
+    background:rgba(152,36,36,.08); padding:4px 11px; border-radius:999px; margin-right:12px; }
+  .rx .fs-head > div{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; }
+
+  .rx .rd-pos{ width:26px; height:26px; flex:0 0 26px; }
+  .rx .rd-pos.p1{ background:linear-gradient(135deg,#f3d27a,#d9a441); color:#6b4a0c; }
+  .rx .rd-n{ font-size:14.5px; }
+  .rx .rd-bar{ height:12px; background:#eeede6; }
+  .rx .rd-l{ border-bottom:1px solid var(--linha); padding:12px 10px; }
+  .rx .rd-l:hover .rd-ch{ color:var(--vermelho); transform:translateX(2px); }
+  .rx .rd-ch{ transition:transform .12s, color .12s; }
+  .rx .rd-leg{ margin-top:14px; }
+  .rx .rf-bar{ height:12px; border-radius:999px; background:#eeede6; }
+  .rx .rf-bar span{ border-radius:999px; }
+  .rx .rf-l{ margin-bottom:13px; }
+  .rx .set-bar{ height:14px; }
+  .rx .set-l{ padding:7px 0; border-bottom:1px dashed var(--linha); }
+  .rx .set-l:last-child{ border-bottom:0; }
+  .rx .rd-big,.rx .rdn{ border-radius:18px; box-shadow:0 10px 26px -22px rgba(75,75,85,.5); }
+
   /* Relatório do projeto */
   .rp-topo{ display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:stretch; margin-bottom:18px; }
   @media(max-width:760px){ .rp-topo{ grid-template-columns:1fr; } }
@@ -4108,7 +4251,7 @@
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     oriLigarDb();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
+      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       if(TELA==='equipe') renderEquipe(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
@@ -11875,11 +12018,12 @@
 
   /* ================= RENDIMENTO POR FUNCIONÁRIO ================= */
   let rendDe='', rendAte='', rendSetor='', rendProj='', rendAtiv='', rendFunc=null, rendOrd='total';
+  function rendIso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
   function rendPeriodo(){
     if(!rendDe||!rendAte){
       const h=new Date(), i=new Date(h.getFullYear(),h.getMonth(),1);
-      rendDe=rendDe||i.toISOString().slice(0,10);
-      rendAte=rendAte||h.toISOString().slice(0,10);
+      rendDe=rendDe||rendIso(i);
+      rendAte=rendAte||rendIso(h);
     }
     return {de:rendDe,ate:rendAte};
   }
@@ -11946,7 +12090,7 @@
     return `<div class="gd">${s.map(([d,v],i)=>{
       const alt=Math.round(v/max*100), dt=new Date(d+'T12:00');
       const fds=[0,6].includes(dt.getDay())||FERIADOS[d];
-      return `<div class="gd-c" title="${fmtData(d)} — ${fmtMin(Math.round(v))}">
+      return `<div class="gd-c" data-tip="${fmtData(d)} · ${fmtMin(Math.round(v))}">
         <div class="gd-b ${fds?'fds':''}" style="height:${Math.max(v?3:0,alt)}%"></div>
         <span class="gd-x">${i%passo===0?String(dt.getDate()).padStart(2,'0'):''}</span></div>`;}).join('')}</div>`;
   }
@@ -11983,71 +12127,77 @@
     }).filter(x=>x.m>0);
     const totSet=porSet.reduce((a,x)=>a+x.m,0)||1;
 
-    view.innerHTML=`<div class="page page-wide">
+    view.innerHTML=`<div class="page page-wide rx">
       <div class="page-head">
         <div><h1 class="page-title">Rendimento</h1>
           <p class="page-sub">${fmtData(de)} a ${fmtData(ate)} · ${ops.length} OP(s) · ${dados.length} pessoa(s)</p></div>
-        <button class="btn btn-ghost" onclick="window.print()">Imprimir</button></div>
+        <button class="btn btn-ghost" onclick="window.print()"><svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5a1 1 0 01-1-1v-5a2 2 0 012-2h12a2 2 0 012 2v5a1 1 0 01-1 1h-2"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>Imprimir</button></div>
 
-      <section class="rd-filtros">
-        <div class="rf-c"><label>Período</label>
-          <div class="rf-datas">
-            <input type="date" value="${de}" onchange="rendDe=this.value;renderRendimento()">
-            <span>até</span>
-            <input type="date" value="${ate}" onchange="rendAte=this.value;renderRendimento()">
-          </div>
-          <div class="rf-at">
-            <button class="rf-b" onclick="rendAtalho(0)">Este mês</button>
-            <button class="rf-b" onclick="rendAtalho(1)">Mês passado</button>
-            <button class="rf-b" onclick="rendAtalho(7)">7 dias</button>
-            <button class="rf-b" onclick="rendAtalho(30)">30 dias</button>
-          </div>
+      <section class="rx-filtros">
+        <div class="rxf-head">
+          <span class="rxf-t"><svg viewBox="0 0 24 24"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg>Filtros</span>
+          ${(rendProj||rendSetor||rendAtiv)?`<button class="rxf-clear" onclick="rendProj='';rendSetor='';rendAtiv='';renderRendimento()">Limpar filtros</button>`:''}
         </div>
-        <div class="rf-c"><label>Projeto / Lote</label>
-          <input list="rdProjs" value="${escHtml(rendProj)}" placeholder="Todos"
-            oninput="rendProj=this.value.trim(); clearTimeout(window._rp); window._rp=setTimeout(renderRendimento,300)">
-          <datalist id="rdProjs">${projs.map(p=>`<option value="${escHtml(p)}">`).join('')}
-            ${lotes.map(l=>`<option value="${escHtml(l)}">Lote ${escHtml(l)}</option>`).join('')}</datalist></div>
-        <div class="rf-c"><label>Setor</label>
-          <select onchange="rendSetor=this.value;rendAtiv='';renderRendimento()"><option value="">Todos</option>
-            ${Object.values(OP_SETORES).map(S=>`<option value="${S.sigla}" ${rendSetor===S.sigla?'selected':''}>${S.sigla} — ${escHtml(S.nome)}</option>`).join('')}
-          </select></div>
-        <div class="rf-c"><label>Atividade</label>
-          <select onchange="rendAtiv=this.value;renderRendimento()"><option value="">Todas</option>
-            ${(rendSetor?opSetorDe(rendSetor).atividades:ativs).map(a=>`<option value="${escHtml(a)}" ${rendAtiv===a?'selected':''}>${escHtml(a)}</option>`).join('')}
-          </select></div>
-        ${(rendProj||rendSetor||rendAtiv)?`<button class="btn btn-ghost btn-sm rf-lim" onclick="rendProj='';rendSetor='';rendAtiv='';renderRendimento()">Limpar filtros</button>`:''}
+        <div class="rxf-grid">
+          <div class="rf-c rxf-per"><label>Período</label>
+            <div class="rxf-range">
+              <input type="date" value="${de}" onchange="rendDe=this.value;renderRendimento()">
+              <span>até</span>
+              <input type="date" value="${ate}" onchange="rendAte=this.value;renderRendimento()">
+            </div>
+            <div class="rf-at">
+              ${[['Este mês',0],['Mês passado',1],['7 dias',7],['30 dias',30]].map(([t,k])=>{ const r=rendAtalhoRange(k);
+                return `<button class="rf-b ${r.de===de&&r.ate===ate?'on':''}" onclick="rendAtalho(${k})">${t}</button>`; }).join('')}
+            </div>
+          </div>
+          <div class="rf-c"><label>Projeto / Lote</label>
+            <input list="rdProjs" value="${escHtml(rendProj)}" placeholder="Todos"
+              oninput="rendProj=this.value.trim(); clearTimeout(window._rp); window._rp=setTimeout(renderRendimento,300)">
+            <datalist id="rdProjs">${projs.map(p=>`<option value="${escHtml(p)}">`).join('')}
+              ${lotes.map(l=>`<option value="${escHtml(l)}">Lote ${escHtml(l)}</option>`).join('')}</datalist></div>
+          <div class="rf-c"><label>Setor</label>
+            <select onchange="rendSetor=this.value;rendAtiv='';renderRendimento()"><option value="">Todos</option>
+              ${Object.values(OP_SETORES).map(S=>`<option value="${S.sigla}" ${rendSetor===S.sigla?'selected':''}>${S.sigla} — ${escHtml(S.nome)}</option>`).join('')}
+            </select></div>
+          <div class="rf-c"><label>Atividade</label>
+            <select onchange="rendAtiv=this.value;renderRendimento()"><option value="">Todas</option>
+              ${(rendSetor?opSetorDe(rendSetor).atividades:ativs).map(a=>`<option value="${escHtml(a)}" ${rendAtiv===a?'selected':''}>${escHtml(a)}</option>`).join('')}
+            </select></div>
+        </div>
       </section>
 
-      <div class="rd-topo">
-        <div class="rd-big">
-          <span class="rb-l">Tempo apontado no período</span>
+      <div class="rx-hero">
+        <div class="rx-main">
+          <div class="rxm-top"><span class="rb-l">Tempo apontado no período</span>
+            <span class="rxm-chip">${ops.length} OP(s) · ${dados.length} pessoa(s)</span></div>
           <span class="rb-v">${fmtMin(Math.round(geral))}</span>
-          <div class="rb-split">
-            <span><i style="background:var(--vermelho)"></i>Normal <b>${fmtMin(Math.round(tot.n))}</b></span>
-            <span><i style="background:#c77d1a"></i>Extra <b>${fmtMin(Math.round(tot.e))}</b></span>
-            <span><i style="background:#7a6ea8"></i>Pausado <b>${fmtMin(Math.round(tot.p))}</b></span>
-          </div>
           <div class="rb-bar">
-            <span style="width:${geral?Math.round(tot.n/geral*100):0}%;background:var(--vermelho)"></span>
-            <span style="width:${geral?Math.round(tot.e/geral*100):0}%;background:#c77d1a"></span>
+            <span style="width:${geral?Math.round(tot.n/geral*100):0}%;background:#fff"></span>
+            <span style="width:${geral?Math.round(tot.e/geral*100):0}%;background:#f2b24d"></span>
+          </div>
+          <div class="rxm-leg">
+            <div class="rxm-i"><span><i style="background:#fff"></i>Normal</span><b>${fmtMin(Math.round(tot.n))}<em>${100-pctExtra}%</em></b></div>
+            <div class="rxm-i"><span><i style="background:#f2b24d"></i>Extra</span><b>${fmtMin(Math.round(tot.e))}<em>${pctExtra}%</em></b></div>
+            <div class="rxm-i"><span><i style="background:#b9aee6"></i>Pausado</span><b>${fmtMin(Math.round(tot.p))}<em>${pctPausa}%</em></b></div>
           </div>
         </div>
-        <div class="rd-mini">
-          <div class="rdm">${donutRend(pctExtra,'#c77d1a','extra')}</div>
-          <div class="rdm">${donutRend(pctPausa,'#7a6ea8','pausa')}</div>
+        <div class="rx-gauges">
+          <div class="rx-g">${donutRend(pctExtra,'#c77d1a','extra')}
+            <div class="rxg-t"><b>Hora extra</b><span>do tempo apontado</span></div></div>
+          <div class="rx-g">${donutRend(pctPausa,'#7a6ea8','pausa')}
+            <div class="rxg-t"><b>Pausas</b><span>do tempo total (com pausas)</span></div></div>
         </div>
-        <div class="rd-nums">
-          <div class="rdn"><b>${tot.o}</b><span>OPs encerradas</span></div>
-          <div class="rdn"><b>${dados.length}</b><span>Pessoas</span></div>
-          <div class="rdn"><b>${tot.o?fmtMin(Math.round(geral/tot.o)):'—'}</b><span>Média por OP</span></div>
-          <div class="rdn"><b>${dados.length?fmtMin(Math.round(geral/dados.length)):'—'}</b><span>Média por pessoa</span></div>
-        </div>
+      </div>
+      <div class="rx-kpis">
+        <div class="rx-k"><i><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></i><div><b>${tot.o}</b><span>OPs encerradas</span></div></div>
+        <div class="rx-k"><i><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 5.5a3 3 0 010 5.5M18 14.5c2 .7 3.5 2.6 3.5 5.5"/></svg></i><div><b>${dados.length}</b><span>Pessoas</span></div></div>
+        <div class="rx-k"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></i><div><b>${tot.o?fmtMin(Math.round(geral/tot.o)):'—'}</b><span>Média por OP</span></div></div>
+        <div class="rx-k"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3.1-7 7-7s7 3 7 7"/></svg></i><div><b>${dados.length?fmtMin(Math.round(geral/dados.length)):'—'}</b><span>Média por pessoa</span></div></div>
       </div>
 
       ${ops.length?`
       <section class="fs" style="margin-bottom:18px">
-        <div class="fs-head"><h3 class="fs-title" style="margin:0">Apontamentos por dia</h3>
+        <div class="fs-head"><div><h3 class="fs-title" style="margin:0">Apontamentos por dia</h3>${(()=>{ const sd=serieDias(ops).slice().sort((x,y)=>y[1]-x[1])[0]; return sd&&sd[1]?`<span class="gd-pico">Pico: ${fmtData(sd[0]).slice(0,5)} · ${fmtMin(Math.round(sd[1]))}</span>`:''; })()}</div>
           <span class="gd-leg"><i class="fds"></i>fim de semana / feriado</span></div>
         ${graficoDias(ops)}
       </section>
@@ -12068,6 +12218,8 @@
         </section>
       </div>
 
+      ${rendAmbSecao(ops)}
+
       <section class="fs">
         <div class="fs-head"><h3 class="fs-title" style="margin:0">Ranking por funcionário</h3>
           <select class="st-sel" onchange="rendOrd=this.value;renderRendimento()">
@@ -12077,7 +12229,8 @@
             <option value="nome" ${rendOrd==='nome'?'selected':''}>Ordenar por nome</option>
           </select></div>
         ${dados.map((f,i)=>`<div class="rd-l" onclick="detalheRend(${i})">
-          <span class="rd-pos">${i+1}</span>
+          <span class="rd-pos ${i===0?'p1':i===1?'p2':i===2?'p3':''}" ${rendOrd==='nome'?'style="background:#f1f0ea;color:var(--muted)"':''}>${i+1}</span>
+          ${avatarHtml(usuarioPorFunc(f.nome),f.nome,'av-md')}
           <div class="rd-n">${escHtml(f.nome)}
             <i>${f.enc} encerrada(s)${f.compart?` · ${f.compart} em dupla`:''} · média ${fmtMin(f.media)}</i></div>
           <div class="rd-bar">
@@ -12095,14 +12248,72 @@
         <h3>Nada apontado no período</h3><p>Ajuste as datas ou limpe os filtros.</p></div>`}
     </div>`;
   }
-  function rendAtalho(t){
-    const h=new Date();
-    if(t===0){ rendDe=new Date(h.getFullYear(),h.getMonth(),1).toISOString().slice(0,10); rendAte=h.toISOString().slice(0,10); }
-    else if(t===1){ const a=new Date(h.getFullYear(),h.getMonth()-1,1), b=new Date(h.getFullYear(),h.getMonth(),0);
-      rendDe=a.toISOString().slice(0,10); rendAte=b.toISOString().slice(0,10); }
-    else { const a=new Date(h); a.setDate(a.getDate()-t); rendDe=a.toISOString().slice(0,10); rendAte=h.toISOString().slice(0,10); }
-    renderRendimento();
+  /* ===== Média de tempo por ambiente (filtro por palavra-chave) ===== */
+  let rendAmb=null, rendAmbSel=null, rendAmbLote=false;
+  function rendAmbLista(){
+    if(!rendAmb){ try{ rendAmb=JSON.parse(localStorage.getItem('rendAmb')||'null'); }catch(e){} }
+    if(!Array.isArray(rendAmb)) rendAmb=['cozinha','banheiro, lavabo, bwc','quarto, suíte','sala','closet','lavanderia, área de serviço'];
+    return rendAmb;
   }
+  function rendAmbSalvar(){ try{ localStorage.setItem('rendAmb',JSON.stringify(rendAmb)); }catch(e){} }
+  function rendAmbRefresh(){ const el=document.getElementById('rxAmb'); if(el) el.outerHTML=rendAmbSecao(opsNoPeriodo()); }
+  function rendAmbAdd(){
+    const el=document.getElementById('amNovo'), v=(el&&el.value||'').trim(); if(!v) return;
+    const l=rendAmbLista(); if(!l.some(x=>normTxt(x)===normTxt(v))) l.push(v);
+    rendAmbSalvar(); rendAmbRefresh(); const n=document.getElementById('amNovo'); if(n) n.focus();
+  }
+  function rendAmbDel(i,ev){ ev.stopPropagation(); rendAmbLista().splice(i,1); rendAmbSalvar(); if(rendAmbSel===i) rendAmbSel=null; else if(rendAmbSel>i) rendAmbSel--; rendAmbRefresh(); }
+  function rendAmbAbrir(i){ rendAmbSel=rendAmbSel===i?null:i; rendAmbRefresh(); }
+  // um "ambiente" = projeto + nome do ambiente; soma o tempo de todas as OPs dele
+  function ambInstancias(ops){
+    const mapa={}; let ign=0;
+    ops.forEach(o=>{
+      const ca=clienteAmbienteOP(o); if(!ca.amb.length) return;
+      if(ca.amb.length>1 && !rendAmbLote){ ign++; return; }
+      const {n,e}=minutosOP(o), eq=equipeOP(o), div=ca.amb.length, proj=String(o.projeto||o.lote||'');
+      ca.amb.forEach(a=>{
+        const m=mapa[proj+'|'+normTxt(a)]=mapa[proj+'|'+normTxt(a)]||{amb:a,proj,cli:ca.cli.join(', '),min:0,ops:0,pessoas:new Set()};
+        m.min+=(n+e)/div; m.ops++; eq.forEach(x=>m.pessoas.add(x));
+      });
+    });
+    return {inst:Object.values(mapa),ign};
+  }
+  function rendAmbSecao(ops){
+    const {inst,ign}=ambInstancias(ops);
+    const cards=rendAmbLista().map((g,i)=>{
+      const termos=g.split(/[,;\/]/).map(normTxt).filter(Boolean);
+      const ms=inst.filter(m=>termos.some(t=>normTxt(m.amb).includes(t))).sort((a,b)=>b.min-a.min);
+      const n=ms.length, tot=ms.reduce((a,m)=>a+m.min,0);
+      return {g,i,ms,n,tot,media:n?tot/n:0,mn:n?ms[n-1].min:0,mx:n?ms[0].min:0,ops:ms.reduce((a,m)=>a+m.ops,0)};
+    });
+    const maxM=Math.max(1,...cards.map(c=>c.media)), sel=cards.find(c=>c.i===rendAmbSel);
+    return `<section class="fs" id="rxAmb" style="margin-bottom:18px">
+      <div class="fs-head"><h3 class="fs-title" style="margin:0">Média de tempo por ambiente</h3></div>
+      <div class="am-top">
+        <div class="am-in"><input id="amNovo" placeholder="Palavra-chave do ambiente (use vírgula para sinônimos: banheiro, lavabo)" onkeydown="if(event.key==='Enter')rendAmbAdd()">
+          <button class="btn btn-primary btn-sm" onclick="rendAmbAdd()">Adicionar</button></div>
+        <label class="am-tg"><input type="checkbox" ${rendAmbLote?'checked':''} onchange="rendAmbLote=this.checked;rendAmbRefresh()">Incluir OPs de lote (tempo rateado)</label>
+      </div>
+      <p class="page-sub" style="margin:-6px 0 14px">Segue os filtros acima. Busca a palavra na descrição do ambiente${ign&&!rendAmbLote?` · ${ign} OP(s) de lote com vários ambientes ficaram de fora`:''}.</p>
+      <div class="am-grid">${cards.map(c=>`<div class="am-c ${c.i===rendAmbSel?'on':''}" onclick="rendAmbAbrir(${c.i})">
+        <button class="am-x" title="Remover" onclick="rendAmbDel(${c.i},event)">×</button>
+        <div class="am-n">${escHtml(c.g)}</div>
+        <div class="am-v">${c.n?fmtMin(Math.round(c.media)):'—'}</div>
+        <div class="am-b"><span style="width:${Math.round(c.media/maxM*100)}%"></span></div>
+        <div class="am-s">${c.n?`${c.n} ambiente(s) · ${c.ops} OP(s)<br>mín ${fmtMin(Math.round(c.mn))} · máx ${fmtMin(Math.round(c.mx))}`:'Nenhum ambiente com essa palavra no período'}</div></div>`).join('')}</div>
+      ${sel&&sel.n?`<div class="am-det"><div class="rb-l" style="margin-bottom:6px">${escHtml(sel.g)} · ${sel.n} ambiente(s) encontrados</div>
+        ${sel.ms.map(m=>`<div class="am-row"><div class="am-a">${escHtml(m.amb)}<i>${escHtml(m.cli||'—')}${m.proj?' · projeto '+escHtml(m.proj):''}</i></div>
+          <span class="av-stack">${[...m.pessoas].slice(0,3).map(p=>avatarHtml(usuarioPorFunc(p),p,'av-sm')).join('')}</span>
+          <div class="am-t">${fmtMin(Math.round(m.min))}</div></div>`).join('')}</div>`:''}
+    </section>`;
+  }
+  function rendAtalhoRange(t){
+    const h=new Date();
+    if(t===0) return {de:rendIso(new Date(h.getFullYear(),h.getMonth(),1)), ate:rendIso(h)};
+    if(t===1) return {de:rendIso(new Date(h.getFullYear(),h.getMonth()-1,1)), ate:rendIso(new Date(h.getFullYear(),h.getMonth(),0))};
+    const a=new Date(h); a.setDate(a.getDate()-t); return {de:rendIso(a), ate:rendIso(h)};
+  }
+  function rendAtalho(t){ const r=rendAtalhoRange(t); rendDe=r.de; rendAte=r.ate; renderRendimento(); }
   // Cliente(s) e ambiente(s) de uma OP (OP de projeto = 1; OP de lote = vários).
   function clienteAmbienteOP(o){
     let pl=(o.projetosLote||[]).filter(Boolean);
@@ -12126,9 +12337,9 @@
     const lista=f.lista.sort((a,b)=>String((b.o.fim&&b.o.fim.em)||'').localeCompare(String((a.o.fim&&a.o.fim.em)||'')));
     const dias=Object.entries(f.dias).sort();
     const maxD=Math.max(1,...dias.map(d=>d[1]));
-    view.innerHTML=`<div class="page page-wide">
-      <div class="page-head"><div><h1 class="page-title">${escHtml(f.nome)}</h1>
-        <p class="page-sub">${fmtData(rendDe)} a ${fmtData(rendAte)}${rendProj?' · projeto '+escHtml(rendProj):''}</p></div>
+    view.innerHTML=`<div class="page page-wide rx">
+      <div class="page-head"><div style="display:flex;align-items:center;gap:14px">${avatarHtml(usuarioPorFunc(f.nome),f.nome,'av-lg')}<div><h1 class="page-title">${escHtml(f.nome)}</h1>
+        <p class="page-sub">${fmtData(rendDe)} a ${fmtData(rendAte)}${rendProj?' · projeto '+escHtml(rendProj):''}</p></div></div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-ghost" onclick="renderRendimento()">Voltar</button>
           <button class="btn btn-primary" onclick="window.print()">Imprimir</button></div></div>
@@ -12156,7 +12367,7 @@
       </div>
 
       ${dias.length?`<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Por dia</h3>
-        <div class="gd">${dias.map(([d,v])=>`<div class="gd-c" title="${fmtData(d)} — ${fmtMin(Math.round(v))}">
+        <div class="gd">${dias.map(([d,v])=>`<div class="gd-c" data-tip="${fmtData(d)} · ${fmtMin(Math.round(v))}">
           <div class="gd-b" style="height:${Math.max(3,Math.round(v/maxD*100))}%"></div>
           <span class="gd-x">${d.slice(8)}</span></div>`).join('')}</div></section>`:''}
 
