@@ -6983,6 +6983,8 @@
         <div class="ft-add">
           <button class="btn btn-ghost" onclick="fitaAdd(1)">${ICO_PLUS}Adicionar linha</button>
           <button class="btn btn-ghost" onclick="fitaAdd(5)">${ICO_PLUS}5 linhas</button>
+          <button class="btn btn-primary" onclick="fitaAbrirColar()">${ICO_PLUS}Colar do SketchUp</button>
+          <button class="btn btn-ghost" onclick="fitaExportarCores()" title="Gera o arquivo de cores que o plugin do SketchUp lê">Exportar cores p/ SketchUp</button>
         </div>
       </section>
 
@@ -7024,6 +7026,65 @@
       larguraRolo:d?d.l:'', metragemRolo:d?d.m:''};
     fitaFecha(); renderFita();
     if(!d) toast('Não identifiquei as dimensões na descrição — preencha a largura necessária manualmente');
+  }
+
+  /* ===== Ponte com o plugin do SketchUp ===== */
+  // 1) Exporta a biblioteca de cores de fita para o plugin (arquivo raldi_cores.json).
+  function fitaExportarCores(){
+    const idx=idxCores();
+    const materiais=gruposFita().map(g=>{
+      const c=idx[g.nome]||[];
+      const it=c.find(i=>imgDe(i.id))||c[0];
+      return {nome:g.nome,
+        hex:it?corDe(it.id):null,
+        img:it?imgDe(it.id):null,
+        larguras:g.itens.map(i=>larguraDe(i.descricao)).filter(w=>w>0)};
+    });
+    if(!materiais.length){ toast('Nenhuma fita de borda cadastrada'); return; }
+    const blob=new Blob([JSON.stringify({raldi:'cores-fita',versao:1,geradoEm:new Date().toISOString(),materiais},null,1)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='raldi_cores.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+    toast(materiais.length+' fitas exportadas para o SketchUp');
+  }
+
+  // 2) Recebe as necessidades copiadas no plugin e preenche as linhas da simulação.
+  function fitaAbrirColar(){
+    abrirModal('Colar do SketchUp',
+      `<p style="font-size:13px;color:var(--muted);margin:0 0 10px">No SketchUp, clique em <b>Copiar para o sistema</b> e cole aqui (Ctrl+V).</p>
+       <textarea id="skColar" style="width:100%;height:170px;font-family:monospace;font-size:12px;padding:10px;border:1px solid #d9d7cd;border-radius:10px;box-sizing:border-box" placeholder="Cole aqui..."></textarea>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button><button class="btn btn-primary" onclick="fitaImportarSketchup()">Importar</button>`);
+    setTimeout(()=>{ const t=document.getElementById('skColar'); if(t) t.focus(); },60);
+  }
+  function fitaImportarSketchup(){
+    const t=document.getElementById('skColar'); if(!t) return;
+    let dados;
+    try{ dados=JSON.parse((t.value||'').trim()); }catch(e){ toast('Texto inválido — copie de novo no SketchUp'); return; }
+    if(!dados||dados.raldi!=='sketchup-fita'||!Array.isArray(dados.linhas)){ toast('Esse texto não veio do plugin do SketchUp'); return; }
+    const grupos=gruposFita(), novas=[], problemas=[];
+    dados.linhas.forEach(l=>{
+      const mat=String(l.material||'').toUpperCase().replace(/\s{2,}/g,' ').trim();
+      const w=parseFloat(l.larguraNec), m=parseFloat(l.metros), q=Math.max(1,parseInt(l.qtd,10)||1);
+      if(!(w>0)||!(m>0)){ problemas.push((mat||'(sem nome)')+': largura ou metragem inválida'); return; }
+      const g=grupos.find(x=>x.nome===mat);
+      if(!g){ problemas.push(mat+': fita não encontrada no cadastro'); return; }
+      // menor rolo do material que comporta a largura (15,5 → 22 · 31 → 35)
+      const cand=g.itens.map(i=>({i:i,d:parseDim(i.descricao)})).filter(x=>x.d&&x.d.l>=w-1e-9).sort((a,b)=>a.d.l-b.d.l)[0];
+      if(!cand){ problemas.push(mat+': nenhuma largura de rolo comporta '+fmtNum(w)+'mm'); return; }
+      novas.push({insumoId:cand.i.id,codigo:cand.i.codigo,descricao:cand.i.descricao,
+        larguraRolo:cand.d.l,metragemRolo:cand.d.m,larguraNec:String(w),metragemNec:String(+m.toFixed(3)),qtd:q});
+    });
+    const mostrarProblemas=()=>{ if(!problemas.length) return;
+      setTimeout(()=>abrirModal('Itens que não foram importados',
+        `<ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7">${problemas.map(p=>'<li>'+escHtml(p)+'</li>').join('')}</ul>`,
+        `<button class="btn btn-primary" onclick="fecharModal()">Entendi</button>`),60); };
+    if(!novas.length){ fecharModal(); toast('Nada foi importado'); mostrarProblemas(); return; }
+    const vazia=r=>!r.descricao&&!r.larguraNec&&!r.metragemNec;
+    simF.linhas=simF.linhas.filter(r=>!vazia(r)).concat(novas);
+    simF.resultado=null; fecharModal(); renderFita();
+    toast(novas.length+(novas.length===1?' linha importada':' linhas importadas'));
+    mostrarProblemas();
   }
 
   /* --- núcleo do cálculo --- */
