@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script>if(!Array.prototype.flatMap){Array.prototype.flatMap=function(f,t){return [].concat.apply([],this.map(f,t));};}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -3730,7 +3731,7 @@
     if(semNum){ toast('Informe o Nº do projeto do ambiente "'+semNum.nome+'"'); return; }
     const data={ id: wiz.editId||('p'+Date.now()), clienteId:wiz.clienteId,
       ambientes: wiz.linhas.map(r=>({nome:r.nome, numeroProjeto:(r.numeroProjeto||'').trim(), numeroContrato:(r.numeroContrato||'').trim(), lote:(r.lote||'').trim(), consultor:(r.consultor||'').trim(), dataEntrega:r.dataEntrega||''})),
-      criadoEm: wiz.editId ? (PROJETOS.find(p=>p.id===wiz.editId)?.criadoEm||new Date().toISOString()) : new Date().toISOString() };
+      criadoEm: wiz.editId ? ((PROJETOS.find(p=>p.id===wiz.editId)||{}).criadoEm||new Date().toISOString()) : new Date().toISOString() };
     const editando=!!wiz.editId;
     db.ref('projetos/'+data.id).set(data)
       .then(()=>toast(editando?'Cadastro atualizado':'Cadastro salvo'))
@@ -4093,8 +4094,8 @@
       ambiente:ace.ambienteNome, numero:ace.numero, lote:ace.lote||'', consultor:ace.consultor, arq:ace.arq, data:ace.data,
       statusPcp: stPcp(ace),
       itens:ace.itens.filter(i=>Object.values(i).some(v=>(v||'').trim())),
-      statusEst: (ace.id ? (ACES.find(x=>x.id===ace.id)?.statusEst||'pendente') : 'pendente'),
-      criadoEm: ace.id?(ACES.find(x=>x.id===ace.id)?.criadoEm||new Date().toISOString()):new Date().toISOString() };
+      statusEst: (ace.id ? ((ACES.find(x=>x.id===ace.id)||{}).statusEst||'pendente') : 'pendente'),
+      criadoEm: ace.id?((ACES.find(x=>x.id===ace.id)||{}).criadoEm||new Date().toISOString()):new Date().toISOString() };
     const editando=!!ace.id;
     db.ref('aces/'+data.id).set(data)
       .then(()=>toast(editando?'Solicitação atualizada':'Solicitação salva'))
@@ -7790,7 +7791,7 @@
           <td><div class="cel-nome">${escHtml(x.descricao)}</div>${loteSub(x)}${vincSub(x)}</td>
           <td class="ctr">${escHtml(x.ccCod)}</td>
           <td class="ctr inv-qt">${fmtNum(parseFloat(x.qtd)||0)} <span class="inv-un">${escHtml(x.unidade||'')}</span></td>
-          <td><div class="qt-row"><input type="number" step="any" min="0" value="${escHtml(String(gsaNec[x.id]??''))}" oninput="gsaNec['${x.id}']=this.value">
+          <td><div class="qt-row"><input type="number" step="any" min="0" value="${escHtml(String(gsaNec[x.id]==null?'':gsaNec[x.id]))}" oninput="gsaNec['${x.id}']=this.value">
             <span class="qt-un">${escHtml(x.unidade)||'—'}</span></div></td></tr>`).join('')}</tbody></table></div>
     </div>`;
   }
