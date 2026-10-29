@@ -292,6 +292,28 @@
   .dina-ico:hover{ background:rgba(255,90,44,.12); transform:translateY(-1px); }
   .dina-btn{ display:inline-flex; align-items:center; gap:9px; margin-top:10px; font:inherit; font-size:13px; font-weight:700; color:#c2410c; background:#fff; border:1.5px solid rgba(255,90,44,.5); border-radius:11px; padding:7px 14px 7px 9px; cursor:pointer; transition:background .12s,box-shadow .12s,transform .12s; }
   .dina-btn:hover{ background:rgba(255,90,44,.09); box-shadow:0 4px 12px rgba(255,90,44,.22); transform:translateY(-1px); }
+  /* código de barras do Dinabox (OP impressa + tela do projeto) */
+  .opz-dina{ margin-top:9px; text-align:left; break-inside:avoid; page-break-inside:avoid; }
+  .opz-dina-t{ font-size:8px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#77777f; margin-bottom:3px; }
+  .opz-dina-g{ display:flex; flex-direction:column; gap:4px; }
+  .opz-dina.sec{ margin-top:8px; }
+  .opz-dina.sec .opz-dina-g{ flex-direction:row; flex-wrap:wrap; gap:6px; }
+  .opz-dina.sec .opz-dina-c{ flex:0 0 auto; width:290px; }
+  .opz-dina-c{ display:flex; align-items:center; gap:8px; border:1px solid #b9b9c0; padding:4px 7px; background:#fff; }
+  .opz-dina-l{ flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:6px; line-height:1.2; }
+  .opz-dina-l svg{ flex:none; }
+  .opz-dina-l div{ min-width:0; }
+  .opz-dina-l b{ display:block; font-size:9px; font-weight:800; color:#c2410c; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap; }
+  .opz-dina-l small{ display:block; font-size:8px; color:#5c5c65; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:84px; }
+  .opz-dina-b{ flex:none; text-align:center; }
+  .opz-dina-b svg{ display:block; height:32px; }
+  .opz-dina-b span{ display:block; font-family:ui-monospace,monospace; font-size:8.5px; letter-spacing:.14em; color:#2c2c33; }
+  .dina-bc{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:16px; padding:12px 14px; border:1px dashed rgba(255,90,44,.55); border-radius:12px; background:#fffaf7; }
+  .dina-bc-l{ display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center; font-size:11.5px; font-weight:700; color:var(--texto); }
+  .dina-bc-l small{ font-weight:500; color:var(--muted); font-size:11px; }
+  .dina-bc-b{ text-align:center; background:#fff; padding:8px 12px 4px; border-radius:8px; border:1px solid var(--linha); }
+  .dina-bc-b svg{ display:block; margin:0 auto; height:52px; }
+  .dina-bc-b span{ display:block; font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.14em; color:#2c2c33; margin-top:2px; }
   /* visualizador embutido */
   .dina-viewer{ position:fixed; inset:0; z-index:100000; display:flex; flex-direction:column; background:#14161a; animation:dinaIn .16s ease-out; }
   @keyframes dinaIn{ from{opacity:0; transform:scale(.985)} to{opacity:1; transform:none} }
@@ -12910,6 +12932,12 @@
     cod=String(cod||'').trim().toUpperCase();
     if(!cod) return;
     let acao=null, num=cod;
+    if(/^D\S+$/.test(cod)){
+      // código de barras do Dinabox (D + projeto) → abre o visualizador 3D dentro do sistema
+      const pj=dinaProjPorCodigo(cod);
+      if(pj){ dinaAbrir(pj); return; }
+      toast('Projeto '+cod.slice(1)+' sem link do Dinabox cadastrado'); return;
+    }
     if(/^I\d+$/.test(cod)){ acao='inicio'; num=cod.slice(1); }
     else if(/^F\d+$/.test(cod)){ acao='fim'; num=cod.slice(1); }
     const o=OPS.find(x=>String(x.numero)===num);
@@ -14347,8 +14375,10 @@ function chkMontHtml(c){
         </div>
         <div class="opz-dir">
           <div class="opz-bc">${barrasSVG(String(o.numero),380,64)}<span>${escHtml(o.numero)}</span></div>
+          ${dinaLinksOp(o).length<=3?dinaBarrasOP(o):''}
         </div>
       </div>
+      ${dinaLinksOp(o).length>3?dinaBarrasOP(o,'sec'):''}
 
       <table class="opz-tbl"><thead>${cab}</thead>
         <tbody>${linhasItens||'<tr><td colspan="7" class="ctr vazio">—</td></tr>'}</tbody></table>
@@ -15856,7 +15886,35 @@ function dinaViewerFechar(){
   const ov=document.getElementById('dinaViewer'); if(!ov) return;
   document.removeEventListener('keydown',dinaViewerEsc,true);
   ov.remove(); document.body.style.overflow='';
+  setTimeout(()=>{ const i=document.getElementById('bipIn'); if(i) i.focus(); },60);
   if(document.fullscreenElement) try{ document.exitFullscreen(); }catch(e){}
+}
+/* ---------- código de barras (Code 128) ----------
+   Conteúdo do código = 'D' + número do projeto (ex.: D3003). Curto, legível pelo leitor e sem risco de
+   confundir com OP (as OPs só têm números, e os de início/fim começam com I e F).
+   Ao bipar no Apontamento, o lerBip() reconhece o 'D', acha o projeto e abre o visualizador. */
+function dinaCodigo(p){ return 'D'+String(p||'').trim().toUpperCase(); }
+function dinaProjPorCodigo(cod){
+  const c=String(cod||'').trim().toUpperCase();
+  const d=Object.values(DINA||{}).find(x=>x&&x.projeto&&dinaCodigo(x.projeto)===c);
+  return d?String(d.projeto).trim():'';
+}
+/* Code 128 com largura de barra FIXA (módulo em px) — o código curto não é esticado, fica com a mesma espessura dos outros da OP */
+function dinaBarrasSVG(txt,modulo,altura){
+  const bits=code128B(txt), n=bits.length, w=+(n*modulo).toFixed(2);
+  let x=0, r='';
+  for(let i=0;i<n;i++){ if(bits[i]==='1') r+=`<rect x="${x.toFixed(2)}" y="0" width="${modulo}" height="${altura}" fill="#000"/>`; x+=modulo; }
+  return `<svg viewBox="0 0 ${w} ${altura}" width="${w}" height="${altura}" shape-rendering="crispEdges">${r}</svg>`;
+}
+function dinaBarrasOP(o,modo){
+  const l=dinaLinksOp(o); if(!l.length) return '';
+  const info=p=>{ const r=(o.projetosLote||[]).find(x=>String(x.projeto||'').trim()===p)||{}; return [r.cliente,r.ambiente].filter(Boolean).join(' · '); };
+  return `<div class="opz-dina ${modo==='sec'?'sec':''}">
+    <div class="opz-dina-t">Visualizar peças em 3D · bipe no Apontamento</div>
+    <div class="opz-dina-g">${l.map(x=>`<div class="opz-dina-c">
+      <div class="opz-dina-l">${dinaCubo(26)}<div><b>Ver em 3D</b><small>Projeto ${escHtml(x.projeto)}${info(x.projeto)?' · '+escHtml(info(x.projeto)):''}</small></div></div>
+      <div class="opz-dina-b">${dinaBarrasSVG(dinaCodigo(x.projeto),1.5,32)}<span>${escHtml(dinaCodigo(x.projeto))}</span></div>
+    </div>`).join('')}</div></div>`;
 }
 function dinaProjetosOp(o){
   const s=new Set(); if(o.projeto) s.add(String(o.projeto).trim());
@@ -15991,6 +16049,10 @@ function renderDinaDet(){
         ${url?`<div class="dina-meta"><span class="dina-pill on">${dinaCubo(14)}Link ativo</span>
           ${m.modulo?`<span>Módulo: <b>${escHtml(m.modulo)}</b></span>`:''}
           ${d.em?`<span>· salvo em <b>${escHtml(fmtData(String(d.em).slice(0,10)))}</b>${d.por?' por <b>'+escHtml(d.por)+'</b>':''}</span>`:''}</div>`:''}
+        ${url?`<div class="dina-bc">
+          <div class="dina-bc-l">${dinaCubo(36)}<span>Ver em 3D</span><small>Bipe no Apontamento</small></div>
+          <div class="dina-bc-b">${dinaBarrasSVG(dinaCodigo(p),2.2,52)}<span>${escHtml(dinaCodigo(p))}</span></div></div>
+        <p class="fld-hint" style="margin-top:8px">Este código sai impresso na OP deste projeto. Ao ser bipado no Apontamento, abre o visualizador 3D dentro do sistema.</p>`:''}
       </section>
     </div></div>`;
   dinaValida(true); view.scrollTop=keep;
