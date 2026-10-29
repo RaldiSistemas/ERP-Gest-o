@@ -278,6 +278,76 @@
   }
 
 
+  /* ===== Dinabox · Visualizador 3D ===== */
+  :root{ --dina:#ff5a2c; --dina-2:#f4592a; }
+  .dina-logo{ display:inline-flex; align-items:center; gap:.28em; line-height:1; }
+  .dina-logo svg{ display:block; flex:none; }
+  .dina-logo b{ font-family:'Nunito','Poppins','Trebuchet MS','Segoe UI',system-ui,sans-serif; font-weight:800; letter-spacing:-.02em; color:var(--dina-2); }
+  .dina-pill{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:999px; background:rgba(75,75,85,.08); color:var(--muted); }
+  .dina-pill.on{ background:rgba(255,90,44,.12); color:#c2410c; }
+  .dina-pill svg{ flex:none; }
+  .dina-go{ display:inline-grid; place-items:center; width:32px; height:32px; border-radius:9px; border:1px solid rgba(255,90,44,.38); background:#fff; cursor:pointer; padding:0; transition:background .12s,transform .12s,box-shadow .12s; }
+  .dina-go:hover{ background:rgba(255,90,44,.1); transform:translateY(-1px); box-shadow:0 3px 8px rgba(255,90,44,.22); }
+  .dina-ico{ display:inline-grid; place-items:center; margin-left:auto; width:26px; height:26px; border-radius:8px; border:1px solid rgba(255,90,44,.38); background:#fff; cursor:pointer; flex:none; transition:background .12s,transform .12s; }
+  .dina-ico:hover{ background:rgba(255,90,44,.12); transform:translateY(-1px); }
+  .dina-btn{ display:inline-flex; align-items:center; gap:9px; margin-top:10px; font:inherit; font-size:13px; font-weight:700; color:#c2410c; background:#fff; border:1.5px solid rgba(255,90,44,.5); border-radius:11px; padding:7px 14px 7px 9px; cursor:pointer; transition:background .12s,box-shadow .12s,transform .12s; }
+  .dina-btn:hover{ background:rgba(255,90,44,.09); box-shadow:0 4px 12px rgba(255,90,44,.22); transform:translateY(-1px); }
+  /* visualizador embutido */
+  .dina-viewer{ position:fixed; inset:0; z-index:100000; display:flex; flex-direction:column; background:#14161a; animation:dinaIn .16s ease-out; }
+  @keyframes dinaIn{ from{opacity:0; transform:scale(.985)} to{opacity:1; transform:none} }
+  .dina-vbar{ flex:none; display:flex; align-items:center; gap:14px; padding:8px 14px; background:#fff; border-bottom:2px solid var(--dina); }
+  .dina-vinfo{ min-width:0; display:flex; flex-direction:column; line-height:1.25; }
+  .dina-vinfo b{ font-size:14px; color:var(--texto); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dina-vinfo small{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dina-vact{ margin-left:auto; display:flex; align-items:center; gap:8px; flex:none; }
+  .dina-vbtn{ display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:12.5px; font-weight:600; color:var(--texto); background:#fff; border:1px solid var(--linha); border-radius:9px; padding:6px 11px; cursor:pointer; transition:background .12s,border-color .12s; }
+  .dina-vbtn:hover{ background:rgba(255,90,44,.09); border-color:rgba(255,90,44,.5); }
+  .dina-vbtn.fechar{ background:var(--dina); border-color:var(--dina); color:#fff; }
+  .dina-vbtn.fechar:hover{ background:#e24a1e; }
+  .dina-vbody{ position:relative; flex:1; min-height:0; }
+  .dina-vbody iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; background:#fff; }
+  .dina-vload{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#fff; color:var(--muted); font-size:13.5px; text-align:center; padding:20px; transition:opacity .2s; }
+  .dina-vload.off{ opacity:0; pointer-events:none; }
+  .dina-spin{ width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,90,44,.2); border-top-color:var(--dina); animation:dinaSpin .8s linear infinite; }
+  @keyframes dinaSpin{ to{ transform:rotate(360deg) } }
+  .dina-vdica{ display:none; max-width:420px; }
+  .dina-vdica.on{ display:block; }
+  @media (max-width:640px){ .dina-vbtn span{ display:none; } .dina-vinfo small{ display:none; } }
+  /* tela do projeto */
+  .dina-hero{ position:relative; overflow:hidden; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:26px 30px; border-radius:18px; border:1px solid rgba(255,90,44,.25);
+    background:radial-gradient(120% 140% at 0% 0%,rgba(255,90,44,.16),rgba(255,90,44,0) 55%),linear-gradient(135deg,#fff 0%,#fff7f3 100%); box-shadow:0 6px 24px rgba(255,90,44,.10); margin-bottom:18px; }
+  .dina-hero::after{ content:''; position:absolute; right:-40px; top:-40px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(255,90,44,.12),transparent 70%); pointer-events:none; }
+  .dina-hero h1{ margin:14px 0 2px; font-size:21px; color:var(--texto); }
+  .dina-hero p{ margin:0; font-size:13.5px; color:var(--muted); max-width:520px; }
+  .dina-chips{ display:flex; gap:10px; flex-wrap:wrap; position:relative; z-index:1; }
+  .dina-chip{ background:#fff; border:1px solid var(--linha); border-radius:12px; padding:8px 14px; min-width:92px; box-shadow:0 1px 2px rgba(75,75,85,.06); }
+  .dina-chip span{ display:block; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .dina-chip b{ font-size:16px; color:var(--texto); font-family:ui-monospace,monospace; }
+  .dina-grid{ display:grid; grid-template-columns:minmax(240px,320px) 1fr; gap:18px; align-items:start; }
+  @media(max-width:860px){ .dina-grid{ grid-template-columns:1fr; } }
+  .dina-card{ background:var(--surface); border:1px solid var(--linha); border-radius:16px; padding:20px 22px; box-shadow:0 1px 2px rgba(75,75,85,.06); }
+  .dina-card h3{ margin:0 0 14px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .dina-kv{ display:flex; flex-direction:column; gap:12px; }
+  .dina-kv div span{ display:block; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .dina-kv div b{ font-size:14px; color:var(--texto); font-weight:600; }
+  .dina-lbl{ display:block; font-size:12.5px; font-weight:700; color:var(--texto); margin-bottom:7px; }
+  .dina-in{ width:100%; font:inherit; font-size:13.5px; padding:12px 14px; border:1.5px solid var(--linha); border-radius:12px; background:#faf9f5; color:var(--texto); outline:none; transition:border-color .12s,box-shadow .12s,background .12s; }
+  .dina-in:focus{ border-color:var(--dina); background:#fff; box-shadow:0 0 0 4px rgba(255,90,44,.14); }
+  .dina-in.ok{ border-color:#2f8f46; } .dina-in.err{ border-color:#d9262c; }
+  .dina-msg{ min-height:18px; margin:7px 2px 0; font-size:12.5px; color:var(--muted); }
+  .dina-msg.ok{ color:#23743a; } .dina-msg.err{ color:#c0262c; }
+  .dina-acoes{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .btn.dina-prim{ background:var(--dina); border-color:var(--dina); color:#fff; } .btn.dina-prim:hover:not(:disabled){ background:#e84a1c; border-color:#e84a1c; }
+  .btn.dina-prim:disabled{ opacity:.45; cursor:default; }
+  .btn.dina-open{ border-color:rgba(255,90,44,.55); color:#c2410c; background:#fff; } .btn.dina-open:hover:not(:disabled){ background:rgba(255,90,44,.09); }
+  .btn.dina-open:disabled{ opacity:.4; cursor:default; }
+  .dina-meta{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px dashed var(--linha); font-size:12.5px; color:var(--muted); align-items:center; }
+  .dina-meta b{ color:var(--texto); }
+  .dina-lista{ display:flex; flex-direction:column; gap:10px; }
+  .dina-lista button{ display:flex; align-items:center; gap:12px; text-align:left; font:inherit; background:#fff; border:1px solid var(--linha); border-radius:12px; padding:10px 14px; cursor:pointer; transition:border-color .12s,background .12s; }
+  .dina-lista button:hover{ border-color:rgba(255,90,44,.55); background:rgba(255,90,44,.05); }
+  .dina-lista b{ font-family:ui-monospace,monospace; color:var(--vermelho); }
+
   /* ===== Orientações do projeto ===== */
   .ori-pill{ display:inline-block; font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:999px; background:rgba(75,75,85,.08); color:var(--muted); }
   .ori-pill.on{ background:rgba(47,143,70,.12); color:#23743a; }
@@ -2893,6 +2963,134 @@
     .cp-tbl th,.cp-s td,.cp-bx{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
 
+  /* ================= CADASTRO DE MÓDULOS + CONFIGURAÇÃO DO PROJETO ================= */
+  .mm-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:16px; }
+  .mm-card{ background:var(--surface); border:1px solid var(--linha); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .15s, transform .15s; }
+  .mm-card:hover{ box-shadow:0 10px 28px rgba(35,36,40,.11); transform:translateY(-2px); }
+  .mm-card.off .mm-ph,.mm-card.off .mm-bd{ opacity:.55; }
+  .mm-ph{ aspect-ratio:4/3; background:#f1f1ec center/cover no-repeat; display:grid; place-items:center; color:#b9b9b1; position:relative; }
+  .mm-ph svg{ width:46px; height:46px; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round; }
+  .mm-flag{ position:absolute; top:10px; left:10px; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; background:rgba(35,36,40,.8); color:#fff; letter-spacing:.05em; text-transform:uppercase; }
+  .mm-bd{ padding:14px 16px 8px; flex:1; }
+  .mm-bd h3{ font-size:16px; font-weight:700; line-height:1.25; margin-bottom:3px; }
+  .mm-obs{ font-size:12px; color:var(--muted); margin-bottom:10px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .mm-bd h3 + .mm-lv{ margin-top:10px; }
+  .mm-lv{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .mm-n{ font:inherit; border-radius:9px; padding:7px 4px; text-align:center; border:1.5px solid transparent; background:#f1f1ec; color:var(--muted); }
+  .mm-n b{ display:block; font-size:11px; letter-spacing:.06em; }
+  .mm-n i{ display:block; font-style:normal; font-size:12.5px; font-weight:700; margin-top:1px; white-space:nowrap; }
+  .mm-n.n1{ background:#e6f4ea; color:#23723a; } .mm-n.n2{ background:#fbf0d8; color:#85560f; } .mm-n.n3{ background:#f8e3e1; color:#9b2a22; }
+  .mm-n.vz{ background:#f1f1ec; color:#a3a39c; }
+  .mm-ac{ display:flex; align-items:center; gap:2px; padding:6px 10px 12px 12px; }
+  .mm-ac .sp{ flex:1; }
+  .mm-ac .btn{ padding:6px 14px; font-size:13px; }
+  .mm-ac .icon-btn{ padding:7px; }
+  .mm-ac .icon-btn svg{ width:17px; height:17px; }
+  /* formulário */
+  .mm-up{ display:flex; gap:12px; align-items:stretch; }
+  .mm-pv{ width:132px; height:99px; flex:none; border-radius:10px; border:1px solid var(--linha); background:#f1f1ec center/cover no-repeat; display:grid; place-items:center; color:#b9b9b1; }
+  .mm-pv svg{ width:34px; height:34px; fill:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+  .mm-drop{ flex:1; border:2px dashed var(--linha); border-radius:12px; padding:14px; display:grid; place-content:center; text-align:center; font-size:13px; color:var(--muted); outline:none; cursor:pointer; line-height:1.5; }
+  .mm-drop:focus,.mm-drop.over,.mm-drop:hover{ border-color:var(--vermelho); background:rgba(152,36,36,.04); }
+  .mm-rem{ align-self:flex-start; background:none; border:0; color:var(--vermelho); font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; padding:4px 0; }
+  .mm-tr{ display:grid; grid-template-columns:1fr 92px 92px; gap:10px; align-items:center; padding:8px 0; border-top:1px solid var(--linha); }
+  .mm-tr:first-of-type{ border-top:0; }
+  .mm-tn{ display:flex; align-items:center; gap:9px; }
+  .mm-tn b{ font-size:12px; font-weight:800; padding:4px 9px; border-radius:7px; }
+  .mm-tn small{ font-size:12.5px; color:var(--muted); }
+  .mm-tn.n1 b{ background:#e6f4ea; color:#23723a; } .mm-tn.n2 b{ background:#fbf0d8; color:#85560f; } .mm-tn.n3 b{ background:#f8e3e1; color:#9b2a22; }
+  .mm-ti{ display:flex; align-items:center; gap:6px; }
+  .mm-ti input{ width:100%; font:inherit; font-size:14px; padding:8px 9px; border:1px solid var(--linha); border-radius:8px; text-align:right; }
+  .mm-ti input:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .mm-ti span{ font-size:12.5px; color:var(--muted); font-weight:600; }
+
+  /* topo do checklist: lead time + botão de configuração */
+  .chk-cfgb{ font:inherit; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:99px; border:1.5px solid var(--vermelho); background:#fff; color:var(--vermelho); cursor:pointer; transition:all .15s; white-space:nowrap; }
+  .chk-cfgb:hover{ background:var(--vermelho); color:#fff; }
+  .chk-cfgb svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .chk-cfgb em{ font-style:normal; font-size:11px; min-width:19px; height:19px; padding:0 5px; border-radius:99px; background:var(--vermelho); color:#fff; display:inline-grid; place-items:center; }
+  .chk-cfgb:hover em{ background:#fff; color:var(--vermelho); }
+  .chk-lt{ display:flex; flex-direction:column; line-height:1.1; padding:2px 14px; border-left:2px solid var(--linha); cursor:pointer; background:none; border-top:0; border-right:0; border-bottom:0; font:inherit; text-align:left; }
+  .chk-lt span{ font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+  .chk-lt b{ font-size:17px; font-weight:800; color:var(--texto); font-variant-numeric:tabular-nums; }
+
+  /* gaveta de configuração */
+  .cfg-ov{ position:fixed; inset:0; z-index:115; background:rgba(35,36,40,.5); display:none; justify-content:flex-end; }
+  .cfg-ov.open{ display:flex; }
+  .cfg-dr{ width:min(780px,100%); height:100%; background:var(--content); display:flex; flex-direction:column; box-shadow:-24px 0 60px rgba(0,0,0,.28); animation:cfgIn .26s cubic-bezier(.2,.7,.2,1); }
+  @keyframes cfgIn{ from{ transform:translateX(48px); opacity:0; } to{ transform:none; opacity:1; } }
+  .cfg-h{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:16px 22px; background:#fff; border-bottom:1px solid var(--linha); }
+  .cfg-h h2{ font-size:18px; font-weight:700; margin-top:2px; }
+  .cfg-h small{ display:block; font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .cfg-b{ flex:1; overflow-y:auto; padding:18px 22px 24px; display:flex; flex-direction:column; gap:12px; }
+  .cfg-lt{ display:flex; align-items:center; gap:16px; padding:18px 20px; border-radius:16px; color:#fff; background:linear-gradient(135deg,#982424 0%,#6f1818 100%); box-shadow:0 10px 26px rgba(152,36,36,.28); }
+  .cfg-lt-i{ width:50px; height:50px; border-radius:14px; background:rgba(255,255,255,.16); display:grid; place-items:center; flex:none; }
+  .cfg-lt-i svg{ width:26px; height:26px; fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .cfg-lt span{ display:block; font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; opacity:.8; }
+  .cfg-lt b{ display:block; font-size:34px; font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums; }
+  .cfg-lt-m{ margin-left:auto; text-align:right; font-size:12.5px; font-weight:600; opacity:.9; line-height:1.5; }
+  .cfg-it{ display:grid; grid-template-columns:84px 1fr auto auto; gap:14px; align-items:center; background:#fff; border:1px solid var(--linha); border-radius:14px; padding:12px; animation:cfgPop .22s ease; }
+  @keyframes cfgPop{ from{ transform:scale(.97); opacity:0; } to{ transform:none; opacity:1; } }
+  .cfg-th{ width:84px; height:63px; border-radius:9px; background:#f1f1ec center/cover no-repeat; display:grid; place-items:center; color:#b9b9b1; }
+  .cfg-th svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+  .cfg-mid b.nm{ display:block; font-size:14.5px; font-weight:700; margin-bottom:7px; }
+  .cfg-seg{ display:inline-grid; grid-template-columns:repeat(3,auto); gap:5px; }
+  .cfg-seg button{ font:inherit; text-align:center; padding:5px 11px; border-radius:9px; border:1.5px solid var(--linha); background:#fff; color:var(--muted); cursor:pointer; transition:all .12s; }
+  .cfg-seg button b{ display:block; font-size:11px; letter-spacing:.06em; }
+  .cfg-seg button i{ display:block; font-style:normal; font-size:12px; font-weight:700; white-space:nowrap; }
+  .cfg-seg button:hover:not(:disabled){ border-color:rgba(75,75,85,.45); }
+  .cfg-seg button:disabled{ opacity:.4; cursor:not-allowed; }
+  .cfg-seg button.on.n1{ background:#2f8f46; border-color:#2f8f46; color:#fff; }
+  .cfg-seg button.on.n2{ background:#d99a1a; border-color:#d99a1a; color:#fff; }
+  .cfg-seg button.on.n3{ background:#c0392b; border-color:#c0392b; color:#fff; }
+  .cfg-qt{ display:flex; align-items:center; border:1.5px solid var(--linha); border-radius:99px; overflow:hidden; }
+  .cfg-qt button{ width:32px; height:34px; border:0; background:#fff; font:inherit; font-size:18px; font-weight:700; cursor:pointer; color:var(--texto); }
+  .cfg-qt button:hover{ background:rgba(75,75,85,.08); }
+  .cfg-qt span{ min-width:30px; text-align:center; font-weight:700; font-size:14px; }
+  .cfg-sub{ text-align:right; min-width:78px; }
+  .cfg-sub span{ display:block; font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+  .cfg-sub b{ font-size:15px; font-variant-numeric:tabular-nums; }
+  .cfg-x{ grid-column:4; justify-self:end; }
+  .cfg-add{ font:inherit; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; padding:15px; border-radius:14px; border:2px dashed rgba(152,36,36,.4); background:rgba(152,36,36,.04); color:var(--vermelho); cursor:pointer; transition:all .15s; }
+  .cfg-add:hover{ background:rgba(152,36,36,.1); border-color:var(--vermelho); }
+  .cfg-add svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; }
+  .cfg-vz{ text-align:center; padding:26px 18px; color:var(--muted); font-size:13.5px; line-height:1.55; background:#fff; border:1px dashed var(--linha); border-radius:14px; }
+  .cfg-vz b{ display:block; color:var(--texto); font-size:15px; margin-bottom:4px; }
+  .cfg-f{ display:flex; justify-content:flex-end; gap:10px; padding:13px 22px; background:#fff; border-top:1px solid var(--linha); }
+  /* seletor de módulos */
+  .cfg-pk{ position:fixed; inset:0; z-index:125; background:rgba(35,36,40,.6); display:flex; align-items:center; justify-content:center; padding:20px; }
+  .cfg-pkb{ width:min(900px,100%); max-height:88vh; background:var(--content); border-radius:16px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 28px 70px rgba(0,0,0,.35); animation:cfgPop .22s ease; }
+  .cfg-pkh{ display:flex; align-items:center; gap:12px; padding:14px 18px; background:#fff; border-bottom:1px solid var(--linha); }
+  .cfg-pkh h3{ font-size:17px; font-weight:700; }
+  .cfg-pkh .search{ margin-left:auto; }
+  .cfg-pkg{ padding:16px 18px; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+  .cfg-pc{ background:#fff; border:1px solid var(--linha); border-radius:13px; overflow:hidden; display:flex; flex-direction:column; }
+  .cfg-pc .mm-ph{ aspect-ratio:16/10; }
+  .cfg-pc .pb{ padding:10px 10px 11px; }
+  .cfg-pc .pb b{ display:block; font-size:14px; margin-bottom:8px; }
+  .cfg-pc .mm-lv{ gap:5px; }
+  .cfg-pc button.mm-n{ cursor:pointer; transition:transform .1s, border-color .12s; }
+  .cfg-pc button.mm-n:hover:not(:disabled){ transform:translateY(-1px); border-color:currentColor; }
+  .cfg-pc button.mm-n:disabled{ cursor:not-allowed; }
+  .cfg-pcn{ position:absolute; top:8px; right:8px; min-width:24px; height:24px; padding:0 7px; border-radius:99px; background:var(--vermelho); color:#fff; font-size:12px; font-weight:800; display:grid; place-items:center; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+  .cfg-pkf{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 18px; background:#fff; border-top:1px solid var(--linha); font-size:13px; color:var(--muted); }
+  @media (max-width:720px){
+    .cfg-it{ grid-template-columns:64px 1fr; } .cfg-th{ width:64px; height:48px; }
+    .cfg-qt,.cfg-sub{ grid-column:2; justify-self:start; } .cfg-x{ grid-column:2; grid-row:1; justify-self:end; }
+    .cfg-lt b{ font-size:28px; } .cfg-lt-m{ display:none; }
+    .chk-lt{ border-left:0; padding:0; }
+    .mm-tr{ grid-template-columns:1fr 78px 78px; }
+  }
+  /* folha impressa: módulos do projeto */
+  .cp-mt{ margin-top:12px; break-inside:avoid; }
+  .cp-mt h4{ background:#982424; color:#fff; font-size:10.5px; letter-spacing:.04em; padding:5px 8px; }
+  .cp-mt table{ width:100%; border-collapse:collapse; }
+  .cp-mt td,.cp-mt th{ border:1px solid #ccc; padding:4px 6px; font-size:10.5px; text-align:left; vertical-align:middle; }
+  .cp-mt th{ background:#f0f0ee; font-size:9px; text-transform:uppercase; letter-spacing:.05em; }
+  .cp-mt img{ width:34px; height:26px; object-fit:cover; border-radius:3px; vertical-align:middle; margin-right:6px; }
+  .cp-mt .t{ text-align:right; white-space:nowrap; } .cp-mt tfoot td{ font-weight:800; background:#f7f7f5; }
+  @media print{ .cfg-ov,.cfg-pk{ display:none !important; } .cp-mt h4,.cp-mt th,.cp-mt tfoot td{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+
   /* ================= DESIGNAÇÕES DE PROJETOS ================= */
   .ds{ max-width:1500px; }
   .ds-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
@@ -3190,9 +3388,10 @@
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
-      {label:'Pasta de produção', children:['Designações de Projetos','Orientações do projeto']},
+      {label:'Pasta de produção', children:['Designações de Projetos','Orientações do projeto','Visualizador 3D (Dinabox)']},
       {label:'Liberação de lote', children:['Projetos liberados','Lotes agrupados']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
+      {label:'Módulos de montagem', children:['Cadastro de módulos']},
       {label:'Programação', children:['Plano Mestre','MRP','Capacidade']},
       {label:'Consultas', children:['Ordens Abertas','Backlog']},
       {label:'Memorial de cálculo', children:['Simulação de estoque de fita']},
@@ -3340,10 +3539,12 @@
     if(mod.id==='pcp' && name==='Equipe Produtiva') return renderEquipe();
     if(mod.id==='pcp' && name==='Acompanhamento da Produção') return renderAcompOP();
     if(mod.id==='pcp' && name==='Rendimento') return renderRendimento();
+    if(mod.id==='pcp' && name==='Cadastro de módulos') return renderModulosMv();
     if(mod.id==='pcp' && name==='Cadastro de Lead time') return renderLead('cad');
     if(mod.id==='pcp' && name==='Painel de Atrasos') return renderLead('dash');
     if(mod.id==='pcp' && name==='Designações de Projetos') return renderDesig();
     if(mod.id==='pcp' && name==='Orientações do projeto') return renderOri();
+    if(mod.id==='pcp' && name==='Visualizador 3D (Dinabox)') return renderDina();
     if(mod.id==='pcp' && name==='Projetos liberados') return renderLiberacaoLote('lista');
     if(mod.id==='pcp' && name==='Lotes agrupados') return renderLiberacaoLote('agrupados');
     if(mod.id==='est' && name==='Solicitação de Compras (SC)') return renderSCEstoque();
@@ -4246,10 +4447,14 @@
       else if(TELA==='sc') atualizarSC(); else if(TELA==='sc-est') atualizarSCEst();
       else if(TELA==='sa-detalhe'&&saViewId) verSA(saViewId); else if(TELA==='sc-detalhe'&&scViewId) verSC(scViewId); },
       e=>console.warn('coresFita:',e.message));
+    db.ref('modulosMoveis').on('value',s=>{ MODULOS_MV=s.val()||{};
+      if(TELA==='modulos') atualizarModulosMv();
+      if(document.getElementById('cfgPkGrid')) cfgPkRender(); },
+      e=>console.warn('modulosMoveis:',e.message));
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
-    oriLigarDb();
+    oriLigarDb(); dinaLigarDb();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
@@ -12557,7 +12762,7 @@
               return `<button class="and-c${pausada?' and-c-pausada':''}" style="--sc:${S.cor}" onclick="abrirApont('${o.id}')">
                 <div class="ac-t"><span class="op-num">${escHtml(o.numero)}</span>
                   ${(o.obs||'').trim()?`<span class="ac-obs" title="Esta OP tem observação">${ALERTA_SVG}</span>`:''}
-                  ${pausada?'<span class="and-pill-pausa">pausada</span>':''}</div>
+                  ${pausada?'<span class="and-pill-pausa">pausada</span>':''}${dinaIconeOp(o)}</div>
                 ${(o.obs||'').trim()?`<span class="ac-obs-t">${escHtml(o.obs)}</span>`:''}
                 ${opClienteAmbiente(o)?`<div class="ac-cli">${escHtml(opClienteAmbiente(o))}</div>`:''}
                 <div class="ac-f ac-fn">${bolinhasFuncs(o)}<span>${escHtml(ativosResumo(o))} · desde ${fmtHora(o.inicio&&o.inicio.em)}</span></div>
@@ -12695,7 +12900,7 @@
       const cli=p.clientes.join(' / '), amb=p.ambientes.join(', ');
       return `<div class="and-c and-fila-c" style="--sc:${COR_FILA}">
         <div class="ac-t"><span class="op-num">Projeto ${escHtml(p.projeto)}</span>
-          <span class="and-pill-pausa">Lote ${escHtml(p.lote)}</span></div>
+          <span class="and-pill-pausa">Lote ${escHtml(p.lote)}</span>${dinaIconeProj(p.projeto)}</div>
         ${(cli||amb)?`<div class="ac-cli">${escHtml([cli,amb].filter(Boolean).join(' · '))}</div>`:''}
         <div class="ac-f">usinado ${fmtHora(p.em)} · ${filaHa(p.em)}</div>
       </div>`;
@@ -12736,7 +12941,7 @@
       <div class="ap-card" style="--ap-cor:${v.cor}">
         <div class="ap-h" style="border-color:${v.cor}">
           <div><span class="ap-lbl">Ordem de Produção</span>
-            <div class="ap-num">${escHtml(o.numero)}</div></div>
+            <div class="ap-num">${escHtml(o.numero)}</div>${dinaBtnOp(o)}</div>
           <div class="ap-st" style="background:${v.cor}18;color:${v.cor}">
             <span class="dot" style="background:${v.cor}"></span>${v.label}</div>
         </div>
@@ -12929,12 +13134,316 @@
       ...(xl.length?{extras:xl}:{}),
       ...(pecas!=null?{pecasProjeto:pecas}:{}),
       ...(chk?{checklistLiberacao:chk}:{}),
+      ...(chk&&chk.montagem?{montagemProjeto:chk.montagem,leadMontagemMin:chk.montagem.totalMin}:{}),
       ...(lm!=null?{leadMin:lm, leadDesvioMin:(norm+ext)-lm}:{})})
       .then(()=>{ delete CHKS[id]; toast('OP encerrada — '+fmtMin(norm+ext)+(ext?' ('+fmtMin(ext)+' extra)':'')
         +(lm!=null?((norm+ext)>lm?' · ATRASO de '+fmtMin((norm+ext)-lm):' · dentro do lead time'):'')); abrirApont(id); })
       .catch(e=>toast('Erro: '+e.message));
   }
 
+
+/* ================= CADASTRO DE MÓDULOS (móveis) ================= */
+// modulosMoveis/{id} = {nome, img?, obs?, tempos:{n1,n2,n3} (minutos por unidade), ativo, criadoEm, criadoPor, atualizadoEm, por}
+// Usado na "Configuração do projeto" do checklist de liberação (soma o lead time de montagem).
+let MODULOS_MV={}, mmBusca='', mmStatus='todos';
+let mmSel={blob:null,prevUrl:null,atual:null,remover:false};
+const MM_NIVEIS=[{k:'n1',l:'N1',d:'Simples'},{k:'n2',l:'N2',d:'Intermediário'},{k:'n3',l:'N3',d:'Complexo'}];
+const MM_SVG={
+  movel:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 12h16M12 3v18"/><path d="M9 8h.01M15 8h.01M9 16h.01M15 16h.01"/></svg>',
+  edit:'<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg>',
+  copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/></svg>',
+  off:'<svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  on:'<svg viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A9.8 9.8 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4M6.6 6.7C3.7 8.6 2 12 2 12s3.6 7 10 7a9.6 9.6 0 004.3-1"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/></svg>',
+  del:'<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
+  img:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>',
+  clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 3h5"/></svg>',
+  gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+function mmTodos(){
+  return Object.keys(MODULOS_MV||{}).map(k=>Object.assign({},MODULOS_MV[k],{id:k})).filter(m=>m&&m.nome)
+    .sort((a,b)=>String(a.nome).localeCompare(String(b.nome),'pt-BR'));
+}
+function mmUrl(u){ return u&&/^https:\/\/[^\s'"()]+$/.test(u)?u:null; }
+function mmTempo(m,k){ return Math.max(0,parseInt(m&&m.tempos&&m.tempos[k],10)||0); }
+function mmT(min){ return min>0?fmtMin(min):'—'; }
+function mmBg(u){ u=mmUrl(u); return u?`background-image:url('${u}')`:''; }
+function mmNiveisHtml(m){
+  return `<div class="mm-lv">${MM_NIVEIS.map(n=>{ const t=mmTempo(m,n.k);
+    return `<div class="mm-n ${t?n.k:'vz'}" title="${n.l} · ${n.d}"><b>${n.l}</b><i>${mmT(t)}</i></div>`; }).join('')}</div>`;
+}
+
+function renderModulosMv(){
+  TELA='modulos';
+  view.innerHTML=`<div class="page">
+    <div class="page-head"><div><h1 class="page-title">Cadastro de módulos</h1><p class="page-sub" id="mmSub"></p></div>
+      <button class="btn btn-primary" onclick="formModuloMv()">+ Novo módulo</button></div>
+    <div class="toolbar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <input class="search" id="mmBuscaIn" value="${escHtml(mmBusca).replace(/"/g,'&quot;')}" placeholder="Buscar módulo..." oninput="mmBusca=this.value;atualizarModulosMv()">
+      <select class="search" style="width:auto" onchange="mmStatus=this.value;atualizarModulosMv()">
+        <option value="todos" ${mmStatus==='todos'?'selected':''}>Todos</option>
+        <option value="ativos" ${mmStatus==='ativos'?'selected':''}>Ativos</option>
+        <option value="inativos" ${mmStatus==='inativos'?'selected':''}>Inativos</option></select>
+    </div><div id="mmBody"></div></div>`;
+  atualizarModulosMv();
+}
+function atualizarModulosMv(){
+  const b=document.getElementById('mmBody'); if(!b) return;
+  const todos=mmTodos(), at=todos.filter(m=>m.ativo!==false).length;
+  const sub=document.getElementById('mmSub'); if(sub) sub.textContent=`${todos.length} módulo(s) · ${at} ativo(s) · ${todos.length-at} inativo(s)`;
+  const q=(mmBusca||'').trim().toLowerCase();
+  const lista=todos.filter(m=>(mmStatus==='todos'||(mmStatus==='ativos'?m.ativo!==false:m.ativo===false))&&(!q||String(m.nome).toLowerCase().includes(q)));
+  if(!todos.length){
+    b.innerHTML=`<div class="empty"><div class="e-ic">${MM_SVG.movel}</div><h3>Nenhum módulo cadastrado</h3>
+      <p>Cadastre os móveis (ex.: Penteadeira, Perfumaria) com foto e o tempo de fabricação de cada nível.</p>
+      <button class="btn btn-primary" onclick="formModuloMv()">+ Cadastrar primeiro módulo</button></div>`; return; }
+  if(!lista.length){ b.innerHTML=`<div class="empty"><p>Nenhum módulo encontrado.</p></div>`; return; }
+  b.innerHTML=`<div class="mm-grid">${lista.map(m=>{ const u=mmUrl(m.img), off=m.ativo===false;
+    return `<article class="mm-card ${off?'off':''}">
+      <div class="mm-ph" style="${mmBg(u)}">${u?'':MM_SVG.movel}${off?'<span class="mm-flag">Inativo</span>':''}</div>
+      <div class="mm-bd"><h3>${escHtml(m.nome)}</h3>${m.obs?`<div class="mm-obs">${escHtml(m.obs)}</div>`:''}${mmNiveisHtml(m)}</div>
+      <div class="mm-ac">
+        <button class="btn btn-ghost" onclick="formModuloMv('${m.id}')">Editar</button><span class="sp"></span>
+        <button class="icon-btn" title="Duplicar" onclick="mmDuplicar('${m.id}')">${MM_SVG.copy}</button>
+        <button class="icon-btn" title="${off?'Ativar':'Inativar'}" onclick="mmAtivo('${m.id}')">${off?MM_SVG.off:MM_SVG.on}</button>
+        <button class="icon-btn danger" title="Excluir" onclick="mmExcluir('${m.id}')">${MM_SVG.del}</button>
+      </div></article>`; }).join('')}</div>`;
+}
+
+function mmPrevAtual(){
+  const pv=document.getElementById('mmPrev'); if(!pv) return;
+  const src=mmSel.remover?null:(mmSel.blob?mmSel.prevUrl:mmSel.atual);
+  pv.style.backgroundImage=src?`url('${src}')`:''; pv.innerHTML=src?'':MM_SVG.img;
+  const r=document.getElementById('mmRem'); if(r) r.style.display=src?'inline-block':'none';
+}
+function mmCarregarImg(file){
+  if(!file||!/^image\//.test(file.type)){ toast('Isso não é uma imagem'); return; }
+  const url=URL.createObjectURL(file), img=new Image();
+  img.onload=()=>{
+    URL.revokeObjectURL(url);
+    const L=Math.min(1,720/Math.max(img.width,img.height)), cv=document.createElement('canvas');
+    cv.width=Math.max(1,Math.round(img.width*L)); cv.height=Math.max(1,Math.round(img.height*L));
+    const cx=cv.getContext('2d'); cx.fillStyle='#fff'; cx.fillRect(0,0,cv.width,cv.height); cx.drawImage(img,0,0,cv.width,cv.height);
+    cv.toBlob(b=>{
+      if(!b){ toast('Falha ao preparar a imagem'); return; }
+      if(mmSel.prevUrl) URL.revokeObjectURL(mmSel.prevUrl);
+      mmSel.blob=b; mmSel.prevUrl=URL.createObjectURL(b); mmSel.remover=false; mmPrevAtual();
+    },'image/jpeg',.86);
+  };
+  img.onerror=()=>{ URL.revokeObjectURL(url); toast('Não consegui abrir a imagem'); };
+  img.src=url;
+}
+function mmRemoverImg(){ mmSel.blob=null; mmSel.remover=true; mmPrevAtual(); }
+document.addEventListener('paste',ev=>{
+  if(!document.getElementById('mmDrop')) return;   // só com o formulário de módulo aberto
+  const its=(ev.clipboardData&&ev.clipboardData.items)||[];
+  for(const it of its){ if(it.type&&it.type.indexOf('image/')===0){ ev.preventDefault(); mmCarregarImg(it.getAsFile()); return; } }
+});
+async function mmEnviarImg(blob){
+  let erro='';
+  for(const preset of ['pastas',CLD_PRESET_AVATAR]){   // mesmos presets unsigned do cadastro de cores
+    const fd=new FormData(); fd.append('file',blob,'modulo.jpg'); fd.append('upload_preset',preset);
+    const r=await fetch(`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/image/upload`,{method:'POST',body:fd});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.secure_url) return j.secure_url;
+    erro=(j.error&&j.error.message)||('Cloudinary recusou o envio ('+r.status+')');
+  }
+  throw new Error(erro);
+}
+function formModuloMv(id){
+  const m=id?MODULOS_MV[id]:null; if(id&&!m) return;
+  if(mmSel.prevUrl) URL.revokeObjectURL(mmSel.prevUrl);
+  mmSel={blob:null,prevUrl:null,atual:m?mmUrl(m.img):null,remover:false};
+  const linhas=MM_NIVEIS.map(n=>{ const t=m?mmTempo(m,n.k):0;
+    return `<div class="mm-tr"><div class="mm-tn ${n.k}"><b>${n.l}</b><small>${n.d}</small></div>
+      <label class="mm-ti"><input type="number" min="0" step="1" id="mmH_${n.k}" value="${t?Math.floor(t/60):''}" placeholder="0"><span>h</span></label>
+      <label class="mm-ti"><input type="number" min="0" max="59" step="1" id="mmM_${n.k}" value="${t?t%60:''}" placeholder="0"><span>min</span></label></div>`; }).join('');
+  abrirModal(id?'Editar módulo':'Novo módulo',
+    `<div class="fld"><label>Nome do módulo<i>*</i></label>
+       <input id="mmNome" maxlength="60" placeholder="Ex.: Penteadeira" value="${m?escHtml(m.nome).replace(/"/g,'&quot;'):''}"></div>
+     <div class="fld" style="margin-top:16px"><label>Foto</label>
+       <div class="mm-up"><div class="mm-pv" id="mmPrev"></div>
+         <div class="mm-drop" id="mmDrop" tabindex="0" onclick="document.getElementById('mmFile').click()"><span><b>Cole o print (Ctrl+V)</b><br>arraste ou clique para escolher</span></div></div>
+       <input type="file" id="mmFile" accept="image/*" style="display:none" onchange="mmCarregarImg(this.files[0]);this.value=''">
+       <button class="mm-rem" id="mmRem" type="button" onclick="mmRemoverImg()" style="display:none">Remover foto</button></div>
+     <div class="fld" style="margin-top:16px"><label>Tempo de fabricação por nível<i>*</i></label>
+       <div>${linhas}</div>
+       <span class="fld-hint">Tempo para fazer 1 unidade deste módulo em cada nível de dificuldade. Deixe em branco o nível que não existe.</span></div>
+     <div class="fld" style="margin-top:16px"><label>Observação</label>
+       <input id="mmObs" maxlength="140" placeholder="Opcional" value="${m&&m.obs?escHtml(m.obs).replace(/"/g,'&quot;'):''}"></div>`,
+    `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+     <button class="btn btn-primary" id="btnMmSalvar" onclick="mmSalvar('${id||''}')">${id?'Salvar alterações':'Cadastrar módulo'}</button>`);
+  mmPrevAtual();
+  const dz=document.getElementById('mmDrop');
+  if(dz){
+    dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+    dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('over'); const f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) mmCarregarImg(f); });
+  }
+  const nm=document.getElementById('mmNome'); if(nm) nm.addEventListener('keydown',e=>{ if(e.key==='Enter') mmSalvar(id||''); });
+}
+async function mmSalvar(id){
+  const nome=(document.getElementById('mmNome').value||'').trim().replace(/\s+/g,' ');
+  if(!nome){ toast('Informe o nome do módulo'); return; }
+  if(mmTodos().some(x=>x.id!==id&&String(x.nome).toLowerCase()===nome.toLowerCase())){ toast('Já existe um módulo com esse nome'); return; }
+  const tempos={};
+  MM_NIVEIS.forEach(n=>{
+    const h=parseInt(document.getElementById('mmH_'+n.k).value,10)||0, mi=parseInt(document.getElementById('mmM_'+n.k).value,10)||0;
+    tempos[n.k]=Math.max(0,h*60+mi); });
+  if(!MM_NIVEIS.some(n=>tempos[n.k]>0)){ toast('Informe o tempo de pelo menos um nível'); return; }
+  const obs=(document.getElementById('mmObs').value||'').trim();
+  const btn=document.getElementById('btnMmSalvar'); if(btn){ btn.disabled=true; btn.textContent='Salvando...'; }
+  const volta=()=>{ if(btn){ btn.disabled=false; btn.textContent=id?'Salvar alterações':'Cadastrar módulo'; } };
+  let img=null;
+  try{
+    if(mmSel.blob) img=await mmEnviarImg(mmSel.blob);
+    else if(!mmSel.remover) img=mmSel.atual||null;
+  }catch(e){ volta(); toast('Falha ao enviar a imagem: '+e.message); return; }
+  const ex=id?MODULOS_MV[id]:null, rid=id||db.ref('modulosMoveis').push().key, agora=new Date().toISOString();
+  const obj={nome,tempos,ativo:ex?ex.ativo!==false:true,
+    criadoEm:(ex&&ex.criadoEm)||agora, criadoPor:(ex&&ex.criadoPor)||usuarioAtual(), atualizadoEm:agora, por:usuarioAtual()};
+  if(img) obj.img=img;
+  if(obs) obj.obs=obs;
+  db.ref('modulosMoveis/'+rid).set(obj)
+    .then(()=>{ fecharModal(); toast(id?'Módulo atualizado':'Módulo cadastrado'); })
+    .catch(e=>{ volta(); toast('Erro: '+e.message); });
+}
+function mmDuplicar(id){
+  const m=MODULOS_MV[id]; if(!m) return;
+  let nome=m.nome+' (cópia)', k=2; const nomes=mmTodos().map(x=>String(x.nome).toLowerCase());
+  while(nomes.includes(nome.toLowerCase())) nome=m.nome+' (cópia '+(k++)+')';
+  const agora=new Date().toISOString(), rid=db.ref('modulosMoveis').push().key;
+  const obj={nome,tempos:Object.assign({},m.tempos),ativo:true,criadoEm:agora,criadoPor:usuarioAtual(),atualizadoEm:agora,por:usuarioAtual()};
+  if(m.img) obj.img=m.img; if(m.obs) obj.obs=m.obs;
+  db.ref('modulosMoveis/'+rid).set(obj).then(()=>toast('Módulo duplicado — ajuste o nome e os tempos')).catch(e=>toast('Erro: '+e.message));
+}
+function mmAtivo(id){
+  const m=MODULOS_MV[id]; if(!m) return; const novo=m.ativo===false;
+  db.ref('modulosMoveis/'+id).update({ativo:novo,atualizadoEm:new Date().toISOString(),por:usuarioAtual()})
+    .then(()=>toast(novo?'Módulo ativado':'Módulo inativado — não aparece mais na configuração dos projetos')).catch(e=>toast('Erro: '+e.message));
+}
+function mmExcluir(id){
+  const m=MODULOS_MV[id]; if(!m) return;
+  if(!confirm(`Excluir o módulo "${m.nome}"?\n\nProjetos que já usaram este módulo mantêm o que foi salvo.`)) return;
+  db.ref('modulosMoveis/'+id).remove().then(()=>toast('Módulo excluído')).catch(e=>toast('Erro: '+e.message));
+}
+
+/* ================= CONFIGURAÇÃO DO PROJETO (dentro do checklist) ================= */
+// Cada item = {uid, mid, nome, img?, tempos:{n1,n2,n3}, nivel, qtd}. Guarda uma "foto" do módulo no momento,
+// então mudar/excluir o cadastro depois não altera projetos já configurados.
+// Lead time de montagem = soma de tempos[nivel] × qtd.
+function cfgTotal(c){ return (c&&c.mont||[]).reduce((a,x)=>a+(parseInt(x.tempos&&x.tempos[x.nivel],10)||0)*(x.qtd||1),0); }
+function cfgMonta(c){
+  const itens=(c.mont||[]).map(x=>{ const un=parseInt(x.tempos&&x.tempos[x.nivel],10)||0, o={mid:x.mid,nome:x.nome,nivel:x.nivel,qtd:x.qtd||1,un,min:un*(x.qtd||1),
+    tempos:{n1:parseInt(x.tempos.n1,10)||0,n2:parseInt(x.tempos.n2,10)||0,n3:parseInt(x.tempos.n3,10)||0}}; if(x.img) o.img=x.img; return o; });
+  return {itens,totalMin:itens.reduce((a,x)=>a+x.min,0)};
+}
+function chkAtualizaLT(){
+  const c=chkC(); if(!c) return;
+  const e=document.getElementById('chkLT'); if(e) e.textContent=fmtMin(cfgTotal(c));
+  const b=document.getElementById('chkCfgN'); if(b){ const n=(c.mont||[]).length; b.textContent=n; b.style.display=n?'':'none'; }
+}
+function chkAbrirConfig(){
+  if(!chkC()) return;
+  let ov=document.getElementById('cfgOv');
+  if(!ov){ ov=document.createElement('div'); ov.id='cfgOv'; ov.className='cfg-ov'; document.body.appendChild(ov); }
+  ov.onclick=e=>{ if(e.target===ov) chkFecharConfig(); };
+  ov.classList.add('open'); cfgRender();
+}
+function chkFecharConfig(){
+  const pk=document.getElementById('cfgPk'); if(pk) pk.remove();
+  const ov=document.getElementById('cfgOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; }
+  chkAtualizaLT();
+}
+function cfgRender(){
+  const ov=document.getElementById('cfgOv'), c=chkC(); if(!ov||!c) return;
+  const o=OPS.find(x=>x.id===CHK_ATUAL)||{}, r0=(o.projetosLote||[])[0]||{};
+  const bd=ov.querySelector('.cfg-b'), sc=bd?bd.scrollTop:0;
+  const it=c.mont, tot=cfgTotal(c), un=it.reduce((a,x)=>a+(x.qtd||1),0);
+  const sub=[o.numero?'OP '+o.numero:'',o.projeto?'Projeto '+o.projeto:'',r0.cliente||'',r0.ambiente||''].filter(Boolean).map(escHtml).join(' · ');
+  ov.innerHTML=`<div class="cfg-dr">
+    <div class="cfg-h"><div><span class="chk-tag">Checklist · Liberado do PCP</span><h2>Configuração do projeto</h2><small>${sub||'&nbsp;'}</small></div>
+      <button class="icon-btn" title="Fechar" onclick="chkFecharConfig()" style="width:30px;height:30px">${MM_SVG.x.replace('<svg','<svg width="20" height="20"')}</button></div>
+    <div class="cfg-b">
+      <div class="cfg-lt"><div class="cfg-lt-i">${MM_SVG.clock}</div>
+        <div><span>Lead time de montagem</span><b id="cfgLT">${fmtMin(tot)}</b></div>
+        <div class="cfg-lt-m">${it.length} módulo(s)<br>${un} unidade(s)</div></div>
+      ${it.length?it.map(x=>{ const u=mmUrl(x.img), sub=(parseInt(x.tempos[x.nivel],10)||0)*(x.qtd||1);
+        return `<div class="cfg-it">
+          <div class="cfg-th" style="${mmBg(u)}">${u?'':MM_SVG.movel}</div>
+          <div class="cfg-mid"><b class="nm">${escHtml(x.nome)}</b>
+            <div class="cfg-seg">${MM_NIVEIS.map(n=>{ const t=parseInt(x.tempos[n.k],10)||0;
+              return `<button class="${n.k}${x.nivel===n.k?' on':''}" ${t?'':'disabled'} title="${n.d}" onclick="cfgNivel('${x.uid}','${n.k}')"><b>${n.l}</b><i>${mmT(t)}</i></button>`; }).join('')}</div></div>
+          <div class="cfg-qt"><button title="Menos" onclick="cfgQtd('${x.uid}',-1)">−</button><span>${x.qtd||1}</span><button title="Mais" onclick="cfgQtd('${x.uid}',1)">+</button></div>
+          <div class="cfg-sub"><span>Tempo</span><b>${fmtMin(sub)}</b></div>
+          <button class="icon-btn danger cfg-x" title="Remover do projeto" onclick="cfgRem('${x.uid}')">${MM_SVG.del}</button>
+        </div>`; }).join('')
+      :`<div class="cfg-vz"><b>Nenhum módulo no projeto ainda</b>Clique em “Adicionar módulo”, escolha o móvel e o nível de dificuldade. O lead time de montagem é somado automaticamente.</div>`}
+      <button class="cfg-add" onclick="cfgAbrirPicker()">${MM_SVG.plus}Adicionar módulo</button>
+    </div>
+    <div class="cfg-f"><button class="btn btn-primary" onclick="chkFecharConfig()">Concluir configuração</button></div></div>`;
+  const nb=ov.querySelector('.cfg-b'); if(nb) nb.scrollTop=sc;
+}
+function cfgUid(){ return 'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function cfgAdd(mid,nv){
+  const c=chkC(), m=MODULOS_MV[mid]; if(!c||!m) return;
+  if(!mmTempo(m,nv)){ toast('Este nível não tem tempo cadastrado'); return; }
+  const ex=c.mont.find(x=>x.mid===mid&&x.nivel===nv);
+  if(ex) ex.qtd=(ex.qtd||1)+1;
+  else c.mont.push({uid:cfgUid(),mid,nome:m.nome,img:mmUrl(m.img)||null,nivel:nv,qtd:1,
+    tempos:{n1:mmTempo(m,'n1'),n2:mmTempo(m,'n2'),n3:mmTempo(m,'n3')}});
+  toast(m.nome+' · '+nv.toUpperCase()+' adicionado');
+  cfgRender(); cfgPkRender(); chkAtualizaLT();
+}
+function cfgNivel(uid,nv){
+  const c=chkC(); if(!c) return; const x=c.mont.find(i=>i.uid===uid); if(!x||x.nivel===nv) return;
+  const outro=c.mont.find(i=>i.uid!==uid&&i.mid===x.mid&&i.nivel===nv);
+  if(outro){ outro.qtd=(outro.qtd||1)+(x.qtd||1); c.mont=c.mont.filter(i=>i.uid!==uid); } else x.nivel=nv;
+  cfgRender(); cfgPkRender(); chkAtualizaLT();
+}
+function cfgQtd(uid,d){
+  const c=chkC(); if(!c) return; const x=c.mont.find(i=>i.uid===uid); if(!x) return;
+  x.qtd=Math.max(1,Math.min(999,(x.qtd||1)+d)); cfgRender(); cfgPkRender(); chkAtualizaLT();
+}
+function cfgRem(uid){
+  const c=chkC(); if(!c) return; c.mont=c.mont.filter(i=>i.uid!==uid);
+  cfgRender(); cfgPkRender(); chkAtualizaLT();
+}
+function cfgAbrirPicker(){
+  let pk=document.getElementById('cfgPk');
+  if(!pk){ pk=document.createElement('div'); pk.id='cfgPk'; pk.className='cfg-pk'; document.body.appendChild(pk); }
+  pk.onclick=e=>{ if(e.target===pk) cfgFecharPicker(); };
+  pk.innerHTML=`<div class="cfg-pkb">
+    <div class="cfg-pkh"><h3>Adicionar módulo</h3>
+      <input class="search" id="cfgPkQ" placeholder="Buscar módulo..." oninput="cfgPkRender()" autocomplete="off">
+      <button class="icon-btn" title="Fechar" onclick="cfgFecharPicker()" style="width:30px;height:30px">${MM_SVG.x.replace('<svg','<svg width="20" height="20"')}</button></div>
+    <div class="cfg-pkg" id="cfgPkGrid"></div>
+    <div class="cfg-pkf"><span>Clique no nível desejado para adicionar. Clicar de novo soma mais uma unidade.</span>
+      <button class="btn btn-primary" onclick="cfgFecharPicker()">Pronto</button></div></div>`;
+  cfgPkRender();
+  setTimeout(()=>{ const q=document.getElementById('cfgPkQ'); if(q) q.focus(); },40);
+}
+function cfgFecharPicker(){ const pk=document.getElementById('cfgPk'); if(pk) pk.remove(); }
+function cfgPkRender(){
+  const g=document.getElementById('cfgPkGrid'); if(!g) return;
+  const c=chkC(), qi=document.getElementById('cfgPkQ'), q=(qi&&qi.value||'').trim().toLowerCase();
+  const todos=mmTodos().filter(m=>m.ativo!==false), lista=todos.filter(m=>!q||String(m.nome).toLowerCase().includes(q));
+  if(!todos.length){ g.innerHTML=`<div class="cfg-vz" style="grid-column:1/-1"><b>Nenhum módulo ativo</b>Cadastre os módulos em PCP › Módulos de montagem › Cadastro de módulos.</div>`; return; }
+  if(!lista.length){ g.innerHTML=`<div class="cfg-vz" style="grid-column:1/-1">Nenhum módulo encontrado.</div>`; return; }
+  g.innerHTML=lista.map(m=>{ const u=mmUrl(m.img), n=(c&&c.mont||[]).filter(x=>x.mid===m.id).reduce((a,x)=>a+(x.qtd||1),0);
+    return `<div class="cfg-pc"><div class="mm-ph" style="${mmBg(u)}">${u?'':MM_SVG.movel}${n?`<span class="cfg-pcn" title="No projeto">${n}</span>`:''}</div>
+      <div class="pb"><b>${escHtml(m.nome)}</b><div class="mm-lv">${MM_NIVEIS.map(nv=>{ const t=mmTempo(m,nv.k);
+        return `<button class="mm-n ${t?nv.k:'vz'}" ${t?'':'disabled'} title="${nv.d}" onclick="cfgAdd('${m.id}','${nv.k}')"><b>${nv.l}</b><i>${mmT(t)}</i></button>`; }).join('')}</div></div></div>`; }).join('');
+}
+function chkMontHtml(c){
+  const m=c&&c.montagem; if(!m||!m.itens||!m.itens.length) return '';
+  const nv={n1:'N1',n2:'N2',n3:'N3'};
+  return `<div class="cp-mt"><h4>Configuração do projeto · módulos de montagem</h4>
+    <table><thead><tr><th>Módulo</th><th style="width:48px">Nível</th><th style="width:40px">Qtd</th><th style="width:78px" class="t">Tempo</th></tr></thead>
+    <tbody>${m.itens.map(x=>`<tr><td>${x.img&&mmUrl(x.img)?`<img src="${escHtml(mmUrl(x.img))}" alt="">`:''}${escHtml(x.nome)}</td><td>${nv[x.nivel]||''}</td><td>${x.qtd}</td><td class="t">${fmtMin(x.min)}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="3">Lead time de montagem</td><td class="t">${fmtMin(m.totalMin)}</td></tr></tfoot></table></div>`;
+}
 
 /* ================= CHECKLIST DE LIBERAÇÃO (atividade "Liberado do PCP") ================= */
   // Obrigatório para encerrar a OP "Liberado do PCP": todos os itens precisam ser marcados
@@ -13018,7 +13527,8 @@
   function chkEstado(o){
     if(!CHKS[o.id]){
       let resp=''; try{ resp=(apFuncs&&apFuncs.length?apFuncs:funcsAtivos(o)).join(', '); }catch(e){}
-      CHKS[o.id]={r:{},o:{},projetista:'',responsavel:resp,pecas:o.pecasProjeto!=null?String(o.pecasProjeto):'',tent:false,fechadas:{}};
+      CHKS[o.id]={r:{},o:{},projetista:'',responsavel:resp,pecas:o.pecasProjeto!=null?String(o.pecasProjeto):'',tent:false,fechadas:{},
+        mont:((o.montagemProjeto&&o.montagemProjeto.itens)||[]).map(x=>({uid:cfgUid(),mid:x.mid,nome:x.nome,img:x.img||null,nivel:x.nivel,qtd:x.qtd||1,tempos:x.tempos||{n1:0,n2:0,n3:0}}))};
     }
     return CHKS[o.id];
   }
@@ -13054,6 +13564,8 @@
     ov.innerHTML=`
       <div class="chk-top">
         <div class="chk-tl"><span class="chk-tag">Liberado do PCP</span><h2>Checklist de liberação</h2></div>
+        <button class="chk-cfgb" onclick="chkAbrirConfig()" title="Escolher módulos e níveis do projeto">${MM_SVG.gear}Configuração do projeto<em id="chkCfgN" style="display:none">0</em></button>
+        <button class="chk-lt" onclick="chkAbrirConfig()" title="Lead time de montagem do projeto"><span>Lead time de montagem</span><b id="chkLT">0min</b></button>
         <div class="chk-prog"><div class="chk-bar"><i id="chkBar"></i></div><span id="chkCnt"></span></div>
         <button class="icon-btn" title="Fechar" onclick="fecharChecklist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
@@ -13084,10 +13596,10 @@
     ov.classList.add('open');
     CHK_ITENS.forEach(it=>chkPinta(it.id));
     CHK_SECOES.forEach((s,si)=>{ if(c.fechadas[si]) document.getElementById('cs-'+si).classList.add('closed'); });
-    chkAtualiza();
+    chkAtualiza(); chkAtualizaLT();
     document.getElementById('chkMain').scrollTop=0;
   }
-  function fecharChecklist(){ const ov=document.getElementById('chkOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; } }
+  function fecharChecklist(){ const cv=document.getElementById('cfgOv'); if(cv){ cv.classList.remove('open'); cv.innerHTML=''; } const pk=document.getElementById('cfgPk'); if(pk) pk.remove(); const ov=document.getElementById('chkOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; } }
   function chkC(){ return CHKS[CHK_ATUAL]; }
   function chkCampo(k,v){ const c=chkC(); if(!c) return; c[k]=v; chkAtualiza(); }
   function chkSet(id,v){
@@ -13163,7 +13675,8 @@
   function chkMonta(c,final){
     return {versao:1, projetista:c.projetista.trim(), responsavel:c.responsavel.trim(),
       pecas:parseInt(c.pecas,10)||0, dataISO:new Date().toISOString(), por:usuarioAtual(),
-      itens:CHK_ITENS.map(it=>({id:it.id,s:it.s,t:it.t,r:c.r[it.id]||'',o:(c.o[it.id]||'').trim()}))};
+      itens:CHK_ITENS.map(it=>({id:it.id,s:it.s,t:it.t,r:c.r[it.id]||'',o:(c.o[it.id]||'').trim()})),
+      ...((c.mont&&c.mont.length)?{montagem:cfgMonta(c)}:{})};
   }
 
   /* --- impressão --- */
@@ -13194,6 +13707,7 @@
       </div>
       <table class="cp-tbl"><thead><tr><th style="width:26px">Nº</th><th>Item verificado</th><th style="width:62px">Conferido</th><th style="width:44px">N/A</th></tr></thead>
         <tbody>${rows}</tbody></table>
+      ${chkMontHtml(c)}
       <div class="cp-res">${ok} conferido(s) · ${na} não se aplica · ${pend} pendente(s)</div>
       <div class="cp-ass"><div><span>${escHtml(c.responsavel)||'&nbsp;'}</span><i>Responsável pelo preenchimento</i></div>
         <div><span>&nbsp;</span><i>Conferência / Líder do setor</i></div></div>
@@ -14633,6 +15147,7 @@ const HM_ICONS={
  'Rendimento':'<path class=a d="M4 17a8 8 0 1116 0"/><path class=c d="M12 17l4-5"/><circle class=b cx=12 cy=17 r=1.3 />',
  'Equipe Produtiva':'<circle class=a cx=9 cy=8 r=3 /><path class=a d="M3 19c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5"/><circle class=b cx=17 cy=9 r=2.4 /><path class=b d="M17 14c2.5 0 4.5 1.6 4.5 4.5"/>',
  'Orientações do projeto':'<rect class=a x=3 y=4 width=18 height=14 rx=2 /><path class=b d="M3 15l5-4 4 3 3-2 6 4"/><circle class=c cx=8.5 cy=9 r=1.5 />',
+ 'Visualizador 3D (Dinabox)':HM_CUBE+'<circle class=c cx=12 cy=12 r=1.6 />',
  'Designações de Projetos':'<path class=a d="M3 8a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle class=c cx=12 cy=12.2 r=1.9 /><path class=b d="M8.6 17c.4-2 1.8-3 3.4-3s3 1 3.4 3"/>',
  'Projetos liberados':'<path class=a d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path class=c d="M9 14l2.2 2.2L15.5 12"/>',
  'Lotes agrupados':'<path class=a d="M12 3l9 5-9 5-9-5z"/><path class=b d="M3 12.5l9 5 9-5"/><path class=c d="M3 17l9 5 9-5"/>',
@@ -14657,6 +15172,7 @@ const HM_ICONS={
  'Raiz do produto':'<circle class=c cx=12 cy=5 r=2 /><path class=b d="M12 7v5M12 12c-4 0-6 2-6 5M12 12c4 0 6 2 6 5"/><circle class=a cx=6 cy=19 r=1.8 /><circle class=a cx=18 cy=19 r=1.8 />',
  'Cadastro simples (insumos)':'<path class=a d="M3 12V4h8l10 10-8 8z"/><circle class=c cx=7.5 cy=8.5 r=1.3 />',
  'Cadastro de Cores':'<path class=a d="M12 3a9 9 0 100 18c1.4 0 2-.9 2-1.8 0-1.3-1-1.6-1-2.7 0-1 .8-1.5 1.8-1.5H17a4 4 0 004-4c0-4-4-8-9-8z"/><circle class=c cx=7.5 cy=11 r=1.2 /><circle class=c cx=10.5 cy=7 r=1.2 /><circle class=c cx=15 cy=7.5 r=1.2 />',
+ 'Cadastro de módulos':'<rect class=a x=4 y=3 width=16 height=18 rx=2 /><path class=b d="M4 12h16M12 3v18"/><path class=c d="M9 8h.01M15 8h.01M9 16h.01M15 16h.01"/>',
  'Cadastro de centro de custo (CC)':'<circle class=a cx=12 cy=12 r=9 /><path class=c d="M14.8 9.3a3.5 3.5 0 100 5.4"/>',
  'Entradas':'<path class=b d="M4 14v6h16v-6"/><path class=a d="M12 3v12M8 11l4 4 4-4"/>',
  'Saídas':'<path class=b d="M4 14v6h16v-6"/><path class=a d="M12 15V3M8 7l4-4 4 4"/>',
@@ -15256,6 +15772,256 @@ function ligarListenersDesig(){
       if(window.__recarregando) return; window.__recarregando=true; location.reload();
     });
   }
+
+/* ================= DINABOX · VISUALIZADOR 3D (pré-montagem) ================= */
+// dinabox/{projeto} = {projeto,url,cliente,ambiente,em,por}
+//   url = link do Visualizador 3D do Dinabox (só https em dinabox.app). Um link por projeto.
+// O ícone do Dinabox aparece no Apontamento (card do Kanban e card da OP) quando o projeto da OP tem link.
+let DINA={}, dinaBusca='', dinaFiltro={st:'',lote:'',amb:''}, dinaProj=null, dinaPronto=false, dinaGradN=0;
+function dinaChave(p){ return slugProjChave(p); }
+function dinaAttr(s){ return escHtml(s).replace(/"/g,'&quot;'); }
+function dinaUrlOk(u){
+  try{ const x=new URL(String(u||'').trim());
+    return x.protocol==='https:' && (x.hostname==='dinabox.app'||x.hostname.endsWith('.dinabox.app')); }
+  catch(e){ return false; }
+}
+function dinaUrl(p){ const d=DINA[dinaChave(p)]; return (d&&d.url&&dinaUrlOk(d.url))?String(d.url).trim():''; }
+function dinaMeta(u){
+  try{ const x=new URL(u); return {modulo:x.searchParams.get('focus_module')||'', qr:x.searchParams.get('qrcode')||''}; }
+  catch(e){ return {modulo:'',qr:''}; }
+}
+/* logo reconstruído em SVG: hexágono laranja + cubo (topo vermelho, lado azul, lado verde) */
+function dinaCubo(px){
+  const n=++dinaGradN, g=k=>'dg'+k+n;
+  return `<svg width="${px}" height="${px}" viewBox="0 0 100 100" aria-hidden="true">
+    <defs><linearGradient id="${g('t')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a80000"/><stop offset="1" stop-color="#f20a05"/></linearGradient>
+      <linearGradient id="${g('l')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#352f8f"/><stop offset="1" stop-color="#1b4fb0"/></linearGradient>
+      <linearGradient id="${g('r')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00c800"/><stop offset="1" stop-color="#004f00"/></linearGradient></defs>
+    <path d="M50 6.5 L89 28.5 V71.5 L50 93.5 L11 71.5 V28.5 Z" fill="#fff" stroke="#ff5a2c" stroke-width="7" stroke-linejoin="round"/>
+    <g stroke-linejoin="round" stroke-width="3">
+      <path d="M50 20 L79.5 35 L50 49.5 L20.5 35 Z" fill="url(#${g('t')})" stroke="url(#${g('t')})"/>
+      <path d="M21 41 L47 54 V81 L21 67.5 Z" fill="url(#${g('l')})" stroke="url(#${g('l')})"/>
+      <path d="M79 41 L53 54 V81 L79 67.5 Z" fill="url(#${g('r')})" stroke="url(#${g('r')})"/></g></svg>`;
+}
+function dinaLogo(px){ return `<span class="dina-logo">${dinaCubo(px)}<b style="font-size:${Math.round(px*.78)}px">DinaBox</b></span>`; }
+
+/* ---------- abrir o visualizador ---------- */
+function dinaAbrir(p){
+  const u=dinaUrl(p);
+  if(!u){ toast('Este projeto ainda não tem link do Dinabox'); return; }
+  if(document.getElementById('modalOv')?.classList.contains('open')) fecharModal(); // fecha a lista de escolha de projeto
+  dinaViewerFechar();
+  const info=oriProjetos().find(x=>x.projeto===p)||{};
+  const sub=[info.cliente,info.ambiente].filter(Boolean).join(' · ');
+  const ic=d=>`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const ov=document.createElement('div');
+  ov.id='dinaViewer'; ov.className='dina-viewer'; ov.dataset.u=u;
+  ov.innerHTML=`
+    <div class="dina-vbar">
+      ${dinaCubo(30)}
+      <div class="dina-vinfo"><b>Projeto ${escHtml(p)} · Visualizador 3D</b><small>${escHtml(sub)||'Dinabox'}</small></div>
+      <div class="dina-vact">
+        <button class="dina-vbtn" id="dinaVRec" title="Recarregar">${ic('<path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/>')}<span>Recarregar</span></button>
+        <button class="dina-vbtn" id="dinaVFull" title="Tela cheia">${ic('<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>')}<span>Tela cheia</span></button>
+        <button class="dina-vbtn" id="dinaVTab" title="Abrir em outra aba">${ic('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>')}<span>Nova aba</span></button>
+        <button class="dina-vbtn fechar" id="dinaVFechar" title="Fechar (Esc)">${ic('<path d="M6 6l12 12M18 6L6 18"/>')}<span>Fechar</span></button>
+      </div>
+    </div>
+    <div class="dina-vbody">
+      <div class="dina-vload" id="dinaVLoad"><div class="dina-spin"></div><div>Carregando o Visualizador 3D…</div>
+        <div class="dina-vdica" id="dinaVDica">Está demorando ou ficou em branco? O Dinabox pode estar bloqueando a exibição dentro de outros sistemas. Use o botão <b>Nova aba</b> acima.</div></div>
+    </div>`;
+  document.body.appendChild(ov);
+  document.body.style.overflow='hidden';
+
+  const ifr=document.createElement('iframe');
+  ifr.title='Visualizador 3D · Dinabox';
+  ifr.setAttribute('allow','fullscreen; accelerometer; gyroscope; xr-spatial-tracking; clipboard-write');
+  ifr.setAttribute('allowfullscreen','');
+  ifr.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock allow-downloads');
+  const load=ov.querySelector('#dinaVLoad'), dica=ov.querySelector('#dinaVDica');
+  const t=setTimeout(()=>dica.classList.add('on'),7000);
+  ifr.addEventListener('load',()=>{ clearTimeout(t); load.classList.add('off'); setTimeout(()=>{ if(load.classList.contains('off')) load.style.display='none'; },250); });
+  ifr.src=u;
+  ov.querySelector('.dina-vbody').appendChild(ifr);
+
+  ov.querySelector('#dinaVFechar').onclick=dinaViewerFechar;
+  ov.querySelector('#dinaVTab').onclick=()=>window.open(u,'_blank','noopener,noreferrer');
+  ov.querySelector('#dinaVRec').onclick=()=>{ load.style.display=''; load.classList.remove('off'); dica.classList.remove('on'); ifr.src=u; };
+  ov.querySelector('#dinaVFull').onclick=()=>{ try{ if(document.fullscreenElement) document.exitFullscreen(); else ov.requestFullscreen(); }catch(e){} };
+  document.addEventListener('keydown',dinaViewerEsc,true);
+}
+function dinaViewerEsc(e){ if(e.key==='Escape' && document.getElementById('dinaViewer') && !document.fullscreenElement){ e.stopPropagation(); dinaViewerFechar(); } }
+function dinaViewerFechar(){
+  const ov=document.getElementById('dinaViewer'); if(!ov) return;
+  document.removeEventListener('keydown',dinaViewerEsc,true);
+  ov.remove(); document.body.style.overflow='';
+  if(document.fullscreenElement) try{ document.exitFullscreen(); }catch(e){}
+}
+function dinaProjetosOp(o){
+  const s=new Set(); if(o.projeto) s.add(String(o.projeto).trim());
+  const pl=Array.isArray(o.projetosLote)?o.projetosLote:Object.values(o.projetosLote||{});
+  pl.forEach(r=>{ if(r&&r.projeto) s.add(String(r.projeto).trim()); });
+  return [...s].filter(Boolean);
+}
+function dinaLinksOp(o){ return dinaProjetosOp(o).map(p=>({projeto:p,url:dinaUrl(p)})).filter(x=>x.url); }
+function dinaAbrirOp(id){
+  const o=OPS.find(x=>x.id===id); if(!o) return;
+  const l=dinaLinksOp(o);
+  if(!l.length){ toast('Este projeto ainda não tem link do Dinabox'); return; }
+  if(l.length===1){ dinaAbrir(l[0].projeto); return; }
+  const info=p=>{ const r=oriProjetos().find(x=>x.projeto===p)||{}; return [r.cliente,r.ambiente].filter(Boolean).join(' · '); };
+  abrirModal(dinaLogo(26),
+    `<p class="fld-hint" style="margin:0 0 12px">Esta OP tem mais de um projeto com link. Escolha qual visualizar:</p>
+     <div class="dina-lista">${l.map(x=>`<button data-p="${dinaAttr(x.projeto)}" onclick="dinaAbrir(this.dataset.p)">
+       <span class="dina-go" style="pointer-events:none">${dinaCubo(20)}</span><span><b>Projeto ${escHtml(x.projeto)}</b><br><small style="color:var(--muted)">${escHtml(info(x.projeto))||'—'}</small></span></button>`).join('')}</div>`,
+    '<button class="btn btn-primary" onclick="fecharModal()">Fechar</button>');
+}
+function dinaIconeOp(o){
+  if(!dinaLinksOp(o).length) return '';
+  return `<span class="dina-ico" role="link" tabindex="0" title="Visualizar as peças no Dinabox (3D)" onclick="event.stopPropagation();dinaAbrirOp('${o.id}')">${dinaCubo(18)}</span>`;
+}
+function dinaIconeProj(p){
+  if(!dinaUrl(p)) return '';
+  return `<span class="dina-ico" role="link" tabindex="0" data-p="${dinaAttr(p)}" title="Visualizar as peças no Dinabox (3D)" onclick="event.stopPropagation();dinaAbrir(this.dataset.p)">${dinaCubo(18)}</span>`;
+}
+function dinaBtnOp(o){
+  const n=dinaLinksOp(o).length; if(!n) return '';
+  return `<button class="dina-btn" onclick="dinaAbrirOp('${o.id}')" title="Abre o Visualizador 3D do Dinabox aqui dentro do sistema">${dinaCubo(24)}Visualizar peças em 3D${n>1?' · '+n+' projetos':''}</button>`;
+}
+
+/* ---------- Firebase ---------- */
+function dinaLigarDb(){
+  // se a leitura for negada (regras ainda não publicadas), o listener é religado sozinho
+  db.ref('dinabox').on('value',s=>{
+    DINA=s.val()||{}; const primeira=!dinaPronto; dinaPronto=true;
+    if(TELA==='dina') atualizarDina();
+    else if(TELA==='dina-det'){ const a=document.activeElement; if(!(a&&a.id==='dinaUrlIn')) renderDinaDet(); }
+    else if(primeira&&TELA==='apont'&&!apontOP) renderApont();
+  },e=>{ console.warn('dinabox:',e.message); setTimeout(dinaLigarDb,5000); });
+  db.ref('painel').on('value',()=>{ if(TELA==='dina') atualizarDina(); });
+}
+
+/* ---------- lista de projetos ---------- */
+function renderDina(){
+  TELA='dina'; dinaProj=null;
+  const P=oriProjetos();
+  const lotes=[...new Set(P.map(x=>x.lote).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
+  const ambs=[...new Set(P.flatMap(x=>x.ambs))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  const filtrado=dinaBusca||dinaFiltro.st||dinaFiltro.lote||dinaFiltro.amb;
+  view.innerHTML=`<div class="page page-wide opx dina">
+    <div class="page-head"><div><h1 class="page-title" style="display:flex;align-items:center;gap:12px">${dinaCubo(34)}Visualizador 3D · Dinabox</h1><p class="page-sub" id="dinaSub"></p></div></div>
+    <div class="opx-filtros">
+      <label class="opx-busca"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="dinaBuscaIn" value="${dinaAttr(dinaBusca)}" placeholder="Buscar por projeto, cliente, ambiente, local ou lote..." oninput="dinaBusca=this.value; atualizarDina()"></label>
+      <select class="${dinaFiltro.st?'on':''}" onchange="dinaFiltro.st=this.value; renderDina()">
+        <option value="">Todas as situações</option><option value="com" ${dinaFiltro.st==='com'?'selected':''}>Com link</option><option value="sem" ${dinaFiltro.st==='sem'?'selected':''}>Sem link</option></select>
+      <select class="${dinaFiltro.lote?'on':''}" onchange="dinaFiltro.lote=this.value; renderDina()">
+        <option value="">Todos os lotes</option>${lotes.map(l=>`<option value="${dinaAttr(l)}" ${dinaFiltro.lote===l?'selected':''}>Lote ${escHtml(l)}</option>`).join('')}</select>
+      <select class="${dinaFiltro.amb?'on':''}" onchange="dinaFiltro.amb=this.value; renderDina()">
+        <option value="">Todos os ambientes</option>${ambs.map(a=>`<option value="${dinaAttr(a)}" ${dinaFiltro.amb===a?'selected':''}>${escHtml(a)}</option>`).join('')}</select>
+      ${filtrado?`<button class="btn btn-ghost btn-sm" onclick="dinaBusca='';dinaFiltro={st:'',lote:'',amb:''};renderDina()">Limpar filtros</button>`:''}
+    </div>
+    <div class="table-wrap table-scroll"><table class="tbl">
+      <thead><tr><th style="width:84px">Projeto</th><th style="width:64px">Lote</th><th>Cliente</th><th>Ambiente</th><th style="width:150px">Local</th>
+        <th style="width:150px">Link do Dinabox</th><th style="width:110px">Atualizado</th><th style="width:92px"></th></tr></thead>
+      <tbody id="dinaBody"></tbody></table></div></div>`;
+  atualizarDina();
+}
+function dinaFiltrados(){
+  const q=dinaBusca.trim().toLowerCase();
+  return oriProjetos().filter(x=>{
+    const tem=!!dinaUrl(x.projeto);
+    if(dinaFiltro.st==='com'&&!tem) return false;
+    if(dinaFiltro.st==='sem'&&tem) return false;
+    if(dinaFiltro.lote&&x.lote!==dinaFiltro.lote) return false;
+    if(dinaFiltro.amb&&!x.ambs.includes(dinaFiltro.amb)) return false;
+    if(q&&![x.projeto,x.cliente,x.ambiente,x.local,x.lote].join(' ').toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a,b)=>b.projeto.localeCompare(a.projeto,'pt-BR',{numeric:true}));
+}
+function atualizarDina(){
+  const b=document.getElementById('dinaBody'); if(!b) return;
+  const todos=oriProjetos(), lista=dinaFiltrados(), com=todos.filter(x=>dinaUrl(x.projeto)).length;
+  const sub=document.getElementById('dinaSub');
+  if(sub) sub.textContent=`${todos.length} projeto(s) · ${com} com link · ${lista.length===todos.length?'mostrando todos':lista.length+' no filtro'}`;
+  b.innerHTML=lista.length?lista.map(x=>{
+    const tem=!!dinaUrl(x.projeto), d=DINA[dinaChave(x.projeto)];
+    return `<tr class="opx-r dina-lin" data-p="${dinaAttr(x.projeto)}" onclick="abrirDina(this.dataset.p)" style="cursor:pointer;--c:${tem?'#ff5a2c':'#d6d4cb'}">
+      <td class="ctr"><span class="opx-pj">${escHtml(x.projeto)}</span></td>
+      <td class="ctr">${x.lote?`<span class="opx-lt">${escHtml(x.lote)}</span>`:'<span class="opx-nil">—</span>'}</td>
+      <td><b>${escHtml(x.cliente)||'—'}</b></td><td>${escHtml(x.ambiente)||'—'}</td><td>${escHtml(x.local)||'—'}</td>
+      <td>${tem?`<span class="dina-pill on">${dinaCubo(14)}Link cadastrado</span>`:'<span class="dina-pill">Sem link</span>'}</td>
+      <td>${d&&d.em?fmtData(String(d.em).slice(0,10)):'<span class="opx-nil">—</span>'}</td>
+      <td class="acoes" style="white-space:nowrap">${tem?`<button class="dina-go" title="Abrir o Visualizador 3D" tabindex="-1" onclick="event.stopPropagation();dinaAbrir(this.closest('tr').dataset.p)">${dinaCubo(20)}</button> `:''}<button class="icon-btn" title="Cadastrar / editar link" tabindex="-1">${EDIT_SVG}</button></td></tr>`; }).join('')
+    :'<tr><td class="td-empty" colspan="8">Nenhum projeto encontrado</td></tr>';
+}
+
+/* ---------- projeto aberto (cadastro do link) ---------- */
+function abrirDina(p){ dinaProj=p; renderDinaDet(); }
+function renderDinaDet(){
+  TELA='dina-det'; const p=dinaProj, keep=view.scrollTop;
+  const info=oriProjetos().find(x=>x.projeto===p)||{projeto:p,cliente:'',ambiente:'',local:'',lote:''};
+  const d=DINA[dinaChave(p)]||{}, url=dinaUrl(p), m=url?dinaMeta(url):{modulo:''};
+  view.innerHTML=`<div class="page page-wide opx dina">
+    <div style="margin-bottom:14px"><button class="btn btn-ghost" onclick="renderDina()">← Projetos</button></div>
+    <div class="dina-hero">
+      <div style="position:relative;z-index:1">${dinaLogo(52)}
+        <h1>Visualizador 3D · Pré-montagem</h1>
+        <p>Cadastre o link do projeto para o pessoal da montagem abrir as peças em 3D direto pelo Apontamento.</p></div>
+      <div class="dina-chips"><div class="dina-chip"><span>Projeto</span><b>${escHtml(p)}</b></div>
+        <div class="dina-chip"><span>Lote</span><b>${escHtml(info.lote)||'—'}</b></div></div>
+    </div>
+    <div class="dina-grid">
+      <section class="dina-card"><h3>Projeto</h3>
+        <div class="dina-kv">
+          <div><span>Cliente</span><b>${escHtml(info.cliente)||'—'}</b></div>
+          <div><span>Ambiente</span><b>${escHtml(info.ambiente)||'—'}</b></div>
+          <div><span>Local</span><b>${escHtml(info.local)||'—'}</b></div></div></section>
+      <section class="dina-card"><h3>Link do visualizador</h3>
+        <label class="dina-lbl" for="dinaUrlIn">URL do Visualizador 3D</label>
+        <input class="dina-in" id="dinaUrlIn" type="url" autocomplete="off" spellcheck="false" maxlength="700"
+          value="${dinaAttr(url)}" placeholder="https://www.dinabox.app/apps/3d/module-viewer/?qrcode=..." oninput="dinaValida()" onkeydown="if(event.key==='Enter'){event.preventDefault();dinaSalvar();}">
+        <div class="dina-msg" id="dinaMsg"></div>
+        <div class="dina-acoes">
+          <button class="btn dina-prim" id="dinaBtnSalvar" onclick="dinaSalvar()">Salvar link</button>
+          <button class="btn btn-ghost" onclick="dinaColar()">Colar da área de transferência</button>
+          <button class="btn dina-open" id="dinaBtnAbrir" ${url?'':'disabled'} onclick="dinaAbrir(dinaProj)">Abrir visualizador</button>
+          ${url?`<button class="btn btn-ghost ori-lp" onclick="dinaRemover()">Remover link</button>`:''}</div>
+        ${url?`<div class="dina-meta"><span class="dina-pill on">${dinaCubo(14)}Link ativo</span>
+          ${m.modulo?`<span>Módulo: <b>${escHtml(m.modulo)}</b></span>`:''}
+          ${d.em?`<span>· salvo em <b>${escHtml(fmtData(String(d.em).slice(0,10)))}</b>${d.por?' por <b>'+escHtml(d.por)+'</b>':''}</span>`:''}</div>`:''}
+      </section>
+    </div></div>`;
+  dinaValida(true); view.scrollTop=keep;
+}
+function dinaValida(inicial){
+  const i=document.getElementById('dinaUrlIn'), m=document.getElementById('dinaMsg'), s=document.getElementById('dinaBtnSalvar'); if(!i) return;
+  const v=i.value.trim(), atual=dinaUrl(dinaProj);
+  i.classList.remove('ok','err'); m.className='dina-msg';
+  if(!v){ m.textContent=inicial?'Cole o link do Visualizador 3D do Dinabox deste projeto.':''; s.disabled=true; return; }
+  if(!dinaUrlOk(v)){ i.classList.add('err'); m.classList.add('err'); m.textContent='Link inválido — precisa começar com https:// e ser do endereço dinabox.app.'; s.disabled=true; return; }
+  i.classList.add('ok'); m.classList.add('ok'); m.textContent=v===atual?'Link salvo e válido.':'Link válido — clique em “Salvar link”.'; s.disabled=(v===atual);
+}
+async function dinaColar(){
+  try{ const t=await navigator.clipboard.readText(); const i=document.getElementById('dinaUrlIn'); if(i){ i.value=(t||'').trim(); dinaValida(); i.focus(); } }
+  catch(e){ toast('Não consegui ler a área de transferência — cole com Ctrl+V no campo'); }
+}
+function dinaSalvar(){
+  const i=document.getElementById('dinaUrlIn'); if(!i) return;
+  const v=i.value.trim();
+  if(!dinaUrlOk(v)){ toast('Link inválido — use o link https do Dinabox'); return; }
+  const p=dinaProj, info=oriProjetos().find(x=>x.projeto===p)||{}, ch=dinaChave(p), ref=db.ref('dinabox/'+ch);
+  ref.set({projeto:p,url:v,cliente:info.cliente||'',ambiente:info.ambiente||'',em:new Date().toISOString(),por:usuarioAtual()})
+    .then(()=>ref.once('value')).then(s=>{ if(s.exists()) DINA[ch]=s.val(); toast('Link do Dinabox salvo'); renderDinaDet(); })
+    .catch(e=>toast('Erro ao salvar: '+e.message));
+}
+function dinaRemover(){
+  if(!confirm('Remover o link do Dinabox do projeto '+dinaProj+'?')) return;
+  const ch=dinaChave(dinaProj);
+  db.ref('dinabox/'+ch).remove().then(()=>{ delete DINA[ch]; toast('Link removido'); renderDinaDet(); })
+    .catch(e=>toast('Erro ao remover: '+e.message));
+}
 
 /* ================= ORIENTAÇÕES DO PROJETO ================= */
 // orientacoes/{projeto} = {projeto,cliente,ambiente,em,por,imgs:[{id,orig,url,legenda,objs,w,h}]}
