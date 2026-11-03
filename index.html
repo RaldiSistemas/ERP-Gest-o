@@ -16194,7 +16194,8 @@ function dinaLogo(px){ return `<span class="dina-logo">${dinaCubo(px)}<b style="
 /* ---------- abrir o visualizador ---------- */
 function dinaUrlMod(p,mod){
   const u=dinaUrl(p); if(!u||!mod) return u;
-  try{ const x=new URL(u); x.searchParams.delete('module_code'); x.searchParams.set('focus_module',String(mod).toUpperCase()); return x.toString(); }catch(e){ return u; }
+  // peça isolada: o Dinabox usa module_code (e não focus_module) para mostrar só o módulo
+  try{ const x=new URL(u); x.searchParams.delete('focus_module'); x.searchParams.set('module_code',String(mod).toUpperCase()); return x.toString(); }catch(e){ return u; }
 }
 function dinaAbrir(p,mod){
   const u=dinaUrlMod(p,mod);
@@ -16311,7 +16312,7 @@ function dinaBtnOp(o){
 
 /* ---------- módulos + peças (PDF "Lista de peças" do Dinabox) ----------
    dinabox/{projeto}/modulos = [{cod:'M259985',nome,dim,qtd,pecas:[{cod,ref,nome,mat,larg,alt,qtd}]}], lote, pdfEm
-   O link do visualizador aceita focus_module=<código longo do módulo> (o mesmo que aparece no PDF). */
+   O link do visualizador isola o módulo com module_code=<código do módulo> (o que aparece no PDF). */
 function dinaMods(p){ const d=DINA[dinaChave(p)]; if(!d||!d.modulos) return []; return (Array.isArray(d.modulos)?d.modulos:Object.values(d.modulos)).filter(Boolean); }
 function dinaCarregarPdfJs(){
   if(window.pdfjsLib) return Promise.resolve();
