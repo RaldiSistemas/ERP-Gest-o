@@ -3424,6 +3424,87 @@
   .ds-pick b{ display:block; font-size:14.5px; } .ds-pick span.f{ font-size:12px; color:var(--muted); }
   .ds-pick em{ margin-left:auto; font-style:normal; font-size:12px; color:var(--muted); }
   @media (max-width:640px){ .dsm{ grid-template-columns:1fr; } .dsm .pst-wrap{ max-width:230px; margin:0 auto; } .ds-gavs{ grid-template-columns:1fr 1fr; gap:12px; } .gv{ padding:11px 10px 10px; } .gv-plate{ padding:7px; gap:8px; } .gv-plate .av{ width:36px; height:36px; font-size:12px; } .gv-nm b{ font-size:13.5px; } .ds-grid{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:22px 14px; } }
+
+  /* ===== Pendências de Pintura ===== */
+  .pp .pp-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .pp-chip{ font:inherit; font-weight:600; font-size:13px; display:inline-flex; align-items:center; gap:8px; padding:7px 13px; border-radius:99px;
+    background:#fff; border:1px solid var(--linha); color:var(--texto); cursor:pointer; }
+  .pp-chip i{ width:10px; height:10px; border-radius:50%; background:var(--cc); }
+  .pp-chip b{ font-size:12px; background:color-mix(in srgb,var(--cc) 14%,#fff); color:var(--cc); border-radius:99px; padding:1px 8px; }
+  .pp-chip.on{ border-color:var(--cc); box-shadow:0 0 0 2px color-mix(in srgb,var(--cc) 22%,transparent); }
+  .pp-busca{ display:flex; align-items:center; gap:9px; background:#fff; border:1px solid var(--linha); border-radius:10px; padding:0 13px; max-width:520px; margin-bottom:14px; color:var(--muted); }
+  .pp-busca input{ flex:1; border:0; outline:0; background:transparent; font:inherit; font-size:14px; padding:11px 0; color:var(--texto); }
+  .pp-tw{ overflow-x:auto; }
+  .pp-tab{ width:100%; border-collapse:separate; border-spacing:0 6px; min-width:860px; }
+  .pp-tab th{ text-align:left; font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); padding:4px 14px; }
+  .pp-tab th.c, .pp-tab td.c{ text-align:center; }
+  .pp-tab td{ padding:12px 14px; background:var(--rb); border-top:1px solid var(--rl); border-bottom:1px solid var(--rl); font-size:14px; }
+  .pp-tab td:first-child{ border-left:6px solid var(--rc); border-radius:10px 0 0 10px; }
+  .pp-tab td:last-child{ border-right:1px solid var(--rl); border-radius:0 10px 10px 0; }
+  .pp-r{ cursor:pointer; --rb:#fff; --rc:#8a8a93; --rl:var(--linha); }
+  .pp-r:hover td{ filter:brightness(.97); }
+  .pp-verde{ --rb:#e5f4e9; --rc:#2f8f46; --rl:#c4e2cc; }
+  .pp-amarelo{ --rb:#fff5d6; --rc:#d4930d; --rl:#f0dc9c; }
+  .pp-cinza{ --rb:#ececee; --rc:#8a8a93; --rl:#d9d9de; }
+  .pp-vermelho{ --rb:#fbe3e0; --rc:#c0392b; --rl:#efb9b3; }
+  .pp-pj{ font-size:15px; } .pp-cl{ display:block; font-weight:600; } .pp-tab small{ color:var(--muted); font-size:12.5px; }
+  .pp-n{ display:inline-block; min-width:30px; font-weight:700; color:var(--muted); }
+  .pp-n-p{ color:#b0361b; } .pp-n-o{ color:#2f8f46; }
+  .pp-ft{ display:inline-flex; align-items:center; gap:5px; font-weight:700; color:var(--texto); }
+  .pp-go{ color:var(--muted); width:40px; }
+  .pp-vazio{ background:#fff; border:1px dashed var(--linha); border-radius:12px; padding:34px 20px; text-align:center; display:flex; flex-direction:column; gap:4px; }
+  .pp-vazio span{ font-size:13px; color:var(--muted); }
+  .pp-lg{ display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-top:1px solid var(--linha); }
+  .pp-lg:first-of-type{ border-top:0; }
+  .pp-lg-c{ width:34px; height:24px; flex:0 0 34px; border-radius:7px; background:var(--rb); border:1px solid var(--rl); border-left:6px solid var(--rc); margin-top:1px; }
+  .pp-lg b{ display:block; font-size:14px; } .pp-lg span:not(.pp-lg-c){ font-size:13px; color:var(--muted); }
+  /* detalhe */
+  .pp-hd{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .pp-lote{ font-size:13px; font-weight:600; color:var(--muted); background:#fff; border:1px solid var(--linha); border-radius:99px; padding:2px 10px; vertical-align:3px; }
+  .pp-st{ display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:13px; padding:8px 14px; border-radius:99px; background:color-mix(in srgb,var(--cc) 13%,#fff); color:var(--cc); border:1px solid color-mix(in srgb,var(--cc) 40%,#fff); white-space:nowrap; }
+  .pp-st i{ width:10px; height:10px; border-radius:50%; background:var(--cc); }
+  .pp-kpis{ display:grid; grid-template-columns:repeat(4,minmax(120px,1fr)); gap:12px; margin-bottom:16px; }
+  .pp-kpis div{ background:#fff; border:1px solid var(--linha); border-radius:12px; padding:12px 16px; }
+  .pp-kpis span{ display:block; font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .pp-kpis b{ font-size:26px; font-family:'Poppins',sans-serif; } .pp-kpis b.p{ color:#b0361b; } .pp-kpis b.o{ color:#2f8f46; }
+  .pp-aviso{ background:#fff5d6; border:1px solid #f0dc9c; border-radius:12px; padding:13px 16px; font-size:13.5px; line-height:1.5; margin-bottom:16px; }
+  .pp-add{ background:#fff; border:1px solid var(--linha); border-radius:12px; padding:14px 16px; margin-bottom:16px; }
+  .pp-add h3{ font-size:13px; font-weight:700; margin-bottom:10px; }
+  .pp-add-g{ display:grid; grid-template-columns:minmax(200px,1.4fr) minmax(110px,.6fr) minmax(160px,1fr) auto auto; gap:10px; align-items:center; }
+  .pp-add-g input:not([type=file]){ font:inherit; font-size:14px; padding:10px 12px; border:1px solid var(--linha); border-radius:9px; background:#fff; color:var(--texto); min-width:0; }
+  .pp-add-g input:disabled, .pp-add-g button:disabled{ opacity:.55; cursor:not-allowed; }
+  .pp-file{ display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:13.5px; padding:10px 14px; border:1px dashed #b8b8c0; border-radius:9px; cursor:pointer; white-space:nowrap; }
+  .pp-abas{ display:inline-flex; background:#fff; border:1px solid var(--linha); border-radius:10px; padding:3px; margin-bottom:12px; }
+  .pp-abas button{ font:inherit; font-weight:600; font-size:13px; border:0; background:transparent; padding:6px 14px; border-radius:8px; cursor:pointer; color:var(--muted); display:flex; gap:7px; align-items:center; }
+  .pp-abas button.on{ background:var(--vermelho); color:#fff; } .pp-abas em{ font-style:normal; font-size:11.5px; opacity:.85; }
+  .pp-it{ display:flex; gap:14px; align-items:flex-start; background:#fff4d9; border:1px solid #f0dc9c; border-left:6px solid #d4930d; border-radius:12px; padding:13px 14px; margin-bottom:9px; }
+  .pp-it.ok{ background:#e9f5ec; border-color:#c4e2cc; border-left-color:#2f8f46; }
+  .pp-ck{ width:28px; height:28px; flex:0 0 28px; border:2px solid #d8c8a4; border-radius:8px; background:#fff; display:grid; place-items:center; color:#fff; cursor:pointer; margin-top:1px; }
+  .pp-it.ok .pp-ck{ background:#2f8f46; border-color:#2f8f46; }
+  .pp-it-m{ flex:1; min-width:0; }
+  .pp-it-t{ font-weight:700; font-size:15px; display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .pp-tag{ font-size:11px; font-weight:700; padding:2px 9px; border-radius:99px; } .pp-tag.p{ background:#fde7c2; color:#8a5a13; } .pp-tag.o{ background:#cfeadb; color:#226a37; }
+  .pp-it-o{ font-size:13.5px; margin-top:3px; } .pp-it-s{ font-size:12px; color:var(--muted); margin-top:3px; }
+  .pp-it-a{ display:flex; gap:4px; }
+  .pp-fs{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .pp-f{ position:relative; width:92px; height:92px; padding:0; border:1px solid var(--linha); border-radius:10px; overflow:hidden; background:#fff; cursor:zoom-in; }
+  .pp-f img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .pp-f i{ position:absolute; right:4px; bottom:4px; background:rgba(0,0,0,.62); color:#fff; border-radius:99px; width:18px; height:18px; display:grid; place-items:center; }
+  .pp-lb{ position:fixed; inset:0; z-index:9000; background:rgba(14,14,17,.92); display:none; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:24px; }
+  .pp-lb.open{ display:flex; }
+  .pp-lb img{ max-width:min(92vw,1200px); max-height:74vh; border-radius:10px; object-fit:contain; background:#000; }
+  .pp-lb-x{ position:absolute; top:16px; right:20px; border:0; background:rgba(255,255,255,.14); color:#fff; width:44px; height:44px; border-radius:50%; font-size:28px; cursor:pointer; }
+  .pp-lb-n{ position:absolute; top:50%; transform:translateY(-50%); border:0; background:rgba(255,255,255,.14); color:#fff; width:48px; height:60px; border-radius:12px; font-size:34px; cursor:pointer; }
+  .pp-lb-n.ant{ left:18px; } .pp-lb-n.prox{ right:18px; }
+  .pp-lb-i{ color:#eee; text-align:center; font-size:13px; } .pp-lb-i b{ display:block; font-size:16px; }
+  .pp-lb-b{ display:flex; gap:12px; } .pp-lb-b a, .pp-lb-b button{ font:inherit; font-weight:600; font-size:13px; color:#fff; background:rgba(255,255,255,.14); border:0; border-radius:9px; padding:9px 16px; cursor:pointer; text-decoration:none; }
+  .pp-lb-b button{ color:#ffb4b4; }
+  @media (max-width:900px){ .pp-add-g{ grid-template-columns:1fr; } .pp-kpis{ grid-template-columns:repeat(2,1fr); } .pp-it{ flex-wrap:wrap; } }
+
+  /* Requisição de pintura */
+  .rpp-i3{ grid-template-columns:.8fr 1fr 1fr; }
+  .pp-hb{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pp-cor-t{ font-size:12px; font-weight:600; color:var(--muted); } .pp-cor-t b{ color:var(--texto); }
 </style>
 </head>
 <body>
@@ -3574,7 +3655,7 @@
     {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Cadastro de clientes'}, {label:'Cadastro de dados'}, {label:'Mapa'} ]},
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
-      {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Rendimento','Equipe Produtiva']},
+      {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Pendências de Pintura','Rendimento','Equipe Produtiva']},
       {label:'Pasta de produção', children:['Designações de Projetos','Orientações do projeto','Visualizador 3D (Dinabox)']},
       {label:'Liberação de lote', children:['Projetos liberados','Lotes agrupados']},
       {label:'Lead time', children:['Cadastro de Lead time','Painel de Atrasos']},
@@ -3725,6 +3806,7 @@
     if(mod.id==='pcp' && name==='Apontamento') return renderApont();
     if(mod.id==='pcp' && name==='Equipe Produtiva') return renderEquipe();
     if(mod.id==='pcp' && name==='Acompanhamento da Produção') return renderAcompOP();
+    if(mod.id==='pcp' && name==='Pendências de Pintura'){ ppProj=null; return renderPendPint(); }
     if(mod.id==='pcp' && name==='Rendimento') return renderRendimento();
     if(mod.id==='pcp' && name==='Cadastro de módulos') return renderModulosMv();
     if(mod.id==='pcp' && name==='Cadastro de Lead time') return renderLead('cad');
@@ -4640,7 +4722,7 @@
       e=>console.warn('modulosMoveis:',e.message));
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
-        renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
+        renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='pend-pint') renderPendPint(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     oriLigarDb(); dinaLigarDb();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
@@ -4652,6 +4734,7 @@
       if(TELA==='ops') renderOPs(); else if(TELA==='ori-det') oriAtualizarOPBar(); else if(TELA==='apont') renderApont();
       else if(TELA==='apont-op'&&apontOP) abrirApont(apontOP);
       else if(TELA==='acomp-op') renderAcompOP();
+      else if(TELA==='pend-pint') renderPendPint();
       else if(TELA==='acomp-det'&&acompDet) detalheAcomp(acompDet);
       else if(TELA==='painel') renderPainel();
       else if(TELA==='liblote') renderLiberacaoLote(lbAba);
@@ -13287,6 +13370,8 @@
     let acao=null, num=cod;
     if(/^D\S+$/.test(cod)){
       // código de barras do Dinabox (D + projeto, ou D + projeto + '-' + módulo) → abre o visualizador 3D dentro do sistema
+      // leitor com teclado diferente do ABNT2 troca o '-' por ';' (ou outro símbolo): normaliza o separador antes do módulo
+      cod=cod.replace(/[;:_\/\\.,\s]+(?=[MT]\d+$)/,'-');
       const mm=cod.match(/^(D.+)-([MT]\d+)$/);
       if(mm){ const pj2=dinaProjPorCodigo(mm[1]); if(pj2){ dinaAbrir(pj2,mm[2]); return; } toast('Projeto '+mm[1].slice(1)+' sem link do Dinabox cadastrado'); return; }
       const pj=dinaProjPorCodigo(cod);
@@ -17110,6 +17195,349 @@ function oriPrevia(){
   setPageOrientation('landscape'); ov.classList.add('open');
 }
 function folhaOP(o){ return folhaOPBase(o)+oriPaginasOP(o); }
+
+/* ================= PENDÊNCIAS DE PINTURA =================
+   Usa o mesmo checklist do app de pintura: ops/<OP de Pintura>/checklistPintura
+   (cada peça: {id,texto,ok,okPor,okEm,obs,fotos:[{id,url,em,por,origem}],criadoPor,criadoEm,origem}).
+   Peça "pintada" = ok:true · "pendente" = ok:false. */
+let ppBusca='', ppFiltro='', ppProj=null, ppAba='todas', ppEnviando=false;
+const PP_COR={
+  verde:   {rot:'Verde',    cor:'#2f8f46', desc:'Todas as peças do checklist foram pintadas.'},
+  amarelo: {rot:'Amarelo',  cor:'#d4930d', desc:'Ainda existem peças pendentes de pintura.'},
+  cinza:   {rot:'Cinza',    cor:'#8a8a93', desc:'Nenhuma peça foi adicionada ao checklist de pintura.'},
+  vermelho:{rot:'Vermelho', cor:'#c0392b', desc:'A expedição foi iniciada ou concluída, mas ainda existem peças pendentes de pintura.'}
+};
+const PP_ORDEM={vermelho:0,amarelo:1,cinza:2,verde:3};
+function ppN(x){ return String(x==null?'':x).trim(); }
+function ppSeg(s){ return String(s||'').replace(/[^\w-]/g,''); }
+function ppAttr(s){ return escHtml(s).replace(/"/g,'&quot;'); }
+function ppUrl(u){ return /^https:\/\//.test(u||'')?ppAttr(u):''; }
+function ppLista(v){ return v?(Array.isArray(v)?v.slice():Object.values(v)):[]; }
+function ppItens(op){ return op?ppLista(op.checklistPintura).filter(Boolean):[]; }
+function ppFotos(x){ return ppLista(x&&x.fotos).filter(f=>f&&f.url); }
+function ppData(iso){ return iso?new Date(iso).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''; }
+function ppQuem(e){ return String(e||'').split('@')[0]; }
+// mesma regra do app de pintura: a OP de Pintura do projeto (a mais antiga, se houver mais de uma)
+function ppOpPintura(r){
+  const p=ppN(r&&r.projeto); if(!p) return null;
+  const l=OPS.filter(o=>o.atividade==='Pintura'&&ppN(o.projeto)===p);
+  l.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  return l[0]||null;
+}
+function ppExpedicaoIniciada(r){
+  const p=ppN(r&&r.projeto); if(!p) return false;
+  return OPS.some(o=>o.atividade==='Expedição'&&ppN(o.projeto)===p&&stOp(o)!=='nao');
+}
+function ppStats(r){
+  const op=ppOpPintura(r), itens=ppItens(op), total=itens.length, pint=itens.filter(x=>x.ok).length, pend=total-pint;
+  const exp=ppExpedicaoIniciada(r), fotos=itens.reduce((a,x)=>a+ppFotos(x).length,0);
+  const cor= total===0?'cinza' : pend===0?'verde' : exp?'vermelho':'amarelo';
+  return {op,itens,total,pint,pend,exp,fotos,cor};
+}
+
+function renderPendPint(){
+  TELA='pend-pint';
+  if(ppProj) return ppDetalhe();
+  const ae=document.activeElement, focoBusca=!!(ae&&ae.id==='ppBusca'), pos=focoBusca?ae.selectionStart:0;
+  const todos=PAINEL.map(r=>({r,s:ppStats(r)}));
+  const cont={verde:0,amarelo:0,cinza:0,vermelho:0}; todos.forEach(x=>cont[x.s.cor]++);
+  const totPecas=todos.reduce((a,x)=>a+x.s.total,0), totPend=todos.reduce((a,x)=>a+x.s.pend,0);
+  const chip=(k,rot,n,cor)=>`<button class="pp-chip ${ppFiltro===k?'on':''}" style="--cc:${cor}" onclick="ppSetFiltro('${k}')"><i></i>${rot}<b>${n}</b></button>`;
+  view.innerHTML=`<div class="page page-wide pp anim">
+    <div class="page-head"><div><h1 class="page-title">Pendências de Pintura</h1>
+      <p class="page-sub">${PAINEL.length} projeto(s) · ${totPecas} peça(s) no checklist · ${totPend} pendente(s) de pintura</p></div>
+      <div class="pp-hb"><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-ghost" onclick="ppLegenda()">${PP_IC.info}Legenda de cores</button>
+        <button class="btn btn-ghost" onclick="folhaReqPintura()">Requisição de pintura</button></div></div></div>
+    <div class="pp-chips">
+      ${chip('','Todos',todos.length,'#4B4B55')}
+      ${chip('vermelho','Vermelho',cont.vermelho,PP_COR.vermelho.cor)}
+      ${chip('amarelo','Amarelo',cont.amarelo,PP_COR.amarelo.cor)}
+      ${chip('cinza','Cinza',cont.cinza,PP_COR.cinza.cor)}
+      ${chip('verde','Verde',cont.verde,PP_COR.verde.cor)}
+    </div>
+    <div class="pp-busca">${PP_IC.lupa}<input id="ppBusca" value="${ppAttr(ppBusca)}" placeholder="Buscar projeto, lote, cliente ou ambiente…" autocomplete="off"
+      oninput="ppBusca=this.value; ppAtualizarLista()"></div>
+    <div id="ppLista">${ppHtmlLista()}</div></div>`;
+  if(focoBusca){ const e=document.getElementById('ppBusca'); if(e){ e.focus(); e.setSelectionRange(pos,pos); } }
+}
+function ppSetFiltro(k){ ppFiltro=(ppFiltro===k?'':k); renderPendPint(); }
+function ppAtualizarLista(){ const el=document.getElementById('ppLista'); if(el) el.innerHTML=ppHtmlLista(); }
+function ppHtmlLista(){
+  const q=ppBusca.trim().toLowerCase(), t=q?q.split(/\s+/):[];
+  let l=PAINEL.map(r=>({r,s:ppStats(r)}));
+  if(ppFiltro) l=l.filter(x=>x.s.cor===ppFiltro);
+  if(t.length) l=l.filter(x=>t.every(y=>[x.r.projeto,x.r.lote,x.r.cliente,x.r.ambiente,x.r.consultor].filter(Boolean).join(' ').toLowerCase().includes(y)));
+  l=l.map((x,i)=>({...x,i})).sort((a,b)=>(PP_ORDEM[a.s.cor]-PP_ORDEM[b.s.cor])||(a.i-b.i));
+  if(!l.length) return `<div class="pp-vazio"><b>${PAINEL.length?'Nenhum projeto encontrado':'Nenhum projeto no Painel de Controle'}</b><span>${PAINEL.length?'Ajuste a busca ou o filtro de cor.':'Cadastre projetos no Painel de Controle para acompanhá-los aqui.'}</span></div>`;
+  return `<div class="pp-tw"><table class="pp-tab"><thead><tr>
+      <th>Projeto</th><th>Cliente · Ambiente</th><th>Lote</th><th class="c">Peças no checklist</th><th class="c">Pendentes</th><th class="c">Pintadas</th><th class="c">Fotos</th><th></th></tr></thead><tbody>
+    ${l.map(({r,s})=>`<tr class="pp-r pp-${s.cor}" onclick="ppAbrir('${ppSeg(r.id)}')" title="${ppAttr(PP_COR[s.cor].desc)}">
+      <td><b class="pp-pj">${escHtml(r.projeto)||'—'}</b></td>
+      <td><span class="pp-cl">${escHtml(r.cliente)||'—'}</span><small>${escHtml(r.ambiente)||'—'}</small></td>
+      <td>${r.lote?escHtml(r.lote):'—'}</td>
+      <td class="c"><span class="pp-n">${s.total}</span></td>
+      <td class="c"><span class="pp-n ${s.pend?'pp-n-p':''}">${s.pend}</span></td>
+      <td class="c"><span class="pp-n ${s.pint?'pp-n-o':''}">${s.pint}</span></td>
+      <td class="c">${s.fotos?`<span class="pp-ft">${PP_IC.cam}${s.fotos}</span>`:'<span class="pp-n">0</span>'}</td>
+      <td class="c pp-go">${PP_IC.seta}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function ppLegenda(){
+  abrirModal('Legenda de cores',
+    `<p style="font-size:13.5px;color:var(--muted);margin-bottom:14px">A cor de cada projeto mostra a situação do checklist de pintura:</p>
+    ${['verde','amarelo','cinza','vermelho'].map(k=>`<div class="pp-lg"><span class="pp-lg-c pp-${k}"></span><div><b>${PP_COR[k].rot}</b><span>${escHtml(PP_COR[k].desc)}</span></div></div>`).join('')}
+    <p style="font-size:12.5px;color:var(--muted);margin-top:14px">Se o projeto cair em mais de uma situação, vale a mais urgente: vermelho antes de amarelo.</p>`,
+    `<button class="btn btn-primary" onclick="fecharModal()">Entendi</button>`);
+}
+
+/* ---- detalhe do projeto ---- */
+function ppAbrir(id){ ppProj=id; ppAba='todas'; view.innerHTML=''; renderPendPint(); window.scrollTo&&window.scrollTo(0,0); }
+function ppVoltar(){ ppProj=null; renderPendPint(); }
+function ppSetAba(a){ ppAba=a; ppDetalhe(); }
+function ppDetalhe(){
+  const r=PAINEL.find(x=>x.id===ppProj); if(!r){ ppProj=null; return renderPendPint(); }
+  if(!document.getElementById('ppItens')){
+    view.innerHTML=`<div class="page page-wide pp anim">
+      <div id="ppHead"></div>
+      <div class="pp-add" id="ppAdd"></div>
+      <div id="ppItens"></div></div>`;
+    ppMontarAdd();
+  }
+  const s=ppStats(r), c=PP_COR[s.cor];
+  document.getElementById('ppHead').innerHTML=`
+    <div class="page-head"><div class="pp-hd">
+        <button class="btn btn-ghost btn-sm" onclick="ppVoltar()">${PP_IC.volta}Projetos</button>
+        <div><h1 class="page-title">Projeto ${escHtml(r.projeto)||'—'}${r.lote?` <span class="pp-lote">Lote ${escHtml(r.lote)}</span>`:''}</h1>
+          <p class="page-sub">${[r.cliente,r.ambiente,r.consultor].filter(Boolean).map(escHtml).join(' · ')||'—'}</p></div></div>
+      <div class="pp-hb"><div class="pp-st" style="--cc:${c.cor}" title="${ppAttr(c.desc)}"><i></i>${c.rot}${s.cor==='vermelho'?' · expedição iniciada':''}</div></div></div>
+    <div class="pp-kpis">
+      <div><span>Peças no checklist</span><b>${s.total}</b></div>
+      <div><span>Pendentes</span><b class="p">${s.pend}</b></div>
+      <div><span>Pintadas</span><b class="o">${s.pint}</b></div>
+      <div><span>Fotos</span><b>${s.fotos}</b></div></div>
+    ${s.op?'':`<div class="pp-aviso"><b>Este projeto ainda não tem OP de Pintura.</b> O checklist fica dentro da OP de Pintura (e é por ela que o celular enxerga o projeto).
+      Emita a OP em <i>Ordens de Produção › Emissão de OP</i> para poder cadastrar as peças.</div>`}`;
+  const bt=document.getElementById('ppBtnAdd'); if(bt) bt.disabled=!s.op||ppEnviando;
+  ['ppNovo','ppNovoCor','ppNovoObs','ppNovoFoto'].forEach(i=>{ const e=document.getElementById(i); if(e) e.disabled=!s.op||ppEnviando; });
+  let l=s.itens; if(ppAba==='pend') l=l.filter(x=>!x.ok); else if(ppAba==='ok') l=l.filter(x=>x.ok);
+  const aba=(k,rot,n)=>`<button class="${ppAba===k?'on':''}" onclick="ppSetAba('${k}')">${rot}<em>${n}</em></button>`;
+  document.getElementById('ppItens').innerHTML=`
+    <div class="pp-abas">${aba('todas','Todas',s.total)}${aba('pend','Pendentes',s.pend)}${aba('ok','Pintadas',s.pint)}</div>
+    ${l.length?l.map(ppHtmlItem).join(''):`<div class="pp-vazio"><b>${s.total?'Nenhuma peça nesta aba':'Nenhuma peça cadastrada'}</b><span>${s.total?'Troque de aba para ver as outras peças.':'Adicione as peças a pintar acima — ou pelo celular, no app de apontamento da pintura.'}</span></div>`}`;
+}
+function ppMontarAdd(){
+  document.getElementById('ppAdd').innerHTML=`
+    <h3>Adicionar peça ao checklist</h3>
+    <div class="pp-add-g">
+      <input id="ppNovo" placeholder="Nome da peça (ex.: Porta 1, Lateral esquerda)" maxlength="120" onkeydown="if(event.key==='Enter')ppAdicionar()">
+      <input id="ppNovoCor" placeholder="Cor" maxlength="60" onkeydown="if(event.key==='Enter')ppAdicionar()">
+      <input id="ppNovoObs" placeholder="Observação (opcional)" maxlength="200" onkeydown="if(event.key==='Enter')ppAdicionar()">
+      <label class="pp-file" title="Anexar fotos">${PP_IC.cam}<span id="ppNovoFotoN">Fotos</span>
+        <input id="ppNovoFoto" type="file" accept="image/*" multiple hidden onchange="document.getElementById('ppNovoFotoN').textContent=this.files.length?this.files.length+' foto(s)':'Fotos'"></label>
+      <button class="btn btn-primary" id="ppBtnAdd" onclick="ppAdicionar()">Adicionar peça</button>
+    </div>`;
+}
+function ppHtmlItem(x){
+  const id=ppSeg(x.id), fs=ppFotos(x);
+  return `<div class="pp-it ${x.ok?'ok':''}">
+    <button class="pp-ck" title="${x.ok?'Marcada como pintada — clique para voltar a pendente':'Pendente — clique para marcar como pintada'}" onclick="ppToggle('${id}')">${x.ok?PP_IC.ok:''}</button>
+    <div class="pp-it-m">
+      <div class="pp-it-t">${escHtml(x.texto)} <span class="pp-tag ${x.ok?'o':'p'}">${x.ok?'Pintada':'Pendente'}</span></div>
+      ${x.cor?`<div class="pp-cor-t"><b>Cor:</b> ${escHtml(x.cor)}</div>`:''}${x.obs?`<div class="pp-it-o">${escHtml(x.obs)}</div>`:''}
+      <div class="pp-it-s">${x.criadoPor?`Adicionada por ${escHtml(ppQuem(x.criadoPor))}${x.origem==='celular'?' · pelo celular':(x.origem==='pcp'?' · pelo PCP':'')}${x.criadoEm?' · '+ppData(x.criadoEm):''}`:'Peça do checklist'}${x.ok&&x.okPor?` · Pintada por ${escHtml(ppQuem(x.okPor))}${x.okEm?' em '+ppData(x.okEm):''}`:''}</div>
+      ${fs.length?`<div class="pp-fs">${fs.map(f=>`<button class="pp-f" onclick="ppVerFoto('${id}','${ppSeg(f.id)}')" title="${ppAttr(ppQuem(f.por)+' · '+ppData(f.em))}"><img src="${ppUrl(f.url)}" alt="" loading="lazy">${f.origem==='celular'?`<i>${PP_IC.cel}</i>`:''}</button>`).join('')}</div>`:''}
+    </div>
+    <div class="pp-it-a">
+      <button class="icon-btn" title="Adicionar foto" onclick="ppFotoAdd('${id}')">${PP_IC.cam}</button>
+      <button class="icon-btn" title="Editar peça" onclick="ppEditar('${id}')">${PP_IC.lapis}</button>
+      <button class="icon-btn danger" title="Excluir peça" onclick="ppExcluir('${id}')">${TRASH_SVG}</button>
+    </div></div>`;
+}
+
+/* ---- escrita (transações: o celular e o PCP mexem no mesmo checklist ao mesmo tempo) ---- */
+function ppTx(opId,fn){
+  return db.ref('ops/'+opId+'/checklistPintura').transaction(cur=>{
+    const l=ppLista(cur).filter(Boolean).map(x=>({...x})); const r=fn(l); return r===undefined?undefined:r; });
+}
+function ppTxPend(opId,fn){
+  return db.ref('ops/'+opId+'/pendencias').transaction(cur=>{ const r=fn(ppLista(cur).filter(Boolean)); return r===undefined?undefined:r; });
+}
+function ppOpAtual(){ const r=PAINEL.find(x=>x.id===ppProj); return r?ppOpPintura(r):null; }
+function ppItemDe(id){ const o=ppOpAtual(); return o?ppItens(o).find(x=>x.id===id):null; }
+function ppPrepararFoto(file){   // lado maior até 1600 px, JPEG 80%
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{ const e=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
+      c.width=Math.round(img.naturalWidth*e); c.height=Math.round(img.naturalHeight*e);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error('Falha ao preparar a foto')),'image/jpeg',.8); };
+    img.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('“'+file.name+'” não é uma imagem válida')); };
+    img.src=url; });
+}
+async function ppEnviarFotos(files){
+  const out=[], lista=[...(files||[])].filter(f=>/^image\//.test(f.type));
+  for(let i=0;i<lista.length;i++){
+    toast(`Enviando foto ${i+1} de ${lista.length}…`);
+    const url=await desigCloud(await ppPrepararFoto(lista[i]),'peca.jpg');
+    out.push({id:'f'+Date.now()+Math.floor(Math.random()*900+100),url,em:new Date().toISOString(),por:usuarioAtual(),origem:'pcp'});
+  }
+  return out;
+}
+async function ppAdicionar(){
+  const op=ppOpAtual(); if(!op){ toast('Emita a OP de Pintura deste projeto primeiro'); return; }
+  const nome=(document.getElementById('ppNovo').value||'').trim(), obs=(document.getElementById('ppNovoObs').value||'').trim(), cor=(document.getElementById('ppNovoCor').value||'').trim();
+  if(!nome){ toast('Informe o nome da peça'); document.getElementById('ppNovo').focus(); return; }
+  const arq=document.getElementById('ppNovoFoto').files;
+  ppEnviando=true; ppDetalhe();
+  try{
+    const fotos=await ppEnviarFotos(arq);
+    const item={id:'c'+Date.now()+Math.floor(Math.random()*90+10),texto:nome,ok:false,criadoPor:usuarioAtual(),criadoEm:new Date().toISOString(),origem:'pcp'};
+    if(obs) item.obs=obs; if(cor) item.cor=cor; if(fotos.length) item.fotos=fotos;
+    await ppTx(op.id,l=>{ l.push(item); return l; });
+    ppMontarAdd(); toast('Peça adicionada');
+  }catch(e){ toast('Erro: '+(e&&e.message?e.message:e)); }
+  ppEnviando=false; ppDetalhe();
+  const n=document.getElementById('ppNovo'); if(n) n.focus();
+}
+function ppToggle(id){
+  const op=ppOpAtual(), it=ppItemDe(id); if(!op||!it) return;
+  const err=e=>toast('Erro: '+(e&&e.message?e.message:e));
+  if(!it.ok){
+    ppTx(op.id,l=>{ const x=l.find(y=>y.id===id); if(!x) return undefined; x.ok=true; x.okPor=usuarioAtual(); x.okEm=new Date().toISOString(); return l; }).catch(err);
+    return;
+  }
+  const mot=prompt('Voltar “'+it.texto+'” para pendente cria uma pendência de pintura.\nMotivo (ex.: retocar, riscado, escorrido):','');
+  if(mot===null) return;
+  const m=(mot||'').trim();
+  ppTx(op.id,l=>{ const x=l.find(y=>y.id===id); if(!x) return undefined; x.ok=false; x.okPor=null; x.okEm=null; return l; })
+    .then(()=>ppTxPend(op.id,p=>{ p.push({id:'p'+Date.now(),texto:'Pintura: '+it.texto+(m?' — '+m:''),ok:false,tipo:'pintura',itemId:id,por:usuarioAtual(),em:new Date().toISOString()}); return p; }))
+    .then(()=>toast('Peça pendente — pendência de pintura criada')).catch(err);
+}
+function ppEditar(id){
+  const it=ppItemDe(id); if(!it) return;
+  abrirModal('Atualizar peça',
+    `<div class="fld"><label>Nome da peça<i>*</i></label><input id="ppEdNome" maxlength="120" value="${ppAttr(it.texto)}"></div>
+     <div class="fld" style="margin-top:15px"><label>Cor</label><input id="ppEdCor" maxlength="60" value="${ppAttr(it.cor||'')}" placeholder="Ex.: Branco acetinado"></div>
+     <div class="fld" style="margin-top:15px"><label>Observação</label><input id="ppEdObs" maxlength="200" value="${ppAttr(it.obs||'')}" placeholder="Opcional"></div>
+     <div class="fld" style="margin-top:15px"><label>Situação</label><select id="ppEdSt"><option value="0" ${it.ok?'':'selected'}>Pendente de pintura</option><option value="1" ${it.ok?'selected':''}>Pintada</option></select></div>`,
+    `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button><button class="btn btn-primary" onclick="ppSalvarEdicao('${ppSeg(id)}')">Salvar</button>`);
+}
+function ppSalvarEdicao(id){
+  const op=ppOpAtual(), it=ppItemDe(id); if(!op||!it) return fecharModal();
+  const nome=(document.getElementById('ppEdNome').value||'').trim(), obs=(document.getElementById('ppEdObs').value||'').trim(), cor=(document.getElementById('ppEdCor').value||'').trim();
+  const ok=document.getElementById('ppEdSt').value==='1';
+  if(!nome){ toast('Informe o nome da peça'); return; }
+  const err=e=>toast('Erro: '+(e&&e.message?e.message:e));
+  ppTx(op.id,l=>{ const x=l.find(y=>y.id===id); if(!x) return undefined;
+    x.texto=nome; if(obs) x.obs=obs; else delete x.obs; if(cor) x.cor=cor; else delete x.cor;
+    if(ok&&!x.ok){ x.ok=true; x.okPor=usuarioAtual(); x.okEm=new Date().toISOString(); }
+    else if(!ok&&x.ok){ x.ok=false; x.okPor=null; x.okEm=null; }
+    return l; })
+    .then(()=>{ if(it.ok&&!ok) return ppTxPend(op.id,p=>{ p.push({id:'p'+Date.now(),texto:'Pintura: '+nome+' — voltou para pendente (PCP)',ok:false,tipo:'pintura',itemId:id,por:usuarioAtual(),em:new Date().toISOString()}); return p; }); })
+    .then(()=>{ fecharModal(); toast('Peça atualizada'); }).catch(err);
+}
+function ppExcluir(id){
+  const op=ppOpAtual(), it=ppItemDe(id); if(!op||!it) return;
+  const nf=ppFotos(it).length;
+  if(!confirm('Excluir a peça “'+it.texto+'” do checklist de pintura?'+(nf?`\n\nAs ${nf} foto(s) vinculadas a ela deixam de aparecer.`:''))) return;
+  ppTx(op.id,l=>l.filter(x=>x.id!==id))
+    .then(()=>ppTxPend(op.id,p=>{ const n=p.filter(q=>!(q.tipo==='pintura'&&q.itemId===id&&!q.ok)); return n.length===p.length?undefined:n; }))
+    .then(()=>toast('Peça excluída')).catch(e=>toast('Erro: '+(e&&e.message?e.message:e)));
+}
+function ppFotoAdd(id){
+  const op=ppOpAtual(); if(!op) return;
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.multiple=true;
+  inp.onchange=async()=>{
+    try{
+      const fotos=await ppEnviarFotos(inp.files); if(!fotos.length) return;
+      const r=await ppTx(op.id,l=>{ const x=l.find(y=>y.id===id); if(!x) return undefined; x.fotos=ppFotos(x).concat(fotos); return l; });
+      if(!r.committed) throw new Error('A peça não existe mais no checklist');
+      toast(fotos.length>1?fotos.length+' fotos adicionadas':'Foto adicionada');
+    }catch(e){ toast('Erro na foto: '+(e&&e.message?e.message:e)); }
+  };
+  inp.click();
+}
+function ppVerFoto(itemId,fotoId){
+  const it=ppItemDe(itemId); if(!it) return;
+  const fs=ppFotos(it), k=fs.findIndex(f=>f.id===fotoId); if(k<0) return;
+  const f=fs[k];
+  const ov=document.getElementById('ppLb')||(()=>{ const d=document.createElement('div'); d.id='ppLb'; d.className='pp-lb';
+    d.onclick=e=>{ if(e.target===d) ppFecharFoto(); }; document.body.appendChild(d); return d; })();
+  ov.innerHTML=`<button class="pp-lb-x" onclick="ppFecharFoto()">&times;</button>
+    ${fs.length>1?`<button class="pp-lb-n ant" onclick="ppVerFoto('${ppSeg(itemId)}','${ppSeg(fs[(k-1+fs.length)%fs.length].id)}')">‹</button><button class="pp-lb-n prox" onclick="ppVerFoto('${ppSeg(itemId)}','${ppSeg(fs[(k+1)%fs.length].id)}')">›</button>`:''}
+    <img src="${ppUrl(f.url)}" alt="">
+    <div class="pp-lb-i"><b>${escHtml(it.texto)}</b><span>${escHtml(ppQuem(f.por))}${f.origem==='celular'?' · pelo celular':''}${f.em?' · '+ppData(f.em):''} · ${k+1}/${fs.length}</span></div>
+    <div class="pp-lb-b"><a href="${ppUrl(f.url)}" target="_blank" rel="noopener">Abrir original</a>
+      <button onclick="ppExcluirFoto('${ppSeg(itemId)}','${ppSeg(fotoId)}')">Excluir foto</button></div>`;
+  ov.classList.add('open');
+}
+function ppFecharFoto(){ const o=document.getElementById('ppLb'); if(o){ o.classList.remove('open'); o.innerHTML=''; } }
+function ppExcluirFoto(itemId,fotoId){
+  const op=ppOpAtual(); if(!op||!confirm('Excluir esta foto?')) return;
+  ppTx(op.id,l=>{ const x=l.find(y=>y.id===itemId); if(!x) return undefined;
+    const n=ppFotos(x).filter(f=>f.id!==fotoId); if(n.length) x.fotos=n; else delete x.fotos; return l; })
+    .then(()=>{ ppFecharFoto(); toast('Foto excluída'); }).catch(e=>toast('Erro: '+(e&&e.message?e.message:e)));
+}
+
+/* ---- Requisição de pintura: 2 vias por folha A4 (mesmo molde da requisição de fita faltante); o montador preenche à mão ---- */
+function folhaReqPintura(){
+  const cols=[['Peça a ser pintada','42%'],['Cor','20%'],['Observação','38%']];
+  const N=9, hoje=new Date().toLocaleDateString('pt-BR');
+  const via=`
+        <div class="rff-via">
+          <div class="folha-head">
+            <img class="fl-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
+            <h1 class="fl-title" style="font-size:21px">Requisição de Pintura</h1>
+            <div class="fl-date" style="font-size:16px">${hoje}</div>
+          </div>
+          <div class="rff-info rpp-i3">
+            <div class="rff-campo"><b>Nº projeto:</b></div>
+            <div class="rff-campo"><b>Ambiente:</b></div>
+            <div class="rff-campo"><b>Montador:</b></div>
+          </div>
+          <table class="rff-tbl">
+            <colgroup>${cols.map(c=>`<col style="width:${c[1]}">`).join('')}</colgroup>
+            <thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead>
+            <tbody>${Array.from({length:N}).map(()=>`<tr>${cols.map(()=>'<td></td>').join('')}</tr>`).join('')}</tbody>
+          </table>
+          <div class="folha-foot">
+            <div class="ff-l">
+              <svg class="ff-mark" viewBox="0 0 60 26" aria-hidden="true">
+                <path d="M2 24 C2 10 8 2 14 2 C20 2 26 10 26 24 Z"/>
+                <path d="M16 24 C16 10 22 2 28 2 C34 2 40 10 40 24 Z"/>
+                <path d="M30 24 C30 10 36 2 42 2 C48 2 54 10 54 24 Z"/>
+              </svg>
+              <div class="ff-end">${EMPRESA.end1}<br>${EMPRESA.end2}<br>${EMPRESA.end3}</div>
+            </div>
+            <div class="ff-r">Raldi · Móveis com precisão</div>
+          </div>
+        </div>`;
+  const ov=document.getElementById('fichaOverlay');
+  ov.innerHTML=`
+      <div class="ficha-actions folha-actions" style="width:min(780px,100%)">
+        <button class="btn btn-ghost" style="background:#fff" onclick="fecharFicha()">Fechar</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button>
+      </div>
+      <div class="folha rff-folha" style="width:min(780px,100%)">
+        ${via}
+        <div class="rff-corte"><span>✂</span></div>
+        ${via}
+      </div>`;
+  ov.onclick=(e)=>{ if(e.target===ov) fecharFicha(); };
+  setPageOrientation('portrait');
+  ov.classList.add('open');
+}
+const PP_IC={
+  print:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>',
+  info:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+  lupa:'<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  cam:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.6"/></svg>',
+  seta:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  volta:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><path d="M15 6l-6 6 6 6"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>',
+  lapis:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  cel:'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>'
+};
 </script>
 </body>
 </html>
