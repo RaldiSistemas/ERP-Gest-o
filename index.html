@@ -2461,6 +2461,10 @@
   .ft-cfg-perda{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .ft-cfg-perda .btn{ border-radius:11px; background:var(--ft-wash); border-color:transparent; padding:8px 14px; font-size:13px; }
   .ft-cfg-perda .btn:hover{ background:#eceae3; }
+  .ft-corte{ display:inline-flex; align-items:center; gap:8px; background:var(--ft-wash); border-radius:11px; padding:5px 12px; font-size:13px; font-weight:600; color:var(--texto,#2b2b31); }
+  .ft-corte input{ width:64px; border:1px solid var(--linha); border-radius:8px; padding:5px 6px; text-align:center; font:inherit; background:#fff; }
+  .ft-corte input:focus{ outline:2px solid rgba(47,111,181,.35); border-color:#2f6fb5; }
+  .ft-corte em{ font-style:normal; color:var(--muted); font-weight:500; }
   .ft-strip{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin:18px 0 6px; padding:10px 14px; background:var(--ft-wash); border-radius:12px; }
   .ft-strip .fr-t{ text-transform:none; letter-spacing:0; font-size:12px; margin-right:2px; }
   .ft-strip .fr-p{ background:#fff; box-shadow:0 0 0 1px var(--ft-edge); }
@@ -4695,6 +4699,10 @@
     db.ref('setores').on('value',s=>{ SETORES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('configFita/perdas').on('value',s=>{ perdaFitaDeFirebase(s.val()); const c=document.getElementById('fitaPerdaChips'); if(c) c.innerHTML=perdaFitaChips(); if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
       e=>console.warn('configFita:',e.message));
+    db.ref('configFita/corteMm').on('value',s=>{ const v=parseFloat(s.val()); CORTE_MM=isFinite(v)&&v>0?v:0;
+        const i=document.getElementById('fitaCorteMm'); if(i&&document.activeElement!==i) i.value=CORTE_MM||'';
+        if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
+      e=>console.warn('configFita/corteMm:',e.message));
     db.ref('atividades').on('value',s=>{ ATIVIDADES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('producao').on('value',s=>{ PRODUCAO=s.val()||{}; if(TELA==='acomp') renderAba(); });
     db.ref('tarefas').on('value',s=>{ TAREFAS=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
@@ -7339,11 +7347,55 @@
 
   /* ================= Memorial de cálculo — Simulação de fita ================= */
   const ROLOS_FITA=[{l:22,m:10},{l:35,m:10},{l:45,m:10},{l:100,m:1},{l:260,m:1}];
+  // PREÇO por rolo (R$) — usado para escolher o rolo mais barato na compra. Chave: largura -> {metros do rolo: preço}.
+  // Ex.: 22mm x 10m = R$ 13,00 (R$ 1,30/m); 100mm vendido por metro = R$ 5,72. Abaixo de 3 m o 100mm sai mais barato; de 3 m em diante, o 22mm.
+  // Rolo sem preço aqui é estimado pela área, na mesma proporção (R$ por mm x m) dos rolos com preço. Preencha os demais quando tiver.
+  const PRECO_ROLO={22:{10:13},100:{1:5.72}};
+  function precoRolo(r){
+    const t=PRECO_ROLO[r.l]; if(t&&t[r.m]!=null) return t[r.m];
+    let somaP=0, somaA=0;
+    Object.keys(PRECO_ROLO).forEach(l=>Object.keys(PRECO_ROLO[l]).forEach(m=>{ somaP+=PRECO_ROLO[l][m]; somaA+=(+l)*(+m); }));
+    return r.l*r.m*(somaA?somaP/somaA:1);
+  }
+  // Sobras só são reaproveitadas em blocos de 3 m (tamanho da chapa): um pedaço menor teria que ser emendado.
+  // Ex.: sobra de 32 m -> 30 m utilizáveis; sobra de 2 m -> não é reaproveitada.
+  const SOBRA_BLOCO_M=3;
+  const sobraUtilM=s=>Math.floor(((+s.m||0)+1e-9)/SOBRA_BLOCO_M)*SOBRA_BLOCO_M;
   let simF={usarMetragem:true, linhas:[], resultado:null}; // usarMetragem: regra fixa (sem emenda)
 
   // % de perda por largura de fita — somada à METRAGEM (ex.: 10 m de 22mm com 5% → 10,5 m).
   // Fica no Firebase em configFita/perdas, como lista [{l:22,p:5},...] (chave com ponto não é aceita no RTDB).
   let PERDA_FITA={};   // {"22":5,"35":3,...}
+
+  // PERDA DE CORTE (mm): largura que a lâmina consome a cada corte de abertura (kerf).
+  // Ex.: abrir 64mm de um rolo de 100mm com 2 mm de corte -> sobra de 34mm (e não 36mm).
+  // Fica no Firebase em configFita/corteMm e vale para a simulação do projeto e do lote.
+  let CORTE_MM=0;
+  function corteFitaMm(){ return CORTE_MM>0?CORTE_MM:0; }
+  function salvarCorteFita(v){
+    const n=parseFloat(String(v).replace(',','.'));
+    const val=isFinite(n)&&n>0?Math.min(50,+n.toFixed(2)):0;
+    db.ref('configFita/corteMm').set(val>0?val:null)
+      .then(()=>{ CORTE_MM=val; simF.resultado=null; const i=document.getElementById('fitaCorteMm'); if(i) i.value=val||''; if(TELA==='fita') fitaLive(true); toast(val>0?'Perda de corte salva':'Perda de corte removida'); })
+      .catch(e=>toast('Erro ao salvar: '+e.message));
+  }
+  // Aviso ao informar 64 mm de largura necessária: costuma ser engano (o correto é a largura real do painel + fita de 100 mm).
+  function fitaAvisoLargura64(i,v){
+    const w=parseFloat(String(v).replace(',','.'));
+    if(!isFinite(w)||Math.abs(w-64)>1e-9) return;
+    const u=usuarioLogadoReg(), email=(auth.currentUser&&auth.currentUser.email)||'';
+    const nome=(u&&u.nome)||(email?email.split('@')[0]:'');
+    const ico='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+    abrirModal(`Atenção${nome?', '+escHtml(nome):''}`,
+      `<div style="display:flex;gap:16px;align-items:flex-start">
+        <div style="flex:none;width:54px;height:54px;border-radius:50%;background:#fdf1d6;color:#b7791f;display:flex;align-items:center;justify-content:center">${ico}</div>
+        <div style="font-size:14px;line-height:1.55">
+          <p style="margin:0 0 12px">Se você estiver utilizando a necessidade de largura de <b>64 mm</b> para o painel de <b>46,5 mm</b>, lembre-se de informar <b>exatamente a largura necessária para o painel</b>, neste caso, <b>46,5 mm</b>, e selecionar a <b>fita de 100 mm</b>, em vez de utilizar a largura de 64 mm.</p>
+          <p style="margin:0;color:var(--muted)">Caso não seja esse o caso, pode seguir normalmente com a largura de 64 mm.</p>
+        </div></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Seguir com 64 mm</button>
+       <button class="btn btn-primary" onclick="fecharModal(); const e=document.querySelector('[data-lnec=\'${i}\']'); if(e){ e.focus(); e.select(); }">Corrigir a largura</button>`);
+  }
   function perdaFitaDeFirebase(v){
     const o={};
     Object.values(v||{}).forEach(x=>{ const l=parseFloat(x&&x.l), pc=parseFloat(x&&x.p); if(l>0&&isFinite(pc)&&pc>0) o[String(l)]=pc; });
@@ -7424,7 +7476,7 @@
         oninput="simF.linhas[${i}].larguraRolo=this.value; fitaLive()"></td>
       <td style="width:92px"><input class="cell-in ctr fita-auto" type="number" step="any" min="0" value="${esc(r.metragemRolo)}" placeholder="m"
         oninput="simF.linhas[${i}].metragemRolo=this.value; fitaLive()"></td>
-      <td class="sep-l" style="width:116px"><input class="cell-in ctr" type="number" step="any" min="0" value="${esc(r.larguraNec)}" placeholder="mm" oninput="simF.linhas[${i}].larguraNec=this.value; fitaLive()"></td>
+      <td class="sep-l" style="width:116px"><input class="cell-in ctr" type="number" step="any" min="0" value="${esc(r.larguraNec)}" placeholder="mm" data-lnec="${i}" oninput="simF.linhas[${i}].larguraNec=this.value; fitaLive()" onchange="fitaAvisoLargura64(${i},this.value)"></td>
       <td style="width:112px"><input class="cell-in ctr" type="number" step="any" min="0" value="${esc(r.metragemNec)}" placeholder="m" title="Total de metros necessários nesta largura" oninput="simF.linhas[${i}].metragemNec=this.value; fitaLive()"></td>
       <td style="width:72px"><input class="cell-in ctr" type="number" step="1" min="1" value="${esc(r.qtd)}" oninput="simF.linhas[${i}].qtd=this.value; fitaLive()"></td>
       <td class="acoes"><button class="icon-btn danger" title="Remover linha" onclick="fitaRem(${i})">${TRASH_SVG}</button></td>
@@ -7441,6 +7493,9 @@
           <div class="ft-cfg-perda">
             <button class="btn btn-ghost" onclick="abrirConfigPerdaFita()">${ICO_ENGR}Configurar perda</button>
             <span id="fitaPerdaChips" style="display:contents">${perdaFitaChips()}</span>
+            <label class="ft-corte" title="Largura que a lâmina consome a cada corte de abertura do rolo (ex.: 2 mm). Vale para o projeto e para o lote."><span>Perda de corte</span>
+              <input id="fitaCorteMm" type="number" step="any" min="0" max="50" value="${CORTE_MM||''}" placeholder="0"
+                onchange="salvarCorteFita(this.value)" onkeydown="if(event.key==='Enter') this.blur()"><em>mm</em></label>
           </div>
         </div>
         <div class="ft-strip"><span class="fr-t">Rolos do fornecedor</span>
@@ -7505,8 +7560,10 @@
   // rolosPorMat: {mat: [{l,m,doItem?}]} — opções de rolo por material (catálogo padrão + rolos avulsos informados).
   // Junta pedaços da mesma largura dentro do mesmo material antes de otimizar — isso evita comprar
   // rolos "picados" à toa quando duas necessidades de mesma largura poderiam vir de uma compra só.
-  function otimizarCorte(pedidosBrutos,rolosPorMat,perdaPct){
-    const perda=1+(perdaPct/100);
+  function otimizarCorte(pedidosBrutos,rolosPorMat,perdaPct,corteMm){
+    const perda=1+((perdaPct||0)/100);
+    // perda de corte (mm) por abertura; sem o 4º parâmetro usa a configuração atual da tela de simulação
+    const kerf=(corteMm!=null)?Math.max(0,+corteMm||0):corteFitaMm();
     const agreg=new Map();
     pedidosBrutos.forEach(p=>{
       const k=p.mat+'|'+p.w;
@@ -7528,43 +7585,54 @@
       let seq=0;
 
       lista.forEach(p=>{
-        const wNec=p.w, wComCorte=p.w*perda;
-        // 1) melhor sobra que atende
-        let melhor=-1;
-        sobras.forEach((s,si)=>{
-          const exige=(Math.abs(s.w-p.w)<1e-9)?wNec:wComCorte;
-          if(s.w+1e-9<exige) return;
-          if(s.m+1e-9<p.m) return;
-          if(melhor<0 || s.w<sobras[melhor].w || (s.w===sobras[melhor].w && s.m<sobras[melhor].m)) melhor=si;
-        });
-        if(melhor>=0){
+        const wNec=p.w, wComCorte=p.w*perda+kerf;
+        // largura consumida: sem corte se a tira já tem a largura exata; senão a peça + a perda de corte (no máx. o que existe)
+        const gastoDe=disp=>(Math.abs(disp-p.w)<1e-9)?wNec:Math.min(disp,wComCorte);
+        let falta=p.m, primeira=true;
+        // 1) sobras: usa o que couber, em blocos de 3 m, mesmo que NÃO cubra a necessidade inteira.
+        //    O que faltar passa para outra sobra ou para rolo novo (ex.: 480 m com sobra de 32 m -> 30 m da sobra + 450 m de rolo novo).
+        while(falta>1e-9){
+          let melhor=-1, melhorCobre=false;
+          sobras.forEach((s,si)=>{
+            if(s.w+1e-9<wNec) return;
+            const util=sobraUtilM(s); if(util<SOBRA_BLOCO_M-1e-9) return;   // menos de 3 m: não reaproveita (emenda)
+            const cobre=util+1e-9>=falta;
+            if(melhor<0){ melhor=si; melhorCobre=cobre; return; }
+            const b=sobras[melhor];
+            if(cobre!==melhorCobre){ if(cobre){ melhor=si; melhorCobre=true; } return; }
+            const mesmaW=Math.abs(s.w-b.w)<1e-9;
+            // cobre tudo: encaixe justo (menor largura, menor sobra). Cobre parte: menor largura, maior trecho útil.
+            if(cobre){ if(s.w<b.w-1e-9 || (mesmaW && s.m<b.m)) melhor=si; }
+            else if(s.w<b.w-1e-9 || (mesmaW && util>sobraUtilM(b))) melhor=si;
+          });
+          if(melhor<0) break;
           const s=sobras.splice(melhor,1)[0];
-          const gasto=(Math.abs(s.w-p.w)<1e-9)?wNec:wComCorte;
+          const take=+(melhorCobre?falta:sobraUtilM(s)).toFixed(4);
+          const gasto=gastoDe(s.w);
           const rl=rolosUsados.find(r=>r.id===s.roloId);
-          if(rl) rl.pecas.push({w:p.w,m:p.m,x:s.x,y:s.y,gasto,origem:'sobra'});
-          alocacoes.push({...p,origem:'sobra',de:s.roloId,roloId:s.roloId,
-            usou:`${fmtNum(s.w)}mm × ${fmtNum(s.m)}m`, corte:gasto>p.w+1e-9});
-          cortar(sobras,s.w,s.m,s.x,s.y,gasto,p.m,s.roloId);
-          return;
+          if(rl) rl.pecas.push({w:p.w,m:take,x:s.x,y:s.y,gasto,origem:'sobra'});
+          alocacoes.push({...p,m:take,mTotal:p.m,primeira,origem:'sobra',de:s.roloId,roloId:s.roloId,
+            usou:`${fmtNum(s.w)}mm × ${fmtNum(+s.m.toFixed(2))}m`, corte:gasto>p.w+1e-9});
+          primeira=false;
+          cortar(sobras,s.w,s.m,s.x,s.y,gasto,take,s.roloId,p.w);
+          falta=+(falta-take).toFixed(4);
         }
-        // 2) rolo novo
-        const opcoes=ROLOS.filter(r=>{
-          const exige=(Math.abs(r.l-p.w)<1e-9)?wNec:wComCorte;
-          return r.l+1e-9>=exige;
-        }).map(r=>({...r,n:Math.max(1,Math.ceil((p.m-1e-9)/r.m))}));
-        opcoes.sort((a,b)=> (a.l*a.m*a.n)-(b.l*b.m*b.n) || a.l-b.l);
+        if(falta<=1e-9) return;
+        // 2) rolo novo para o que faltou
+        const opcoes=ROLOS.filter(r=>r.l+1e-9>=wNec).map(r=>({...r,n:Math.max(1,Math.ceil((falta-1e-9)/r.m))}));
+        opcoes.sort((a,b)=> (precoRolo(a)*a.n)-(precoRolo(b)*b.n) || (a.l*a.m*a.n)-(b.l*b.m*b.n) || a.l-b.l);   // menor custo; empate: menor área
         const cand=opcoes[0];
-        if(!cand){ alocacoes.push({...p,origem:'impossivel'}); return; }
+        if(!cand){ alocacoes.push({...p,m:falta,mTotal:p.m,primeira,origem:'impossivel'}); return; }
         const nRolos=cand.n, chave=`${fmtNum(cand.l)}x${fmtNum(cand.m)}`;
         compras[chave]=(compras[chave]||0)+nRolos;
-        const gastoN=(Math.abs(cand.l-p.w)<1e-9)?wNec:wComCorte;
+        const gastoN=gastoDe(cand.l);
         const id='R'+(++seq);
         const totalM=cand.m*nRolos;
         rolosUsados.push({id,largura:cand.l,metragem:cand.m,nRolos,totalM,chave,
-          pecas:[{w:p.w,m:p.m,x:0,y:0,gasto:gastoN,origem:'novo'}]});
-        alocacoes.push({...p,origem:'novo',de:chave,roloId:id,nRolos,corte:gastoN>p.w+1e-9,
+          pecas:[{w:p.w,m:falta,x:0,y:0,gasto:gastoN,origem:'novo'}]});
+        alocacoes.push({...p,m:falta,mTotal:p.m,primeira,origem:'novo',de:chave,roloId:id,nRolos,corte:gastoN>p.w+1e-9,
           usou:`${nRolos>1?nRolos+'× ':''}${fmtNum(cand.l)}mm × ${fmtNum(cand.m)}m`});
-        cortar(sobras,cand.l,totalM,0,0,gastoN,p.m,id);
+        cortar(sobras,cand.l,totalM,0,0,gastoN,falta,id,p.w);
       });
 
       // sobras finais por rolo
@@ -7572,7 +7640,7 @@
 
       const areaUsada=lista.reduce((a,p)=>a+(p.w*p.m),0);
       const areaComprada=Object.entries(compras).reduce((a,[k,n])=>{const [l,m]=k.split('x').map(Number); return a+l*m*n;},0);
-      const areaSobraUtil=sobras.filter(s=>s.w>=22).reduce((a,s)=>a+s.w*s.m,0);
+      const areaSobraUtil=sobras.filter(s=>s.w>=22).reduce((a,s)=>a+s.w*sobraUtilM(s),0);
       const areaRefugo=Math.max(0,areaComprada-areaUsada-areaSobraUtil);
       const porLargura={};
       Object.entries(compras).forEach(([k,n])=>{
@@ -7581,7 +7649,7 @@
         porLargura[l].rolos+=n; porLargura[l].metros+=m*n;
       });
       const linhasCompra=Object.values(porLargura).sort((a,b)=>a.largura-b.largura);
-      materiais.push({mat,alocacoes,sobras,compras,rolosUsados,areaUsada,areaComprada,rolos:ROLOS,
+      materiais.push({mat,corteMm:kerf,alocacoes,sobras,compras,rolosUsados,areaUsada,areaComprada,rolos:ROLOS,
         areaSobraUtil,areaRefugo,linhasCompra,
         totalMetros:linhasCompra.reduce((a,c)=>a+c.metros,0),
         metrosCortados:+lista.reduce((a,p)=>a+p.m,0).toFixed(2),
@@ -7625,7 +7693,7 @@
     });
     const materiais=otimizarCorte(pedidosBrutos,rolosPorMat,0);
     const perdasUsadas={}; pedidosBrutos.forEach(p=>{ if(p.pct>0) perdasUsadas[p.w]=p.pct; });
-    simF.resultado={materiais, geradoEm:new Date().toISOString(), perdas:perdasUsadas};
+    simF.resultado={materiais, geradoEm:new Date().toISOString(), perdas:perdasUsadas, corteMm:corteFitaMm()};
     box.innerHTML=htmlResultadoFita();
     const tot=materiais.reduce((a,M)=>({rolos:a.rolos+Object.values(M.compras).reduce((x,y)=>x+y,0), metros:a.metros+M.totalMetros, usada:a.usada+M.areaUsada, comprada:a.comprada+M.areaComprada}),{rolos:0,metros:0,usada:0,comprada:0});
     const ap=tot.comprada?Math.min(100,tot.usada/tot.comprada*100):0;
@@ -7637,11 +7705,12 @@
       <button class="btn btn-primary" onclick="verSolFita()">${ICO_DOC}Gerar solicitação de fita</button>`;
   }
   // corte guilhotinado com coordenadas: tira lateral + ponta da tira usada
-  function cortar(sobras,W,M,x,y,wUsado,mUsado,roloId){
+  // wPeca = largura real da peça (sem a perda de corte): a ponta que sobra no fim da tira tem a largura da peça
+  function cortar(sobras,W,M,x,y,wUsado,mUsado,roloId,wPeca){
     const lateral=W-wUsado;
     if(lateral>0.5) sobras.push({w:lateral,m:M,x,y:y+wUsado,roloId});
-    const ponta=M-mUsado;
-    if(ponta>0.05 && wUsado>0.5) sobras.push({w:wUsado,m:ponta,x:x+mUsado,y,roloId});
+    const ponta=M-mUsado, wP=(wPeca!=null&&wPeca<wUsado)?wPeca:wUsado;
+    if(ponta>0.05 && wP>0.5) sobras.push({w:wP,m:ponta,x:x+mUsado,y,roloId});
   }
   function gerarSobras(sobras,W,M,wUsado,mUsado,origemRolo){ cortar(sobras,W,M,0,0,wUsado,mUsado,origemRolo); }
 
@@ -7663,7 +7732,7 @@
     g+=`<rect x="${pl}" y="${pt}" width="${iw}" height="${ih}" rx="8" fill="#fff" stroke="#d3d1c6"/>`;
     g+=`<g clip-path="url(#${uid}c)">`;
     (r.sobras||[]).forEach(sb=>{
-      const x=ex(sb.x), y=ey(sb.y), w=Math.max(1,ex(sb.x+sb.m)-x), h=Math.max(2,ey(sb.y+sb.w)-y), util=sb.w>=22;
+      const x=ex(sb.x), y=ey(sb.y), w=Math.max(1,ex(sb.x+sb.m)-x), h=Math.max(2,ey(sb.y+sb.w)-y), util=sb.w>=22&&sobraUtilM(sb)>0;
       g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${uid}${util?'s':'r'})"/>`;
       const t=`sobra ${fmtNum(+sb.w.toFixed(2))} × ${fmtNum(+sb.m.toFixed(2))}`;
       if(cabe(t,w,h)) g+=T(x+w/2,y+h/2+4,t,{s:10.5,c:util?'#2f6b39':'#8d8d95'});
@@ -7713,12 +7782,12 @@
         :`<span><i style="background:#982424"></i>Peça em rolo novo</span>
       <span><i style="background:#3b7f4b"></i>Peça em sobra reaproveitada</span>`;
       return `<div class="ft-leg">${a}
-      <span><i style="background:repeating-linear-gradient(45deg,#e9f2eb 0 3px,#a9cfb3 3px 5px)"></i>Sobra ≥ 22mm (reutilizável)</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#e9f2eb 0 3px,#a9cfb3 3px 5px)"></i>Sobra ≥ 22mm e ≥ 3m (reutilizável, em blocos de 3m)</span>
       <span><i style="background:repeating-linear-gradient(45deg,#eeede7 0 3px,#d6d4ca 3px 5px)"></i>Sobra pequena</span></div>`; };
     return R.materiais.map(M=>{
       const nr=Object.values(M.compras).reduce((a,b)=>a+b,0);
       const imposs=M.alocacoes.filter(a=>a.origem==='impossivel');
-      const comPerda=M.alocacoes.filter(a=>a.pct>0);
+      const comPerda=M.alocacoes.filter(a=>a.pct>0&&a.primeira);
       const cls=M.aprov>=80?'ok':(M.aprov>=55?'mid':'low');
       return `<section class="ft-mat">
         <div class="ft-mat-top">
@@ -7727,7 +7796,8 @@
           <div class="ft-buy"><b>${fmtNum(M.totalMetros)} m</b><span>${nr} rolo${nr===1?'':'s'} para comprar</span></div>
           <div class="ft-meter ${cls}"><span>Aproveitamento <b>${M.aprov.toFixed(1).replace('.',',')}%</b></span><div class="ft-meter-bar"><i style="width:${Math.max(2,M.aprov).toFixed(1)}%"></i></div></div>
         </div>
-        ${comPerda.length?`<div class="ft-perda">Perda somada à metragem:${comPerda.map(a=>`<span class="fr-p fr-item">${fmtNum(a.w)}mm · ${fmtNum(+a.mBase.toFixed(2))} m + ${fmtNum(a.pct)}% = ${fmtNum(+a.m.toFixed(2))} m</span>`).join('')}</div>`:''}
+        ${comPerda.length?`<div class="ft-perda">Perda somada à metragem:${comPerda.map(a=>`<span class="fr-p fr-item">${fmtNum(a.w)}mm · ${fmtNum(+a.mBase.toFixed(2))} m + ${fmtNum(a.pct)}% = ${fmtNum(+(a.mTotal!=null?a.mTotal:a.m).toFixed(2))} m</span>`).join('')}</div>`:''}
+        ${(M.corteMm>0&&M.alocacoes.some(a=>a.corte))?`<div class="ft-perda">Perda de corte considerada:<span class="fr-p fr-item">${fmtNum(+M.corteMm.toFixed(2))} mm por abertura</span></div>`:''}
         ${imposs.length?`<div class="ft-aviso"><b>${imposs.length} peça(s) sem rolo compatível:</b>
           ${imposs.slice(0,3).map(a=>`${fmtNum(a.w)}mm × ${fmtNum(a.m)}m`).join(', ')}${imposs.length>3?'…':''}.
           Nenhum rolo atende essa largura.</div>`:''}
@@ -7743,7 +7813,7 @@
               <td>${pc.origem==='sobra'?'<span class="or-sobra">Sobra</span>':'<span class="or-novo">Rolo novo</span>'}</td>
             </tr>`).join('')}</tbody></table>
           ${(r.sobras||[]).length?`<div class="ft-sob">Sobras:${r.sobras.slice().sort((a,b)=>b.w-a.w).map(sb=>
-            `<span class="fs-p ${sb.w>=22?'util':''}">${fmtNum(+sb.w.toFixed(2))}mm × ${fmtNum(+sb.m.toFixed(2))}m</span>`).join('')}</div>`:''}
+            `<span class="fs-p ${(sb.w>=22&&sobraUtilM(sb)>0)?'util':''}">${fmtNum(+sb.w.toFixed(2))}mm × ${fmtNum(+sb.m.toFixed(2))}m${(sb.w>=22&&sobraUtilM(sb)>0&&sobraUtilM(sb)!==+sb.m.toFixed(2))?` (útil ${fmtNum(sobraUtilM(sb))}m)`:''}</span>`).join('')}</div>`:''}
         </div>`).join('')}
         ${legFn(M.mat)}
       </section>`;
@@ -8575,7 +8645,7 @@
       const gm=parseFloat(g.metros)||0, ge=parseFloat(g.estoqueM)||0;
       return linhas+`<tr class="row-sem"><td colspan="4" style="text-align:right"><b>Total de ${fmtNum(g.largura)}mm</b></td>
           <td class="ctr inv-qt"><b>${fmtNum(gm)} M</b></td></tr>`
-        +(ge>0?`<tr><td colspan="4" style="text-align:right">Atendido pelo estoque (SA)</td><td class="ctr">− ${fmtNum(ge)} M</td></tr>`:'');
+        +(ge>0?`<tr><td colspan="4" style="text-align:right">Atendido pelo estoque (SA) ou por sobra de outro rolo</td><td class="ctr">− ${fmtNum(ge)} M</td></tr>`:'');
     }).join('');
     return `<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Necessidade de fita por projeto</h3>
       <div class="sa-saldo" style="margin-bottom:14px">
@@ -9155,7 +9225,8 @@
       if(liq>1e-9) (p.forcar?diretas:liquidos).push({...p,m:liq});
     });
     console.log('[fita-debug] liquidos', JSON.parse(JSON.stringify(liquidos)));
-    const materiais=liquidos.length?otimizarCorte(liquidos,simFita.rolosPorMat,0):[];
+    simFita.corteMm=corteFitaMm();   // perda de corte (mm) usada neste cálculo: fica gravada no histórico
+    const materiais=liquidos.length?otimizarCorte(liquidos,simFita.rolosPorMat,0,simFita.corteMm):[];
     console.log('[fita-debug] materiais', JSON.parse(JSON.stringify(materiais)));
     const linhas=[], porIns=new Map();
     materiais.forEach(M=>{
@@ -9206,11 +9277,16 @@
   // Necessidade REAL (antes de arredondar para o rolo) das larguras atendidas por esta linha de compra,
   // separada por projeto. É o que o armazém precisa entregar depois que o material chegar.
   function sfItensDaLinha(M,c,agreg){
-    const itens=[];
+    const itens=[], porW=new Map();
     (M.alocacoes||[]).forEach(a=>{
       if(a.origem==='impossivel') return;
       const r=(M.rolosUsados||[]).find(x=>x.id===a.roloId);
       if(!r||Math.abs(r.largura-c.largura)>0.01||Math.abs(r.metragem-c.metrosRolo)>0.01) return;
+      const k=a.mat+'|'+a.w;
+      if(!porW.has(k)) porW.set(k,{a,m:0});
+      porW.get(k).m+=a.m;    // a necessidade de uma largura pode vir de várias sobras/rolos: soma só o que saiu DESTA linha
+    });
+    porW.forEach(({a,m})=>{
       const g=agreg.get(a.mat+'|'+a.w); if(!g) return;
       const projs=new Map();
       simFita.pedidosBrutos.forEach(p=>{
@@ -9220,7 +9296,7 @@
         if(!projs.has(k)) projs.set(k,{clienteNome:pr.clienteNome||'',ambiente:pr.ambiente||'',numeroProjeto:pr.numeroProjeto||'',metros:0});
         projs.get(k).metros+=p.m;
       });
-      itens.push({largura:a.w, metros:+g.m.toFixed(4), estoqueM:+Math.max(0,g.m-a.m).toFixed(4),
+      itens.push({largura:a.w, metros:+g.m.toFixed(4), estoqueM:+Math.max(0,g.m-m).toFixed(4),
         projetos:[...projs.values()].map(x=>({...x,metros:+x.metros.toFixed(4)}))});
     });
     return itens;
@@ -9378,7 +9454,7 @@
       necessario:+(l.necM||l.metros||0).toFixed(4), estoqueUsado:+(l.metrosEstoque||0).toFixed(4),
       comprar:+(l.metros||0).toFixed(4), rolos:l.rolos||0, metrosRolo:l.metrosRolo||0,
       projetos:(l.itens||[]).reduce((a,g)=>a.concat((g.projetos||[]).map(p=>({...p,largura:g.largura}))),[]),
-      abrir:sfOrientarLinha({descricao:l.descricao,largura:l.largura,metrosRolo:l.metrosRolo,fitaItens:l.itens},histId)}));
+      abrir:sfOrientarLinha({descricao:l.descricao,largura:l.largura,metrosRolo:l.metrosRolo,fitaItens:l.itens,corteMm:(simFita&&simFita.corteMm)||0},histId)}));
   }
   /* ===== Orientação de abertura da fita (rolo largo -> larguras menores) =====
      Ex.: rolo de 100mm que precisa virar 64mm + 35mm. O plano de corte não fica salvo no histórico,
@@ -9395,7 +9471,7 @@
     });
     const pedidos=[...porW.entries()].map(([w,m])=>({mat:'x',w,m}));
     if(!pedidos.length||pedidos.every(p=>Math.abs(p.w-larg)<0.01)) return []; // nada a abrir
-    let mats; try{ mats=otimizarCorte(pedidos,{x:[{l:larg,m:mRolo}]},0); }catch(e){ return []; }
+    let mats; try{ mats=otimizarCorte(pedidos,{x:[{l:larg,m:mRolo}]},0,+l.corteMm||0); }catch(e){ return []; }
     const out=[];
     ((mats[0]&&mats[0].rolosUsados)||[]).forEach(r=>{
       const cortes=new Map(); let fimY=0;
@@ -9403,13 +9479,14 @@
       if(cortes.size===1&&Math.abs([...cortes.keys()][0]-r.largura)<0.01) return; // rolo usado inteiro
       const lista=[...cortes.entries()].map(([w,m])=>({w,m})).sort((a,b)=>b.w-a.w);
       out.push({sim:histId||'',larguraRolo:r.largura,metrosRolo:r.metragem,rolos:r.nRolos,metros:r.totalM,
-        cortes:lista,refugoMm:+Math.max(0,r.largura-fimY).toFixed(2)});
+        cortes:lista,corteMm:+l.corteMm||0,refugoMm:+Math.max(0,r.largura-fimY).toFixed(2)});
     });
     return out;
   }
   function sfTextoAbrir(a){
     return `Abrir ${fmtNum(a.metros)} m do rolo de ${fmtNum(a.larguraRolo)}mm`
-      +` → `+fbArr(a.cortes).map(c=>`${fmtNum(c.w)}mm (${fmtNum(c.m)} m)`).join(' + ');
+      +` → `+fbArr(a.cortes).map(c=>`${fmtNum(c.w)}mm (${fmtNum(c.m)} m)`).join(' + ')
+      +(a.corteMm>0?` · perda de corte: ${fmtNum(+(+a.corteMm).toFixed(2))} mm`:'');
   }
   // bloco impresso na OP: o que o operador precisa abrir antes de aplicar a fita
   function sfHtmlOrientacao(nf){
@@ -9426,7 +9503,7 @@
     const h=HISTFITAS.find(x=>x.id===id); if(!h) return;
     const op=opLaminadoDoLote(h.lote); if(!op){ toast('Nenhuma OP de Laminado para o lote '+(h.lote||'—')); return; }
     const novos=new Map();
-    fbArr(h.linhas).forEach(l=>{ const o=sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},id); if(o.length) novos.set(String(l.codigo||l.descricao),o); });
+    fbArr(h.linhas).forEach(l=>{ const o=sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens,corteMm:h.corteMm||0},id); if(o.length) novos.set(String(l.codigo||l.descricao),o); });
     if(!novos.size){ toast('Nenhum rolo desta simulação precisa ser aberto'); return; }
     if(!(op.necessidadeFita&&fbArr(op.necessidadeFita.itens).length)){ toast('A OP ainda não tem fita gravada — use "Marcar na OP (gravar)"'); return; }
     if(!sfSimNaOP(h,op)){ toast('Grave esta simulação na OP primeiro'); return; }
@@ -9530,7 +9607,7 @@
       } else if(opL){ opPend=opL.numero; } // OP já tem fita: quem decide é o Histórico (sobrescrever ou adicionar)
       try{
         await db.ref('histFitas/'+hid).set(sfLimpa({id:hid,lote:simFita.lote||'',criadoEm:agora,criadoPor:quem,
-          ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',ambientes:simFita.origemInfo||[],sas,scs,
+          ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',corteMm:simFita.corteMm||0,ambientes:simFita.origemInfo||[],sas,scs,
           op:opNum?{id:opL.id,numero:opNum}:null,
           pedidos:simFita.pedidosBrutos, conv:simFita.conv||{}, rolosExtra:sfRolosExtra(simFita.rolosPorMat),
           linhas:L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necM:+(l.necM||l.metros||0).toFixed(4),
@@ -9564,7 +9641,7 @@
     return fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
       comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
       projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[]),
-      abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id)}));
+      abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens,corteMm:h.corteMm||0},h.id)}));
   }
   // SA/SC desta simulação que ainda existem + as que não estão Pendentes (impedem a atualização)
   function sfStatusSolic(h){
@@ -9770,7 +9847,7 @@
       }
       etapa='gravando o histórico';
       const linhas=sfLinhasHist(L);
-      const novo=sfLimpa({...h,ambientes:simFita.origemInfo,sas,scs,linhas,pedidos:simFita.pedidosBrutos,conv:simFita.conv||{},
+      const novo=sfLimpa({...h,corteMm:simFita.corteMm||0,ambientes:simFita.origemInfo,sas,scs,linhas,pedidos:simFita.pedidosBrutos,conv:simFita.conv||{},
         rolosExtra:sfRolosExtra(simFita.rolosPorMat),reconstruidoDoHistorico:!!simFita.reconstruida||null,atualizadoEm:agora,atualizadoPor:quem});
       await db.ref('histFitas/'+hid).set(novo);
       etapa='excluindo as solicitações antigas';
@@ -9864,7 +9941,7 @@
     const amb=fbArr(h.ambientes), L=fbArr(h.linhas);
     const info=(k,val)=>`<div class="it"><div class="k">${k}</div><div class="v">${val||'—'}</div></div>`;
     const orient=[]; // orientação de abertura (rolo largo -> larguras menores), recalculada do histórico
-    L.forEach(l=>sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id).forEach(a=>orient.push({item:l.descricao,a})));
+    L.forEach(l=>sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens,corteMm:h.corteMm||0},h.id).forEach(a=>orient.push({item:l.descricao,a})));
     const proj=[]; // necessidade por projeto, por largura
     L.forEach(l=>fbArr(l.fitaItens).forEach(g=>fbArr(g.projetos).forEach(p=>proj.push({...p,largura:g.largura,item:l.descricao}))));
     const baseP=sfPedidosBase(h), temPed=baseP.pedidos.length>0;
@@ -9950,7 +10027,7 @@
     const itens=fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
       comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
       projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[]),
-      abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens},h.id)}));
+      abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens,corteMm:h.corteMm||0},h.id)}));
     const tem=!!(op.necessidadeFita&&fbArr(op.necessidadeFita.itens).length);
     if(modo==='sobrescrever'&&tem&&!confirm('Sobrescrever a fita da OP '+op.numero+'?\n\nO que está gravado nela hoje será SUBSTITUÍDO só pelos itens desta simulação.')) return;
     if(modo==='adicionar'&&!confirm('Adicionar esta simulação à OP '+op.numero+'?\n\nOs itens iguais serão somados à fita que já está gravada, e os diferentes serão incluídos.')) return;
@@ -10157,7 +10234,7 @@
         <p>Calcula quantos metros de fita comprar aproveitando as sobras de largura.</p>
         ${D_FITA}
         <h4>Como usar</h4>
-        <ol><li>Em <b>Configurar perda</b>, defina a % de perda de cada largura de fita. Ela é somada à metragem: com 5% em 22 mm, 10 m pedidos viram 10,5 m.</li>
+        <ol><li>Em <b>Perda de corte</b>, informe em mm o que a lâmina consome a cada corte de abertura (ex.: 2 mm). Abrindo 64mm de um rolo de 100mm, a sobra passa a ser 34mm, e não 36mm. A medida vale para o projeto e para o lote e aparece na <b>orientação para abrir a fita</b>.</li><li>Ao comprar, o sistema escolhe o rolo de <b>menor preço</b> (ex.: 22mm a R$ 13 por 10 m e 100mm a R$ 5,72 por metro: até 2 m compensa o de 100mm; de 3 m em diante, o de 22mm).</li><li>As <b>sobras</b> são reaproveitadas mesmo quando não cobrem a necessidade inteira, mas só em <b>blocos de 3 m</b> (tamanho da chapa): uma sobra de 32 m rende 30 m, e uma de 2 m não é usada (exigiria emenda). O que faltar vai para outra sobra ou para rolo novo.</li><li>Em <b>Configurar perda</b>, defina a % de perda de cada largura de fita. Ela é somada à metragem: com 5% em 22 mm, 10 m pedidos viram 10,5 m.</li>
         <li>Busque a fita pelo código ou descrição. As dimensões do rolo saem da própria descrição ("22MM X 50M") — e você pode corrigir.</li>
         <li>Informe a <b>largura necessária</b>, a <b>metragem</b> e quantas peças.</li>
         <li>O <b>plano de corte</b> aparece na hora, enquanto você preenche. Quando estiver certo, clique em <b>Gerar solicitação de fita</b>.</li></ol>
