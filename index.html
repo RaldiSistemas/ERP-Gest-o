@@ -2519,6 +2519,11 @@
   .ft-corte{ display:inline-flex; align-items:center; gap:8px; background:var(--ft-wash); border-radius:11px; padding:5px 12px; font-size:13px; font-weight:600; color:var(--texto,#2b2b31); }
   .ft-corte input{ width:64px; border:1px solid var(--linha); border-radius:8px; padding:5px 6px; text-align:center; font:inherit; background:#fff; }
   .ft-corte input:focus{ outline:2px solid rgba(47,111,181,.35); border-color:#2f6fb5; }
+  .ft-rmetro{ cursor:pointer; user-select:none; }
+  .ft-rmetro input{ width:34px; height:18px; padding:0; border:0; border-radius:999px; appearance:none; -webkit-appearance:none; background:#c9c7bd; position:relative; cursor:pointer; transition:background .15s; }
+  .ft-rmetro input::after{ content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s; }
+  .ft-rmetro input:checked{ background:#3b7f4b; }
+  .ft-rmetro input:checked::after{ transform:translateX(16px); }
   .ft-corte em{ font-style:normal; color:var(--muted); font-weight:500; }
   .ft-strip{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin:18px 0 6px; padding:10px 14px; background:var(--ft-wash); border-radius:12px; }
   .ft-strip .fr-t{ text-transform:none; letter-spacing:0; font-size:12px; margin-right:2px; }
@@ -4758,6 +4763,10 @@
         const i=document.getElementById('fitaCorteMm'); if(i&&document.activeElement!==i) i.value=CORTE_MM||'';
         if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
       e=>console.warn('configFita/corteMm:',e.message));
+    db.ref('configFita/rolosPorMetro').on('value',s=>{ ROLOS_POR_METRO=(s.val()!==false);
+        const c=document.getElementById('fitaRolosMetro'); if(c) c.checked=ROLOS_POR_METRO;
+        if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
+      e=>console.warn('configFita/rolosPorMetro:',e.message));
     db.ref('atividades').on('value',s=>{ ATIVIDADES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('producao').on('value',s=>{ PRODUCAO=s.val()||{}; if(TELA==='acomp') renderAba(); });
     db.ref('tarefas').on('value',s=>{ TAREFAS=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
@@ -7531,6 +7540,20 @@
   // Fica no Firebase em configFita/corteMm e vale para a simulação do projeto e do lote.
   let CORTE_MM=0;
   function corteFitaMm(){ return CORTE_MM>0?CORTE_MM:0; }
+
+  // REGRA "ROLO POR METRO": com ela LIGADA (padrão) o sistema escolhe o rolo mais barato — e, abaixo de ~3 m,
+  // o 100mm/260mm vendido por metro (ex.: 1 m de 100mm) sai mais barato que um rolo de 10 m de 22mm.
+  // DESLIGADA: rolos vendidos por metro (<= 1 m) só entram se nenhum rolo de 10 m atender a largura
+  // (ex.: 22mm pede 10 m de 22mm; 60mm continua usando o 100mm porque não existe rolo de 10 m dessa largura).
+  // Fica em configFita/rolosPorMetro (false = desligada) e vale para a simulação do projeto e do lote.
+  let ROLOS_POR_METRO=true;
+  const ROLO_POR_METRO_MAX_M=1;
+  function salvarRolosPorMetro(on){
+    db.ref('configFita/rolosPorMetro').set(on?null:false)
+      .then(()=>{ ROLOS_POR_METRO=!!on; simF.resultado=null; if(TELA==='fita') fitaLive(true);
+        toast(on?'Regra de rolo por metro ligada':'Regra de rolo por metro desligada'); })
+      .catch(e=>{ toast('Erro ao salvar: '+e.message); const c=document.getElementById('fitaRolosMetro'); if(c) c.checked=ROLOS_POR_METRO; });
+  }
   function salvarCorteFita(v){
     const n=parseFloat(String(v).replace(',','.'));
     const val=isFinite(n)&&n>0?Math.min(50,+n.toFixed(2)):0;
@@ -7652,6 +7675,9 @@
           <div class="ft-cfg-perda">
             <button class="btn btn-ghost" onclick="abrirConfigPerdaFita()">${ICO_ENGR}Configurar perda</button>
             <span id="fitaPerdaChips" style="display:contents">${perdaFitaChips()}</span>
+            <label class="ft-corte ft-rmetro" title="Ligada: o sistema pode comprar 1 m de fita 100mm/260mm quando sair mais barato (necessidades pequenas). Desligada: sempre compra rolo de 10 m da largura certa (ex.: 22mm), e só usa 100/260mm se nenhum rolo de 10 m atender a largura.">
+              <span>Rolo 100/260mm por metro</span>
+              <input id="fitaRolosMetro" type="checkbox" ${ROLOS_POR_METRO?'checked':''} onchange="salvarRolosPorMetro(this.checked)"></label>
             <label class="ft-corte" title="Largura que a lâmina consome a cada corte de abertura do rolo (ex.: 2 mm). Vale para o projeto e para o lote."><span>Perda de corte</span>
               <input id="fitaCorteMm" type="number" step="any" min="0" max="50" value="${CORTE_MM||''}" placeholder="0"
                 onchange="salvarCorteFita(this.value)" onkeydown="if(event.key==='Enter') this.blur()"><em>mm</em></label>
@@ -7778,7 +7804,12 @@
         }
         if(falta<=1e-9) return;
         // 2) rolo novo para o que faltou
-        const opcoes=ROLOS.filter(r=>r.l+1e-9>=wNec).map(r=>({...r,n:Math.max(1,Math.ceil((falta-1e-9)/r.m))}));
+        let opcoes=ROLOS.filter(r=>r.l+1e-9>=wNec).map(r=>({...r,n:Math.max(1,Math.ceil((falta-1e-9)/r.m))}));
+        // regra desligada: tira os rolos por metro (100/260mm) se existir algum rolo de 10 m que atenda a largura
+        if(!ROLOS_POR_METRO){
+          const semMetro=opcoes.filter(o=>o.doItem||o.m>ROLO_POR_METRO_MAX_M+1e-9);
+          if(semMetro.length) opcoes=semMetro;
+        }
         opcoes.sort((a,b)=> (precoRolo(a)*a.n)-(precoRolo(b)*b.n) || (a.l*a.m*a.n)-(b.l*b.m*b.n) || a.l-b.l);   // menor custo; empate: menor área
         const cand=opcoes[0];
         if(!cand){ alocacoes.push({...p,m:falta,mTotal:p.m,primeira,origem:'impossivel'}); return; }
@@ -16223,7 +16254,7 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
     sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfHistParaOP,sfMarcarOrientacao,
     abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem,
-    fitaLive,fitaAtualizar,fitaCalcToggle,fitaCalcKey,fitaCalcCopiar});
+    fitaLive,fitaAtualizar,fitaCalcToggle,fitaCalcKey,fitaCalcCopiar,salvarRolosPorMetro});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
   Object.defineProperty(window,'fDan',{get:()=>fDan,set:v=>fDan=v});
