@@ -1981,6 +1981,46 @@
   .app-m{ color:var(--muted); font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .app-tot{ font-size:12px; color:var(--muted); margin-top:7px; padding-top:7px; border-top:1px solid var(--linha); }
 
+  /* ===== Relatório da produção (botão, seleção de setores, folha) ===== */
+  .rel-btn{ display:inline-flex; align-items:center; gap:8px; border-radius:12px; font-weight:600; background:var(--surface); white-space:nowrap; }
+  .rel-btn svg{ width:16px; height:16px; }
+  .rel-tools{ display:flex; gap:8px; margin:0 0 12px; }
+  .rel-tools .btn{ padding:5px 11px; font-size:12px; }
+  .rel-set{ border:1px solid var(--linha); border-left:4px solid var(--sc,#999); border-radius:10px; margin-bottom:10px; background:#fff; overflow:hidden; }
+  .rel-set-h{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:#faf9f5; cursor:pointer; font-size:13.5px; }
+  .rel-set-h b{ font-family:'Poppins',sans-serif; font-weight:600; color:var(--sc,var(--texto)); }
+  .rel-at{ display:flex; align-items:center; gap:10px; padding:9px 14px 9px 38px; border-top:1px solid var(--linha); cursor:pointer; font-size:13.5px; }
+  .rel-at:hover{ background:#faf9f5; }
+  .rel-at span{ flex:1; } .rel-at em{ font-style:normal; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#5b7c99; background:#eaf0f5; padding:2px 6px; border-radius:5px; margin-left:6px; }
+  .rel-at i{ font-style:normal; font-weight:700; font-size:12px; min-width:26px; text-align:center; padding:2px 8px; border-radius:999px; background:#eeede7; color:var(--texto); }
+  .rel-set input[type=checkbox]{ width:17px; height:17px; accent-color:var(--vermelho); cursor:pointer; }
+  .rel-cont{ margin-right:auto; align-self:center; font-size:13px; color:var(--muted); }
+  .rel-sec{ margin-top:16px; break-inside:avoid-page; }
+  .rel-sec-h{ display:flex; align-items:baseline; gap:10px; padding:6px 10px; border-left:5px solid var(--sc,#999); background:#f6f1ef; margin-bottom:0; }
+  .rel-sec-h span{ font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#77777f; }
+  .rel-sec-h b{ font-family:'Poppins',sans-serif; font-size:14px; color:#3a3a42; }
+  .rel-sec-h em{ margin-left:auto; font-style:normal; font-size:11px; font-weight:700; color:#7a1717; }
+  .rel-tbl{ width:100%; border-collapse:collapse; font-size:10.5px; }
+  .rel-tbl thead{ display:table-header-group; }
+  .rel-tbl tr{ break-inside:avoid; page-break-inside:avoid; }
+  .rel-tbl th{ border:1px solid #7d7d86; border-bottom:2px solid #9E1B1B; background:#f6f1ef; color:#7a1717; font-size:9px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.03em; padding:5px 5px; text-align:left; line-height:1.2; }
+  .rel-tbl td{ border:1px solid #a9a9b0; padding:5px 6px; color:#3a3a42; vertical-align:middle; line-height:1.3; }
+  .rel-tbl tbody tr:nth-child(even) td{ background:#faf7f6; }
+  .rel-tbl .ctr{ text-align:center; } .rel-tbl .nw{ white-space:nowrap; }
+  .rel-tbl .mono{ font-family:ui-monospace,monospace; font-weight:700; color:#7a1717; white-space:nowrap; }
+  .rel-tbl small{ display:block; font-size:9px; color:#6b6b74; margin-top:2px; }
+  .rel-tbl td.rel-tempo{ font-weight:700; white-space:nowrap; }
+  .rel-tbl td.atr{ background:#fbe4e1 !important; color:#a12a1d; font-weight:700; }
+  .rel-neg{ color:#a12a1d; }
+  .rel-pill{ display:inline-block; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:999px; white-space:nowrap; }
+  .rel-pill.and{ background:#fbf0d6; color:#8a5e06; } .rel-pill.pz{ background:#e9e5f4; color:#5a4d8c; }
+  .rel-set-l{ font-size:11px; color:#5c5c65; margin:-6px 0 4px; line-height:1.5; }
+  .rel-set-l b{ color:#7a1717; }
+  @media print{
+    .rel-sec-h,.rel-tbl th,.rel-tbl tbody tr:nth-child(even) td,.rel-tbl td.atr,.rel-pill{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+
   /* ===== Apontamento da OP — visual moderno ===== */
   .ap-card{ position:relative; max-width:720px; padding:0; border:1px solid rgba(75,75,85,.10); border-radius:22px; overflow:hidden;
     box-shadow:0 1px 2px rgba(75,75,85,.06), 0 18px 48px -12px rgba(75,75,85,.20); background:var(--surface); }
@@ -2114,6 +2154,21 @@
   .opz-amo small{ font:600 8px/1 ui-monospace,Consolas,monospace; color:#444; letter-spacing:.2px; }
   .opz-amo small.nil{ color:#888; font-family:inherit; font-weight:500; }
   .opz-tbl td.opz-abrir{ font-size:9px; line-height:1.3; }
+  /* plano de corte desenhado abaixo de cada fita que precisa ser aberta */
+  .opz-tfita tr.has-plano td{ border-bottom:0; }
+  .opz-plano td{ padding:0 7px 8px; border-bottom:1px solid #dcdcd4; }
+  .opz-plano-b{ border:1px solid #dcdcd4; border-radius:6px; background:#fbfaf8; padding:5px 9px 5px; break-inside:avoid; page-break-inside:avoid; }
+  .opz-plano-b + .opz-plano-b{ margin-top:5px; }
+  .opz-plano-h{ display:flex; flex-wrap:wrap; gap:3px 12px; align-items:baseline; font-size:9px; color:#5c5c65; }
+  .opz-plano-h b{ font-size:9.5px; color:#9E1B1B; text-transform:uppercase; letter-spacing:.04em; }
+  .opz-plano-svg{ display:block; width:100%; max-width:720px; height:auto; margin:3px auto 2px; }
+  .opz-plano-c{ display:flex; flex-wrap:wrap; gap:4px 8px; font-size:9px; }
+  .opz-plano-c span{ display:inline-flex; align-items:center; gap:5px; padding:1px 8px 1px 3px; border:1px solid #d6d4ca; border-radius:9px; background:#fff; font-weight:700; color:#2c2c33; }
+  .opz-plano-c i{ display:inline-block; width:18px; height:9px; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.3); }
+  .opz-plano-c span.pd{ font-weight:600; color:#a31818; }
+  .opz-plano-c span.pd i{ background:#d32020; height:3px; box-shadow:none; }
+  .opz-plano-c span.sb{ font-weight:600; color:#4f6b55; }
+  .opz-plano-c span.sb i{ background:repeating-linear-gradient(45deg,#e9f2eb 0 3px,#a9cfb3 3px 5px); box-shadow:inset 0 0 0 1px #a9cfb3; }
   .opz-op{ margin-top:12px; border:1px solid #b9b9c0; }
   .opz-oph{ display:grid; grid-template-columns:1fr 1fr 260px; background:#eceae6;
     border-bottom:1px solid #2c2c33; font-size:9.5px; font-weight:700; }
@@ -2139,7 +2194,7 @@
     .opz{ box-shadow:none; padding:6mm 7mm; page-break-after:always; break-after:page; }
     .opz:last-child{ page-break-after:auto; break-after:auto; }
     .opz-wrap{ gap:0; width:100%; }
-    .opz-cx,.opz-tbl th,.opz-oph{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .opz-cx,.opz-tbl th,.opz-oph,.opz-plano-b,.opz-plano-c i{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
 
   /* impressão em lote */
@@ -6109,6 +6164,110 @@
     const v=visualItemFita(x);
     const rot=v?(v.img?'Textura':v.hex.toUpperCase()):'Sem cor';
     return `<div class="opz-amo">${amostraFita(x,'static')}<small class="${v?'':'nil'}">${rot}</small></div>`;
+  }
+  /* ===== Plano de corte na OP de Laminado =====
+     A OP guarda só a orientação (rolo + cortes + perda de corte). O desenho é refeito aqui com o mesmo motor
+     da simulação (otimizarCorte) e a mesma textura/cor da fita (visualFita), para o operador VER o que abrir. */
+  let _opzSvgN=0;
+  function opzPlanoRolo(a){
+    const larg=+a.larguraRolo, mRolo=+a.metrosRolo, kerf=+a.corteMm||0;
+    const cortes=fbArr(a.cortes).map(c=>({w:+c.w,m:+c.m})).filter(c=>c.w>0&&c.m>0);
+    if(!larg||!mRolo||!cortes.length) return null;
+    const totalM=+a.metros||mRolo*(+a.rolos||1);
+    try{
+      const mats=otimizarCorte(cortes.map(c=>({mat:'x',w:c.w,m:c.m})),{x:[{l:larg,m:mRolo}]},0,kerf);
+      const rs=(mats[0]&&mats[0].rolosUsados)||[];
+      if(rs.length===1 && Math.abs(rs[0].largura-larg)<0.01 && Math.abs(rs[0].totalM-totalM)<0.01) return rs[0];
+    }catch(e){}
+    // plano de reserva: faixas empilhadas na largura do rolo, cada uma começando no metro 0
+    const pecas=[], sobras=[]; let y=0;
+    cortes.slice().sort((p,q)=>q.w-p.w).forEach(c=>{
+      const gasto=Math.abs(larg-c.w)<0.01?c.w:Math.min(larg-y,c.w+kerf);
+      pecas.push({w:c.w,m:c.m,x:0,y,gasto,origem:'novo'});
+      if(totalM-c.m>0.05) sobras.push({w:Math.min(c.w,gasto),m:totalM-c.m,x:c.m,y});
+      y+=gasto;
+    });
+    if(larg-y>0.5) sobras.push({w:larg-y,m:totalM,x:0,y});
+    return {largura:larg,metragem:mRolo,nRolos:+a.rolos||1,totalM,pecas,sobras};
+  }
+  function opzPlanoSVG(r,mat){
+    const uid='opz'+(++_opzSvgN);
+    const W=760, pl=52, pr=136, pt=12, pb=30, iw=W-pl-pr;
+    const ih=Math.max(66,Math.min(150,r.largura*0.6+24),(r.pecas||[]).length*16+6), H=pt+ih+pb;
+    const ex=m=>pl+(m/r.totalM)*iw, ey=mm=>pt+(mm/r.largura)*ih;
+    const T=(x,y,t,o={})=>`<text x="${x}" y="${y}" text-anchor="${o.a||'middle'}" font-size="${o.s||11}" font-weight="${o.w||600}" fill="${o.c||'#6b6b74'}">${t}</text>`;
+    const vc={}, vis=w=>(w in vc)?vc[w]:(vc[w]=mat?visualFita(mat,w):null), pats={}; let pn=0;
+    const patFor=v=>{ if(!v.img) return null; if(!pats[v.img]) pats[v.img]=uid+'t'+(pn++); return pats[v.img]; };
+    let g=`<defs>
+      <pattern id="${uid}s" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#e9f2eb"/><line x1="0" y1="0" x2="0" y2="8" stroke="#a9cfb3" stroke-width="2.2"/></pattern>
+      <pattern id="${uid}r" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#eeede7"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d6d4ca" stroke-width="2.2"/></pattern>
+      <linearGradient id="${uid}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".24"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".24"/></linearGradient>
+      <clipPath id="${uid}c"><rect x="${pl}" y="${pt}" width="${iw}" height="${ih}" rx="7"/></clipPath>
+      @@PATS@@</defs>`;
+    g+=`<rect x="${pl}" y="${pt}" width="${iw}" height="${ih}" rx="7" fill="#fff" stroke="#b9b7ad"/><g clip-path="url(#${uid}c)">`;
+    (r.sobras||[]).forEach(sb=>{
+      const x=ex(sb.x), y=ey(sb.y), w=Math.max(1,ex(sb.x+sb.m)-x), h=Math.max(2,ey(sb.y+sb.w)-y), util=sb.w>=22&&sobraUtilM(sb)>0;
+      g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${uid}${util?'s':'r'})"/>`;
+      const t=`sobra ${fmtNum(+sb.w.toFixed(1))} × ${fmtNum(+sb.m.toFixed(2))}`;
+      if(w>t.length*6+14 && h>=15) g+=T(x+w/2,y+h/2+4,t,{s:10,c:util?'#2f6b39':'#8d8d95'});
+    });
+    const callouts=[];
+    (r.pecas||[]).forEach(pc=>{
+      const x=ex(pc.x), y=ey(pc.y), w=Math.max(1,ex(pc.x+pc.m)-x), h=Math.max(3,ey(pc.y+pc.w)-y);
+      const v=vis(pc.w), t=`${fmtNum(+pc.w.toFixed(2))} mm × ${fmtNum(+pc.m.toFixed(2))} m`;
+      const rx=x+.5, ry=y+.5, rw=Math.max(1,w-1), rh=Math.max(2,h-1);
+      const fill=v?(patFor(v)?`url(#${patFor(v)})`:v.hex):'#c9c7bd';
+      g+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="3.5" fill="${fill}"/><rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="3.5" fill="url(#${uid}g)"/>`;
+      g+=`<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="3.5" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="1"/>`;
+      if((pc.gasto||0)>pc.w+1e-9){ const kh=Math.max(2,ey(pc.y+(pc.gasto))-ey(pc.y+pc.w)), ky=ey(pc.y+pc.w)+kh/2;
+        g+=`<line x1="${x}" y1="${ky}" x2="${x+w}" y2="${ky}" stroke="#d32020" stroke-width="${kh}"><title>Perda de corte ${fmtNum(+(pc.gasto-pc.w).toFixed(2))} mm</title></line>`; }
+      if(w>t.length*6.9+30 && h>=22){ const tw=t.length*6.9+18;
+        g+=`<rect x="${x+w/2-tw/2}" y="${y+h/2-9}" width="${tw}" height="18" rx="9" fill="rgba(20,20,24,.7)"/>`+T(x+w/2,y+h/2+4,t,{s:11.5,w:700,c:'#fff'});
+      } else callouts.push({yc:y+h/2,xe:x+w,t});
+    });
+    g+=`</g>`;
+    // medidas que não cabem dentro da peça: saem para a margem direita, com linha-guia
+    callouts.sort((p,q)=>p.yc-q.yc);
+    let prev=-1e9; const gx=pl+iw+16;
+    callouts.forEach(c=>{
+      const ty=Math.max(c.yc,prev+15); prev=ty;
+      g+=`<polyline points="${c.xe+1},${c.yc} ${gx-6},${c.yc} ${gx-3},${ty-3.5}" fill="none" stroke="#8a8a93" stroke-width=".9" stroke-dasharray="2 2"/>`;
+      g+=T(gx,ty,c.t,{a:'start',s:11.5,w:700,c:'#2c2c33'});
+    });
+    if(r.nRolos>1){ for(let k=1;k<r.nRolos;k++){ const xx=ex(k*r.metragem);
+      g+=`<line x1="${xx}" y1="${pt-3}" x2="${xx}" y2="${pt+ih+6}" stroke="#7d7d86" stroke-width="1" stroke-dasharray="3 3"/>`; } }
+    // eixo em metros: marca onde cada corte começa e termina
+    const yb=pt+ih+8;
+    g+=`<line x1="${pl}" y1="${yb}" x2="${pl+iw}" y2="${yb}" stroke="#cfcdc2"/>`;
+    const vs=new Set([0,+r.totalM.toFixed(4)]); (r.pecas||[]).forEach(pc=>{ vs.add(+pc.x.toFixed(4)); vs.add(+(pc.x+pc.m).toFixed(4)); });
+    const marcas=[]; [...vs].sort((a,b)=>a-b).forEach(v=>{
+      if(marcas.length && ex(v)-ex(marcas[marcas.length-1])<34){ if(v===+r.totalM.toFixed(4)) marcas.pop(); else return; }
+      marcas.push(v);
+    });
+    marcas.forEach((v,i)=>{ const xx=ex(v), ult=(i===marcas.length-1);
+      g+=`<line x1="${xx}" y1="${yb}" x2="${xx}" y2="${yb+4}" stroke="#9d9b90"/>`+T(xx,yb+16,fmtNum(+v.toFixed(2))+(ult?' m':''),{s:10.5,w:ult?700:500,a:i===0?'start':(ult?'end':'middle'),c:ult?'#2c2c33':'#6b6b74'});
+    });
+    g+=T(pl-8,pt+ih/2+4,fmtNum(r.largura)+' mm',{a:'end',s:11,w:700,c:'#2c2c33'});
+    g=g.replace('@@PATS@@',Object.keys(pats).map(u=>`<pattern id="${pats[u]}" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" width="1" height="1" viewBox="0 0 1 1" preserveAspectRatio="none"><image href="${u}" x="0" y="0" width="1" height="1" preserveAspectRatio="none" transform="rotate(90 .5 .5)"/></pattern>`).join(''));
+    return `<svg viewBox="0 0 ${W} ${H}" class="opz-plano-svg" role="img" aria-label="Plano de corte do rolo de ${fmtNum(r.largura)}mm">${g}</svg>`;
+  }
+  // linha extra da tabela: aparece logo abaixo da fita que precisa ser aberta
+  function opzPlanoLinha(it,cols){
+    const ab=fbArr(it.abrir); if(!ab.length) return '';
+    const mat=materialDe(/fita de borda/i.test(it.descricao||'')?it.descricao:'Fita de borda '+(it.descricao||''));
+    const blocos=ab.map(a=>{
+      const r=opzPlanoRolo(a); if(!r) return '';
+      const chip=(w,m,estilo)=>`<i style="${estilo}"></i>${fmtNum(+(+w).toFixed(2))} mm × ${fmtNum(+(+m).toFixed(2))} m`;
+      const pecas=(r.pecas||[]).slice().sort((p,q)=>q.w-p.w||p.x-q.x).map(pc=>{ const v=visualFita(mat,pc.w);
+        return `<span>${chip(pc.w,pc.m,v?v.estilo:'background:#c9c7bd')}</span>`; }).join('');
+      const sobras=(r.sobras||[]).filter(sb=>sb.w>=10&&sb.m>=0.5).sort((p,q)=>q.w-p.w).map(sb=>`<span class="sb">${chip(sb.w,sb.m,'')} <small>sobra</small></span>`).join('');
+      return `<div class="opz-plano-b">
+        <div class="opz-plano-h"><b>Plano de corte</b><span>Rolo de ${fmtNum(+(+a.larguraRolo).toFixed(2))} mm · abrir ${fmtNum(+(+a.metros||r.totalM).toFixed(2))} m</span>
+          ${(+a.corteMm>0)?`<span>perda de corte: ${fmtNum(+(+a.corteMm).toFixed(2))} mm por corte</span>`:''}</div>
+        ${opzPlanoSVG(r,mat)}
+        <div class="opz-plano-c">${pecas}${sobras}${(+a.corteMm>0&&(r.pecas||[]).some(pc=>(pc.gasto||0)>pc.w+1e-9))?`<span class="pd"><i></i>perda de corte ${fmtNum(+(+a.corteMm).toFixed(2))} mm</span>`:''}</div></div>`;
+    }).join('');
+    return blocos?`<tr class="opz-plano"><td colspan="${cols}">${blocos}</td></tr>`:'';
   }
   function amoCadastrar(id){ if(INSUMOS.some(i=>i.id===id)) formCor(id); }
   function amostraInfo(x){
@@ -13251,7 +13410,10 @@
     const _kOld=document.getElementById('andKanban'), _sx=_kOld?_kOld.scrollLeft:0;
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Apontamento</h1>
-        <p class="page-sub">Bipe o código de barras da OP ou digite o número</p></div>${apUserHtml()}</div>
+        <p class="page-sub">Bipe o código de barras da OP ou digite o número</p></div>
+        <div class="ap-head-dir"><button class="btn btn-ghost rel-btn" onclick="relProdAbrir()" title="Imprimir relatório do que está em produção">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 17H5a1 1 0 01-1-1v-5a2 2 0 012-2h12a2 2 0 012 2v5a1 1 0 01-1 1h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/></svg>
+          Imprimir relatório</button>${apUserHtml()}</div></div>
       <div class="bip-box">
         <div class="bip-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
           <path d="M3 6V4h3M21 6V4h-3M3 18v2h3M21 18v2h-3"/><path d="M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></div>
@@ -13326,6 +13488,150 @@
     if(d) d.classList.toggle('oculta',k.scrollLeft+k.clientWidth>=k.scrollWidth-2);
   }
   window.addEventListener('resize',andNavAtualizar);
+
+  /* ===== Relatório da produção: escolher setores/atividades e imprimir ===== */
+  let relSel=new Set();
+  // Itens agrupados como no Kanban: setor > atividade (+ as duas filas, que não têm apontamento)
+  function relProdItens(){
+    const todas=OPS.filter(o=>['parcial','pausada'].includes(stOp(o)));
+    const out=[];
+    Object.values(OP_SETORES).forEach(S=>{
+      const doSetor=todas.filter(o=>o.setor===S.sigla);
+      const ativs=[...new Set([...S.atividades,...doSetor.map(o=>o.atividade)])];
+      const grupos=[];
+      ativs.forEach(at=>{
+        const lista=doSetor.filter(o=>o.atividade===at);
+        if(lista.length) grupos.push({k:S.sigla+'|'+(at||''),nome:at||'Sem atividade',tipo:'op',lista,S});
+      });
+      if(S.sigla==='APOIO'){ const l=lotesAgrupadosFila(); if(l.length) grupos.push({k:'APOIO|fila:agrupados',nome:'Lotes agrupados',tipo:'agrup',fila:true,lista:l,S}); }
+      if(S.sigla==='SL'){ const l=roleteFila(); if(l.length) grupos.push({k:'SL|fila:rolete',nome:'No rolete',tipo:'rolete',fila:true,lista:l,S}); }
+      if(grupos.length) out.push({S,grupos});
+    });
+    return out;
+  }
+  function relProdAbrir(){
+    const dados=relProdItens();
+    if(!dados.length){ toast('Nada em produção para imprimir'); return; }
+    relSel=new Set(); dados.forEach(d=>d.grupos.forEach(g=>relSel.add(g.k)));
+    const corpo=`<p class="fld-hint" style="margin:0 0 12px">Escolha o(s) setor(es) que vão sair no relatório. Ele mostra o que está na produção agora: projeto, responsável, tempo gasto, lead time e se está pausado.</p>
+      <div class="rel-tools"><button class="btn btn-ghost" onclick="relProdTodos(true)">Marcar todos</button><button class="btn btn-ghost" onclick="relProdTodos(false)">Limpar</button></div>
+      ${dados.map(d=>`<div class="rel-set" style="--sc:${d.S.cor}">
+        <label class="rel-set-h"><input type="checkbox" data-rs="${d.S.sigla}" checked onchange="relProdSetor('${d.S.sigla}',this.checked)"><b>${escHtml(d.S.nome)}</b></label>
+        ${d.grupos.map(g=>`<label class="rel-at"><input type="checkbox" data-rk="${escHtml(g.k)}" data-rset="${d.S.sigla}" checked onchange="relProdMarcar(this)"><span>${escHtml(g.nome)}${g.fila?'<em>fila</em>':''}</span><i>${g.lista.length}</i></label>`).join('')}
+      </div>`).join('')}`;
+    abrirModal('Imprimir relatório da produção',corpo,
+      `<span class="rel-cont" id="relCont"></span><button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button><button class="btn btn-primary" onclick="relProdGerar()">Gerar relatório</button>`);
+    relProdCont();
+  }
+  function relProdCont(){
+    const el=document.getElementById('relCont'); if(!el) return;
+    let n=0; relProdItens().forEach(d=>d.grupos.forEach(g=>{ if(relSel.has(g.k)) n+=g.lista.length; }));
+    el.textContent=relSel.size?(n+' item(ns) · '+relSel.size+' coluna(s)'):'Nada selecionado';
+  }
+  function relProdSync(sig){
+    const ov=document.getElementById('modalOv'); if(!ov) return;
+    const cks=[...ov.querySelectorAll('input[data-rset="'+sig+'"]')];
+    const h=ov.querySelector('input[data-rs="'+sig+'"]'); if(!h) return;
+    const on=cks.filter(c=>c.checked).length;
+    h.checked=on===cks.length; h.indeterminate=on>0&&on<cks.length;
+  }
+  function relProdMarcar(el){
+    const k=el.getAttribute('data-rk');
+    el.checked?relSel.add(k):relSel.delete(k);
+    relProdSync(el.getAttribute('data-rset')); relProdCont();
+  }
+  function relProdSetor(sig,on){
+    document.querySelectorAll('#modalOv input[data-rset="'+sig+'"]').forEach(c=>{
+      c.checked=on; const k=c.getAttribute('data-rk'); on?relSel.add(k):relSel.delete(k); });
+    relProdSync(sig); relProdCont();
+  }
+  function relProdTodos(on){
+    document.querySelectorAll('#modalOv input[data-rk]').forEach(c=>{
+      c.checked=on; const k=c.getAttribute('data-rk'); on?relSel.add(k):relSel.delete(k); });
+    document.querySelectorAll('#modalOv input[data-rs]').forEach(h=>{ h.checked=on; h.indeterminate=false; });
+    relProdCont();
+  }
+  function relProdGerar(){
+    // recalcula na hora de gerar: a posição impressa é a de agora
+    const dados=relProdItens().map(d=>({S:d.S,grupos:d.grupos.filter(g=>relSel.has(g.k))})).filter(d=>d.grupos.length);
+    if(!dados.length){ toast('Selecione ao menos um setor'); return; }
+    fecharModal();
+    const agora=new Date(), agoraISO=agora.toISOString();
+    let nOps=0, nAnd=0, nPz=0, nEst=0, nFila=0;
+    const nomes=[];
+    const linhaOP=o=>{
+      const st=stOp(o), L=leadStatus(o);
+      const gasto=L?L.gastoMin:tempoLiquido(o,agoraISO);
+      const pz=st==='pausada'?(pausaAberta(o)||pausaImplicita(o)):null;
+      const eq=funcsAtivos(o), resp=(eq.length?eq:equipeOP(o)).join(', ')||'—';
+      nOps++; st==='pausada'?nPz++:nAnd++; if(L&&L.atrasado) nEst++;
+      const sit=st==='pausada'
+        ?`<span class="rel-pill pz">Pausada</span><small>${pz&&pz.de?'desde '+fmtHora(pz.de)+' ('+filaHa(pz.de)+')':''}${pz&&pz.motivo&&!pz.implicita?' · '+escHtml(pz.motivo):''}</small>`
+        :`<span class="rel-pill and">Em andamento</span>`;
+      const saldo=L?(L.atrasado
+        ?`+${fmtMin(Math.abs(Math.round(L.gastoMin-L.leadMin)))} de atraso`
+        :`${fmtMin(Math.max(0,Math.round(L.leadMin-L.gastoMin)))} restantes`):'Sem prazo';
+      return `<tr>
+        <td class="mono">${escHtml(o.numero)}</td>
+        <td class="nw">${escHtml(o.projeto)||'—'}</td>
+        <td>${escHtml(opClienteAmbiente(o))||'—'}</td>
+        <td class="ctr nw">${escHtml(loteDaOP(o))||'—'}</td>
+        <td>${escHtml(resp)}</td>
+        <td class="nw">${fmtHora(o.inicio&&o.inicio.em)}</td>
+        <td>${sit}</td>
+        <td class="ctr rel-tempo">${L?fmtMin(L.leadMin):'—'}</td>
+        <td class="ctr rel-tempo">${fmtMin(Math.round(gasto))}</td>
+        <td class="ctr nw ${L&&L.atrasado?'atr':''}">${saldo}</td></tr>`;
+    };
+    const cab=(S,g,corpoTh,linhas)=>`<div class="rel-sec" style="--sc:${S.cor}">
+      <div class="rel-sec-h"><span>${escHtml(S.nome)}</span><b>${escHtml(g.nome)}</b><em>${g.lista.length} ${g.tipo==='op'?'OP(s)':(g.tipo==='agrup'?'lote(s) na fila':'projeto(s) na fila')}</em></div>
+      <table class="rel-tbl"><thead><tr>${corpoTh}</tr></thead><tbody>${linhas}</tbody></table></div>`;
+    const TH_OP='<th>OP</th><th>Projeto</th><th>Cliente · Ambiente</th><th class="ctr">Lote</th><th>Responsável</th><th>Início</th><th>Situação</th><th class="ctr">Lead time</th><th class="ctr">Tempo gasto</th><th class="ctr">Saldo</th>';
+    const secoes=dados.map(d=>d.grupos.map(g=>{
+      nomes.push(g.nome);
+      if(g.tipo==='op'){
+        const ord=g.lista.slice().sort((a,b)=>{
+          const la=leadStatus(a), lb=leadStatus(b);
+          const ea=la&&la.atrasado?1:0, eb=lb&&lb.atrasado?1:0;
+          return (eb-ea)||((lb?lb.gastoMin:0)-(la?la.gastoMin:0));
+        });
+        return cab(d.S,g,TH_OP,ord.map(linhaOP).join(''));
+      }
+      nFila+=g.lista.length;
+      if(g.tipo==='agrup')
+        return cab(d.S,g,'<th>Lote</th><th>Projetos</th><th>Agrupado em</th><th class="ctr">Aguardando o corte</th>',
+          g.lista.map(x=>`<tr><td class="mono">${escHtml(x.lote)}</td><td>${escHtml([...x.projs].join(', '))||'—'}</td><td class="nw">${fmtHora(x.em)}</td><td class="ctr rel-tempo">${filaHa(x.em)||'—'}</td></tr>`).join(''));
+      return cab(d.S,g,'<th>Projeto</th><th>Lote</th><th>Cliente · Ambiente</th><th>Usinado em</th><th class="ctr">Aguardando a montagem</th>',
+        g.lista.map(x=>`<tr><td class="mono">${escHtml(x.projeto)}</td><td class="ctr">${escHtml(x.lote)}</td><td>${escHtml([x.clientes.join(' / '),x.ambientes.join(', ')].filter(Boolean).join(' · '))||'—'}</td><td class="nw">${fmtHora(x.em)}</td><td class="ctr rel-tempo">${filaHa(x.em)||'—'}</td></tr>`).join(''));
+    }).join('')).join('');
+    const ov=document.getElementById('fichaOverlay');
+    ov.innerHTML=`<div class="ficha-actions folha-actions" style="width:min(1180px,100%)">
+        <button class="btn btn-ghost" style="background:#fff" onclick="fecharFicha()">Fechar</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button></div>
+      <div class="folha">
+        <div class="folha-head">
+          <img class="fl-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
+          <h1 class="fl-title">Relatório da Produção</h1>
+          <div class="fl-date">${agora.toLocaleDateString('pt-BR')}</div>
+        </div>
+        <div class="fl-band">
+          <div class="fb"><b>Posição:</b> ${fmtDataHora(agoraISO)}</div>
+          <div class="fb"><b>OPs em produção:</b> ${nOps}</div>
+          <div class="fb"><b>Em andamento:</b> ${nAnd}</div>
+          <div class="fb"><b>Pausadas:</b> ${nPz}</div>
+          <div class="fb"><b>Lead time estourado:</b> ${nEst}</div>
+          ${nFila?`<div class="fb"><b>Em fila:</b> ${nFila}</div>`:''}
+        </div>
+        <p class="rel-set-l"><b>Setores:</b> ${nomes.map(escHtml).join(' · ')}</p>
+        ${secoes}
+        <div class="folha-foot">
+          <div class="ff-l"><svg class="ff-mark" viewBox="0 0 60 26"><path d="M2 24 C2 10 8 2 14 2 C20 2 26 10 26 24 Z"/><path d="M16 24 C16 10 22 2 28 2 C34 2 40 10 40 24 Z"/><path d="M30 24 C30 10 36 2 42 2 C48 2 54 10 54 24 Z"/></svg>
+            <div class="ff-end">${EMPRESA.end1}<br>${EMPRESA.end2}<br>${EMPRESA.end3}</div></div>
+          <div class="ff-r">Emitido em ${fmtDataHora(agoraISO)}${(()=>{ const u=usuarioLogadoReg(), n=(u&&u.nome)||usuarioAtual(); return n?' · '+escHtml(n):''; })()}</div>
+        </div></div>`;
+    ov.onclick=(e)=>{ if(e.target===ov) fecharFicha(); };
+    setPageOrientation('landscape'); ov.classList.add('open');
+  }
 
   /* ===== Filas do Kanban (derivadas das OPs — nada é gravado, nada é apontado) ===== */
   // LOTES AGRUPADOS: entra quando a OP "Agrupamento do lote" é encerrada; sai quando alguma OP de "Corte" do lote é iniciada.
@@ -14907,11 +15213,11 @@ function chkMontHtml(c){
         ${(()=>{ const nf=o.necessidadeFita, temAbrir=nf.itens.some(it=>fbArr(it.abrir).length);
           return `<table class="opz-tbl opz-tfita"><thead><tr><th style="width:96px">Código</th><th style="width:74px">Cor</th><th>Item</th><th style="width:40px">Un.</th>
           <th style="width:76px">Necessário</th>${temAbrir?'<th style="width:36%">Orientação para abrir a fita</th>':''}</tr></thead>
-          <tbody>${nf.itens.map(it=>`<tr>
+          <tbody>${nf.itens.map(it=>`<tr${fbArr(it.abrir).length?' class="has-plano"':''}>
             <td class="mono">${escHtml(it.codigo)||'—'}</td><td class="ctr opz-cor">${opzAmostraFita(it)}</td><td>${escHtml(it.descricao)||'—'}</td><td class="ctr">${escHtml(it.unidade)}</td>
             <td class="ctr">${fmtNum(it.necessario||0)}</td>
             ${temAbrir?`<td class="opz-abrir">${fbArr(it.abrir).map(a=>`<b>${escHtml(sfTextoAbrir(a))}</b>`).join('<br>')}</td>`:''}
-          </tr>`).join('')}</tbody></table>`; })()}
+          </tr>${opzPlanoLinha(it,temAbrir?6:5)}`).join('')}</tbody></table>`; })()}
       </div>`:''}
 
       <div class="opz-op">
