@@ -1824,6 +1824,27 @@
     color:var(--texto); cursor:pointer; max-width:200px; }
   .opx-filtros select:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
   .opx-filtros select.on{ border-color:rgba(152,36,36,.5); background-color:rgba(152,36,36,.06); color:var(--vermelho); font-weight:600; }
+  .opx-dtw{ position:relative; }
+  .opx-dtb{ display:inline-flex; align-items:center; gap:7px; font:inherit; font-size:13px; padding:9px 12px; border:1px solid var(--linha); border-radius:9px;
+    background:#faf9f5; color:var(--texto); cursor:pointer; white-space:nowrap; }
+  .opx-dtb svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  .opx-dtb:hover{ background:#fff; }
+  .opx-dtb.on{ border-color:rgba(152,36,36,.5); background-color:rgba(152,36,36,.06); color:var(--vermelho); font-weight:600; }
+  .opx-pop{ display:none; position:absolute; top:calc(100% + 6px); right:0; z-index:40; width:250px; background:#fff; border:1px solid var(--linha);
+    border-radius:12px; padding:14px; box-shadow:0 12px 32px rgba(0,0,0,.14); }
+  .opx-pop.open{ display:block; }
+  .opx-pop-t{ font-size:12px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .opx-opt{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; font:inherit; font-size:13.5px; padding:10px 10px; margin:0 0 6px; border:1px solid var(--linha); border-radius:9px; background:#faf9f5; color:var(--texto); cursor:pointer; }
+  .opx-opt i{ width:14px; height:14px; border-radius:50%; border:2px solid #b9b7ae; flex:none; background:#fff; }
+  .opx-opt:hover{ background:#fff; }
+  .opx-opt.sel{ border-color:rgba(152,36,36,.5); background:rgba(152,36,36,.06); color:var(--vermelho); font-weight:600; }
+  .opx-opt.sel i{ border-color:var(--vermelho); background:radial-gradient(circle,var(--vermelho) 45%,#fff 50%); }
+  .opx-pop label{ display:block; font-size:12.5px; font-weight:600; color:var(--texto); margin:0 0 10px; }
+  .opx-pop input[type=date]{ display:block; width:100%; margin-top:4px; font:inherit; font-size:13.5px; padding:8px 10px; border:1px solid var(--linha);
+    border-radius:9px; background:#faf9f5; color:var(--texto); }
+  .opx-pop input[type=date]:focus{ outline:2px solid var(--vermelho); outline-offset:1px; background:#fff; border-color:transparent; }
+  .opx-pop-f{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:2px; }
+  .opx-pop-f small{ font-size:11.5px; color:var(--muted); }
   .opx-cont{ margin-left:auto; font-size:12.5px; font-weight:600; color:var(--muted); white-space:nowrap; padding:0 6px; }
   .opx .table-wrap{ border-radius:14px; box-shadow:0 1px 2px rgba(75,75,85,.06); }
   .opx .table-scroll{ max-height:calc(100vh - 370px); min-height:320px; overflow:auto; }
@@ -10578,7 +10599,7 @@
   const DIAS_SEM=[['Dom',0],['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6]];
 
   let PAINEL=[], EQUIPE=[], OPS=[];
-  let grupoModo=false, grupoSel=new Set(), painelSel=new Set(), emitOP=null, emitApoio=null, apontOP=null, buscaOps='', fOps={setor:'',status:'',tipo:'',ativ:''}, painelBusca='';
+  let grupoModo=false, grupoSel=new Set(), painelSel=new Set(), emitOP=null, emitApoio=null, apontOP=null, buscaOps='', fOps={setor:'',status:'',tipo:'',ativ:'',emis:'',exec:''}, painelBusca='';
 
   /* ---- tempo dentro da jornada ---- */
 
@@ -11900,18 +11921,51 @@
   /* ================= 3. EMISSÃO DE OP + LISTA ================= */
   function filtrarOps(){
     const q=(buscaOps||'').trim().toLowerCase(), t=q?q.split(/\s+/):[];
-    return OPS.filter(o=>{
+    const res=OPS.filter(o=>{
       if(fOps.setor&&o.setor!==fOps.setor) return false;
       if(fOps.status&&stOp(o)!==fOps.status) return false;
       if(fOps.tipo&&o.tipo!==fOps.tipo) return false;
       if(fOps.ativ&&o.atividade!==fOps.ativ) return false;
+      if(fOps.exec==='inicio'&&!(o.inicio&&o.inicio.em)) return false;
+      if(fOps.exec==='fim'&&!(o.fim&&o.fim.em)) return false;
       if(!t.length) return true;
       const txt=[o.numero,o.projeto,o.lote,o.atividade,o.setor,
         (o.projetosLote||[]).map(r=>[r.projeto,r.cliente,r.ambiente].join(' ')).join(' '),
         o.inicio&&o.inicio.func,o.fim&&o.fim.func].filter(Boolean).join(' ').toLowerCase();
       return t.every(x=>txt.includes(x));
     });
+    if(opsDataAtiva()){
+      const ch=o=>String((fOps.exec==='inicio'?(o.inicio&&o.inicio.em):fOps.exec==='fim'?(o.fim&&o.fim.em):o.emitidoEm)||'');
+      res.sort((a,b)=>ch(b).localeCompare(ch(a))||String(b.numero||'').localeCompare(String(a.numero||'')));
+    }
+    return res;
   }
+  /* ---- filtros de data (emissão / execução): só escolher, sem digitar data ---- */
+  function opsDataAtiva(){ return !!(fOps.emis||fOps.exec); }
+  function opsDtLabel(ch){
+    if(ch==='emis') return fOps.emis?'Emissão: mais recentes':'Data de emissão';
+    return fOps.exec==='inicio'?'Execução: por início':fOps.exec==='fim'?'Execução: por fim':'Data de execução';
+  }
+  function opsDtHtml(ch){
+    const ops=ch==='emis'
+      ?[['','Data de emissão'],['on','Emissão: mais recentes primeiro']]
+      :[['','Data de execução'],['inicio','Execução: por início'],['fim','Execução: por fim']];
+    const dica=ch==='emis'?'Ordena pela data em que a OP foi emitida':'Ordena pela execução (início ou fim do apontamento), da mais recente para a mais antiga';
+    return `<select class="${fOps[ch]?'on':''}" title="${dica}" onchange="opsDtSet('${ch}',this.value)">
+      ${ops.map(([v,l])=>`<option value="${v}" ${fOps[ch]===v?'selected':''}>${l}</option>`).join('')}</select>`;
+  }
+  function opsDtTog(ch,ev){
+    if(ev) ev.stopPropagation();
+    const pop=document.getElementById('dtp-'+ch); if(!pop) return;
+    const abrir=!pop.classList.contains('open');
+    document.querySelectorAll('.opx-pop.open').forEach(e=>e.classList.remove('open'));
+    if(abrir) pop.classList.add('open');
+  }
+  function opsDtSet(ch,v){
+    fOps[ch]=v||'';
+    renderOPs();
+  }
+  document.addEventListener('click',()=>document.querySelectorAll('.opx-pop.open').forEach(e=>e.classList.remove('open')));
   function renderOPs(){
     TELA='ops'; emitOP=null;
     const lista=filtrarOps();
@@ -11939,7 +11993,8 @@
           ${ativsTodas.map(a=>`<option value="${escHtml(a)}" ${fOps.ativ===a?'selected':''}>${escHtml(a)}</option>`).join('')}</select>
         <select class="${fOps.tipo?'on':''}" onchange="fOps.tipo=this.value; renderOPs()"><option value="">Todos os tipos</option>
           ${Object.entries(TIPO_OP).map(([k,v])=>`<option value="${k}" ${fOps.tipo===k?'selected':''}>${v}</option>`).join('')}</select>
-        ${(buscaOps||fOps.setor||fOps.status||fOps.tipo||fOps.ativ)?`<button class="btn btn-ghost btn-sm" onclick="buscaOps='';fOps={setor:'',status:'',tipo:'',ativ:''};renderOPs()">Limpar filtros</button>`:''}
+        ${opsDtHtml('emis')}${opsDtHtml('exec')}
+        ${true?`<button class="btn btn-ghost btn-sm" id="opsLimpar" style="${(buscaOps||fOps.setor||fOps.status||fOps.tipo||fOps.ativ||opsDataAtiva())?'':'display:none'}" onclick="buscaOps='';fOps={setor:'',status:'',tipo:'',ativ:'',emis:'',exec:''};renderOPs()">Limpar filtros</button>`:''}
         <span class="opx-cont" id="opsCont">${contOpsTxt(lista.length)}</span>
       </div>
       <div id="grBar"></div>
