@@ -369,6 +369,22 @@
   .dina-kv{ display:flex; flex-direction:column; gap:12px; }
   .dina-kv div span{ display:block; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
   .dina-kv div b{ font-size:14px; color:var(--texto); font-weight:600; }
+  .bom-n{ display:inline-flex; align-items:center; justify-content:center; min-width:26px; height:22px; padding:0 8px; border-radius:999px; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; background:rgba(75,75,85,.08); color:var(--muted); }
+  .bom-n.on{ background:rgba(152,36,36,.1); color:var(--vermelho); }
+  .bom-sec{ margin-top:18px; }
+  .bom-sec > h3{ display:flex; align-items:center; gap:10px; }
+  .bom-vz{ padding:18px; text-align:center; color:var(--muted); font-size:13px; background:#faf9f5; border:1px dashed var(--linha); border-radius:10px; }
+  .bom-cor{ display:flex; align-items:center; gap:8px; }
+  .bom-cor small{ font-size:11.5px; font-weight:600; font-family:ui-monospace,Consolas,monospace; color:var(--muted); }
+  .bom-cor small.nil{ font-family:inherit; font-weight:500; color:#b0aea4; }
+  .bom-ace{ border:1px solid var(--linha); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+  .bom-ace-h{ display:flex; flex-wrap:wrap; gap:6px 22px; padding:10px 14px; background:#faf9f5; border-bottom:1px solid var(--linha); font-size:12.5px; }
+  .bom-ace-h span{ color:var(--muted); } .bom-ace-h b{ color:var(--texto); font-weight:600; }
+  .bom-mod{ border:1px solid var(--linha); border-radius:12px; margin-bottom:10px; overflow:hidden; }
+  .bom-mod > summary{ cursor:pointer; padding:10px 14px; background:#faf9f5; font-size:13px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .bom-mod > summary b{ font-family:ui-monospace,Consolas,monospace; }
+  .bom-mod > summary small{ color:var(--muted); }
+  .bom-sub{ font-size:11px; color:var(--muted); margin-top:2px; }
   .dina-lbl{ display:block; font-size:12.5px; font-weight:700; color:var(--texto); margin-bottom:7px; }
   .dina-in{ width:100%; font:inherit; font-size:13.5px; padding:12px 14px; border:1.5px solid var(--linha); border-radius:12px; background:#faf9f5; color:var(--texto); outline:none; transition:border-color .12s,box-shadow .12s,background .12s; }
   .dina-in:focus{ border-color:var(--dina); background:#fff; box-shadow:0 0 0 4px rgba(255,90,44,.14); }
@@ -2920,6 +2936,225 @@
   .tbl-ace .cell-in{ min-width:0; font-size:12px; padding:5px 6px; }
   .cell-in.ctr{ text-align:center; }
 
+  /* Foto do item (ACE) */
+  .ace-foto{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; min-height:32px; }
+  .ace-foto-add{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:30px; border:1px dashed #cfcdc3;
+    border-radius:7px; background:#fff; color:var(--muted); cursor:pointer; padding:0; transition:border-color .12s,color .12s,background .12s; }
+  .ace-foto-add:hover,.ace-foto-add:focus-visible{ border-color:var(--vermelho); color:var(--vermelho); background:rgba(152,36,36,.04); outline:none; }
+  .ace-foto-add svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .ace-foto-th{ position:relative; display:inline-block; line-height:0; }
+  .ace-foto-img{ border:0; background:none; padding:0; margin:0; cursor:zoom-in; line-height:0; border-radius:7px; }
+  .ace-foto-img:focus-visible{ outline:2px solid var(--vermelho); outline-offset:2px; }
+  .ace-foto-th img{ width:58px; height:44px; object-fit:cover; border-radius:6px; border:1px solid var(--linha); background:#f1f0ea; display:block; transition:transform .15s, box-shadow .15s; }
+  .ace-foto-img:hover img{ transform:scale(1.05); box-shadow:0 3px 10px rgba(0,0,0,.18); }
+  .ace-foto[data-t="p"] .ace-foto-th img{ width:46px; height:34px; }
+  .ace-foto[data-t="g"] .ace-foto-th img{ width:70px; height:52px; }
+  .ace-foto[data-t="x"] .ace-foto-th img,.ace-foto[data-t="xg"] .ace-foto-th img,.ace-foto[data-t="fi"] .ace-foto-th img{ width:82px; height:62px; }
+  .ace-foto-x{ position:absolute; top:-6px; right:-6px; width:17px; height:17px; border-radius:50%; border:0; background:var(--vermelho);
+    color:#fff; font-size:13px; line-height:17px; cursor:pointer; padding:0; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+  .ace-foto-env{ font-size:11px; color:var(--muted); }
+  .ace-tam{ display:inline-flex; border:1px solid var(--linha); border-radius:7px; overflow:hidden; background:#fff; }
+  .ace-tam button{ border:0; background:transparent; padding:3px 0; width:17px; font:600 9px/1 'Archivo',sans-serif; color:var(--muted); cursor:pointer; border-right:1px solid var(--linha); }
+  .ace-tam button[data-k="x"],.ace-tam button[data-k="xg"],.ace-tam button[data-k="fi"]{ width:21px; }
+  .ace-tam button svg{ width:10px; height:12px; display:block; margin:0 auto; fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; }
+  .ace-tam button:last-child{ border-right:0; }
+  .ace-xg-nota{ display:none; font-size:9.5px; color:var(--vermelho); font-weight:600; white-space:nowrap; }
+  .ace-foto[data-t="xg"] .ace-xg-nota.n-xg,.ace-foto[data-t="fi"] .ace-xg-nota.n-fi{ display:block; }
+
+  /* ACE: foto por print (Ctrl+V / botão / arrastar) */
+  .ace-foto:focus{ outline:none; }
+  .ace-foto:focus-visible{ outline:2px solid var(--vermelho); outline-offset:3px; border-radius:7px; }
+  .ace-foto.arrasta{ outline:2px dashed var(--vermelho); outline-offset:3px; border-radius:7px; background:rgba(152,36,36,.05); }
+  .ace-foto-bts{ display:inline-flex; gap:4px; }
+  .ace-foto-bts .ace-foto-add{ width:30px; }
+  .ace-foto-bts .ace-foto-colar svg{ stroke-width:1.7; }
+  .ace-dica{ font-size:12px; color:var(--muted); margin-left:6px; }
+  .ace-dica b{ color:var(--texto); }
+
+  /* ACE: células que quebram linha e crescem para mostrar o texto inteiro */
+  .tbl-ace td{ vertical-align:top; }
+  .tbl-ace td.ace-cat-td,.tbl-ace td.acoes{ vertical-align:top; padding-top:6px; }
+  .tbl-ace textarea.cell-in{ display:block; resize:none; overflow:hidden; min-height:30px; line-height:1.3; white-space:pre-wrap; overflow-wrap:anywhere; font-family:inherit; }
+  .tbl-ace tbody tr.ace-ativa td{ background:#fbf3f1; }
+  .tbl-ace tbody tr.ace-ativa textarea.cell-in{ border-color:rgba(152,36,36,.35); }
+  .tbl-ace tbody tr.ace-ativa.sc-prio td{ background:#fff2b8; }
+  .ace-tam button:hover{ background:rgba(152,36,36,.06); color:var(--vermelho); }
+  .ace-tam button.on{ background:var(--vermelho); color:#fff; }
+  .tbl-ace-ro td.ro-foto{ text-align:center; }
+  .ro-foto-b{ border:0; background:none; padding:0; margin:0 auto; cursor:zoom-in; line-height:0; display:block; border-radius:8px; }
+  .ro-foto-b:focus-visible{ outline:2px solid var(--vermelho); outline-offset:2px; }
+  .ro-foto img{ width:92px; height:68px; object-fit:cover; border-radius:8px; border:1px solid var(--linha); background:#f1f0ea; display:block; margin:0 auto; transition:transform .15s, box-shadow .15s; }
+  .ro-foto-b:hover img{ transform:scale(1.04); box-shadow:0 4px 12px rgba(0,0,0,.2); }
+  .ro-foto img.t-m{ width:120px; height:90px; }
+  .ro-foto img.t-g{ width:150px; height:112px; }
+  .ro-foto img.t-x{ width:190px; height:142px; }
+  .ro-foto img.t-xg{ width:200px; height:150px; }
+
+  /* Visualizador de fotos (dentro do sistema) */
+  .ace-lb{ position:fixed; inset:0; z-index:9500; display:none; flex-direction:column; background:rgba(18,16,16,.92);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+  .ace-lb.open{ display:flex; animation:aceLbIn .18s ease-out; }
+  @keyframes aceLbIn{ from{ opacity:0 } to{ opacity:1 } }
+  .ace-lb-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 20px; color:#fff; }
+  .ace-lb-tt{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .ace-lb-tt b{ font:600 16px/1.2 'Poppins','Archivo',sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ace-lb-tt span{ font-size:12px; color:rgba(255,255,255,.65); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ace-lb-tools{ display:flex; align-items:center; gap:8px; flex:none; }
+  .ace-lb-cnt{ font-size:12px; color:rgba(255,255,255,.7); padding:0 6px; letter-spacing:.03em; }
+  .ace-lb-btn{ width:38px; height:38px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; text-decoration:none; padding:0; transition:background .12s; }
+  .ace-lb-btn:hover,.ace-lb-btn:focus-visible{ background:rgba(255,255,255,.26); outline:none; }
+  .ace-lb-btn svg{ width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .ace-lb-btn.fechar:hover{ background:var(--vermelho); }
+  .ace-lb-stage{ position:relative; flex:1; min-height:0; display:flex; overflow:auto; padding:6px 74px; }
+  .ace-lb-stage img{ margin:auto; max-width:100%; max-height:100%; object-fit:contain; border-radius:10px; background:#222;
+    box-shadow:0 18px 60px rgba(0,0,0,.55); cursor:zoom-in; opacity:0; transition:opacity .2s; }
+  .ace-lb-stage img.ok{ opacity:1; }
+  .ace-lb-stage.zoom img{ max-width:none; max-height:none; cursor:zoom-out; }
+  .ace-lb-load{ position:absolute; top:50%; left:50%; width:34px; height:34px; margin:-17px 0 0 -17px; border-radius:50%;
+    border:3px solid rgba(255,255,255,.2); border-top-color:#fff; animation:aceLbSp .8s linear infinite; pointer-events:none; }
+  .ace-lb-stage img.ok ~ .ace-lb-load{ display:none; }
+  @keyframes aceLbSp{ to{ transform:rotate(360deg) } }
+  .ace-lb-nav{ position:fixed; top:50%; transform:translateY(-50%); width:46px; height:46px; border-radius:50%; border:0; z-index:2;
+    background:rgba(255,255,255,.14); color:#fff; font-size:26px; line-height:1; cursor:pointer; padding:0 0 3px; transition:background .12s; }
+  .ace-lb-nav:hover,.ace-lb-nav:focus-visible{ background:var(--vermelho); outline:none; }
+  .ace-lb-nav.ant{ left:14px; } .ace-lb-nav.prox{ right:14px; }
+  .ace-lb-foot{ text-align:center; padding:10px 16px 16px; font-size:12px; color:rgba(255,255,255,.6); }
+  .ace-lb-foot b{ color:#fff; font-weight:600; }
+  @media (max-width:720px){ .ace-lb-stage{ padding:4px 10px; } .ace-lb-nav{ top:auto; bottom:14px; transform:none; } }
+  @media print{ .ace-lb{ display:none !important; } }
+
+  /* ===== ACE v2: categoria, prioridade e status por item ===== */
+  .ace2 .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .ace2 .chk-prio{ display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; color:var(--texto); padding:0 4px; }
+  .ace2 .chk-prio input{ width:16px; height:16px; accent-color:var(--vermelho); }
+  .ace2 .chk-prio svg{ width:17px; height:17px; }
+  .ace2 .tbl tbody tr.lnk{ cursor:pointer; }
+  .ace2 .tbl tbody tr.ace-feita td{ opacity:.62; }
+  .ace2 .tbl tbody tr.ace-feita:hover td{ opacity:1; }
+
+  /* cartões de resumo (KPIs) */
+  .kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:14px; }
+  .kpi{ font:inherit; text-align:left; display:flex; flex-direction:column; gap:4px; background:var(--surface); border:1px solid var(--linha);
+    border-radius:14px; padding:12px 16px 13px; box-shadow:0 1px 3px rgba(75,75,85,.06); border-top:3px solid var(--c); color:var(--texto); }
+  .kpi.clicavel{ cursor:pointer; transition:transform .12s, box-shadow .12s; }
+  .kpi.clicavel:hover{ transform:translateY(-1px); box-shadow:0 6px 16px -8px rgba(75,75,85,.35); }
+  .kpi.ativo{ background:color-mix(in srgb,var(--c) 9%,#fff); border-color:var(--c); }
+  .kpi-n{ font-family:'Poppins',sans-serif; font-weight:700; font-size:26px; line-height:1; letter-spacing:-.02em; }
+  .kpi-l{ display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--muted); }
+  .kpi-l .dot{ background:var(--c); }
+  .kpi-l svg{ width:16px; height:16px; }
+
+  /* abas Por solicitação / Por item */
+  .seg2{ display:inline-flex; background:var(--surface); border:1px solid var(--linha); border-radius:11px; padding:3px; gap:2px; }
+  .seg2 button{ font:inherit; font-size:13px; font-weight:600; border:0; background:transparent; color:var(--muted); padding:7px 15px; border-radius:8px; cursor:pointer; }
+  .seg2 button:hover{ color:var(--texto); }
+  .seg2 button.on{ background:var(--texto); color:#fff; }
+
+  /* categorias */
+  .cat-strip{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .cat-tag{ display:inline-flex; align-items:center; font-size:11px; font-weight:700; line-height:1; padding:4px 8px; border-radius:6px; white-space:nowrap;
+    color:var(--c,#555); background:color-mix(in srgb,var(--c,#555) 12%,#fff); border:1px solid color-mix(in srgb,var(--c,#555) 32%,#fff); }
+  .cat-tag.sem{ --c:#8a8a92; font-weight:600; }
+  .chip-f.cat{ --c:#8a8a92; color:var(--c); border-color:color-mix(in srgb,var(--c) 38%,#fff); }
+  .chip-f.cat:hover{ color:var(--c); background:color-mix(in srgb,var(--c) 8%,#fff); }
+  .chip-f.cat.on{ background:var(--c); border-color:var(--c); color:#fff; }
+  .cat-cel{ display:flex; align-items:center; gap:7px; min-height:26px; }
+  .cat-vz{ color:#b3b2aa; font-size:12px; }
+  .bol{ flex:0 0 20px; width:20px; height:20px; border-radius:50%; border:2px solid #b3b2aa; background:#fff; cursor:pointer; padding:0; transition:.12s; }
+  .bol:hover{ border-color:var(--vermelho); }
+  .bol.on{ border-color:var(--vermelho); background:var(--vermelho); box-shadow:inset 0 0 0 3.5px #fff; }
+  .cat-bar{ position:sticky; top:0; z-index:6; display:flex; align-items:center; gap:10px 16px; flex-wrap:wrap; margin-bottom:12px; padding:11px 14px;
+    background:#fff8ee; border:1px solid #ecd3a6; border-left:4px solid var(--vermelho); border-radius:10px; box-shadow:0 6px 16px -10px rgba(75,75,85,.4); }
+  .cat-bar .cb-t{ font-size:13px; color:var(--muted); }
+  .cat-bar .cb-t b{ color:var(--texto); font-size:15px; }
+  .cat-bar .cb-chips{ display:flex; gap:6px; flex-wrap:wrap; flex:1; }
+  .cat-bar .cb-ac{ display:flex; gap:8px; }
+  .cat-btn{ font:inherit; font-size:12.5px; font-weight:700; padding:6px 12px; border-radius:8px; cursor:pointer; --c:#8a8a92;
+    color:var(--c); background:#fff; border:1.5px solid var(--c); }
+  .cat-btn:hover{ background:var(--c); color:#fff; }
+
+  /* status por item */
+  .st-pill{ display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:700; color:var(--c); white-space:nowrap; }
+  .st-pill .dot{ background:var(--c); box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 20%,transparent); }
+  .st-seg{ display:inline-flex; border:1px solid var(--linha); border-radius:10px; overflow:hidden; background:#fff; }
+  .st-seg button{ font:inherit; font-size:12px; font-weight:600; padding:7px 11px; border:0; border-right:1px solid var(--linha); background:#fff; color:var(--muted);
+    cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .st-seg button:last-child{ border-right:0; }
+  .st-seg button .dot{ background:var(--c); }
+  .st-seg button:hover:not(.on){ background:#f4f3ee; color:var(--texto); }
+  .st-seg button.on{ background:var(--c); color:#fff; cursor:default; }
+  .st-seg button.on .dot{ background:#fff; }
+  .st-sel-c{ border-color:var(--c); color:var(--c); font-weight:700; padding:5px 8px; }
+  .st-lib{ width:100%; border-left:4px solid var(--c); }
+  .pg{ display:flex; height:8px; border-radius:99px; overflow:hidden; background:#e6e5de; min-width:110px; }
+  .pg i{ display:block; height:100%; background:var(--c); }
+
+  /* caixa de andamento (tela interna) */
+  .ace-prog{ min-width:260px; }
+  .ace-prog .big{ font-family:'Poppins',sans-serif; font-weight:700; font-size:28px; letter-spacing:-.02em; margin:6px 0 8px; color:var(--texto); }
+  .ace-prog .big small{ font-size:16px; color:var(--muted); font-weight:600; }
+  .ace-prog .big span{ font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:600; color:var(--muted); margin-left:4px; }
+  .ace-prog .lg{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); padding:3px 0; }
+  .ace-prog .lg b{ margin-left:auto; color:var(--texto); }
+  .ace-prog .pri{ display:flex; align-items:center; gap:7px; margin-top:9px; padding-top:9px; border-top:1px solid var(--linha); font-size:12.5px; font-weight:600; color:#8a6400; }
+  .ace-prog .pri svg{ width:17px; height:17px; }
+
+  /* barra de ferramentas da tela interna */
+  .det-tools{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .det-tools .search{ flex:1; min-width:200px; width:auto; }
+  .det-tools select{ font:inherit; font-size:13.5px; padding:9px 11px; border:1px solid var(--linha); border-radius:9px; background:var(--surface); color:var(--texto); }
+  .chip-f .dot{ margin-right:6px; vertical-align:1px; }
+
+  /* cartão de item */
+  .itc{ display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:start; background:var(--surface); border:1px solid var(--linha);
+    border-radius:14px; padding:13px 16px; margin-bottom:10px; box-shadow:0 1px 3px rgba(75,75,85,.06); border-left:5px solid var(--c); }
+  .itc.sel-on{ outline:2px solid var(--vermelho); outline-offset:-1px; }
+  .itc.prio{ background:#fff8d6; border-color:#e6c84a; border-left-color:#e0a800; }
+  .itc.feito{ background:#fafaf6; }
+  .itc.feito .itc-nm{ color:var(--muted); }
+  .itc-l{ display:flex; align-items:center; gap:12px; }
+  .itc-foto{ display:grid; place-items:center; width:84px; height:84px; border-radius:10px; overflow:hidden; border:1px solid var(--linha); background:#f1f0ea; padding:0; color:#b3b2aa; cursor:zoom-in; }
+  .itc-foto.vz{ cursor:default; }
+  .itc-foto img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .15s; }
+  .itc-foto:hover img{ transform:scale(1.06); }
+  .itc-foto svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .itc-foto.mini{ width:46px; height:46px; border-radius:8px; margin:0 auto; }
+  .itc-t{ display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap; }
+  .itc-cod{ font-family:ui-monospace,monospace; font-size:12px; font-weight:700; color:var(--vermelho); }
+  .itc-nm{ font-weight:700; font-size:15.5px; color:var(--texto); }
+  .itc-qt{ font-size:12.5px; font-weight:700; color:var(--texto); background:#efeee7; border-radius:6px; padding:3px 8px; }
+  .itc-kv{ display:flex; flex-wrap:wrap; gap:4px 18px; margin-top:8px; font-size:12.5px; color:var(--muted); }
+  .itc-kv b{ color:var(--texto); font-weight:600; }
+  .itc-ctl{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+  .itc-meta{ font-size:11.5px; color:var(--muted); text-align:right; }
+  .itc-prio{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#8a6400; }
+  .itc-prio svg{ width:17px; height:17px; }
+  .itc-vz{ text-align:center; color:var(--muted); padding:28px; background:var(--surface); border:1px dashed var(--linha); border-radius:12px; }
+  @media (max-width:980px){
+    .itc{ grid-template-columns:auto 1fr; }
+    .itc-ctl{ grid-column:1/-1; align-items:flex-start; }
+    .itc-meta{ text-align:left; }
+    .st-seg{ display:grid; grid-template-columns:1fr 1fr; width:100%; }
+    .st-seg button{ border-bottom:1px solid var(--linha); }
+  }
+  .hist-d > summary{ cursor:pointer; font-size:12.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--vermelho); }
+  .hist-d[open] > summary{ margin-bottom:12px; }
+  .hl-it{ flex:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); }
+
+  /* formulário do PCP */
+  .tbl-ace td.ace-cat-td{ min-width:118px; }
+  .tbl-ace tr.sc-prio td.ace-cat-td{ box-shadow:inset 3px 0 0 #e0a800; }
+  .tbl-ace .acoes{ min-width:70px; }
+
+  /* PDF por categoria */
+  .fl-tbl tr.fl-grp td{ background:#efe6e3 !important; font-size:9px; color:#4b2a2a; padding:5px 6px; border-top:2px solid #9E1B1B; break-after:avoid; page-break-after:avoid;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fl-tbl tr.fl-prio td{ background:#fff2b8 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fl-tbl td.fl-st{ font-size:8px; line-height:1.25; }
+  .fl-tbl .fl-pri{ display:block; font-size:7px; font-weight:800; color:#8a6400; letter-spacing:.02em; margin-top:2px; }
+
+
   /* Folha de impressão ACE */
   .folha-actions{ width:min(1180px,100%); }
   .folha{ width:min(1180px,100%); background:#fff; box-shadow:0 20px 60px rgba(0,0,0,.3); padding:28px 32px 22px; color:#3a3a42;
@@ -2944,6 +3179,36 @@
   .fl-tbl td.ctr{ text-align:center; }
   .fl-tbl td.fl-cod{ font-family:ui-monospace,monospace; font-size:8px; white-space:nowrap; color:#7a1717; font-weight:600; }
   .fl-tbl td.fl-desc{ font-weight:600; }
+  .fl-tbl td.fl-foto{ text-align:center; padding:2px; }
+  .fl-tbl td.fl-foto img{ display:block; margin:0 auto; max-width:100%; max-height:70px; object-fit:contain; }
+  .fl-tbl td.fl-foto img.t-m{ max-height:110px; }
+  .fl-tbl td.fl-foto img.t-g{ max-height:150px; }
+  .fl-tbl td.fl-foto img.t-x{ max-height:200px; }
+  .fl-tbl tr.fl-xg-pai{ break-after:avoid; page-break-after:avoid; }
+  .fl-tbl .fl-xg-ref{ font-size:7.5px; color:#7a1717; font-weight:600; text-transform:uppercase; letter-spacing:.02em; }
+  .fl-tbl tbody tr.fl-xg td{ background:#faf6f5 !important; text-align:center; padding:12px 10px 10px; height:auto; border-top:0;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fl-xg-moldura{ display:inline-block; max-width:100%; box-sizing:border-box; line-height:0; padding:7px; background:#fff;
+    border:2px solid #9E1B1B; border-radius:5px; box-shadow:0 3px 10px rgba(0,0,0,.16), 0 0 0 4px #f1dedb;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fl-tbl tr.fl-xg img{ display:block; margin:0 auto; max-width:100%; max-height:300px; object-fit:contain; border:1px solid #d6cfcd; border-radius:2px; }
+  .fl-xg-leg{ display:flex; align-items:center; gap:10px; max-width:440px; margin:12px auto 0; font:700 7.5px/1.2 'Archivo',sans-serif;
+    color:#7a1717; text-transform:uppercase; letter-spacing:.06em; }
+  .fl-xg-leg::before,.fl-xg-leg::after{ content:""; flex:1; height:1px; background:#d8bdb9; }
+  .fl-xg-leg span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:300px; }
+  .fl-tbl tr.fl-xg-pai td{ border-bottom-color:#d6c3c0; }
+  /* foto ocupando a folha inteira (opção "Folha inteira") */
+  .fl-fi{ display:flex; flex-direction:column; flex:none; height:170mm; box-sizing:border-box;
+    break-before:page; page-break-before:always; break-after:page; page-break-after:always; }
+  .fl-fi.ult{ height:148mm; break-after:auto; page-break-after:auto; }
+  .fl-fi-h{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:0 2px 6px; margin-bottom:8px; border-bottom:2px solid #9E1B1B; }
+  .fl-fi-h b{ font:700 14px 'Poppins',sans-serif; color:#7a1717; }
+  .fl-fi-h span{ font-size:10.5px; color:#5c5c65; text-align:right; }
+  .fl-fi-f{ flex:1; min-height:0; display:flex; box-sizing:border-box; padding:6px; background:#fff; border:2px solid #9E1B1B; border-radius:5px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fl-fi-f img{ display:block; width:100%; height:100%; object-fit:contain; }
+  @media screen{ .fl-fi{ margin:22px 0 4px; padding-top:16px; border-top:2px dashed #cfcdc3; } .fl-fi.ult{ height:150mm; } }
+  .fl-tbl tr{ page-break-inside:avoid; break-inside:avoid; }
   .fl-tbl tr.vazia td{ color:transparent; background:#fff !important; }
   .folha-foot{ display:flex; align-items:flex-end; justify-content:space-between; margin-top:18px;
     padding-top:11px; border-top:2px solid #9E1B1B; }
@@ -3899,6 +4164,7 @@
     if(mod.id==='pcp' && name==='Designações de Projetos') return renderDesig();
     if(mod.id==='pcp' && name==='Orientações do projeto') return renderOri();
     if(mod.id==='pcp' && name==='Visualizador 3D (Dinabox)') return renderDina();
+    if(mod.id==='eng' && name==='Lista de Materiais (BOM)') return renderBom();
     if(mod.id==='pcp' && name==='Projetos liberados') return renderLiberacaoLote('lista');
     if(mod.id==='pcp' && name==='Lotes agrupados') return renderLiberacaoLote('agrupados');
     if(mod.id==='est' && name==='Solicitação de Compras (SC)') return renderSCEstoque();
@@ -4352,18 +4618,19 @@
   /* ================= Solicitação de Acessórios (ACE) ================= */
   const ACE_COLS=[
     {k:'codigo',    t:'Código',           w:'9%',  c:1, ac:'cod'},
-    {k:'produto',   t:'Produto',          w:'16%', ac:'desc'},
+    {k:'produto',   t:'Produto',          w:'12%', ac:'desc'},
     {k:'qtde',      t:'Qtde',             w:'4%',  c:1},
     {k:'unidade',   t:'Un.',              w:'4%',  c:1},
     {k:'local',     t:'Local',            w:'6%',  c:1},
     {k:'dimensao',  t:'Dimensão (LAP)',   w:'8%',  c:1},
     {k:'dimVao',    t:'Dim. Vão (LAP)',   w:'8%',  c:1},
-    {k:'acessorios',t:'Acessórios',       w:'8%'},
+    {k:'acessorios',t:'Acessórios',       w:'7%'},
     {k:'pux',       t:'Pux.',             w:'5%'},
-    {k:'posPux',    t:'Posição Pux.',     w:'7%'},
+    {k:'posPux',    t:'Posição Pux.',     w:'6%'},
     {k:'perfil',    t:'Perfil',           w:'6%'},
-    {k:'cor',       t:'Cor',              w:'8%'},
-    {k:'obs',       t:'Observações',      w:'11%'}
+    {k:'cor',       t:'Cor',              w:'7%'},
+    {k:'obs',       t:'Observações',      w:'9%'},
+    {k:'foto',      t:'Foto',             w:'9%',  c:1, foto:1}   // URL da foto (Cloudinary); deve ser a última coluna
   ];
   const EMPRESA={ end1:'Rua Miguel Luiz Goulart, 116', end2:'São João Margem Esquerda,', end3:'Tubarão - SC, 88708-500' };
   let ACES=[]; let ace=null;
@@ -4373,6 +4640,124 @@
   let LIB_IGNORADOS={}, lbMostrarExcluidos=false;
   let resumoCarregado={ops:false,ign:false}, resumoUltimo=null;
   function linhaVazia(){ const o={}; ACE_COLS.forEach(c=>o[c.k]=''); return o; }
+
+  /* ================= ACE: categoria, prioridade e status POR ITEM =================
+     Cada item de aces/{id}/itens[n] ganhou:  cat (chave de ACE_CATS), prio (bool),
+     status (chave de ST_ITEM), statusPor/statusEm, e iid (id estável do item).
+     Solicitações antigas (status só na solicitação) continuam válidas: o item sem status herda o statusEst antigo. */
+  const ACE_CATS={
+    'aluminios-vidros':{label:'Alumínios e vidros', cor:'#1f7a8c'},
+    'metalon':         {label:'Metalon',            cor:'#5b6475'},
+    'estofados':       {label:'Estofados',          cor:'#7a4fa3'},
+    'puxadores':       {label:'Puxadores',          cor:'#9a6a2f'},
+    'pintura':         {label:'Pintura',            cor:'#b0357f'},
+    'moveis-soltos':   {label:'Móveis soltos',      cor:'#4f7f3a'},
+    'usinagens':       {label:'Usinagens',          cor:'#3b4fa3'}
+  };
+  // 'entregue' mantém a chave antiga para não quebrar o que já está gravado
+  const ST_ITEM={
+    pendente:{label:'Pendente',            cor:'#c0392b'},
+    comprado:{label:'Comprado',            cor:'#d4930d'},
+    separado:{label:'Separado',            cor:'#2f6fb5'},
+    entregue:{label:'Separado e entregue', cor:'#2f8f46'}
+  };
+  const ST_ACE=ST_ITEM;   // nome antigo
+  let aceCatModo=false, aceCatSel=new Set();
+
+  // "linha preenchida" olha só as colunas da planilha (prio/cat/status não contam, e boolean não tem .trim)
+  function itemPreenchido(i){ return !!i && typeof i==='object' && ACE_COLS.some(c=>String(i[c.k]==null?'':i[c.k]).trim()!==''); }
+  function novoIid(){ return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+  // lista de itens preenchidos, guardando o índice REAL no banco (usado nas gravações por item)
+  function aceLista(a){
+    const v=a&&a.itens, out=[];
+    if(!v) return out;
+    if(Array.isArray(v)) v.forEach((it,ix)=>{ if(itemPreenchido(it)) out.push({it,ix}); });
+    else Object.keys(v).forEach(k=>{ if(itemPreenchido(v[k])) out.push({it:v[k],ix:k}); });
+    return out;
+  }
+  function catDe(it){ return (it && ACE_CATS[it.cat]) ? it.cat : ''; }
+  function catTag(it,vazio){
+    const k=catDe(it);
+    if(!k) return vazio?'<span class="cat-tag sem">Sem categoria</span>':'';
+    return `<span class="cat-tag" style="--c:${ACE_CATS[k].cor}">${escHtml(ACE_CATS[k].label)}</span>`;
+  }
+  function stItem(a,it){
+    if(it && ST_ITEM[it.status]) return it.status;
+    return (a && ST_ITEM[a.statusEst]) ? a.statusEst : 'pendente';   // solicitação antiga: herda o status que ela tinha
+  }
+  // prioridade só vale enquanto o item está pendente (mesma regra da SC)
+  function itemPrio(a,it){ return !!(it && it.prio) && stItem(a,it)==='pendente'; }
+  function resumoItens(a){
+    const c={pendente:0,comprado:0,separado:0,entregue:0}; let n=0, prio=0;
+    aceLista(a).forEach(o=>{ n++; c[stItem(a,o.it)]++; if(itemPrio(a,o.it)) prio++; });
+    return {c,n,prio};
+  }
+  function aceTodosItens(arr){
+    const out=[];
+    arr.forEach(a=>aceLista(a).forEach((o,pos)=>out.push({a,it:o.it,ix:o.ix,pos,st:stItem(a,o.it)})));
+    return out;
+  }
+  function stPill(st){ const s=ST_ITEM[st]||ST_ITEM.pendente; return `<span class="st-pill" style="--c:${s.cor}"><i class="dot"></i>${s.label}</span>`; }
+  function progBarra(r){
+    if(!r.n) return '<div class="pg"></div>';
+    const tip=Object.entries(ST_ITEM).map(([k,s])=>s.label+': '+r.c[k]).join(' · ');
+    return `<div class="pg" title="${tip}">${['entregue','separado','comprado','pendente'].map(k=>r.c[k]?`<i style="--c:${ST_ITEM[k].cor};width:${(r.c[k]/r.n*100).toFixed(2)}%"></i>`:'').join('')}</div>`;
+  }
+  function kpiCard(o){
+    const tag=o.on?'button type="button"':'div', fim=o.on?'button':'div';
+    return `<${tag} class="kpi${o.ativo?' ativo':''}${o.on?' clicavel':''}" style="--c:${o.cor}" ${o.on?`onclick="${o.on}"`:''}>
+      <span class="kpi-n">${o.n}</span><span class="kpi-l">${o.ic||'<i class="dot dot-lg"></i>'}${o.label}</span></${fim}>`;
+  }
+  // mantém a rolagem (vertical e da tabela) quando a tela é redesenhada
+  function aceKeep(fn){
+    const sc=view.scrollTop, t=document.querySelector('.table-scroll'), sl=t?t.scrollLeft:0;
+    fn();
+    view.scrollTop=sc; const t2=document.querySelector('.table-scroll'); if(t2) t2.scrollLeft=sl;
+  }
+
+  /* --- formulário do PCP: botão "Categorizar" + prioridade por item --- */
+  function aceCatCelula(it,i){
+    const tag=catDe(it)?catTag(it):'<span class="cat-vz">—</span>';
+    return aceCatModo
+      ? `<div class="cat-cel"><button type="button" class="bol ${aceCatSel.has(i)?'on':''}" title="Selecionar para categorizar" aria-label="Selecionar item ${i+1}" onclick="aceCatTog(${i},this)"></button>${tag}</div>`
+      : `<div class="cat-cel">${tag}</div>`;
+  }
+  function aceCatBarraHtml(){
+    return `<div class="cat-bar" id="aceCatBar">
+      <div class="cb-t"><b id="aceCatN">${aceCatSel.size}</b> item(ns) marcado(s) — toque na categoria para aplicar:</div>
+      <div class="cb-chips">${Object.entries(ACE_CATS).map(([k,c])=>`<button type="button" class="cat-btn" style="--c:${c.cor}" onclick="aceCatAplicar('${k}')">${escHtml(c.label)}</button>`).join('')}
+        <button type="button" class="cat-btn" onclick="aceCatAplicar('')">Remover categoria</button></div>
+      <div class="cb-ac"><button type="button" class="btn btn-ghost btn-sm" onclick="aceCatTodos(true)">Marcar todos</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="aceCatTodos(false)">Limpar</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="aceCatToggleModo()">Concluir</button></div></div>`;
+  }
+  function aceCatToggleModo(){ aceCatModo=!aceCatModo; aceCatSel=new Set(); aceKeep(renderACEForm); }
+  function aceCatTog(i,btn){
+    if(aceCatSel.has(i)) aceCatSel.delete(i); else aceCatSel.add(i);
+    btn.classList.toggle('on',aceCatSel.has(i));
+    const n=document.getElementById('aceCatN'); if(n) n.textContent=aceCatSel.size;
+  }
+  function aceCatTodos(on){
+    aceCatSel=new Set();
+    if(on) ace.itens.forEach((it,i)=>{ if(itemPreenchido(it)) aceCatSel.add(i); });
+    aceKeep(renderACEForm);
+  }
+  function aceCatAplicar(k){
+    if(!aceCatSel.size){ toast('Marque a bolinha dos itens primeiro'); return; }
+    if(k && !ACE_CATS[k]) return;
+    const n=aceCatSel.size;
+    aceCatSel.forEach(i=>{ const it=ace.itens[i]; if(!it) return; if(k) it.cat=k; else delete it.cat; });
+    aceCatSel=new Set();
+    aceKeep(renderACEForm);
+    toast(n+' item(ns): '+(k?ACE_CATS[k].label:'categoria removida'));
+  }
+  function aceFormPrioBtn(it,i){
+    const st=ST_ITEM[it.status]?it.status:'pendente';
+    if(st!=='pendente') return `<span class="dot dot-lg" style="background:${ST_ITEM[st].cor};margin-right:8px;vertical-align:middle" title="${ST_ITEM[st].label} — status definido pelo Estoque"></span>`;
+    const pr=!!it.prio;
+    return `<button type="button" class="icon-btn sc-pbtn ${pr?'':'off'}" title="${pr?'Remover prioridade':'Marcar prioridade'}" onclick="aceFormPrio(${i})">${ALERTA_SVG.replace(' class="sc-alerta"','')}</button>`;
+  }
+  function aceFormPrio(i){ const it=ace.itens[i]; if(!it) return; it.prio=!it.prio; aceKeep(renderACEForm); }
 
   function textoBuscaAce(a){
     return [a.cliente,a.ambiente,a.numero,a.lote,a.consultor,a.arq,
@@ -4387,44 +4772,67 @@
   }
   let buscaPcp='', buscaEst='';
 
+  let fPcp='';
+  function listaAcePcp(){
+    let l=filtrarLista(ACES,buscaPcp);
+    if(fPcp) l=l.filter(a=>stPcp(a)===fPcp);
+    return l;
+  }
   function renderACE(){
-    ace=null; TELA='aces';
-    const lista=filtrarLista(ACES,buscaPcp);
+    ace=null; TELA='aces'; aceRowAtiva=-1;
     const total=ACES.length;
-    view.innerHTML=`<div class="page">
+    const lib=ACES.filter(a=>stPcp(a)==='liberado'), anal=total-lib.length;
+    let pend=0, prio=0;
+    aceTodosItens(lib).forEach(o=>{ if(o.st==='pendente'){ pend++; if(o.it.prio) prio++; } });
+    const chips=[['','Todas',total],['analise','Em análise',anal],['liberado','Liberadas',lib.length]];
+    view.innerHTML=`<div class="page ace2">
       <div class="page-head">
-        <div><h1 class="page-title">Solicitação de Acessórios (ACE)</h1><p class="page-sub">${total} solicitação(ões)</p></div>
+        <div><h1 class="page-title">Solicitação de Acessórios (ACE)</h1>
+          <p class="page-sub">${total} solicitação(ões) · depois de liberada, o andamento de cada item aparece aqui</p></div>
         <button class="btn btn-primary" onclick="novaACE()">+ Nova solicitação</button>
       </div>
       ${total?`
-      <div class="toolbar"><input class="search" id="buscaAcePcp" value="${buscaPcp.replace(/"/g,'&quot;')}"
-        placeholder="Buscar por cliente, ambiente, nº projeto, lote, consultor ou data..."
-        oninput="buscaPcp=this.value; atualizarListaPcp()"></div>
-      <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:30px"></th><th>Cliente</th><th>Ambiente</th><th>Nº Projeto</th><th>Lote</th><th>Consultor(a)</th><th>Data</th><th>Status</th><th>Itens</th><th></th></tr></thead>
-        <tbody id="acePcpBody">${linhasAcePcp(lista)}</tbody></table></div>`
+      <div class="kpis">
+        ${kpiCard({cor:'#8a8a92',label:'Em análise',n:anal,on:"fPcp=(fPcp==='analise'?'':'analise');renderACE()",ativo:fPcp==='analise'})}
+        ${kpiCard({cor:'#2f6fb5',label:'Liberadas p/ o almoxarifado',n:lib.length,on:"fPcp=(fPcp==='liberado'?'':'liberado');renderACE()",ativo:fPcp==='liberado'})}
+        ${kpiCard({cor:ST_ITEM.pendente.cor,label:'Itens pendentes',n:pend})}
+        ${kpiCard({cor:'#e0a800',label:'Itens com prioridade',n:prio,ic:ALERTA_SVG})}
+      </div>
+      <div class="inv-filtros">
+        <input class="search" id="buscaAcePcp" value="${buscaPcp.replace(/"/g,'&quot;')}"
+          placeholder="Buscar por cliente, ambiente, nº projeto, lote, consultor ou data..."
+          oninput="buscaPcp=this.value; atualizarListaPcp()">
+        <div class="chips-f">${chips.map(([k,t,n])=>`<button class="chip-f ${fPcp===k?'on':''}" onclick="fPcp='${k}';renderACE()">${t} · ${n}</button>`).join('')}</div>
+      </div>
+      <div class="table-wrap"><table class="tbl tbl-sol">
+        <thead><tr><th>Cliente / Ambiente</th><th style="width:130px">Projeto / Lote</th><th style="width:150px">Consultor(a)</th><th style="width:92px">Data</th>
+          <th style="width:230px">Andamento dos itens</th><th style="width:200px">Liberação</th><th style="width:150px"></th></tr></thead>
+        <tbody id="acePcpBody">${linhasAcePcp(listaAcePcp())}</tbody></table></div>`
       :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.pcp}</svg></div>
         <h3>Nenhuma solicitação</h3><p>Crie uma solicitação de acessórios vinculada a um cliente e ambiente.</p>
         <button class="btn btn-primary" onclick="novaACE()">+ Nova solicitação</button></div>`}
     </div>`;
   }
   function linhasAcePcp(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="10">Nenhum resultado para a busca</td></tr>';
+    if(!lista.length) return '<tr><td class="td-empty" colspan="7">Nenhum resultado</td></tr>';
     return lista.map(a=>{
-      const sp=stPcp(a), p=ST_PCP[sp];
-      return `<tr>
-        <td><span class="dot dot-lg" style="background:${p.cor}" title="${p.label}"></span></td>
-        <td class="cel-nome">${escHtml(a.cliente)}</td>
-        <td>${escHtml(a.ambiente)}</td>
-        <td>${escHtml(a.numero)||'—'}</td>
-        <td>${escHtml(a.lote)||'—'}</td>
+      const sp=stPcp(a), p=ST_PCP[sp], r=resumoItens(a), lib=sp==='liberado';
+      const feita=lib && r.n>0 && r.c.entregue===r.n;
+      const pr=lib && r.prio>0;
+      const and=(lib && r.n)
+        ? `${progBarra(r)}<div class="cel-sub">${r.c.entregue}/${r.n} separados e entregues${r.c.pendente?` · ${r.c.pendente} pendente(s)`:''}</div>`
+        : `<span class="cel-sub">${r.n} item(ns)${lib?'':' · aguardando liberação'}</span>`;
+      return `<tr class="${pr?'sc-prio':''}${feita?' ace-feita':''}">
+        <td>${pr?`<span title="${r.prio} item(ns) com prioridade">${ALERTA_SVG}</span>`:''}<span class="cel-nome">${escHtml(a.cliente)}</span><div class="cel-sub">${escHtml(a.ambiente)}</div></td>
+        <td>${escHtml(a.numero)||'—'}<div class="cel-sub">${a.lote?'Lote '+escHtml(a.lote):'sem lote'}</div></td>
         <td>${escHtml(a.consultor)||'—'}</td>
         <td>${fmtData(a.data)}</td>
-        <td><select class="st-sel" onchange="mudarStatusPcp('${a.id}',this.value)">
+        <td>${and}</td>
+        <td><select class="st-sel st-lib" style="--c:${p.cor}" onchange="mudarStatusPcp('${a.id}',this.value)">
           ${Object.entries(ST_PCP).map(([k,v])=>`<option value="${k}" ${sp===k?'selected':''}>${v.label}</option>`).join('')}
         </select></td>
-        <td>${(a.itens||[]).filter(i=>i.produto).length}</td>
         <td class="acoes">
+          <button class="icon-btn" title="Acompanhar itens" onclick="verAce('${a.id}','pcp')">${EYE_SVG}</button>
           <button class="icon-btn" title="Imprimir / PDF" onclick="imprimirACE('${a.id}')">${FICHA_SVG}</button>
           <button class="icon-btn" title="Editar" onclick="editarACE('${a.id}')">${EDIT_SVG}</button>
           <button class="icon-btn danger" title="${sp==='analise'?'Excluir':'Excluir (já liberada — confirmação reforçada)'}" onclick="excluirACE('${a.id}')">${TRASH_SVG}</button>
@@ -4433,7 +4841,7 @@
   }
   function atualizarListaPcp(){
     const b=document.getElementById('acePcpBody');
-    if(b) b.innerHTML=linhasAcePcp(filtrarLista(ACES,buscaPcp));
+    if(b) b.innerHTML=linhasAcePcp(listaAcePcp());
   }
   function mudarStatusPcp(id,st){
     const a=ACES.find(x=>x.id===id); if(a && stPcp(a)===st) return;
@@ -4441,11 +4849,18 @@
       .then(()=>toast(st==='liberado'?'Liberado para o almoxarifado':'Voltou para análise'))
       .catch(e=>toast('Erro: '+e.message));
   }
-  function novaACE(){ ace={id:null,painelId:null,clienteNome:'',ambienteNome:'',numero:'',lote:'',consultor:'',arq:'',statusPcp:'analise',data:new Date().toISOString().slice(0,10),itens:[linhaVazia(),linhaVazia(),linhaVazia()]}; renderACEForm(); }
+  function novaACE(){
+    aceCatModo=false; aceCatSel=new Set();
+    ace={id:null,painelId:null,clienteNome:'',ambienteNome:'',numero:'',lote:'',consultor:'',arq:'',statusPcp:'analise',data:new Date().toISOString().slice(0,10),itens:[linhaVazia(),linhaVazia(),linhaVazia()]};
+    renderACEForm();
+  }
   function editarACE(id){ const a=ACES.find(x=>x.id===id); if(!a) return;
-    ace={id:a.id,painelId:a.painelId||null,clienteNome:a.cliente,ambienteNome:a.ambiente,numero:a.numero,lote:a.lote||'',consultor:a.consultor,arq:a.arq,statusPcp:stPcp(a),data:a.data,itens:(a.itens||[]).map(i=>({...i}))};
+    aceCatModo=false; aceCatSel=new Set();
+    // _k = chave para reencontrar o item no banco ao salvar (o status é do Estoque e não pode ser sobrescrito pela tela)
+    const its=aceLista(a).map(o=>({...o.it, iid:o.it.iid||novoIid(), _k:(o.it.iid||('ix:'+o.ix)), status:stItem(a,o.it)}));
+    ace={id:a.id,painelId:a.painelId||null,clienteNome:a.cliente,ambienteNome:a.ambiente,numero:a.numero,lote:a.lote||'',consultor:a.consultor,arq:a.arq,statusPcp:stPcp(a),data:a.data,itens:its};
     if(!ace.itens.length) ace.itens=[linhaVazia()]; renderACEForm(); }
-  function excluirACE(id){
+    function excluirACE(id){
     const a=ACES.find(x=>x.id===id);
     if(!a){ toast('Solicitação não encontrada'); return; }
     const liberada = stPcp(a)!=='analise';
@@ -4489,15 +4904,17 @@
         : `<p class="aviso">Nenhuma linha desse cliente no <b>Painel de Controle</b>.</p>`)
       : `<p class="aviso">Selecione um cliente primeiro.</p>`;
 
-    const rows=ace.itens.map((it,i)=>`<tr>
+    const rows=ace.itens.map((it,i)=>`<tr data-i="${i}" class="${(it.prio&&(!it.status||it.status==='pendente'))?'sc-prio':''}${i===aceRowAtiva?' ace-ativa':''}">
+      <td class="ace-cat-td">${aceCatCelula(it,i)}</td>
       ${ACE_COLS.map(col=>{
-        const v=(it[col.k]||'').replace(/"/g,'&quot;');
-        if(col.ac) return `<td><input class="cell-in${col.c?' ctr':''} cell-ac" data-r="${i}" data-ac="${col.ac}" value="${v}" autocomplete="off"
-          oninput="ace.itens[${i}]['${col.k}']=this.value; acItemBusca(this)"
-          onfocus="acItemBusca(this)" onblur="acItemBlur(this)" onkeydown="acItemTecla(event,this)"></td>`;
-        return `<td><input class="cell-in${col.c?' ctr':''}" value="${v}" oninput="ace.itens[${i}]['${col.k}']=this.value"></td>`;
+        if(col.foto) return `<td>${aceFotoCelula(it,i)}</td>`;
+        const v=escHtml(it[col.k]||''), cls='cell-in'+(col.c?' ctr':'');
+        if(col.ac) return `<td><textarea rows="1" spellcheck="false" class="${cls} cell-ac" data-r="${i}" data-ac="${col.ac}" autocomplete="off"
+          oninput="aceCelIn(this,${i},'${col.k}'); acItemBusca(this)"
+          onfocus="acItemBusca(this)" onblur="acItemBlur(this)" onkeydown="acItemTecla(event,this)">${v}</textarea></td>`;
+        return `<td><textarea rows="1" spellcheck="false" class="${cls}" oninput="aceCelIn(this,${i},'${col.k}')" onkeydown="aceCelTecla(event,this)">${v}</textarea></td>`;
       }).join('')}
-      <td class="acoes"><button class="icon-btn danger" title="Remover linha" onclick="aceRemLinha(${i})">${TRASH_SVG}</button></td>
+      <td class="acoes">${aceFormPrioBtn(it,i)}<button class="icon-btn danger" title="Remover linha" onclick="aceRemLinha(${i})">${TRASH_SVG}</button></td>
     </tr>`).join('');
 
     view.innerHTML=`<div class="page page-wide">
@@ -4515,20 +4932,24 @@
           <div class="fld"><label>Consultor(a)</label><input value="${(ace.consultor||'').replace(/"/g,'&quot;')}" oninput="ace.consultor=this.value"></div>
           <div class="fld"><label>Arq.</label><input value="${(ace.arq||'').replace(/"/g,'&quot;')}" oninput="ace.arq=this.value"></div>
           <div class="fld"><label>Data</label><input type="date" value="${ace.data||''}" oninput="ace.data=this.value"></div>
-          <div class="fld"><label>Status da solicitação</label>
+          <div class="fld"><label>Liberação para o almoxarifado</label>
             <select onchange="ace.statusPcp=this.value">
               ${Object.entries(ST_PCP).map(([k,v])=>`<option value="${k}" ${stPcp(ace)===k?'selected':''}>${v.label}</option>`).join('')}
             </select></div>
         </div>
       </section>
 
-      <section class="fs"><h3 class="fs-title">Itens</h3>
+      <section class="fs"><div class="fs-head"><h3 class="fs-title" style="margin:0">Itens</h3>
+          <button type="button" class="btn ${aceCatModo?'btn-primary':'btn-ghost'} btn-sm" onclick="aceCatToggleModo()">${aceCatModo?'Sair de Categorizar':'Categorizar'}</button></div>
+        ${aceCatModo?aceCatBarraHtml():''}
         <div class="table-wrap table-scroll"><table class="tbl tbl-ace">
-          <thead><tr>${ACE_COLS.map(c=>`<th style="width:${c.w}">${c.t}</th>`).join('')}<th></th></tr></thead>
+          <thead><tr><th style="width:130px">Categoria</th>${ACE_COLS.map(c=>`<th style="width:${c.w}">${c.t}</th>`).join('')}<th style="width:74px"></th></tr></thead>
           <tbody>${rows}</tbody></table></div>
-        <div style="margin-top:12px;display:flex;gap:8px">
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <button class="btn btn-ghost" onclick="aceAddLinha(1)">+ Adicionar linha</button>
           <button class="btn btn-ghost" onclick="aceAddLinha(5)">+ 5 linhas</button>
+          <span class="ace-dica">Foto por print: clique na linha do item e use <b>Ctrl+V</b> (ou o botão de colar).</span>
+          <input type="file" id="aceFotoFile" accept="image/*" hidden onchange="aceFotoEnviar(this)">
         </div>
       </section>
 
@@ -4540,6 +4961,8 @@
         </div>
       </div>
     </div>`;
+    aceAutoTodas();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(TELA==='form') aceAutoTodas(); });
     if(!ace.clienteNome) setTimeout(()=>{ const i=document.getElementById('aceAc'); if(i) i.focus(); },30);
   }
   let aceResNomes=[];
@@ -4603,12 +5026,14 @@
     if(!it||!input) return;
     const i=parseInt(input.dataset.r,10);
     ace.itens[i].codigo=it.codigo; ace.itens[i].produto=it.descricao; ace.itens[i].unidade=it.unidade;
-    const tr=input.closest('tr'), ins=tr.querySelectorAll('input.cell-in');
+    const tr=input.closest('tr'), ins=tr.querySelectorAll('.cell-in');
     ACE_COLS.forEach((col,ci)=>{ if(['codigo','produto','unidade'].includes(col.k) && ins[ci]) ins[ci].value=ace.itens[i][col.k]||''; });
+    aceAutoRow(tr);
     acItemFechar();
     const idxQ=ACE_COLS.findIndex(c=>c.k==='qtde'); if(ins[idxQ]) ins[idxQ].focus();
   }
   function acItemTecla(ev,input){
+    if(ev.key==='Enter') ev.preventDefault();      // a célula é uma linha só: Enter não quebra linha
     const c=acCaixa();
     if(c.style.display!=='block'||!acItemLista.length){
       if(ev.key==='Enter') acPreencheExato(input);
@@ -4633,40 +5058,303 @@
       : INSUMOS.find(x=>String(x.descricao).toLowerCase()===v.toLowerCase());
     if(!it) return;
     ace.itens[i].codigo=it.codigo; ace.itens[i].produto=it.descricao; ace.itens[i].unidade=it.unidade;
-    const ins=input.closest('tr').querySelectorAll('input.cell-in');
+    const ins=input.closest('tr').querySelectorAll('.cell-in');
     ACE_COLS.forEach((col,ci)=>{ if(['codigo','produto','unidade'].includes(col.k) && ins[ci]) ins[ci].value=ace.itens[i][col.k]||''; });
+    aceAutoRow(input.closest('tr'));
   }
   function acItemBlur(input){ setTimeout(()=>{ acPreencheExato(input); acItemFechar(); },130); }
 
+  /* --- foto do item (ACE) ---
+     Cada item pode ter 1 foto. Vai para o Cloudinary (mesmo envio das pastas de projeto)
+     e só a URL fica em aces/{id}/itens[n]/foto. Aparece no PDF e na visão do Estoque. */
+  const ACE_CAM_SVG='<svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg>';
+  const aceFotoPend=new WeakSet(); let aceFotoAlvo=null;
+  function aceUrl(u){ u=String(u||''); return /^https:\/\//i.test(u) ? escHtml(u).replace(/"/g,'%22') : ''; }
+  /* Tamanhos da foto na solicitação: alt = altura máx. na folha (px), col = largura da coluna Foto (%), w = largura pedida ao Cloudinary */
+  const ACE_TAM={ p:{l:'P', n:'Pequena',      alt:70,  col:9,  w:520},
+                  m:{l:'M', n:'Média',        alt:110, col:13, w:700},
+                  g:{l:'G', n:'Grande',       alt:150, col:17, w:900},
+                  x:{l:'GG',n:'Extra grande', alt:200, col:23, w:1100},
+                  xg:{l:'XG',n:'Gigante (linha própria)', alt:300, col:0, w:1600},   // xg: a foto vai para uma linha abaixo do item, em largura total
+                  fi:{l:'<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M1 1h8v10H1z"/></svg>',n:'Folha inteira', alt:0, col:0, w:1800} };   // fi: a foto ocupa uma folha inteira no PDF
+  function aceTam(it){ return (it && ACE_TAM[it.fotoTam]) ? it.fotoTam : 'm'; }
+  function aceFotoPdf(u,t){ return String(u).replace('/upload/','/upload/w_'+ACE_TAM[t||'m'].w+',c_limit,q_auto/'); }
+  function aceFotoGrande(u){ return String(u).replace('/upload/','/upload/w_1600,c_limit,q_auto,f_auto/'); }   // visualizador
+  function aceFotoBaixar(u){ return String(u).replace('/upload/','/upload/fl_attachment/'); }                // baixa sem sair do sistema
+  function aceColsLarg(tam){   // folha: a coluna Foto cresce e as demais encolhem na mesma proporção (soma = 100%)
+    const fw=ACE_TAM[tam].col, soma=ACE_COLS.filter(c=>!c.foto).reduce((x,c)=>x+parseFloat(c.w),0), f=(100-fw)/soma;
+    return ACE_COLS.map(c=>c.foto?fw+'%':(parseFloat(c.w)*f).toFixed(2)+'%');
+  }
+  const ACE_PASTE_SVG='<svg viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="2"/><path d="M9 4.5V3.5h6v1"/><path d="M8.5 12.5h7M8.5 16h5"/></svg>';
+  function aceFotoCelula(it,i){
+    if(aceFotoPend.has(it)) return '<div class="ace-foto"><span class="ace-foto-env">Enviando…</span></div>';
+    const dnd=`ondragover="event.preventDefault();this.classList.add('arrasta')" ondragleave="this.classList.remove('arrasta')" ondrop="aceFotoSolta(event,${i})"`;
+    if(it.foto && aceUrl(it.foto)){
+      const t=aceTam(it);
+      return `<div class="ace-foto" data-t="${t}" tabindex="0" title="Clique aqui e use Ctrl+V para trocar a foto por um print" ${dnd}><span class="ace-foto-th">
+        <button type="button" class="ace-foto-img" title="Ampliar foto" onclick="aceFotoAbrir('form',${i})"><img src="${aceUrl(desigThumb(it.foto))}" alt="Foto do item" loading="lazy"></button>
+        <button type="button" class="ace-foto-x" title="Remover foto" onclick="aceFotoRem(${i})">×</button></span>
+        <span class="ace-xg-nota n-xg">↓ linha abaixo</span><span class="ace-xg-nota n-fi">folha inteira</span>
+        <div class="ace-tam" title="Tamanho da foto na solicitação">${Object.keys(ACE_TAM).map(k=>`<button type="button" data-k="${k}" class="${k===t?'on':''}" title="Foto ${ACE_TAM[k].n.toLowerCase()} na solicitação${k==='fi'?' (ocupa uma folha inteira no PDF)':''}" onclick="aceFotoTam(${i},'${k}',this)">${ACE_TAM[k].l}</button>`).join('')}</div></div>`;
+    }
+    return `<div class="ace-foto" tabindex="0" title="Clique aqui e use Ctrl+V para colar um print (ou arraste uma imagem)" ${dnd}><div class="ace-foto-bts">
+      <button type="button" class="ace-foto-add" title="Enviar arquivo de foto" onclick="aceFotoEscolher(${i})">${ACE_CAM_SVG}</button>
+      <button type="button" class="ace-foto-add ace-foto-colar" title="Colar print (da área de transferência)" onclick="aceFotoColar(${i})">${ACE_PASTE_SVG}</button></div></div>`;
+  }
+  function aceFotoTam(i,k,btn){
+    const it=ace&&ace.itens[i]; if(!it||!ACE_TAM[k]) return;
+    it.fotoTam=k;
+    const box=btn.closest('.ace-foto'); if(!box) return;
+    box.dataset.t=k; box.querySelectorAll('.ace-tam button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+  }
+  function aceFotoEscolher(i){
+    const it=ace&&ace.itens[i]; if(!it) return;
+    aceFotoAlvo=it; const f=document.getElementById('aceFotoFile'); if(f) f.click();
+  }
+  function aceFotoEnviar(inp){
+    const f=inp.files&&inp.files[0]; inp.value='';
+    const it=aceFotoAlvo; aceFotoAlvo=null;
+    if(!f||!it) return;
+    return aceFotoProcessar(it,f);
+  }
+  async function aceFotoProcessar(it,f){
+    if(!f||!it) return;
+    if(!/^image\//.test(f.type)){ toast('Selecione um arquivo de imagem'); return; }
+    aceFotoPend.add(it); aceKeep(renderACEForm);
+    try{
+      const blob=await desigPrepararFoto(f);              // lado maior até 1800 px, JPEG 82%
+      it.foto=await desigCloud(blob,'acessorio.jpg'); if(!ACE_TAM[it.fotoTam]) it.fotoTam='m';
+      toast('Foto anexada');
+    }catch(e){ toast('Erro ao enviar a foto: '+(e&&e.message?e.message:e)); }
+    aceFotoPend.delete(it);
+    if(TELA==='form' && ace && ace.itens.includes(it)) aceKeep(renderACEForm);
+  }
+  /* --- foto por print: Ctrl+V na linha, botão "colar" ou arrastar a imagem --- */
+  let aceRowAtiva=-1;
+  function aceRowSet(i){
+    if(i===aceRowAtiva) return; aceRowAtiva=i;
+    document.querySelectorAll('.tbl-ace tbody tr').forEach(tr=>tr.classList.toggle('ace-ativa', Number(tr.dataset.i)===i));
+  }
+  function aceRowDoEl(el){ const tr=el&&el.closest?el.closest('.tbl-ace tbody tr'):null; return (tr&&tr.dataset.i!=null)?Number(tr.dataset.i):-1; }
+  document.addEventListener('focusin',e=>{ const i=aceRowDoEl(e.target); if(i>=0) aceRowSet(i); });
+  document.addEventListener('mousedown',e=>{ const i=aceRowDoEl(e.target); if(i>=0) aceRowSet(i); },true);
+  function aceFotoColarArq(f,idx){
+    const it=ace&&ace.itens[idx]; if(!it){ toast('Clique na linha do item e cole de novo (Ctrl+V)'); return; }
+    if(it.foto && !confirm('Este item já tem foto. Substituir pelo print colado?')) return;
+    return aceFotoProcessar(it,f);
+  }
+  document.addEventListener('paste',e=>{
+    if(TELA!=='form' || !ace) return;
+    const fo=document.getElementById('fichaOverlay'); if((fo&&fo.classList.contains('open')) || aceLb) return;
+    const cd=e.clipboardData; if(!cd) return;
+    let img=[...(cd.files||[])].find(f=>/^image\//.test(f.type));
+    if(!img) for(const x of (cd.items||[])){ if(x.kind==='file' && /^image\//.test(x.type)){ img=x.getAsFile(); break; } }
+    if(!img) return;
+    const el=document.activeElement;
+    // colar texto copiado (ex.: do Excel, que também leva uma imagem) continua colando o texto
+    if(el && /^(INPUT|TEXTAREA)$/.test(el.tagName) && (cd.getData('text/plain')||'').trim()!=='') return;
+    e.preventDefault();
+    let idx=aceRowDoEl(el); if(idx<0) idx=aceRowAtiva;
+    if(idx<0 || !ace.itens[idx]){ toast('Clique na linha do item (ou no campo da foto) e cole com Ctrl+V'); return; }
+    aceFotoColarArq(img,idx);
+  });
+  async function aceFotoColar(i){
+    const it=ace&&ace.itens[i]; if(!it) return; aceRowSet(i);
+    if(!navigator.clipboard || !navigator.clipboard.read){ toast('Neste navegador, clique na linha e use Ctrl+V'); return; }
+    try{
+      const lista=await navigator.clipboard.read();
+      for(const ci of lista){
+        const tp=ci.types.find(t=>/^image\//.test(t));
+        if(tp){ const blob=await ci.getType(tp); return aceFotoColarArq(new File([blob],'print.'+tp.split('/')[1],{type:tp}),i); }
+      }
+      toast('Não há imagem copiada. Tire o print (Win+Shift+S) e tente de novo');
+    }catch(e){ toast('Não consegui ler a área de transferência — clique na linha e use Ctrl+V'); }
+  }
+  function aceFotoSolta(ev,i){
+    ev.preventDefault(); ev.currentTarget.classList.remove('arrasta');
+    const f=[...((ev.dataTransfer&&ev.dataTransfer.files)||[])].find(x=>/^image\//.test(x.type));
+    if(!f){ toast('Solte um arquivo de imagem'); return; }
+    aceFotoColarArq(f,i);
+  }
+
+  /* --- células que crescem: a linha inteira fica visível enquanto você escreve --- */
+  function aceAutoRow(tr){
+    if(!tr) return; const tas=tr.querySelectorAll('textarea.cell-in'); if(!tas.length) return;
+    let h=0; tas.forEach(t=>{ t.style.height='auto'; h=Math.max(h,t.scrollHeight+2); });
+    tas.forEach(t=>{ t.style.height=h+'px'; });      // todas as células da linha ficam da mesma altura
+  }
+  function aceAutoTodas(){ document.querySelectorAll('.tbl-ace tbody tr').forEach(aceAutoRow); }
+  function aceCelIn(el,i,k){
+    if(/[\r\n]/.test(el.value)) el.value=el.value.replace(/\s*[\r\n]+\s*/g,' ');
+    if(ace&&ace.itens[i]) ace.itens[i][k]=el.value;
+    aceAutoRow(el.closest('tr'));
+  }
+  function aceCelTecla(ev,el){      // Enter não quebra linha: desce para a mesma coluna da linha de baixo
+    if(ev.key!=='Enter') return;
+    ev.preventDefault(); if(ev.shiftKey) return;
+    const tr=el.closest('tr'), ci=[...tr.querySelectorAll('.cell-in')].indexOf(el), nx=tr.nextElementSibling;
+    if(nx){ const al=nx.querySelectorAll('.cell-in')[ci]; if(al) al.focus(); }
+  }
+  let aceResizeT=null;
+  window.addEventListener('resize',()=>{ if(TELA!=='form') return; clearTimeout(aceResizeT); aceResizeT=setTimeout(aceAutoTodas,120); });
+  function aceFotoRem(i){ if(!ace||!ace.itens[i]) return; ace.itens[i].foto=''; delete ace.itens[i].fotoTam; aceKeep(renderACEForm); }
+  function aceFotoEnviando(){ return !!(ace && ace.itens.some(i=>aceFotoPend.has(i))); }
+
+  /* --- visualizador de fotos (dentro do sistema, sem abrir link externo) ---
+     Navega entre as fotos da mesma solicitação: setas ← →, Esc fecha, Z (ou clique na foto) amplia. */
+  let aceLb=null;
+  const LB_SVG={
+    zoom:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M11 8.5v5M8.5 11h5"/></svg>',
+    down:'<svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg>',
+    x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
+  function aceFotoBase(ctx){
+    if(ctx==='form') return ace?ace.itens:[];
+    const a=ACES.find(x=>x.id===ctx);
+    return a?aceLista(a).map(o=>o.it):[];
+  }
+  function aceFotoAbrir(ctx,i){
+    const lista=aceFotoBase(ctx).map((it,ix)=>({it,ix})).filter(o=>aceUrl(o.it.foto));
+    const k=lista.findIndex(o=>o.ix===i); if(k<0) return;
+    aceLb={lista,k,zoom:false};
+    let ov=document.getElementById('aceLb');
+    if(!ov){
+      ov=document.createElement('div'); ov.id='aceLb'; ov.className='ace-lb';
+      ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Visualizador de foto');
+      ov.addEventListener('click',e=>{ if(e.target===ov || e.target.classList.contains('ace-lb-stage')) aceFotoFechar(); });
+      let x0=null;
+      ov.addEventListener('touchstart',e=>{ x0=e.touches.length===1?e.touches[0].clientX:null; },{passive:true});
+      ov.addEventListener('touchend',e=>{ if(x0===null||!aceLb||aceLb.zoom) return; const dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>60) aceFotoNav(dx<0?1:-1); },{passive:true});
+      document.body.appendChild(ov);
+    }
+    aceFotoDesenha(); ov.classList.add('open');
+    document.addEventListener('keydown',aceFotoTecla,true);
+    const f=ov.querySelector('.ace-lb-btn.fechar'); if(f) f.focus();
+  }
+  function aceFotoDesenha(){
+    const ov=document.getElementById('aceLb'); if(!ov||!aceLb) return;
+    const {lista,k}=aceLb, it=lista[k].it, t=aceTam(it), n=lista.length;
+    const titulo=[it.codigo,it.produto].filter(s=>(s||'').trim()).join(' · ')||'Foto do item';
+    const det=[it.local&&'Local: '+it.local, it.cor&&'Cor: '+it.cor, it.qtde&&'Qtde: '+it.qtde].filter(Boolean).join('   ·   ');
+    ov.innerHTML=`
+      <div class="ace-lb-top">
+        <div class="ace-lb-tt"><b>${escHtml(titulo)}</b>${det?`<span>${escHtml(det)}</span>`:''}</div>
+        <div class="ace-lb-tools">
+          ${n>1?`<span class="ace-lb-cnt">${k+1} / ${n}</span>`:''}
+          <button type="button" class="ace-lb-btn" title="Ampliar / ajustar (Z)" onclick="aceFotoZoom()">${LB_SVG.zoom}</button>
+          <a class="ace-lb-btn" href="${aceUrl(aceFotoBaixar(it.foto))}" download title="Baixar foto">${LB_SVG.down}</a>
+          <button type="button" class="ace-lb-btn fechar" title="Fechar (Esc)" onclick="aceFotoFechar()">${LB_SVG.x}</button>
+        </div>
+      </div>
+      <div class="ace-lb-stage">
+        <img src="${aceUrl(aceFotoGrande(it.foto))}" alt="${escHtml(titulo)}" onclick="aceFotoZoom()" onload="this.classList.add('ok')" onerror="this.classList.add('ok');this.alt='Não foi possível carregar a foto'">
+        <div class="ace-lb-load"></div>
+      </div>
+      ${n>1?`<button type="button" class="ace-lb-nav ant" title="Anterior (←)" onclick="aceFotoNav(-1)">&#8249;</button><button type="button" class="ace-lb-nav prox" title="Próxima (→)" onclick="aceFotoNav(1)">&#8250;</button>`:''}
+      <div class="ace-lb-foot">Tamanho na solicitação: <b>${ACE_TAM[t].n}</b></div>`;
+  }
+  function aceFotoNav(d){ if(!aceLb) return; const n=aceLb.lista.length; aceLb.k=(aceLb.k+d+n)%n; aceLb.zoom=false; aceFotoDesenha(); }
+  function aceFotoZoom(){ if(!aceLb) return; const s=document.querySelector('#aceLb .ace-lb-stage'); if(!s) return; aceLb.zoom=!aceLb.zoom; s.classList.toggle('zoom',aceLb.zoom); }
+  function aceFotoFechar(){
+    const ov=document.getElementById('aceLb'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; }
+    document.removeEventListener('keydown',aceFotoTecla,true); aceLb=null;
+  }
+  function aceFotoTecla(e){
+    if(!aceLb) return;
+    if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); aceFotoFechar(); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); aceFotoNav(-1); }
+    else if(e.key==='ArrowRight'){ e.preventDefault(); aceFotoNav(1); }
+    else if(e.key==='z'||e.key==='Z'){ e.preventDefault(); aceFotoZoom(); }
+  }
+
   function aceAddLinha(n){ for(let i=0;i<n;i++) ace.itens.push(linhaVazia()); renderACEForm(); }
-  function aceRemLinha(i){ ace.itens.splice(i,1); if(!ace.itens.length) ace.itens.push(linhaVazia()); renderACEForm(); }
+  function aceRemLinha(i){ aceCatSel=new Set(); ace.itens.splice(i,1); if(!ace.itens.length) ace.itens.push(linhaVazia()); renderACEForm(); }
   function salvarACE(){
+    if(aceFotoEnviando()){ toast('Aguarde o envio da foto terminar'); return; }
     if(!ace.clienteNome){ toast('Selecione o cliente'); return; }
     if(!ace.ambienteNome){ toast('Selecione o ambiente'); return; }
+    const antigo=ace.id?ACES.find(x=>x.id===ace.id):null;
+    // O status de cada item é do Estoque: vale o que está no banco AGORA, não o que estava na tela quando o formulário abriu.
+    const noBanco={};
+    if(antigo) aceLista(antigo).forEach(o=>{ noBanco[o.it.iid||('ix:'+o.ix)]=o.it; });
+    const agora=new Date().toISOString();
+    const itens=ace.itens.filter(itemPreenchido).map(it=>{
+      const o={...it}, k=o._k; delete o._k;
+      if(!o.iid) o.iid=novoIid();
+      const b=k?noBanco[k]:null;
+      if(b){
+        o.status=stItem(antigo,b);
+        const legado=!ST_ITEM[b.status];                       // item antigo: o status estava na solicitação
+        const por=b.statusPor||(legado?antigo.statusPor:''), em=b.statusEm||(legado?antigo.statusEm:'');
+        if(por) o.statusPor=por; else delete o.statusPor;
+        if(em) o.statusEm=em; else delete o.statusEm;
+      }else{
+        o.status=ST_ITEM[o.status]?o.status:'pendente';
+        if(!o.statusPor) delete o.statusPor; if(!o.statusEm) delete o.statusEm;
+      }
+      if(!ACE_CATS[o.cat]) delete o.cat;
+      if(o.prio){ if(!o.prioPor){ o.prioPor=usuarioAtual(); o.prioEm=agora; } }
+      else{ delete o.prio; delete o.prioPor; delete o.prioEm; }
+      return o;
+    });
     const data={ id:ace.id||('a'+Date.now()), painelId:ace.painelId||null,
       cliente:ace.clienteNome,
       ambiente:ace.ambienteNome, numero:ace.numero, lote:ace.lote||'', consultor:ace.consultor, arq:ace.arq, data:ace.data,
       statusPcp: stPcp(ace),
-      itens:ace.itens.filter(i=>Object.values(i).some(v=>(v||'').trim())),
-      statusEst: (ace.id ? (ACES.find(x=>x.id===ace.id)?.statusEst||'pendente') : 'pendente'),
-      criadoEm: ace.id?(ACES.find(x=>x.id===ace.id)?.criadoEm||new Date().toISOString()):new Date().toISOString() };
+      itens,
+      criadoEm: antigo?(antigo.criadoEm||agora):agora };
+    if(antigo && antigo.historico) data.historico=antigo.historico;   // antes, editar a solicitação apagava o histórico
     const editando=!!ace.id;
     db.ref('aces/'+data.id).set(data)
       .then(()=>toast(editando?'Solicitação atualizada':'Solicitação salva'))
       .catch(e=>toast('Erro ao salvar: '+e.message));
+    aceCatModo=false; aceCatSel=new Set();
     renderACE();
   }
   function previewACE(){
+    if(aceFotoEnviando()){ toast('Aguarde o envio da foto terminar'); return; }
     folhaACE({ cliente:ace.clienteNome, ambiente:ace.ambienteNome,
       numero:ace.numero, consultor:ace.consultor, arq:ace.arq, data:ace.data, itens:ace.itens });
   }
   function imprimirACE(id){ const a=ACES.find(x=>x.id===id); if(a) folhaACE(a); }
 
+  /* --- PDF: partes da folha (tabela, foto em folha inteira, tabela...) --- */
+  function aceFolhaFotoHtml(it,ult){
+    const det=[it.local&&'Local: '+it.local, it.qtde&&'Qtde: '+it.qtde, it.dimensao&&'Dimensão: '+it.dimensao, it.cor&&'Cor: '+it.cor].filter(Boolean).join('   ·   ');
+    return `<div class="fl-fi${ult?' ult':''}"><div class="fl-fi-h"><b>Foto · ${escHtml(aceItemRotulo(it))}</b>${det?`<span>${escHtml(det)}</span>`:''}</div>
+      <div class="fl-fi-f"><img src="${aceUrl(aceFotoPdf(it.foto,'fi'))}" alt=""></div></div>`;
+  }
+  /* units: [{html, n, fi:item|null, cab:'<tr grupo>', first:bool}] — a foto "Folha inteira" fecha a tabela, ocupa a página e a tabela recomeça depois */
+  function aceFolhaPartes(units,tabela){
+    let out='', buf='', un=0;
+    units.forEach((u,ix)=>{
+      if(u.cab && (u.first || !buf)) buf+=u.cab;
+      buf+=u.html; un+=u.n;
+      if(u.fi){ out+=tabela(buf,false,un); buf=''; un=0; out+=aceFolhaFotoHtml(u.fi,ix===units.length-1); }
+    });
+    if(buf || !out) out+=tabela(buf,true,un);
+    return out;
+  }
+
   function folhaACE(a){
-    const preenchidas=(a.itens||[]).filter(i=>Object.values(i).some(v=>(v||'').trim()));
-    const MIN=26; const vazias=Math.max(0,MIN-preenchidas.length);
-    const linhas=preenchidas.map(it=>`<tr>${ACE_COLS.map(col=>`<td class="${col.c?'ctr':''}${col.k==='codigo'?' fl-cod':''}${col.k==='produto'?' fl-desc':''}">${escHtml(it[col.k]||'')}</td>`).join('')}</tr>`).join('')
-      + Array.from({length:vazias}).map(()=>`<tr class="vazia">${ACE_COLS.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    const preenchidas=(Array.isArray(a.itens)?a.itens:Object.values(a.itens||{})).filter(itemPreenchido);
+    const ordem=Object.keys(ACE_TAM);
+    const fi=it=>aceUrl(it.foto)&&aceTam(it)==='fi';        // Folha inteira: a foto ocupa uma página própria
+    const noCol=it=>aceUrl(it.foto)&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';     // foto dentro da coluna Foto
+    const abaixo=it=>aceUrl(it.foto)&&aceTam(it)==='xg';    // XG: foto numa linha própria, logo abaixo do item
+    const tamMax=preenchidas.filter(noCol).reduce((m,i)=>ordem.indexOf(aceTam(i))>ordem.indexOf(m)?aceTam(i):m,'p');
+    const larg=aceColsLarg(tamMax);
+    const MIN=26;
+    const unidDe=it=>abaixo(it)?1+Math.round(ACE_TAM.xg.alt/16):noCol(it)?Math.max(1,Math.round(ACE_TAM[aceTam(it)].alt/16)):1;
+    const celFoto=it=>fi(it)?'<span class="fl-xg-ref">foto na folha seguinte</span>':abaixo(it)?'<span class="fl-xg-ref">↓ foto abaixo</span>':noCol(it)?`<img class="t-${aceTam(it)}" src="${aceUrl(aceFotoPdf(it.foto,aceTam(it)))}" alt="">`:'';
+    const units=preenchidas.map(it=>({ n:unidDe(it), fi:fi(it)?it:null,
+      html:`<tr class="${abaixo(it)?'fl-xg-pai':''}">${ACE_COLS.map(col=>col.foto?`<td class="ctr fl-foto">${celFoto(it)}</td>`:`<td class="${col.c?'ctr':''}${col.k==='codigo'?' fl-cod':''}${col.k==='produto'?' fl-desc':''}">${escHtml(it[col.k]||'')}</td>`).join('')}</tr>`
+        +(abaixo(it)?`<tr class="fl-xg"><td colspan="${ACE_COLS.length}"><div class="fl-xg-moldura"><img src="${aceUrl(aceFotoPdf(it.foto,'xg'))}" alt=""></div><div class="fl-xg-leg"><span>Foto · ${escHtml([it.codigo,it.produto].filter(v=>(v||'').trim()).join(' · ')||'item')}</span></div></td></tr>`:'') }));
+    const tabela=(body,ult,un)=>`<table class="fl-tbl">
+          <colgroup>${ACE_COLS.map((c,ci)=>`<col style="width:${larg[ci]}">`).join('')}</colgroup>
+          <thead><tr>${ACE_COLS.map(c=>`<th>${c.t}</th>`).join('')}</tr></thead>
+          <tbody>${body}${ult?Array.from({length:Math.max(0,MIN-un)}).map(()=>`<tr class="vazia">${ACE_COLS.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join(''):''}</tbody>
+        </table>`;
+    const partes=aceFolhaPartes(units,tabela);
     const ov=document.getElementById('fichaOverlay');
     ov.innerHTML=`
       <div class="ficha-actions folha-actions">
@@ -4686,11 +5374,7 @@
           <div class="fb"><b>Número:</b> ${escHtml(a.numero)}</div>
           <div class="fb"><b>Arq:</b> ${escHtml(a.arq)}</div>
         </div>
-        <table class="fl-tbl">
-          <colgroup>${ACE_COLS.map(c=>`<col style="width:${c.w}">`).join('')}</colgroup>
-          <thead><tr>${ACE_COLS.map(c=>`<th>${c.t}</th>`).join('')}</tr></thead>
-          <tbody>${linhas}</tbody>
-        </table>
+        ${partes}
         <div class="folha-foot">
           <div class="ff-l">
             <svg class="ff-mark" viewBox="0 0 60 26" aria-hidden="true">
@@ -4771,11 +5455,14 @@
       e=>toast('Erro de leitura: '+e.message));
     db.ref('aces').on('value',s=>{ ACES=objParaArray(s);
       const fid=document.activeElement&&document.activeElement.id;
-      const pos=(fid==='buscaAcePcp'||fid==='buscaAceEst')?document.activeElement.selectionStart:null;
+      const pos=(fid&&/^buscaAce/.test(fid))?document.activeElement.selectionStart:null;
+      const sc=view.scrollTop;
       if(TELA==='aces') renderACE();
       else if(TELA==='aces-est') renderACEEstoque();
-      if(pos!==null){ const el=document.getElementById(fid); if(el){ el.focus(); el.setSelectionRange(pos,pos); } }
-      else if(TELA==='ace-detalhe' && aceViewId) verAce(aceViewId); },
+      else if(TELA==='ace-detalhe' && aceViewId) verAce(aceViewId);
+      else return;
+      view.scrollTop=sc;
+      if(pos!==null){ const el=document.getElementById(fid); if(el){ el.focus(); el.setSelectionRange(pos,pos); } } },
       e=>toast('Erro de leitura: '+e.message));
     db.ref('setores').on('value',s=>{ SETORES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('configFita/perdas').on('value',s=>{ perdaFitaDeFirebase(s.val()); const c=document.getElementById('fitaPerdaChips'); if(c) c.innerHTML=perdaFitaChips(); if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
@@ -4816,7 +5503,7 @@
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='pend-pint') renderPendPint(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
-    oriLigarDb(); dinaLigarDb();
+    oriLigarDb(); dinaLigarDb(); bomLigar();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
       atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
@@ -4935,108 +5622,393 @@
     liberado:{label:'Liberado para o almoxarifado',  cor:'#2f6fb5'}
   };
   function stPcp(a){ return (a && ST_PCP[a.statusPcp]) ? a.statusPcp : 'analise'; }
-  const ST_ACE={
-    pendente:{label:'Pendente', cor:'#c0392b'},
-    separado:{label:'Separado', cor:'#d4930d'},
-    entregue:{label:'Entregue', cor:'#2f8f46'}
-  };
-  let aceViewId=null;
-  function stAce(a){ return (a && ST_ACE[a.statusEst]) ? a.statusEst : 'pendente'; }
+  let aceViewId=null, aceViewCtx='est';
+  let aceEstTab='sol', aceEstF={cat:'',status:'',prio:false}, buscaEstItens='', aceEstSolF='';
+  let aceDet={id:null,f:'',cat:'',q:'',modo:false,sel:new Set()};
 
-  function renderACEEstoque(){
-    TELA='aces-est'; aceViewId=null;
-    const liberadas=ACES.filter(a=>stPcp(a)==='liberado');
-    const lista=filtrarLista(liberadas,buscaEst);
-    const total=liberadas.length, retidas=ACES.length-total;
-    const cont={pendente:0,separado:0,entregue:0};
-    liberadas.forEach(a=>cont[stAce(a)]++);
-    view.innerHTML=`<div class="page">
-      <div class="page-head">
-        <div><h1 class="page-title">Solicitação de Acessórios (ACE)</h1>
-          <p class="page-sub">${total} liberada(s) pelo PCP${retidas?` · ${retidas} ainda em análise`:''}</p></div>
-      </div>
-      ${total?`
-      <div class="st-resumo">
-        ${Object.entries(ST_ACE).map(([k,s])=>`<div class="st-item"><span class="dot" style="background:${s.cor}"></span>${s.label} <b>${cont[k]}</b></div>`).join('')}
-      </div>
-      <div class="toolbar"><input class="search" id="buscaAceEst" value="${buscaEst.replace(/"/g,'&quot;')}"
-        placeholder="Buscar por cliente, ambiente, nº projeto, lote, consultor ou data..."
-        oninput="buscaEst=this.value; atualizarListaEst()"></div>
-      <div class="table-wrap"><table class="tbl">
-        <thead><tr><th style="width:34px"></th><th>Cliente</th><th>Ambiente</th><th>Nº Projeto</th><th>Lote</th><th style="width:62px">Itens</th><th style="width:150px">Status</th><th style="width:106px"></th></tr></thead>
-        <tbody id="aceEstBody">${linhasAceEst(lista)}</tbody></table></div>`
-      :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.est}</svg></div>
-        <h3>Nenhuma solicitação liberada</h3>
-        <p>${ACES.length?`Há ${ACES.length} solicitação(ões) aguardando liberação do PCP.`:'As solicitações liberadas pelo PCP aparecem aqui automaticamente.'}</p></div>`}
-    </div>`;
+  // compat (nome antigo): status "mais atrasado" entre os itens da solicitação
+  function stAce(a){
+    const r=resumoItens(a); if(!r.n) return 'pendente';
+    return Object.keys(ST_ITEM).find(k=>r.c[k]>0)||'pendente';
   }
-  function linhasAceEst(lista){
-    if(!lista.length) return '<tr><td class="td-empty" colspan="8">Nenhum resultado para a busca</td></tr>';
-    return lista.map(a=>{
-      const st=stAce(a), s=ST_ACE[st];
-      return `<tr>
-        <td><span class="dot dot-lg" style="background:${s.cor}" title="${s.label}"></span></td>
-        <td><div class="cel-nome">${escHtml(a.cliente)}</div>${a.statusPor?`<div class="cel-sub">${escHtml(a.statusPor)} · ${fmtDataHora(a.statusEm)}</div>`:''}</td>
-        <td>${escHtml(a.ambiente)}</td>
-        <td>${escHtml(a.numero)||'—'}</td>
-        <td>${escHtml(a.lote)||'—'}</td>
-        <td class="ctr">${(a.itens||[]).filter(i=>Object.values(i).some(v=>(v||'').trim())).length}</td>
-        <td><select class="st-sel" onchange="mudarStatusAce('${a.id}',this.value)">
-          ${Object.entries(ST_ACE).map(([k,v])=>`<option value="${k}" ${st===k?'selected':''}>${v.label}</option>`).join('')}
-        </select></td>
-        <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="verAce('${a.id}')">Visualizar</button></td>
-      </tr>`;
-    }).join('');
-  }
-  function atualizarListaEst(){
-    const b=document.getElementById('aceEstBody');
-    if(b) b.innerHTML=linhasAceEst(filtrarLista(ACES.filter(a=>stPcp(a)==='liberado'),buscaEst));
-  }
+  function aceLiberadas(){ return ACES.filter(a=>stPcp(a)==='liberado'); }
   function usuarioAtual(){ return (auth.currentUser && auth.currentUser.email) || 'desconhecido'; }
   function fmtDataHora(iso){
     if(!iso) return '—';
     const d=new Date(iso); if(isNaN(d)) return '—';
     return d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   }
-  function mudarStatusAce(id,st){
-    const a=ACES.find(x=>x.id===id);
-    if(a && stAce(a)===st) return;
-    const quem=usuarioAtual(), quando=new Date().toISOString();
-    const upd={};
-    upd['aces/'+id+'/statusEst']=st;
-    upd['aces/'+id+'/statusPor']=quem;
-    upd['aces/'+id+'/statusEm']=quando;
-    upd['aces/'+id+'/historico/'+db.ref().push().key]={status:st,por:quem,em:quando};
+  function aceItemRotulo(it){ return [it.codigo,it.produto].filter(s=>(s||'').trim()).join(' · ')||'item'; }
+
+  /* ---------- gravações por item ---------- */
+  function mudarStatusItens(aid,ixs,st){
+    const a=ACES.find(x=>x.id===aid); if(!a||!ST_ITEM[st]) return;
+    const quem=usuarioAtual(), quando=new Date().toISOString(), upd={}, alvo=new Set((ixs||[]).map(String));
+    let n=0;
+    aceLista(a).forEach(o=>{
+      if(!alvo.has(String(o.ix))) return;
+      if(ST_ITEM[o.it.status] && o.it.status===st) return;            // já está assim e já gravado
+      n++;
+      const base='aces/'+aid+'/itens/'+o.ix;
+      upd[base+'/status']=st; upd[base+'/statusPor']=quem; upd[base+'/statusEm']=quando;
+      upd['aces/'+aid+'/historico/'+db.ref().push().key]={status:st,por:quem,em:quando,item:aceItemRotulo(o.it),iid:o.it.iid||null};
+    });
+    if(!n){ toast('Nada a alterar'); return; }
     db.ref().update(upd)
-      .then(()=>toast('Status: '+ST_ACE[st].label))
+      .then(()=>toast(n===1?'Status: '+ST_ITEM[st].label:n+' itens: '+ST_ITEM[st].label))
       .catch(e=>toast('Erro: '+e.message));
   }
-  function verAce(id){
-    const a=ACES.find(x=>x.id===id); if(!a) return;
-    TELA='ace-detalhe'; aceViewId=id;
-    const st=stAce(a), s=ST_ACE[st];
-    const itens=(a.itens||[]).filter(i=>Object.values(i).some(v=>(v||'').trim()));
-    const hist=Object.values(a.historico||{}).sort((x,y)=>String(y.em||'').localeCompare(String(x.em||'')));
-    const semCod=itens.filter(i=>!(i.codigo||'').trim()).length;
-    const linhas=itens.map(it=>{
-      const nocod=!(it.codigo||'').trim();
-      return `<tr class="${nocod?'ro-nocod':''}">${ACE_COLS.map(col=>{
-        let cls=col.c?'ctr':'';
-        if(col.k==='codigo') cls+=' ro-cod';
-        if(col.k==='produto') cls+=' ro-desc';
-        if(col.k==='qtde') cls+=' ro-qt';
-        const v=escHtml(it[col.k]||'');
-        if(col.k==='codigo' && nocod) return `<td class="${cls}"><span class="ro-flag" title="Item sem código no cadastro">sem código</span></td>`;
-        return `<td class="${cls}">${v||'—'}</td>`;
-      }).join('')}</tr>`;
+  // compat: antes o status era da solicitação inteira; agora aplica o status a todos os itens dela
+  function mudarStatusAce(id,st){ const a=ACES.find(x=>x.id===id); if(a) mudarStatusItens(id,aceLista(a).map(o=>o.ix),st); }
+  function mudarStatusAceDetalhe(id,st){ mudarStatusAce(id,st); }
+  function alternarPrioridadeItem(aid,ix){
+    const a=ACES.find(x=>x.id===aid); if(!a) return;
+    const o=aceLista(a).find(y=>String(y.ix)===String(ix)); if(!o) return;
+    if(stItem(a,o.it)!=='pendente'){ toast('Só itens pendentes podem ter prioridade'); return; }
+    const nova=!o.it.prio, base='aces/'+aid+'/itens/'+o.ix, upd={};
+    upd[base+'/prio']=nova?true:null; upd[base+'/prioPor']=nova?usuarioAtual():null; upd[base+'/prioEm']=nova?new Date().toISOString():null;
+    db.ref().update(upd)
+      .then(()=>toast(nova?'Item marcado como prioridade':'Prioridade removida'))
+      .catch(e=>toast('Erro: '+e.message));
+  }
+
+  /* ---------- Estoque: lista ---------- */
+  function renderACEEstoque(){
+    TELA='aces-est'; aceViewId=null;
+    const lib=aceLiberadas(), todos=aceTodosItens(lib), retidas=ACES.length-lib.length;
+    const cont={pendente:0,comprado:0,separado:0,entregue:0}, cc={}; let prio=0, sem=0;
+    Object.keys(ACE_CATS).forEach(k=>cc[k]=0);
+    todos.forEach(o=>{ cont[o.st]++; if(itemPrio(o.a,o.it)) prio++; const k=catDe(o.it); if(k) cc[k]++; else sem++; });
+    const abertos=todos.length-cont.entregue;
+    const kSt=k=>`aceEstF.status=(aceEstF.status==='${k}'?'':'${k}');aceEstTab='itens';renderACEEstoque()`;
+    view.innerHTML=`<div class="page ace2">
+      <div class="page-head">
+        <div><h1 class="page-title">Solicitação de Acessórios (ACE)</h1>
+          <p class="page-sub">${lib.length} liberada(s) pelo PCP · ${abertos} item(ns) em aberto${retidas?` · ${retidas} ainda em análise`:''}</p></div>
+        ${lib.length?`<div class="seg2">
+          <button class="${aceEstTab==='sol'?'on':''}" onclick="aceEstTab='sol';renderACEEstoque()">Por solicitação</button>
+          <button class="${aceEstTab==='itens'?'on':''}" onclick="aceEstTab='itens';renderACEEstoque()">Por item</button></div>`:''}
+      </div>
+      ${lib.length?`
+      <div class="kpis">
+        ${Object.entries(ST_ITEM).map(([k,s])=>kpiCard({cor:s.cor,label:s.label,n:cont[k],on:kSt(k),ativo:aceEstTab==='itens'&&aceEstF.status===k})).join('')}
+        ${kpiCard({cor:'#e0a800',label:'Prioridade',n:prio,ic:ALERTA_SVG,on:"aceEstF.prio=!aceEstF.prio;aceEstTab='itens';renderACEEstoque()",ativo:aceEstTab==='itens'&&aceEstF.prio})}
+      </div>
+      <div class="cat-strip"><span class="cf-lbl">Categoria</span>
+        <div class="chips-f">
+          <button class="chip-f ${!aceEstF.cat?'on':''}" onclick="aceEstCat('')">Todas · ${todos.length}</button>
+          ${Object.entries(ACE_CATS).map(([k,c])=>`<button class="chip-f cat ${aceEstF.cat===k?'on':''}" style="--c:${c.cor}" onclick="aceEstCat('${k}')">${escHtml(c.label)} · ${cc[k]}</button>`).join('')}
+          <button class="chip-f cat ${aceEstF.cat==='__sem'?'on':''}" onclick="aceEstCat('__sem')">Sem categoria · ${sem}</button>
+        </div></div>
+      ${aceEstTab==='sol'?aceEstSolHtml():aceEstItensHtml()}`
+      :`<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.est}</svg></div>
+        <h3>Nenhuma solicitação liberada</h3>
+        <p>${ACES.length?`Há ${ACES.length} solicitação(ões) aguardando liberação do PCP.`:'As solicitações liberadas pelo PCP aparecem aqui automaticamente.'}</p></div>`}
+    </div>`;
+  }
+  function aceEstCat(k){ aceEstF.cat=(aceEstF.cat===k?'':k); aceEstTab='itens'; renderACEEstoque(); }
+
+  function aceSolEstLista(){
+    let l=filtrarLista(aceLiberadas(),buscaEst).map(a=>({a,r:resumoItens(a)}));
+    const feita=o=>o.r.n>0 && o.r.c.entregue===o.r.n;
+    if(aceEstSolF==='andamento') l=l.filter(o=>!feita(o));
+    else if(aceEstSolF==='concluidas') l=l.filter(feita);
+    // prioridade primeiro, concluídas por último (sort estável: o resto fica na ordem de criação)
+    l.sort((x,y)=>((y.r.prio>0)-(x.r.prio>0)) || (feita(x)-feita(y)));
+    return l.map(o=>o.a);
+  }
+  function aceEstSolHtml(){
+    return `<div class="inv-filtros">
+        <input class="search" id="buscaAceEst" value="${buscaEst.replace(/"/g,'&quot;')}"
+          placeholder="Buscar por cliente, ambiente, nº projeto, lote, consultor ou data..."
+          oninput="buscaEst=this.value; atualizarListaEst()">
+        <select onchange="aceEstSolF=this.value; atualizarListaEst()">
+          <option value="">Todas as solicitações</option>
+          <option value="andamento" ${aceEstSolF==='andamento'?'selected':''}>Em andamento</option>
+          <option value="concluidas" ${aceEstSolF==='concluidas'?'selected':''}>Concluídas</option></select>
+      </div>
+      <div class="table-wrap"><table class="tbl tbl-sol">
+        <thead><tr><th>Cliente / Ambiente</th><th style="width:130px">Projeto / Lote</th><th style="width:150px">Consultor(a)</th><th style="width:92px">Data</th>
+          <th style="width:250px">Andamento dos itens</th><th style="width:96px"></th></tr></thead>
+        <tbody id="aceEstBody">${linhasAceEst(aceSolEstLista())}</tbody></table></div>`;
+  }
+  function linhasAceEst(lista){
+    if(!lista.length) return '<tr><td class="td-empty" colspan="6">Nenhum resultado</td></tr>';
+    return lista.map(a=>{
+      const r=resumoItens(a), pr=r.prio>0, feita=r.n>0 && r.c.entregue===r.n;
+      return `<tr class="lnk ${pr?'sc-prio':''}${feita?' ace-feita':''}" onclick="verAce('${a.id}','est')">
+        <td>${pr?`<span title="${r.prio} item(ns) com prioridade">${ALERTA_SVG}</span>`:''}<span class="cel-nome">${escHtml(a.cliente)}</span><div class="cel-sub">${escHtml(a.ambiente)}</div></td>
+        <td>${escHtml(a.numero)||'—'}<div class="cel-sub">${a.lote?'Lote '+escHtml(a.lote):'sem lote'}</div></td>
+        <td>${escHtml(a.consultor)||'—'}</td>
+        <td>${fmtData(a.data)}</td>
+        <td>${progBarra(r)}<div class="cel-sub">${r.c.entregue}/${r.n} separados e entregues${r.c.pendente?` · ${r.c.pendente} pendente(s)`:''}</div></td>
+        <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();verAce('${a.id}','est')">Abrir</button></td>
+      </tr>`;
     }).join('');
+  }
+  function atualizarListaEst(){
+    const b=document.getElementById('aceEstBody');
+    if(b) b.innerHTML=linhasAceEst(aceSolEstLista());
+  }
+
+  /* ---------- Estoque: itens (filtro por categoria + PDF) ---------- */
+  function aceItensFiltrados(){
+    const q=(buscaEstItens||'').trim().toLowerCase(), t=q?q.split(/\s+/):[];
+    return aceTodosItens(aceLiberadas()).filter(o=>{
+      const k=catDe(o.it);
+      if(aceEstF.cat==='__sem'){ if(k) return false; } else if(aceEstF.cat && k!==aceEstF.cat) return false;
+      if(aceEstF.status && o.st!==aceEstF.status) return false;
+      if(aceEstF.prio && !itemPrio(o.a,o.it)) return false;
+      if(!t.length) return true;
+      const txt=[o.a.cliente,o.a.ambiente,o.a.numero,o.a.lote].concat(ACE_COLS.filter(c=>!c.foto).map(c=>o.it[c.k])).filter(Boolean).join(' ').toLowerCase();
+      return t.every(x=>txt.includes(x));
+    }).sort((x,y)=>(itemPrio(y.a,y.it)-itemPrio(x.a,x.it))
+      || String(x.a.cliente||'').localeCompare(String(y.a.cliente||''),'pt-BR')
+      || String(x.a.ambiente||'').localeCompare(String(y.a.ambiente||''),'pt-BR') || (x.pos-y.pos));
+  }
+  function aceTxtPdf(n){
+    return ACE_CATS[aceEstF.cat] ? `Gerar PDF · ${ACE_CATS[aceEstF.cat].label}` : 'Gerar PDF da categoria';
+  }
+  function aceEstItensHtml(){
+    const l=aceItensFiltrados(), pode=!!ACE_CATS[aceEstF.cat];
+    return `<div class="inv-filtros">
+        <input class="search" id="buscaAceItens" value="${buscaEstItens.replace(/"/g,'&quot;')}"
+          placeholder="Buscar por cliente, código, produto, cor, local..." oninput="buscaEstItens=this.value; atualizarItensEst()">
+        <select onchange="aceEstF.status=this.value; renderACEEstoque()"><option value="">Todos os status</option>
+          ${Object.entries(ST_ITEM).map(([k,s])=>`<option value="${k}" ${aceEstF.status===k?'selected':''}>${s.label}</option>`).join('')}</select>
+        <label class="chk-prio"><input type="checkbox" ${aceEstF.prio?'checked':''} onchange="aceEstF.prio=this.checked; renderACEEstoque()">${ALERTA_SVG}Só prioridade</label>
+        <button class="btn btn-primary" id="acePdfBtn" ${pode?'':'disabled'}
+          title="${pode?'Escolha o cliente e o ambiente para gerar o PDF desta categoria':'Escolha uma categoria acima para gerar o PDF'}"
+          onclick="aceGerarPdfCategoria()">${aceTxtPdf(l.length)}</button>
+      </div>
+      <div class="table-wrap"><table class="tbl tbl-itens">
+        <thead><tr><th>Cliente / Ambiente</th><th style="width:112px">Código</th><th>Produto</th><th style="width:84px">Qtde</th>
+          <th style="width:140px">Categoria</th><th style="width:64px">Foto</th><th style="width:190px">Status</th><th style="width:48px"></th></tr></thead>
+        <tbody id="aceItensBody">${linhasItensEst(l)}</tbody></table></div>`;
+  }
+  function linhasItensEst(l){
+    if(!l.length) return '<tr><td class="td-empty" colspan="8">Nenhum item com esses filtros</td></tr>';
+    return l.map(o=>{
+      const a=o.a, it=o.it, s=ST_ITEM[o.st], pr=itemPrio(a,it);
+      const det=['local','dimensao','cor','pux'].map(k=>(it[k]||'').toString().trim()).filter(Boolean).join(' · ');
+      return `<tr class="${pr?'sc-prio':''}">
+        <td>${pr?`<span title="Prioridade">${ALERTA_SVG}</span>`:''}<span class="cel-nome">${escHtml(a.cliente)}</span><div class="cel-sub">${escHtml(a.ambiente)}${a.numero?' · '+escHtml(a.numero):''}</div></td>
+        <td><span class="cod-mono">${escHtml(it.codigo)||'—'}</span></td>
+        <td><div class="cel-nome">${escHtml(it.produto)||'—'}</div>${det?`<div class="cel-sub">${escHtml(det)}</div>`:''}</td>
+        <td class="ctr"><b>${escHtml(it.qtde)||'—'}</b> <span class="cel-sub">${escHtml(it.unidade)}</span></td>
+        <td>${catTag(it,true)}</td>
+        <td>${aceUrl(it.foto)?`<button type="button" class="itc-foto mini" title="Ampliar foto" onclick="aceFotoAbrir('${escHtml(a.id)}',${o.pos})"><img src="${aceUrl(desigThumb(it.foto))}" alt="" loading="lazy"></button>`:'<span class="cat-vz">—</span>'}</td>
+        <td><select class="st-sel st-sel-c" style="--c:${s.cor}" onchange="mudarStatusItens('${a.id}',['${o.ix}'],this.value)">
+          ${Object.entries(ST_ITEM).map(([k,v])=>`<option value="${k}" ${o.st===k?'selected':''}>${v.label}</option>`).join('')}</select></td>
+        <td class="acoes"><button class="icon-btn" title="Abrir solicitação" onclick="verAce('${a.id}','est')">${EYE_SVG}</button></td>
+      </tr>`;
+    }).join('');
+  }
+  function atualizarItensEst(){
+    const l=aceItensFiltrados();
+    const b=document.getElementById('aceItensBody'); if(b) b.innerHTML=linhasItensEst(l);
+    const p=document.getElementById('acePdfBtn'); if(p) p.textContent=aceTxtPdf(l.length);
+  }
+  /* PDF da categoria: escolhe cliente + ambiente em uma janelinha */
+  let aceCatPdf={k:'',cli:[]};
+  function aceCatClientes(k){
+    const mapa={}, cli=[];
+    aceTodosItens(aceLiberadas()).forEach(o=>{
+      if(catDe(o.it)!==k) return;
+      const ck=String(o.a.cliente||'').trim().toLowerCase();
+      let c=mapa[ck]; if(!c){ c=mapa[ck]={nome:String(o.a.cliente||'').trim()||'(sem cliente)',sols:[]}; cli.push(c); }
+      let sl=c.sols.find(x=>x.a.id===o.a.id); if(!sl){ sl={a:o.a,n:0}; c.sols.push(sl); }
+      sl.n++;
+    });
+    cli.sort((x,y)=>x.nome.localeCompare(y.nome,'pt-BR'));
+    cli.forEach(c=>c.sols.sort((x,y)=>String(x.a.ambiente||'').localeCompare(String(y.a.ambiente||''),'pt-BR')));
+    return cli;
+  }
+  function aceGerarPdfCategoria(){
+    const k=aceEstF.cat;
+    if(!ACE_CATS[k]){ toast('Escolha uma categoria para gerar o PDF'); return; }
+    const cli=aceCatClientes(k);
+    if(!cli.length){ toast('Nenhum item nesta categoria'); return; }
+    aceCatPdf={k,cli};
+    abrirModal('Gerar PDF · '+escHtml(ACE_CATS[k].label),
+      `<div class="grid">
+        <div class="fld full"><label>Cliente<i>*</i></label>
+          <select id="aceCatCli" onchange="aceCatCliMudou()">
+            <option value="">Selecione o cliente…</option>
+            ${cli.map((c,i)=>`<option value="${i}">${escHtml(c.nome)}</option>`).join('')}
+          </select></div>
+        <div class="fld full"><label>Ambiente<i>*</i></label>
+          <select id="aceCatAmb" onchange="aceCatAmbMudou()" disabled><option value="">Selecione o cliente primeiro</option></select></div>
+      </div>
+      <p class="aviso" style="margin-top:12px">O PDF terá só os itens de <b>${escHtml(ACE_CATS[k].label)}</b> do cliente e do ambiente escolhidos.</p>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       <button class="btn btn-primary" id="aceCatOk" disabled onclick="aceCatPdfOk()">Gerar PDF</button>`);
+    if(cli.length===1){ document.getElementById('aceCatCli').value='0'; aceCatCliMudou(); }
+  }
+  function aceCatCliMudou(){
+    const i=document.getElementById('aceCatCli').value, amb=document.getElementById('aceCatAmb');
+    if(i===''){ amb.innerHTML='<option value="">Selecione o cliente primeiro</option>'; amb.disabled=true; aceCatAmbMudou(); return; }
+    const c=aceCatPdf.cli[+i];
+    amb.innerHTML='<option value="">Selecione o ambiente…</option>'+c.sols.map(x=>
+      `<option value="${escHtml(x.a.id)}">${escHtml(x.a.ambiente||'(sem ambiente)')}${x.a.numero?' · Nº '+escHtml(x.a.numero):''} — ${x.n} item(ns)</option>`).join('');
+    amb.disabled=false;
+    if(c.sols.length===1) amb.value=c.sols[0].a.id;
+    aceCatAmbMudou();
+  }
+  function aceCatAmbMudou(){
+    const ok=document.getElementById('aceCatOk'), amb=document.getElementById('aceCatAmb');
+    if(ok) ok.disabled=!(amb && amb.value);
+  }
+  function aceCatPdfOk(){
+    const id=document.getElementById('aceCatAmb').value, k=aceCatPdf.k;
+    if(!id){ toast('Escolha o cliente e o ambiente'); return; }
+    const l=aceTodosItens(aceLiberadas()).filter(o=>o.a.id===id && catDe(o.it)===k);
+    if(!l.length){ toast('Nenhum item desta categoria nesse ambiente'); return; }
+    fecharModal();
+    folhaACECat(k,l);
+  }
+
+  /* ---------- PDF só com os itens de uma categoria ---------- */
+  function folhaACECat(k,lista){
+    const cat=ACE_CATS[k];
+    const ordem=Object.keys(ACE_TAM);
+    const fi=it=>aceUrl(it.foto)&&aceTam(it)==='fi';
+    const noCol=it=>aceUrl(it.foto)&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';
+    const abaixo=it=>aceUrl(it.foto)&&aceTam(it)==='xg';
+    const tamMax=lista.filter(o=>noCol(o.it)).reduce((m,o)=>ordem.indexOf(aceTam(o.it))>ordem.indexOf(m)?aceTam(o.it):m,'p');
+    const cols=ACE_COLS.slice(0,-1).concat([{k:'__st',t:'Status',w:'9%',c:1}],[ACE_COLS[ACE_COLS.length-1]]);
+    const fw=ACE_TAM[tamMax].col, soma=cols.filter(c=>!c.foto).reduce((x,c)=>x+parseFloat(c.w),0), f=(100-fw)/soma;
+    const larg=cols.map(c=>c.foto?fw+'%':(parseFloat(c.w)*f).toFixed(2)+'%');
+    const celFoto=it=>fi(it)?'<span class="fl-xg-ref">foto na folha seguinte</span>':abaixo(it)?'<span class="fl-xg-ref">↓ foto abaixo</span>':noCol(it)?`<img class="t-${aceTam(it)}" src="${aceUrl(aceFotoPdf(it.foto,aceTam(it)))}" alt="">`:'';
+    const grupos=[], mapa={};
+    lista.forEach(o=>{ let g=mapa[o.a.id]; if(!g){ g=mapa[o.a.id]={a:o.a,itens:[]}; grupos.push(g); } g.itens.push(o); });
+    const units=[];
+    grupos.forEach(g=>{
+      const a=g.a;
+      const cab=`<tr class="fl-grp"><td colspan="${cols.length}"><b>${escHtml(a.cliente)}</b> — ${escHtml(a.ambiente)}${a.numero?' · Nº '+escHtml(a.numero):''}${a.lote?' · Lote '+escHtml(a.lote):''}${a.consultor?' · '+escHtml(a.consultor):''}</td></tr>`;
+      g.itens.forEach((o,gi)=>{
+        const it=o.it, pr=itemPrio(a,it), s=ST_ITEM[o.st];
+        const tds=cols.map(col=>{
+          if(col.foto) return `<td class="ctr fl-foto">${celFoto(it)}</td>`;
+          if(col.k==='__st') return `<td class="ctr fl-st"><b style="color:${s.cor}">${escHtml(s.label)}</b>${pr?'<span class="fl-pri">▲ PRIORIDADE</span>':''}</td>`;
+          return `<td class="${col.c?'ctr':''}${col.k==='codigo'?' fl-cod':''}${col.k==='produto'?' fl-desc':''}">${escHtml(it[col.k]||'')}</td>`;
+        }).join('');
+        units.push({ cab, first:gi===0, n:1, fi:fi(it)?it:null,
+          html:`<tr class="${pr?'fl-prio ':''}${abaixo(it)?'fl-xg-pai':''}">${tds}</tr>`
+            +(abaixo(it)?`<tr class="fl-xg"><td colspan="${cols.length}"><div class="fl-xg-moldura"><img src="${aceUrl(aceFotoPdf(it.foto,'xg'))}" alt=""></div><div class="fl-xg-leg"><span>Foto · ${escHtml(aceItemRotulo(it))}</span></div></td></tr>`:'') });
+      });
+    });
+    const tabela=(body)=>`<table class="fl-tbl">
+          <colgroup>${larg.map(w=>`<col style="width:${w}">`).join('')}</colgroup>
+          <thead><tr>${cols.map(c=>`<th>${c.t}</th>`).join('')}</tr></thead>
+          <tbody>${body}</tbody>
+        </table>`;
+    const partes=aceFolhaPartes(units,tabela);
+    const a0=lista[0].a;
+    const ov=document.getElementById('fichaOverlay');
+    ov.innerHTML=`
+      <div class="ficha-actions folha-actions">
+        <button class="btn btn-ghost" style="background:#fff" onclick="fecharFicha()">Fechar</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button>
+      </div>
+      <div class="folha">
+        <div class="folha-head">
+          <img class="fl-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
+          <h1 class="fl-title">Acessórios — ${escHtml(cat.label)}</h1>
+          <div class="fl-date">${new Date().toLocaleDateString('pt-BR')}</div>
+        </div>
+        <div class="fl-band">
+          <div class="fb"><b>Cliente:</b> ${escHtml(a0.cliente)}</div>
+          <div class="fb"><b>Ambiente:</b> ${escHtml(a0.ambiente)}${a0.numero?' · Nº '+escHtml(a0.numero):''}</div>
+          <div class="fb"><b>Categoria:</b> ${escHtml(cat.label)}</div>
+          <div class="fb"><b>Itens:</b> ${lista.length}</div>
+        </div>
+        ${partes}
+        <div class="folha-foot">
+          <div class="ff-l">
+            <svg class="ff-mark" viewBox="0 0 60 26" aria-hidden="true">
+              <path d="M2 24 C2 10 8 2 14 2 C20 2 26 10 26 24 Z"/>
+              <path d="M16 24 C16 10 22 2 28 2 C34 2 40 10 40 24 Z"/>
+              <path d="M30 24 C30 10 36 2 42 2 C48 2 54 10 54 24 Z"/>
+            </svg>
+            <div class="ff-end">${EMPRESA.end1}<br>${EMPRESA.end2}<br>${EMPRESA.end3}</div>
+          </div>
+          <div class="ff-r">1</div>
+        </div>
+      </div>`;
+    ov.onclick=(e)=>{ if(e.target===ov) fecharFicha(); };
+    setPageOrientation('landscape');
+    ov.classList.add('open');
+  }
+
+  /* ---------- Tela interna da solicitação (status individual por item) ---------- */
+  function aceDetFiltrados(a){
+    const q=(aceDet.q||'').trim().toLowerCase(), t=q?q.split(/\s+/):[];
+    return aceLista(a).map((o,pos)=>({it:o.it,ix:o.ix,pos,st:stItem(a,o.it)})).filter(o=>{
+      const k=catDe(o.it);
+      if(aceDet.f && o.st!==aceDet.f) return false;
+      if(aceDet.cat==='__sem'){ if(k) return false; } else if(aceDet.cat && k!==aceDet.cat) return false;
+      if(!t.length) return true;
+      const txt=ACE_COLS.filter(c=>!c.foto).map(c=>o.it[c.k]).filter(Boolean).join(' ').toLowerCase();
+      return t.every(x=>txt.includes(x));
+    }).sort((x,y)=>itemPrio(a,y.it)-itemPrio(a,x.it));     // prioridade no topo (sort estável)
+  }
+  function aceSegHtml(aid,ix,st){
+    return `<div class="st-seg" role="group" aria-label="Status do item">${Object.entries(ST_ITEM).map(([k,s])=>
+      `<button type="button" style="--c:${s.cor}" class="${st===k?'on':''}" ${st===k?'aria-pressed="true"':''} title="Marcar como ${s.label.toLowerCase()}"
+        onclick="mudarStatusItens('${aid}',['${ix}'],'${k}')"><i class="dot"></i>${s.label}</button>`).join('')}</div>`;
+  }
+  function aceCard(a,o,edit){
+    const it=o.it, s=ST_ITEM[o.st], pr=itemPrio(a,it), ix=String(o.ix).replace(/'/g,'');
+    const nocod=!(it.codigo||'').trim();
+    const campos=ACE_COLS.filter(c=>!c.foto && !['codigo','produto','qtde','unidade'].includes(c.k) && (it[c.k]||'').toString().trim());
+    const foto=aceUrl(it.foto)
+      ? `<button type="button" class="itc-foto" title="Ampliar foto" onclick="aceFotoAbrir('${escHtml(a.id)}',${o.pos})"><img src="${aceUrl(desigThumb(it.foto))}" alt="Foto do item" loading="lazy"></button>`
+      : `<div class="itc-foto vz" title="Sem foto">${ACE_CAM_SVG}</div>`;
+    const sel=edit&&aceDet.modo;
+    return `<div class="itc ${pr?'prio':''}${o.st==='entregue'?' feito':''}${sel&&aceDet.sel.has(ix)?' sel-on':''}" style="--c:${s.cor}">
+      <div class="itc-l">${sel?`<button type="button" class="bol ${aceDet.sel.has(ix)?'on':''}" title="Selecionar item" aria-label="Selecionar item" onclick="aceDetTog('${ix}',this)"></button>`:''}${foto}</div>
+      <div>
+        <div class="itc-t">
+          ${nocod?'<span class="ro-flag" title="Item sem código no cadastro">sem código</span>':`<span class="itc-cod">${escHtml(it.codigo)}</span>`}
+          <span class="itc-nm">${escHtml(it.produto)||'—'}</span>
+          <span class="itc-qt">${escHtml(it.qtde)||'—'} ${escHtml(it.unidade)}</span>
+          ${catTag(it,false)}
+        </div>
+        ${campos.length?`<div class="itc-kv">${campos.map(c=>`<span>${c.t}: <b>${escHtml(it[c.k])}</b></span>`).join('')}</div>`:''}
+      </div>
+      <div class="itc-ctl">
+        ${edit?aceSegHtml(a.id,ix,o.st):stPill(o.st)}
+        ${!edit&&o.st==='pendente'?`<button type="button" class="btn btn-ghost btn-sm" title="${it.prio?'Remover prioridade':'Marcar prioridade'}" onclick="alternarPrioridadeItem('${a.id}','${ix}')">${ALERTA_SVG}${it.prio?'Remover prioridade':'Marcar prioridade'}</button>`
+          :(pr?`<span class="itc-prio">${ALERTA_SVG}Prioridade</span>`:'')}
+        ${it.statusPor?`<div class="itc-meta">por <b>${escHtml(String(it.statusPor).split('@')[0])}</b><br>${fmtDataHora(it.statusEm)}</div>`:''}
+      </div>
+    </div>`;
+  }
+  function aceDetCards(a){
+    const edit=aceViewCtx==='est', l=aceDetFiltrados(a);
+    return l.length ? l.map(o=>aceCard(a,o,edit)).join('') : '<div class="itc-vz">Nenhum item com esses filtros.</div>';
+  }
+  function verAce(id,ctx){
+    const a=ACES.find(x=>x.id===id); if(!a) return;
+    if(ctx) aceViewCtx=ctx;
+    TELA='ace-detalhe'; aceViewId=id;
+    if(aceDet.id!==id) aceDet={id,f:'',cat:'',q:'',modo:false,sel:new Set()};
+    const edit=aceViewCtx==='est', voltar=edit?'renderACEEstoque()':'renderACE()';
+    const lista=aceLista(a), r=resumoItens(a);
+    const semCod=lista.filter(o=>!(o.it.codigo||'').trim()).length;
+    const hist=Object.values(a.historico||{}).sort((x,y)=>String(y.em||'').localeCompare(String(x.em||'')));
     const info=(k,v)=>`<div class="it"><div class="k">${k}</div><div class="v">${v||'—'}</div></div>`;
-    view.innerHTML=`<div class="page page-wide">
+    const cc={}; let sem=0; Object.keys(ACE_CATS).forEach(k=>cc[k]=0);
+    lista.forEach(o=>{ const k=catDe(o.it); if(k) cc[k]++; else sem++; });
+    const usadas=Object.keys(ACE_CATS).filter(k=>cc[k]>0);
+    const chips=[['','Todos',r.n,null]].concat(Object.entries(ST_ITEM).map(([k,s])=>[k,s.label,r.c[k],s.cor]));
+    view.innerHTML=`<div class="page page-wide ace2">
       <div class="page-head">
         <div><h1 class="page-title">Solicitação de Acessórios</h1>
-          <p class="page-sub">Estoque · Solicitações · ACE</p></div>
+          <p class="page-sub">${edit?'Estoque':'PCP'} · Solicitações · ACE</p></div>
         <div style="display:flex;gap:10px">
-          <button class="btn btn-ghost" onclick="renderACEEstoque()">Voltar</button>
+          <button class="btn btn-ghost" onclick="${voltar}">Voltar</button>
           <button class="btn btn-primary" onclick="imprimirACE('${a.id}')">Visualizar PDF</button>
         </div>
       </div>
@@ -5052,38 +6024,73 @@
             ${info('Arq.',escHtml(a.arq))}
             ${info('Data',fmtData(a.data))}
           </div>
-          <div class="st-box">
-            <div class="k">Status do atendimento</div>
-            <div class="st-atual"><span class="dot dot-lg" style="background:${s.cor}"></span>${s.label}</div>
-            <select class="st-sel" onchange="mudarStatusAceDetalhe('${a.id}',this.value)">
-              ${Object.entries(ST_ACE).map(([k,v])=>`<option value="${k}" ${st===k?'selected':''}>${v.label}</option>`).join('')}
-            </select>
-            ${a.statusPor?`<div class="st-meta">por <b>${escHtml(a.statusPor)}</b><br>${fmtDataHora(a.statusEm)}</div>`:''}
+          <div class="st-box ace-prog">
+            <div class="k">Andamento dos itens</div>
+            <div class="big">${r.c.entregue}<small>/${r.n}</small><span>separados e entregues</span></div>
+            ${progBarra(r)}
+            <div style="margin-top:9px">${Object.entries(ST_ITEM).map(([k,s])=>`<div class="lg"><i class="dot" style="background:${s.cor}"></i>${s.label}<b>${r.c[k]}</b></div>`).join('')}</div>
+            ${r.prio?`<div class="pri">${ALERTA_SVG}${r.prio} item(ns) com prioridade</div>`:''}
           </div>
         </div>
       </section>
 
-      ${hist.length?`<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Histórico de atendimento</h3>
+      <section class="fs">
+        <div class="fs-head"><h3 class="fs-title" style="margin:0">Itens da solicitação (${r.n})</h3>
+          ${semCod?`<span class="ro-alerta">${semCod} item(ns) sem código cadastrado</span>`:''}</div>
+        <div class="det-tools">
+          <div class="chips-f">${chips.map(([k,t,n,cor])=>`<button class="chip-f ${aceDet.f===k?'on':''}" onclick="aceDetFiltro('${k}')">${cor?`<i class="dot" style="background:${cor}"></i>`:''}${t} · ${n}</button>`).join('')}</div>
+          <select onchange="aceDet.cat=this.value; aceKeep(()=>verAce(aceViewId))" title="Filtrar por categoria">
+            <option value="">Todas as categorias</option>
+            ${usadas.map(k=>`<option value="${k}" ${aceDet.cat===k?'selected':''}>${escHtml(ACE_CATS[k].label)} (${cc[k]})</option>`).join('')}
+            ${sem?`<option value="__sem" ${aceDet.cat==='__sem'?'selected':''}>Sem categoria (${sem})</option>`:''}</select>
+          <input class="search" id="buscaAceDet" value="${(aceDet.q||'').replace(/"/g,'&quot;')}" placeholder="Buscar item..." oninput="aceDet.q=this.value; aceDetAtualiza()">
+          ${edit&&r.n?`<button class="btn ${aceDet.modo?'btn-primary':'btn-ghost'} btn-sm" onclick="aceDetModo()">${aceDet.modo?'Cancelar seleção':'Selecionar vários'}</button>`:''}
+        </div>
+        ${edit&&aceDet.modo?aceDetBulkHtml():''}
+        <div id="aceDetLista">${aceDetCards(a)}</div>
+      </section>
+
+      ${hist.length?`<details class="fs hist-d" style="margin-top:18px"><summary>Histórico de atendimento (${hist.length})</summary>
         <div class="hist">${hist.map(h=>{
-          const hs=ST_ACE[h.status]||ST_ACE.pendente;
+          const hs=ST_ITEM[h.status]||ST_ITEM.pendente;
           return `<div class="hist-l"><span class="dot" style="background:${hs.cor}"></span>
             <span class="hl-st">${hs.label}</span>
+            <span class="hl-it">${escHtml(h.item||'Solicitação inteira')}</span>
             <span class="hl-por">${escHtml(h.por||'—')}</span>
             <span class="hl-em">${fmtDataHora(h.em)}</span></div>`;
-        }).join('')}</div>
-      </section>`:''}
-
-      <section class="fs">
-        <div class="fs-head"><h3 class="fs-title" style="margin:0">Itens da solicitação (${itens.length})</h3>
-          ${semCod?`<span class="ro-alerta">${semCod} item(ns) sem código cadastrado</span>`:''}</div>
-        <div class="table-wrap table-scroll"><table class="tbl tbl-ace-ro">
-          <thead><tr>${ACE_COLS.map(c=>`<th style="width:${c.w}">${c.t}</th>`).join('')}</tr></thead>
-          <tbody>${linhas||`<tr><td class="td-empty" colspan="${ACE_COLS.length}">Nenhum item lançado</td></tr>`}</tbody>
-        </table></div>
-      </section>
+        }).join('')}</div></details>`:''}
     </div>`;
   }
-  function mudarStatusAceDetalhe(id,st){ mudarStatusAce(id,st); }
+  function aceDetFiltro(k){ aceDet.f=(aceDet.f===k?'':k); aceKeep(()=>verAce(aceViewId)); }
+  function aceDetAtualiza(){
+    const a=ACES.find(x=>x.id===aceViewId), el=document.getElementById('aceDetLista');
+    if(a&&el) el.innerHTML=aceDetCards(a);
+  }
+  function aceDetBulkHtml(){
+    return `<div class="cat-bar" id="aceDetBulk">
+      <div class="cb-t"><b id="aceDetN">${aceDet.sel.size}</b> item(ns) marcado(s) — definir status:</div>
+      <div class="cb-chips">${Object.entries(ST_ITEM).map(([k,s])=>`<button type="button" class="cat-btn" style="--c:${s.cor}" onclick="aceDetBulk('${k}')">${s.label}</button>`).join('')}</div>
+      <div class="cb-ac"><button type="button" class="btn btn-ghost btn-sm" onclick="aceDetSelTodos(true)">Marcar os visíveis</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="aceDetSelTodos(false)">Limpar</button></div></div>`;
+  }
+  function aceDetModo(){ aceDet.modo=!aceDet.modo; aceDet.sel=new Set(); aceKeep(()=>verAce(aceViewId)); }
+  function aceDetTog(ix,btn){
+    if(aceDet.sel.has(ix)) aceDet.sel.delete(ix); else aceDet.sel.add(ix);
+    btn.classList.toggle('on',aceDet.sel.has(ix));
+    const c=btn.closest('.itc'); if(c) c.classList.toggle('sel-on',aceDet.sel.has(ix));
+    const n=document.getElementById('aceDetN'); if(n) n.textContent=aceDet.sel.size;
+  }
+  function aceDetSelTodos(on){
+    aceDet.sel=new Set();
+    if(on){ const a=ACES.find(x=>x.id===aceViewId); if(a) aceDetFiltrados(a).forEach(o=>aceDet.sel.add(String(o.ix))); }
+    aceKeep(()=>verAce(aceViewId));
+  }
+  function aceDetBulk(st){
+    if(!aceDet.sel.size){ toast('Marque a bolinha dos itens primeiro'); return; }
+    const ixs=[...aceDet.sel], aid=aceViewId;
+    aceDet.sel=new Set();                       // limpa antes: a gravação redesenha a tela
+    mudarStatusItens(aid,ixs,st);
+  }
 
   /* ================= Acompanhamento da Produção ================= */
   const SYM={
@@ -9389,7 +10396,9 @@
     // roda a otimização de corte/rolo do fornecedor — quanto maior o lote, menor o desperdício.
     const pedidosBrutos=[], rolosPorMat={}, origemInfo=[], origemIds=[];
     grupos.forEach(g=>{
-      origemInfo.push({clienteNome:g.clienteNome,ambiente:g.ambiente,numeroProjeto:g.numeroProjeto});
+      origemInfo.push({clienteNome:g.clienteNome,ambiente:g.ambiente,numeroProjeto:g.numeroProjeto,
+        solicitante:[...new Set(g.regs.map(r=>r.criadoPor).filter(Boolean))].join(', '),
+        solicitadoEm:g.regs.map(r=>r.criadoEm).filter(Boolean).sort()[0]||''});
       g.regs.forEach(r=>{
         origemIds.push(r.id);
         (r.itens||[]).forEach(it=>{
@@ -10401,9 +11410,15 @@
         <li>Escolha o <b>ambiente</b> — o sistema puxa sozinho o Nº do projeto, o lote e o consultor.</li>
         <li>Na tabela, digite o <b>código</b> ou a <b>descrição</b> do item: a lista aparece enquanto você digita, e ao escolher, código, descrição e unidade se preenchem juntos. O cursor pula direto para a quantidade.</li>
         <li>Complete as colunas que fizerem sentido (local, dimensões, cor...). Nenhuma é obrigatória.</li>
+        <li>Na coluna <b>Foto</b>, clique no ícone da câmera para anexar uma foto do item (no celular, dá para tirar na hora). Ela sai no PDF e o Estoque também vê. Escolha o tamanho da foto na solicitação com <b>P · M · G · GG · XG</b> (a coluna da folha se ajusta sozinha; no <b>XG</b> a foto vai para uma linha própria abaixo do item, bem grande). Clique na miniatura para ampliar dentro do sistema (setas ← → trocam de foto, Esc fecha); o <b>×</b> remove.</li>
         <li><b>+ Adicionar linha</b> para mais itens.</li></ol>
         <div class="hc-box"><b>Liberar para o almoxarifado</b>
         <p>Toda ACE nasce <b>Em análise</b> (bolinha cinza) e <b>não aparece no Estoque</b>. Só quando você muda para <b>Liberado para o almoxarifado</b> (azul) é que ela chega lá.</p></div>
+        <h4>Categorizar e prioridade</h4>
+        <p>Em <b>Itens</b>, clique em <b>Categorizar</b>: aparece uma bolinha ao lado de cada linha. Marque os itens, escolha a categoria (Alumínios e vidros, Metalon, Estofados, Puxadores, Pintura, Móveis soltos, Usinagens) e ela vale para todos os marcados. O Estoque filtra por categoria e gera o PDF só daquela categoria.</p>
+        <p>O triângulo amarelo marca o item como <b>prioridade</b> (mesmo padrão da SC). Só vale enquanto o item está <b>Pendente</b>.</p>
+        <h4>Acompanhar</h4>
+        <p>O status agora é <b>de cada item</b> (Pendente, Comprado, Separado, Separado e entregue) e é definido pelo Estoque. No PCP, o ícone de olho abre a solicitação e mostra o andamento item a item.</p>
         <h4>PDF</h4>
         <p>O ícone de documento gera a folha em paisagem, no mesmo formato da planilha antiga: logo, faixa vermelha com cliente/ambiente/consultor/número/arquiteta, e a tabela com linhas em branco para anotar à mão.</p>
         <p><b>Excluir:</b> só enquanto está Em análise. Depois de liberada, o sistema avisa que o Estoque pode já ter começado a separar.</p>`},
@@ -16255,7 +17270,7 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
   Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,andRolar,andNavAtualizar,abrirLoteFila,abrirApont,abrirCard,abrirCardDe,
     abrirChecklist,abrirColar,abrirEmissao,abrirFeriados,abrirFormCliente,abrirImportacao,abrirMapaPin,abrirModal,
     abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
-    acPreencheExato,aceAddLinha,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
+    acPreencheExato,aceAddLinha,aceFotoEscolher,aceFotoEnviar,aceFotoRem,aceFotoTam,aceFotoAbrir,aceFotoNav,aceFotoZoom,aceFotoFechar,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
     agHoje,agMover,ambientesDoCliente,aptosPara,ativDe,ativsDoSetor,atualizaAtivsFunc,atualizarContagem,
     emitirApoio,renderEmissaoApoio,salvarApoio,toggleDiaApoio,
     indiceEmissao,emissaoDe,badgeEmissao,painelDetalheEmissao,painelEmitirApoio,painelIrStatus,
@@ -17184,6 +18199,208 @@ function oriProjetos(){
   return [...m.values()].map(g=>({projeto:g.projeto,lote:String(g.lote||''),cliente:[...g.cli].join(' / '),
     ambs:[...g.amb],ambiente:[...g.amb].join(' · '),local:[...g.loc].join(' · ')}));
 }
+/* ================= ENGENHARIA · LISTA DE MATERIAIS (BOM) POR PROJETO =================
+   Junta, por nº de projeto, tudo que vai nele:
+   - fitas:     solfitas (pendentes) + histFitas (já agrupadas em lote), com cor/textura do cadastro de cores
+   - acessórios: aces (Solicitação de Acessórios) — solicitante = Consultor(a) / Arq.
+   - peças:     dinabox/{projeto}/modulos (PDF "Lista de peças" lido no Visualizador 3D)
+   Vínculo: numeroProjeto (fita) / numero (ACE) / chave do projeto (Dinabox); também casa pelo painelId do projeto. */
+let bomBusca='', bomFiltro={lote:'',amb:'',con:''}, bomProj=null, bomAbertos={}, bomRes=new Map(), _bomT=null;
+function bomNorm(v){ return String(v==null?'':v).trim(); }
+function bomArr(v){ return Array.isArray(v)?v.filter(Boolean):(v&&typeof v==='object'?Object.values(v).filter(Boolean):[]); }
+function bomNum(v){ const n=parseFloat(String(v==null?'':v).replace(',','.')); return isNaN(n)?null:n; }
+function bomQuem(e){ return String(e||'').split('@')[0]; }
+function bomIdsPainel(p){ return new Set(PAINEL.filter(r=>bomNorm(r.projeto)===p).map(r=>r.id)); }
+function bomDoProjeto(x,p,ids,campo){ return bomNorm(x[campo])===p || !!(x.painelId&&ids.has(x.painelId)); }
+
+function bomFitas(p){
+  const ids=bomIdsPainel(p), bruto=[];
+  SOLFITAS.forEach(sf=>{
+    if(!bomDoProjeto(sf,p,ids,'numeroProjeto')) return;
+    bomArr(sf.itens).forEach(it=>bruto.push({desc:it.descricao,codigo:it.codigo,largura:+it.largura||0,metros:+it.metros||0,
+      solicitante:sf.criadoPor||'',geradoPor:'',quando:sf.criadoEm||'',lote:'',pendente:true,ambiente:sf.ambiente||''}));
+  });
+  HISTFITAS.forEach(h=>{
+    const amb=bomArr(h.ambientes).find(a=>bomNorm(a.numeroProjeto)===p);
+    const ped=bomArr(h.pedidos).filter(x=>x.proj&&bomNorm(x.proj.numeroProjeto)===p);
+    const base={solicitante:(amb&&amb.solicitante)||'',geradoPor:h.criadoPor||'',quando:(amb&&amb.solicitadoEm)||h.criadoEm||'',lote:h.lote||'',pendente:false};
+    if(ped.length) ped.forEach(x=>bruto.push({...base,desc:x.desc,codigo:x.codigo,largura:+x.w||0,metros:+x.m||0,ambiente:x.proj.ambiente||''}));
+    else if(amb) bomArr(h.linhas).forEach(l=>bomArr(l.fitaItens).forEach(fi=>bomArr(fi.projetos).forEach(pr=>{
+      if(bomNorm(pr.numeroProjeto)===p) bruto.push({...base,desc:l.descricao,codigo:l.codigo,largura:+fi.largura||0,metros:+pr.metros||0,ambiente:pr.ambiente||''}); })));
+  });
+  // soma metros repetidos do mesmo material/largura dentro da mesma solicitação/lote
+  const m=new Map();
+  bruto.forEach(x=>{ const k=[x.pendente?'P':'L',x.lote,x.solicitante,x.quando,x.ambiente,x.codigo,x.desc,x.largura].join('|');
+    if(!m.has(k)) m.set(k,{...x,metros:0}); m.get(k).metros+=x.metros; });
+  return [...m.values()].sort((a,b)=>(b.pendente-a.pendente)||String(b.quando).localeCompare(String(a.quando))||String(a.desc).localeCompare(String(b.desc),'pt-BR'));
+}
+function bomAces(p){
+  const ids=bomIdsPainel(p);
+  return ACES.filter(a=>bomDoProjeto(a,p,ids,'numero')).sort((a,b)=>String(b.data||'').localeCompare(String(a.data||'')));
+}
+function bomPecas(p){
+  return dinaMods(p).map(m=>({...m,pecas:bomArr(m.pecas)}));
+}
+function bomCorFita(desc,codigo){
+  const ins=codigo?INSUMOS.find(i=>i.codigo&&i.codigo===codigo):null;
+  const x={descricao:/fita de borda/i.test(desc||'')?desc:'Fita de borda '+(desc||''),insumoId:ins&&ins.id}, v=visualItemFita(x);
+  return `<div class="bom-cor">${amostraFita(x,'static')}<small class="${v?'':'nil'}">${v?(v.img?'Textura':escHtml(v.hex.toUpperCase())):'Sem cor'}</small></div>`;
+}
+function bomIndexar(){
+  bomRes=new Map();
+  oriProjetos().forEach(x=>{
+    const pc=bomPecas(x.projeto);
+    bomRes.set(x.projeto,{fitas:bomFitas(x.projeto).length,aces:bomAces(x.projeto).reduce((n,a)=>n+bomArr(a.itens).filter(i=>i.produto||i.codigo).length,0),
+      pecas:pc.reduce((n,m)=>n+m.pecas.reduce((q,y)=>q+(parseInt(y.qtd,10)||1),0),0)});
+  });
+}
+
+/* ---------- lista de projetos ---------- */
+function renderBom(){
+  TELA='bom'; bomProj=null; bomIndexar();
+  const P=oriProjetos();
+  const lotes=[...new Set(P.map(x=>x.lote).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
+  const ambs=[...new Set(P.flatMap(x=>x.ambs))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  const filtrado=bomBusca||bomFiltro.lote||bomFiltro.amb||bomFiltro.con;
+  const opt=(v,t)=>`<option value="${v}" ${bomFiltro.con===v?'selected':''}>${t}</option>`;
+  view.innerHTML=`<div class="page page-wide opx">
+    <div class="page-head"><div><h1 class="page-title">Lista de Materiais (BOM)</h1><p class="page-sub" id="bomSub"></p></div></div>
+    <div class="opx-filtros">
+      <label class="opx-busca"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="bomBuscaIn" value="${dinaAttr(bomBusca)}" placeholder="Buscar por projeto, cliente, ambiente, local ou lote..." oninput="bomBusca=this.value; atualizarBom()"></label>
+      <select class="${bomFiltro.lote?'on':''}" onchange="bomFiltro.lote=this.value; renderBom()">
+        <option value="">Todos os lotes</option>${lotes.map(l=>`<option value="${dinaAttr(l)}" ${bomFiltro.lote===l?'selected':''}>Lote ${escHtml(l)}</option>`).join('')}</select>
+      <select class="${bomFiltro.amb?'on':''}" onchange="bomFiltro.amb=this.value; renderBom()">
+        <option value="">Todos os ambientes</option>${ambs.map(a=>`<option value="${dinaAttr(a)}" ${bomFiltro.amb===a?'selected':''}>${escHtml(a)}</option>`).join('')}</select>
+      <select class="${bomFiltro.con?'on':''}" onchange="bomFiltro.con=this.value; renderBom()">
+        <option value="">Todo o conteúdo</option>${opt('fita','Com fita')}${opt('sem-fita','Sem fita')}${opt('ace','Com acessórios')}${opt('sem-ace','Sem acessórios')}${opt('pecas','Com peças (PDF)')}${opt('sem-pecas','Sem peças (PDF)')}</select>
+      ${filtrado?`<button class="btn btn-ghost btn-sm" onclick="bomBusca='';bomFiltro={lote:'',amb:'',con:''};renderBom()">Limpar filtros</button>`:''}
+    </div>
+    <div class="table-wrap table-scroll"><table class="tbl">
+      <thead><tr><th style="width:84px">Projeto</th><th style="width:64px">Lote</th><th>Cliente</th><th>Ambiente</th><th style="width:150px">Local</th>
+        <th style="width:70px" class="ctr">Fitas</th><th style="width:90px" class="ctr">Acessórios</th><th style="width:70px" class="ctr">Peças</th></tr></thead>
+      <tbody id="bomBody"></tbody></table></div></div>`;
+  atualizarBom();
+}
+function bomFiltrados(){
+  const q=bomBusca.trim().toLowerCase();
+  return oriProjetos().filter(x=>{
+    const r=bomRes.get(x.projeto)||{fitas:0,aces:0,pecas:0}, c=bomFiltro.con;
+    if(bomFiltro.lote&&x.lote!==bomFiltro.lote) return false;
+    if(bomFiltro.amb&&!x.ambs.includes(bomFiltro.amb)) return false;
+    if(c==='fita'&&!r.fitas) return false; if(c==='sem-fita'&&r.fitas) return false;
+    if(c==='ace'&&!r.aces) return false;   if(c==='sem-ace'&&r.aces) return false;
+    if(c==='pecas'&&!r.pecas) return false; if(c==='sem-pecas'&&r.pecas) return false;
+    if(q&&!q.split(/\s+/).every(t=>[x.projeto,x.cliente,x.ambiente,x.local,x.lote].join(' ').toLowerCase().includes(t))) return false;
+    return true;
+  }).sort((a,b)=>b.projeto.localeCompare(a.projeto,'pt-BR',{numeric:true}));
+}
+function atualizarBom(){
+  const b=document.getElementById('bomBody'); if(!b) return;
+  const todos=oriProjetos(), lista=bomFiltrados();
+  const sub=document.getElementById('bomSub');
+  if(sub) sub.textContent=`${todos.length} projeto(s) · ${lista.length===todos.length?'mostrando todos':lista.length+' no filtro'} · clique em um projeto para ver tudo que vai nele`;
+  const n=v=>`<span class="bom-n ${v?'on':''}">${v}</span>`;
+  b.innerHTML=lista.length?lista.map(x=>{
+    const r=bomRes.get(x.projeto)||{fitas:0,aces:0,pecas:0};
+    return `<tr class="opx-r" data-p="${dinaAttr(x.projeto)}" onclick="abrirBom(this.dataset.p)" style="cursor:pointer;--c:${(r.fitas||r.aces||r.pecas)?'#982424':'#d6d4cb'}">
+      <td class="ctr"><span class="opx-pj">${escHtml(x.projeto)}</span></td>
+      <td class="ctr">${x.lote?`<span class="opx-lt">${escHtml(x.lote)}</span>`:'<span class="opx-nil">—</span>'}</td>
+      <td><b>${escHtml(x.cliente)||'—'}</b></td><td>${escHtml(x.ambiente)||'—'}</td><td>${escHtml(x.local)||'—'}</td>
+      <td class="ctr">${n(r.fitas)}</td><td class="ctr">${n(r.aces)}</td><td class="ctr">${n(r.pecas)}</td></tr>`;
+  }).join(''):'<tr><td class="td-empty" colspan="8">Nenhum projeto encontrado</td></tr>';
+}
+
+/* ---------- projeto aberto ---------- */
+function abrirBom(p){ bomProj=p; bomAbertos={}; renderBomDet(); }
+function bomSecFitas(p){
+  const L=bomFitas(p);
+  if(!L.length) return `<div class="bom-vz">Nenhuma fita solicitada para este projeto.</div>`;
+  const tot=L.reduce((s,x)=>s+x.metros,0);
+  return `<div class="table-wrap table-scroll"><table class="tbl">
+    <thead><tr><th style="width:150px">Cor / textura</th><th>Material</th><th style="width:80px" class="ctr">Largura</th><th style="width:100px" class="ctr">Metros</th><th>Solicitante</th><th style="width:120px">Data</th><th style="width:130px">Situação</th></tr></thead>
+    <tbody>${L.map(x=>`<tr>
+      <td>${bomCorFita(x.desc,x.codigo)}</td>
+      <td><div class="cel-nome">${escHtml(x.desc)||'—'}</div><div class="cel-sub">${escHtml(x.codigo)}${x.ambiente?(x.codigo?' · ':'')+escHtml(x.ambiente):''}</div></td>
+      <td class="ctr">${x.largura?fmtNum(x.largura)+'mm':'—'}</td>
+      <td class="ctr">${fmtNum(+x.metros.toFixed(2))} m</td>
+      <td>${x.solicitante?escHtml(bomQuem(x.solicitante)):'<span class="opx-nil">não registrado</span>'}${!x.solicitante&&x.geradoPor?`<div class="bom-sub">lote gerado por ${escHtml(bomQuem(x.geradoPor))}</div>`:''}</td>
+      <td>${x.quando?escHtml(fmtDataHora(x.quando)):'—'}</td>
+      <td>${x.pendente?'<span class="dina-pill">Pendente</span>':`<span class="dina-pill on">Lote ${escHtml(x.lote)||'—'}</span>`}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="3" style="text-align:right;font-weight:600">Total pedido</td><td class="ctr"><b>${fmtNum(+tot.toFixed(2))} m</b></td><td colspan="3"></td></tr></tfoot></table></div>`;
+}
+function bomSecAces(p){
+  const A=bomAces(p);
+  if(!A.length) return `<div class="bom-vz">Nenhuma solicitação de acessórios para este projeto.</div>`;
+  return A.map(a=>{
+    const it=bomArr(a.itens).filter(i=>i.produto||i.codigo), sp=ST_PCP[stPcp(a)];
+    return `<div class="bom-ace">
+      <div class="bom-ace-h"><div><span>Solicitante (consultor/a):</span> <b>${escHtml(a.consultor)||'—'}</b></div>
+        <div><span>Arq.:</span> <b>${escHtml(a.arq)||'—'}</b></div><div><span>Data:</span> <b>${fmtData(a.data)}</b></div>
+        ${a.lote?`<div><span>Lote:</span> <b>${escHtml(a.lote)}</b></div>`:''}
+        <div><span>Ambiente:</span> <b>${escHtml(a.ambiente)||'—'}</b></div>
+        <div><span>Status:</span> <b style="color:${sp.cor}">${sp.label}</b></div></div>
+      ${it.length?`<div class="table-scroll"><table class="tbl">
+        <thead><tr><th style="width:90px">Código</th><th>Produto</th><th style="width:56px" class="ctr">Qtde</th><th style="width:48px" class="ctr">Un.</th><th>Local</th><th>Dimensão</th><th>Acessórios</th><th>Puxador</th><th>Perfil</th><th>Cor</th><th>Obs.</th></tr></thead>
+        <tbody>${it.map(i=>`<tr><td class="cod-mono">${escHtml(i.codigo)||'—'}</td><td class="cel-nome">${escHtml(i.produto)||'—'}</td>
+          <td class="ctr">${escHtml(i.qtde)||'—'}</td><td class="ctr">${escHtml(i.unidade)||'—'}</td><td>${escHtml(i.local)||'—'}</td>
+          <td>${escHtml(i.dimensao)||'—'}${i.dimVao?`<div class="bom-sub">vão ${escHtml(i.dimVao)}</div>`:''}</td>
+          <td>${escHtml(i.acessorios)||'—'}</td>
+          <td>${escHtml(i.pux)||'—'}${i.posPux?`<div class="bom-sub">${escHtml(i.posPux)}</div>`:''}</td>
+          <td>${escHtml(i.perfil)||'—'}</td><td>${escHtml(i.cor)||'—'}</td><td>${escHtml(i.obs)||''}</td></tr>`).join('')}</tbody></table></div>`
+      :'<div class="bom-vz" style="border:0">Solicitação sem itens.</div>'}</div>`;
+  }).join('');
+}
+function bomSecPecas(p){
+  const M=bomPecas(p);
+  if(!M.length) return `<div class="bom-vz">Nenhuma lista de peças lida para este projeto.<br>Anexe o PDF “Lista de peças” em <b>PCP › Pasta de produção › Visualizador 3D (Dinabox)</b>.</div>`;
+  const porMat=new Map();
+  M.forEach(m=>m.pecas.forEach(x=>{ const q=parseInt(x.qtd,10)||1, k=bomNorm(x.mat)||'(sem material)', l=bomNum(x.larg), a=bomNum(x.alt);
+    if(!porMat.has(k)) porMat.set(k,{mat:k,pecas:0,area:0}); const g=porMat.get(k); g.pecas+=q; if(l&&a) g.area+=l*a*q/1e6; }));
+  const mats=[...porMat.values()].sort((a,b)=>a.mat.localeCompare(b.mat,'pt-BR'));
+  const totP=mats.reduce((s,x)=>s+x.pecas,0), totA=mats.reduce((s,x)=>s+x.area,0);
+  const d=bomDinaInfo(p);
+  return `<div class="table-wrap" style="margin-bottom:14px"><table class="tbl">
+      <thead><tr><th>Material</th><th style="width:100px" class="ctr">Peças</th><th style="width:120px" class="ctr">Área (m²)</th></tr></thead>
+      <tbody>${mats.map(x=>`<tr><td>${escHtml(x.mat)}</td><td class="ctr">${x.pecas}</td><td class="ctr">${x.area?fmtNum(+x.area.toFixed(2)):'—'}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td style="text-align:right;font-weight:600">Total</td><td class="ctr"><b>${totP}</b></td><td class="ctr"><b>${totA?fmtNum(+totA.toFixed(2)):'—'}</b></td></tr></tfoot></table></div>
+    ${d}
+    ${M.map(m=>`<details class="bom-mod" ${bomAbertos[m.cod]?'open':''} ontoggle="bomAbertos['${dinaAttr(m.cod)}']=this.open">
+      <summary><b>${escHtml(m.cod)}</b>${escHtml(m.nome)}<small>${escHtml(m.dim||'')}${m.dim?' · ':''}${m.pecas.length} peça(s)</small></summary>
+      <div class="table-scroll"><table class="tbl"><thead><tr><th style="width:56px" class="ctr">Qtd</th><th style="width:110px">Código</th><th>Peça</th><th>Material</th><th style="width:130px">Dimensões</th><th style="width:80px" class="ctr">Fita</th></tr></thead>
+      <tbody>${m.pecas.map(x=>`<tr><td class="ctr">${escHtml(x.qtd)}</td><td class="cod-mono">${escHtml(x.cod)}</td><td>${escHtml(x.nome)}${x.ref?`<div class="bom-sub">${escHtml(x.ref)}</div>`:''}</td>
+        <td>${escHtml(x.mat)}</td><td>${escHtml(x.larg)} × ${escHtml(x.alt)}</td><td class="ctr">${dinaLamSvg(x.lam)}</td></tr>`).join('')}</tbody></table></div></details>`).join('')}`;
+}
+function bomDinaInfo(p){
+  const d=DINA[dinaChave(p)]||{};
+  return d.pdfEm?`<p class="fld-hint" style="margin:0 0 10px">Lista de peças lida em ${escHtml(fmtData(String(d.pdfEm).slice(0,10)))}${d.pdfPor?' por '+escHtml(bomQuem(d.pdfPor)):''}.</p>`:'';
+}
+function renderBomDet(){
+  TELA='bom-det'; const p=bomProj, keep=view.scrollTop;
+  const info=oriProjetos().find(x=>x.projeto===p)||{projeto:p,cliente:'',ambiente:'',local:'',lote:''};
+  const r=(bomIndexar(),bomRes.get(p))||{fitas:0,aces:0,pecas:0};
+  view.innerHTML=`<div class="page page-wide opx dina">
+    <div style="margin-bottom:14px"><button class="btn btn-ghost" onclick="renderBom()">← Projetos</button></div>
+    <div class="dina-hero" style="background:var(--surface)">
+      <div style="position:relative;z-index:1"><h1>Lista de Materiais · Projeto ${escHtml(p)}</h1>
+        <p>${escHtml(info.cliente)||'—'}${info.ambiente?' · '+escHtml(info.ambiente):''}${info.local?' · '+escHtml(info.local):''}</p></div>
+      <div class="dina-chips"><div class="dina-chip"><span>Lote</span><b>${escHtml(info.lote)||'—'}</b></div>
+        <div class="dina-chip"><span>Fitas</span><b>${r.fitas}</b></div>
+        <div class="dina-chip"><span>Acessórios</span><b>${r.aces}</b></div>
+        <div class="dina-chip"><span>Peças</span><b>${r.pecas}</b></div></div>
+    </div>
+    <section class="dina-card bom-sec"><h3>Fita de borda <span class="bom-n ${r.fitas?'on':''}">${r.fitas}</span></h3>${bomSecFitas(p)}</section>
+    <section class="dina-card bom-sec"><h3>Acessórios <span class="bom-n ${r.aces?'on':''}">${r.aces}</span></h3>${bomSecAces(p)}</section>
+    <section class="dina-card bom-sec"><h3>Peças do projeto (Dinabox) <span class="bom-n ${r.pecas?'on':''}">${r.pecas}</span></h3>${bomSecPecas(p)}</section>
+  </div>`;
+  view.scrollTop=keep;
+}
+function bomRefresh(){
+  clearTimeout(_bomT);
+  _bomT=setTimeout(()=>{ if(TELA==='bom'){ bomIndexar(); atualizarBom(); } else if(TELA==='bom-det'&&bomProj) renderBomDet(); },80);
+}
+function bomLigar(){ ['aces','solfitas','histFitas','painel','dinabox','insumos','coresFita'].forEach(n=>db.ref(n).on('value',bomRefresh)); }
+
 function oriLigarDb(){
   // se a leitura for negada (ex.: regras ainda não publicadas), o Firebase cancela o listener;
   // aqui ele é religado sozinho, sem precisar recarregar a página
