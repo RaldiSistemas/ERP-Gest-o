@@ -4613,7 +4613,14 @@
     if(!s){ s=document.createElement('style'); s.id='pageStyle'; document.head.appendChild(s); }
     s.textContent='@page{ size:A4 '+mode+'; margin:8mm; }';
   }
-  function fecharFicha(){ const ov=document.getElementById('fichaOverlay'); ov.classList.remove('open'); ov.innerHTML=''; }
+  /* Nome do arquivo ao "Salvar como PDF": o navegador usa o título da página. Fica "Pedido <nº do projeto>" enquanto a folha está aberta. */
+  let TITULO_ORIGINAL=document.title;
+  function tituloPedido(numero){
+    const n=String(numero||'').trim().replace(/[\\\/:*?"<>|]+/g,'-');
+    document.title=n?('Pedido '+n):TITULO_ORIGINAL;
+  }
+  function restaurarTitulo(){ document.title=TITULO_ORIGINAL; }
+  function fecharFicha(){ const ov=document.getElementById('fichaOverlay'); ov.classList.remove('open'); ov.innerHTML=''; restaurarTitulo(); }
 
   /* ================= Solicitação de Acessórios (ACE) ================= */
   const ACE_COLS=[
@@ -4833,7 +4840,7 @@
         </select></td>
         <td class="acoes">
           <button class="icon-btn" title="Acompanhar itens" onclick="verAce('${a.id}','pcp')">${EYE_SVG}</button>
-          <button class="icon-btn" title="Imprimir / PDF" onclick="imprimirACE('${a.id}')">${FICHA_SVG}</button>
+          <button class="icon-btn" title="Imprimir / PDF (geral ou por categoria)" onclick="imprimirACEPcp('${a.id}')">${FICHA_SVG}</button>
           <button class="icon-btn" title="Editar" onclick="editarACE('${a.id}')">${EDIT_SVG}</button>
           <button class="icon-btn danger" title="${sp==='analise'?'Excluir':'Excluir (já liberada — confirmação reforçada)'}" onclick="excluirACE('${a.id}')">${TRASH_SVG}</button>
         </td></tr>`;
@@ -5316,6 +5323,29 @@
       numero:ace.numero, consultor:ace.consultor, arq:ace.arq, data:ace.data, itens:ace.itens });
   }
   function imprimirACE(id){ const a=ACES.find(x=>x.id===id); if(a) folhaACE(a); }
+  /* PCP: escolher PDF geral ou de uma categoria específica */
+  function imprimirACEPcp(id){
+    const a=ACES.find(x=>x.id===id); if(!a) return;
+    const its=aceLista(a).map(o=>o.it);
+    if(!its.length){ toast('Esta solicitação não tem itens'); return; }
+    const sem=its.filter(it=>!catDe(it)).length;
+    const op=(v,t,n,chk)=>`<label class="ace-pdf-op"><input type="radio" name="acePdfCat" value="${v}" ${chk?'checked':''} ${n===0?'disabled':''}> <span>${t}</span> <i>${n} item(ns)</i></label>`;
+    abrirModal('Imprimir / PDF · '+escHtml(a.cliente||'')+(a.ambiente?' — '+escHtml(a.ambiente):''),
+      `<style>.ace-pdf-op{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #dfe3ea;border-radius:10px;margin-bottom:8px;cursor:pointer}
+        .ace-pdf-op i{margin-left:auto;font-style:normal;color:#6b7280;font-size:12px}.ace-pdf-op input:disabled+span{opacity:.45}</style>
+       <p class="aviso" style="margin:0 0 12px">O arquivo será salvo como <b>${a.numero?'Pedido '+escHtml(a.numero):'(sem nº de projeto)'}</b>.</p>
+       ${op('',"Todas as categorias (PDF geral)",its.length,true)}
+       ${Object.entries(ACE_CATS).map(([k,c])=>op(k,escHtml(c.label),its.filter(it=>catDe(it)===k).length,false)).join('')}
+       ${op('__sem','Não categorizados',sem,false)}`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+       <button class="btn btn-primary" onclick="imprimirACEPcpOk('${a.id}')">Gerar PDF</button>`);
+  }
+  function imprimirACEPcpOk(id){
+    const a=ACES.find(x=>x.id===id); if(!a) return;
+    const r=document.querySelector('input[name="acePdfCat"]:checked');
+    fecharModal();
+    folhaACE(a,r?r.value:'');
+  }
 
   /* --- PDF: partes da folha (tabela, foto em folha inteira, tabela...) --- */
   function aceFolhaFotoHtml(it,ult){
@@ -5335,8 +5365,13 @@
     return out;
   }
 
-  function folhaACE(a){
-    const preenchidas=(Array.isArray(a.itens)?a.itens:Object.values(a.itens||{})).filter(itemPreenchido);
+  function folhaACE(a,catK){
+    const cat=ACE_CATS[catK]||null;
+    let preenchidas=(Array.isArray(a.itens)?a.itens:Object.values(a.itens||{})).filter(itemPreenchido);
+    if(catK==='__sem') preenchidas=preenchidas.filter(it=>!catDe(it));
+    else if(cat) preenchidas=preenchidas.filter(it=>catDe(it)===catK);
+    const catRot=catK==='__sem'?'Não categorizados':(cat?cat.label:'');
+    tituloPedido(a.numero);
     const ordem=Object.keys(ACE_TAM);
     const fi=it=>aceUrl(it.foto)&&aceTam(it)==='fi';        // Folha inteira: a foto ocupa uma página própria
     const noCol=it=>aceUrl(it.foto)&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';     // foto dentro da coluna Foto
@@ -5364,7 +5399,7 @@
       <div class="folha">
         <div class="folha-head">
           <img class="fl-logo" src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
-          <h1 class="fl-title">Solicitação de Acessórios</h1>
+          <h1 class="fl-title">Solicitação de Acessórios${catRot?' — '+escHtml(catRot):''}</h1>
           <div class="fl-date">${fmtData(a.data)}</div>
         </div>
         <div class="fl-band">
@@ -5373,6 +5408,7 @@
           <div class="fb"><b>Consultor(a):</b> ${escHtml(a.consultor)}</div>
           <div class="fb"><b>Número:</b> ${escHtml(a.numero)}</div>
           <div class="fb"><b>Arq:</b> ${escHtml(a.arq)}</div>
+          ${catRot?`<div class="fb"><b>Categoria:</b> ${escHtml(catRot)}</div>`:''}
         </div>
         ${partes}
         <div class="folha-foot">
@@ -5905,6 +5941,7 @@
         </table>`;
     const partes=aceFolhaPartes(units,tabela);
     const a0=lista[0].a;
+    tituloPedido(a0.numero);
     const ov=document.getElementById('fichaOverlay');
     ov.innerHTML=`
       <div class="ficha-actions folha-actions">
