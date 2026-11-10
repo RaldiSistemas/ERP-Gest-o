@@ -3143,7 +3143,14 @@
   .hl-it{ flex:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--muted); }
 
   /* formulário do PCP */
-  .tbl-ace td.ace-cat-td{ min-width:118px; }
+  .tbl-ace td.ace-cat-td{ min-width:118px; position:relative; }
+  .tbl-ace .ace-ins{ position:absolute; right:4px; bottom:-9px; z-index:6; width:18px; height:18px; padding:0; border-radius:50%; border:1px solid var(--linha); background:var(--surface); color:#982424; font:700 14px/1 inherit; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:.55; transition:opacity .12s, transform .12s, background .12s; box-shadow:0 1px 2px rgba(75,75,85,.15); }
+  .tbl-ace .ace-ins:hover,.tbl-ace .ace-ins:focus-visible{ opacity:1; background:#982424; color:#fff; border-color:#982424; transform:scale(1.15); }
+  @media (hover:hover){
+    .tbl-ace .ace-ins{ opacity:0; }
+    .tbl-ace tbody tr:hover .ace-ins{ opacity:.7; }
+    .tbl-ace tbody tr .ace-ins:hover{ opacity:1; }
+  }
   .tbl-ace tr.sc-prio td.ace-cat-td{ box-shadow:inset 3px 0 0 #e0a800; }
   .tbl-ace .acoes{ min-width:70px; }
 
@@ -4912,7 +4919,7 @@
       : `<p class="aviso">Selecione um cliente primeiro.</p>`;
 
     const rows=ace.itens.map((it,i)=>`<tr data-i="${i}" class="${(it.prio&&(!it.status||it.status==='pendente'))?'sc-prio':''}${i===aceRowAtiva?' ace-ativa':''}">
-      <td class="ace-cat-td">${aceCatCelula(it,i)}</td>
+      <td class="ace-cat-td">${aceCatCelula(it,i)}${i<ace.itens.length-1?`<button type="button" class="ace-ins" title="Inserir linha aqui" aria-label="Inserir linha abaixo do item ${i+1}" onclick="aceInserirLinha(${i})">+</button>`:''}</td>
       ${ACE_COLS.map(col=>{
         if(col.foto) return `<td>${aceFotoCelula(it,i)}</td>`;
         const v=escHtml(it[col.k]||''), cls='cell-in'+(col.c?' ctr':'');
@@ -5273,6 +5280,11 @@
     else if(e.key==='z'||e.key==='Z'){ e.preventDefault(); aceFotoZoom(); }
   }
 
+  function aceInserirLinha(i){            // insere uma linha vazia logo abaixo da linha i
+    aceCatSel=new Set(); aceRowAtiva=i+1;
+    ace.itens.splice(i+1,0,linhaVazia());
+    aceKeep(renderACEForm);
+  }
   function aceAddLinha(n){ for(let i=0;i<n;i++) ace.itens.push(linhaVazia()); renderACEForm(); }
   function aceRemLinha(i){ aceCatSel=new Set(); ace.itens.splice(i,1); if(!ace.itens.length) ace.itens.push(linhaVazia()); renderACEForm(); }
   function salvarACE(){
