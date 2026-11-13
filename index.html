@@ -7344,8 +7344,14 @@
     const blocos=ab.map(a=>{
       const r=opzPlanoRolo(a); if(!r) return '';
       const chip=(w,m,estilo)=>`<i style="${estilo}"></i>${fmtNum(+(+w).toFixed(2))} mm × ${fmtNum(+(+m).toFixed(2))} m`;
-      const pecas=(r.pecas||[]).slice().sort((p,q)=>q.w-p.w||p.x-q.x).map(pc=>{ const v=visualFita(mat,pc.w);
-        return `<span>${chip(pc.w,pc.m,v?v.estilo:'background:#c9c7bd')}</span>`; }).join('');
+      // com ambiente gravado: uma etiqueta por peça (medida + ambiente), para o operador do corte identificar cada uma
+      const comAmb=fbArr(a.cortes).some(c=>fbArr(c.pecas).some(x=>x&&x.amb));
+      const pecas=comAmb
+        ? fbArr(a.cortes).slice().sort((p,q)=>q.w-p.w).map(c=>{ const v=visualFita(mat,+c.w), est=v?v.estilo:'background:#c9c7bd';
+            const ps=fbArr(c.pecas).length?fbArr(c.pecas):[{m:c.m,amb:''}];
+            return ps.map(x=>`<span>${chip(c.w,x.m,est)}${x.amb?` · ${escHtml(x.amb)}`:''}</span>`).join(''); }).join('')
+        : (r.pecas||[]).slice().sort((p,q)=>q.w-p.w||p.x-q.x).map(pc=>{ const v=visualFita(mat,pc.w);
+            return `<span>${chip(pc.w,pc.m,v?v.estilo:'background:#c9c7bd')}</span>`; }).join('');
       const sobras=(r.sobras||[]).filter(sb=>sb.w>=10&&sb.m>=0.5).sort((p,q)=>q.w-p.w).map(sb=>`<span class="sb">${chip(sb.w,sb.m,'')} <small>sobra</small></span>`).join('');
       return `<div class="opz-plano-b">
         <div class="opz-plano-h"><b>Plano de corte</b><span>Rolo de ${fmtNum(+(+a.larguraRolo).toFixed(2))} mm · abrir ${fmtNum(+(+a.metros||r.totalM).toFixed(2))} m</span>
@@ -8828,8 +8834,9 @@
     const kerf=(corteMm!=null)?Math.max(0,+corteMm||0):corteFitaMm();
     const agreg=new Map();
     pedidosBrutos.forEach(p=>{
-      const k=p.mat+'|'+p.w;
-      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,mBase:0,pct:p.pct||0});
+      // p.id = linha da simulação: cada linha é uma PEÇA própria e não se soma às outras de mesma largura
+      const k=p.mat+'|'+p.w+'|'+(p.id||'');
+      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,mBase:0,pct:p.pct||0,peca:!!p.id,pk:p.id||'',amb:p.amb||''});
       agreg.get(k).m+=p.m; agreg.get(k).mBase+=(p.mBase!=null?p.mBase:p.m);
     });
     const pedidos=[...agreg.values()];
@@ -8850,14 +8857,21 @@
         const wNec=p.w, wComCorte=p.w*perda+kerf;
         // largura consumida: sem corte se a tira já tem a largura exata; senão a peça + a perda de corte (no máx. o que existe)
         const gastoDe=disp=>(Math.abs(disp-p.w)<1e-9)?wNec:Math.min(disp,wComCorte);
-        let falta=p.m, primeira=true;
+        let falta=p.m, primeira=true, seguirLargura=false;   // seguirLargura: parte da peça veio da ponta de uma compra contínua; o resto tem que continuar na MESMA fita (senão seria emenda)
         // 1) sobras: usa o que couber, em blocos de 3 m, mesmo que NÃO cubra a necessidade inteira.
         //    O que faltar passa para outra sobra ou para rolo novo (ex.: 480 m com sobra de 32 m -> 30 m da sobra + 450 m de rolo novo).
         while(falta>1e-9){
           let melhor=-1, melhorCobre=false;
+          // peça própria (linha): se a sobra cobre a peça INTEIRA, usa mesmo com menos de 3 m (não precisa emendar)
+          const inteira=s=>p.peca && s.m+1e-9>=falta;
+          // compra CONTÍNUA: o fornecedor só aceita o pedido em múltiplos (ex.: 10 m), mas não existe rolo físico. A ponta de uma compra
+          // da MESMA largura da peça (tira sem lateral) continua na próxima, então qualquer trecho dela é aproveitado, mesmo menor que 3 m.
+          // Ex.: 5 peças de 4 m em 22mm = 20 m = 2 × 10 m (e não 3).
+          const continua=s=>{ const rl=rolosUsados.find(r=>r.id===s.roloId); return !!rl && Math.abs(rl.largura-p.w)<0.01 && Math.abs(s.w-p.w)<0.01; };
+          const utilP=s=>(inteira(s)||continua(s))?s.m:sobraUtilM(s);
           sobras.forEach((s,si)=>{
             if(s.w+1e-9<wNec) return;
-            const util=sobraUtilM(s); if(util<SOBRA_BLOCO_M-1e-9) return;   // menos de 3 m: não reaproveita (emenda)
+            const util=utilP(s); if(!inteira(s) && !continua(s) && util<SOBRA_BLOCO_M-1e-9) return;   // menos de 3 m: não reaproveita (emenda)
             const cobre=util+1e-9>=falta;
             if(melhor<0){ melhor=si; melhorCobre=cobre; return; }
             const b=sobras[melhor];
@@ -8865,14 +8879,15 @@
             const mesmaW=Math.abs(s.w-b.w)<1e-9;
             // cobre tudo: encaixe justo (menor largura, menor sobra). Cobre parte: menor largura, maior trecho útil.
             if(cobre){ if(s.w<b.w-1e-9 || (mesmaW && s.m<b.m)) melhor=si; }
-            else if(s.w<b.w-1e-9 || (mesmaW && util>sobraUtilM(b))) melhor=si;
+            else if(s.w<b.w-1e-9 || (mesmaW && util>utilP(b))) melhor=si;
           });
           if(melhor<0) break;
           const s=sobras.splice(melhor,1)[0];
-          const take=+(melhorCobre?falta:sobraUtilM(s)).toFixed(4);
+          const take=+(melhorCobre?falta:(continua(s)?s.m:sobraUtilM(s))).toFixed(4);
+          if(!melhorCobre && continua(s)) seguirLargura=true;
           const gasto=gastoDe(s.w);
           const rl=rolosUsados.find(r=>r.id===s.roloId);
-          if(rl) rl.pecas.push({w:p.w,m:take,x:s.x,y:s.y,gasto,origem:'sobra'});
+          if(rl) rl.pecas.push({w:p.w,m:take,x:s.x,y:s.y,gasto,origem:'sobra',amb:p.amb||''});
           alocacoes.push({...p,m:take,mTotal:p.m,primeira,origem:'sobra',de:s.roloId,roloId:s.roloId,
             usou:`${fmtNum(s.w)}mm × ${fmtNum(+s.m.toFixed(2))}m`, corte:gasto>p.w+1e-9});
           primeira=false;
@@ -8882,6 +8897,7 @@
         if(falta<=1e-9) return;
         // 2) rolo novo para o que faltou
         let opcoes=ROLOS.filter(r=>r.l+1e-9>=wNec).map(r=>({...r,n:Math.max(1,Math.ceil((falta-1e-9)/r.m))}));
+        if(seguirLargura){ const mesma=opcoes.filter(o=>Math.abs(o.l-p.w)<0.01); if(mesma.length) opcoes=mesma; }
         // regra desligada: tira os rolos por metro (100/260mm) se existir algum rolo de 10 m que atenda a largura
         if(!ROLOS_POR_METRO){
           const semMetro=opcoes.filter(o=>o.doItem||o.m>ROLO_POR_METRO_MAX_M+1e-9);
@@ -8896,7 +8912,7 @@
         const id='R'+(++seq);
         const totalM=cand.m*nRolos;
         rolosUsados.push({id,largura:cand.l,metragem:cand.m,nRolos,totalM,chave,
-          pecas:[{w:p.w,m:falta,x:0,y:0,gasto:gastoN,origem:'novo'}]});
+          pecas:[{w:p.w,m:falta,x:0,y:0,gasto:gastoN,origem:'novo',amb:p.amb||''}]});
         alocacoes.push({...p,m:falta,mTotal:p.m,primeira,origem:'novo',de:chave,roloId:id,nRolos,corte:gastoN>p.w+1e-9,
           usou:`${nRolos>1?nRolos+'× ':''}${fmtNum(cand.l)}mm × ${fmtNum(cand.m)}m`});
         cortar(sobras,cand.l,totalM,0,0,gastoN,falta,id,p.w);
@@ -8936,11 +8952,11 @@
     const box=document.getElementById('fitaRes'), bar=document.getElementById('fitaBar');
     if(!box||!bar) return;
     const pedidosBrutos=[];
-    simF.linhas.forEach(r=>{
+    simF.linhas.forEach((r,ri)=>{
       const w=parseFloat(r.larguraNec), m=parseFloat(r.metragemNec), q=Math.max(1,parseInt(r.qtd,10)||1);
       if(!r.descricao||isNaN(w)||w<=0||isNaN(m)||m<=0) return;
       const base=m*q, pct=perdaFitaPct(w);
-      pedidosBrutos.push({mat:materialDe(r.descricao),desc:r.descricao,codigo:r.codigo,w,m:+(base*(1+pct/100)).toFixed(3),mBase:base,pct});
+      pedidosBrutos.push({id:'L'+ri,mat:materialDe(r.descricao),desc:r.descricao,codigo:r.codigo,w,m:+(base*(1+pct/100)).toFixed(3),mBase:base,pct});
     });
     if(!pedidosBrutos.length){
       simF.resultado=null;
@@ -9070,7 +9086,7 @@
           Nenhum rolo atende essa largura.</div>`:''}
         ${(M.rolosUsados||[]).map((r,n)=>`<div class="ft-rolo">
           <div class="ft-rolo-t"><b>Rolo ${n+1}</b><span>${fmtNum(r.largura)}mm × ${fmtNum(r.totalM)}m</span>
-            ${r.nRolos>1?`<i>${r.nRolos} rolos de ${fmtNum(r.metragem)}m emendados na sequência</i>`:''}</div>
+            ${r.nRolos>1?`<i>pedido contínuo de ${fmtNum(r.totalM)} m (${r.nRolos} × ${fmtNum(r.metragem)} m)</i>`:''}</div>
           ${planoCorteSVG(r,M.mat)}
           <table class="ft-pt"><thead><tr><th>Peça</th><th>Posição na largura</th><th>Trecho</th><th>Origem</th></tr></thead>
             <tbody>${(r.pecas||[]).map(pc=>`<tr>
@@ -10271,8 +10287,11 @@
       if(!r.descricao||isNaN(w)||w<=0||isNaN(m)||m<=0) return;
       const mat=materialDe(r.descricao), k=mat+'|'+w;
       if(!porChave.has(k)) porChave.set(k,{mat,codigo:r.codigo,descricao:r.descricao,largura:w,metros:0,
-        larguraRolo:parseFloat(r.larguraRolo)||null, metragemRolo:parseFloat(r.metragemRolo)||null, metrosBase:0, perdaPct:perdaFitaPct(w)});
+        larguraRolo:parseFloat(r.larguraRolo)||null, metragemRolo:parseFloat(r.metragemRolo)||null, metrosBase:0, perdaPct:perdaFitaPct(w), pecas:[]});
       porChave.get(k).metrosBase+=m*q;
+      // cada linha é UMA PEÇA (igual ao plano de corte da simulação). O total soma tudo, mas o lote precisa das peças
+      // separadas: 2 peças de 128mm × 2m cabem lado a lado num rolo de 260mm (2 m), e não 4 m de rolo.
+      porChave.get(k).pecas.push(+(m*q*(1+perdaFitaPct(w)/100)).toFixed(4));
     });
     // a perda da largura é somada AQUI, uma única vez: a solicitação já guarda a necessidade com perda (ex.: 10 m + 5% = 10,5 m)
     porChave.forEach(l=>{ l.metros=+(l.metrosBase*(1+l.perdaPct/100)).toFixed(4); });
@@ -10308,7 +10327,7 @@
           <tbody>${L.map(l=>`<tr>
             <td><div class="cel-nome">${escHtml(l.descricao)}</div><div class="cel-sub">${escHtml(l.codigo)}</div></td>
             <td class="ctr">${fmtNum(l.largura)}mm</td>
-            <td class="ctr sd-tot">${fmtNum(l.metros)} m${l.perdaPct>0?`<div class="cel-sub">${fmtNum(+l.metrosBase.toFixed(2))} m pedidos + ${fmtNum(l.perdaPct)}% de perda</div>`:''}</td>
+            <td class="ctr sd-tot">${fmtNum(l.metros)} m${l.perdaPct>0?`<div class="cel-sub">${fmtNum(+l.metrosBase.toFixed(2))} m pedidos + ${fmtNum(l.perdaPct)}% de perda</div>`:''}${(l.pecas||[]).length>1?`<div class="cel-sub">${l.pecas.length} peças: ${l.pecas.map(v=>fmtNum(+v.toFixed(2))+' m').join(' + ')}</div>`:''}</td>
           </tr>`).join('')}</tbody></table></div>
 
         <div class="sim-acao">
@@ -10326,7 +10345,7 @@
     const data={ id, ccCod:solFitaCalc.ccCod, setor:solFitaCalc.setor, obs:(solFitaCalc.obs||'').trim(),
       ...vincDados(solFitaCalc),
       itens:L.map(l=>({mat:l.mat,codigo:l.codigo,descricao:l.descricao,largura:l.largura,metros:l.metros,
-        larguraRolo:l.larguraRolo,metragemRolo:l.metragemRolo})),
+        larguraRolo:l.larguraRolo,metragemRolo:l.metragemRolo,pecas:l.pecas||[]})),
       criadoEm:new Date().toISOString(), criadoPor:usuarioAtual() };
     db.ref('solfitas/'+id).set(data)
       .then(()=>{ toast('Solicitação de fita criada');
@@ -10452,8 +10471,13 @@
         origemIds.push(r.id);
         (r.itens||[]).forEach(it=>{
           if(!it.largura||!it.metros) return;
-          pedidosBrutos.push({mat:it.mat,desc:it.descricao,codigo:it.codigo,w:it.largura,m:it.metros,
-            proj:{clienteNome:g.clienteNome||'',ambiente:g.ambiente||'',numeroProjeto:g.numeroProjeto||''}});
+          const base={mat:it.mat,desc:it.descricao,codigo:it.codigo,w:it.largura,
+            proj:{clienteNome:g.clienteNome||'',ambiente:g.ambiente||'',numeroProjeto:g.numeroProjeto||''}};
+          // solicitação nova guarda as peças (uma por linha do memorial); a antiga só tem o total
+          const ps=fbArr(it.pecas).map(Number).filter(v=>v>1e-9);
+          if(ps.length && Math.abs(ps.reduce((a,v)=>a+v,0)-it.metros)<0.01)
+            ps.forEach((pm,k)=>pedidosBrutos.push({...base,m:pm,pid:r.id+'#'+k}));
+          else pedidosBrutos.push({...base,m:it.metros});
           if(it.larguraRolo>0 && it.metragemRolo>0){
             rolosPorMat[it.mat]=rolosPorMat[it.mat]||ROLOS_FITA.map(x=>({...x}));
             if(!rolosPorMat[it.mat].some(x=>x.l===it.larguraRolo&&x.m===it.metragemRolo))
@@ -10473,8 +10497,8 @@
     const agreg=new Map();
     simFita.pedidosBrutos.forEach(p=>{
       const k=p.mat+'|'+p.w;
-      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,forcar:null});
-      agreg.get(k).m+=p.m;
+      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,forcar:null,pecas:[]});
+      agreg.get(k).m+=p.m; agreg.get(k).pecas.push({pid:p.pid||null,m:p.m});
       if(p.forcarRolo) agreg.get(k).forcar=p.forcarRolo;   // fita pedida editada na mesma largura: compra esse rolo direto
     });
     const liquidos=[], diretas=[], usos=new Map(), restM=new Map();
@@ -10491,7 +10515,15 @@
         u.estM+=usa; u.necM+=p.m; usos.set(ins.id,u);
       }
       const liq=+(p.m-usa).toFixed(4);
-      if(liq>1e-9) (p.forcar?diretas:liquidos).push({...p,m:liq});
+      if(liq<=1e-9) return;
+      if(p.forcar){ diretas.push({...p,m:liq}); return; }
+      // o estoque abate as peças em ordem; o que sobrar de cada peça vai para o corte SEPARADO (não soma de novo)
+      let resta=usa;
+      p.pecas.forEach(pc=>{
+        let m=pc.m;
+        if(resta>1e-9){ const t=Math.min(m,resta); m=+(m-t).toFixed(4); resta=+(resta-t).toFixed(4); }
+        if(m>1e-9) liquidos.push({mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m,forcar:null,id:pc.pid||undefined});
+      });
     });
     console.log('[fita-debug] liquidos', JSON.parse(JSON.stringify(liquidos)));
     simFita.corteMm=corteFitaMm();   // perda de corte (mm) usada neste cálculo: fica gravada no histórico
@@ -10552,10 +10584,12 @@
       const r=(M.rolosUsados||[]).find(x=>x.id===a.roloId);
       if(!r||Math.abs(r.largura-c.largura)>0.01||Math.abs(r.metragem-c.metrosRolo)>0.01) return;
       const k=a.mat+'|'+a.w;
-      if(!porW.has(k)) porW.set(k,{a,m:0});
-      porW.get(k).m+=a.m;    // a necessidade de uma largura pode vir de várias sobras/rolos: soma só o que saiu DESTA linha
+      if(!porW.has(k)) porW.set(k,{a,m:0,pcs:new Map()});
+      porW.get(k).m+=a.m;
+      porW.get(k).pcs.set(a.pk||'_',+(((porW.get(k).pcs.get(a.pk||'_'))||0)+a.m).toFixed(4));    // a necessidade de uma largura pode vir de várias sobras/rolos: soma só o que saiu DESTA linha
     });
-    porW.forEach(({a,m})=>{
+    const ambDe=pk=>{ const pb=simFita.pedidosBrutos.find(x=>x.pid&&x.pid===pk); return (pb&&pb.proj&&pb.proj.ambiente)||''; };
+    porW.forEach(({a,m,pcs})=>{
       const g=agreg.get(a.mat+'|'+a.w); if(!g) return;
       const projs=new Map();
       simFita.pedidosBrutos.forEach(p=>{
@@ -10565,7 +10599,7 @@
         if(!projs.has(k)) projs.set(k,{clienteNome:pr.clienteNome||'',ambiente:pr.ambiente||'',numeroProjeto:pr.numeroProjeto||'',metros:0});
         projs.get(k).metros+=p.m;
       });
-      itens.push({largura:a.w, metros:+g.m.toFixed(4), estoqueM:+Math.max(0,g.m-m).toFixed(4),
+      itens.push({largura:a.w, metros:+g.m.toFixed(4), estoqueM:+Math.max(0,g.m-m).toFixed(4), pecas:[...pcs.values()], pecasAmb:[...pcs.keys()].map(ambDe),
         projetos:[...projs.values()].map(x=>({...x,metros:+x.metros.toFixed(4)}))});
     });
     return itens;
@@ -10733,20 +10767,24 @@
     const larg=+l.largura||larguraDe(l.descricao), mRolo=+l.metrosRolo||0;
     const itens=fbArr(l.fitaItens);
     if(!larg||!mRolo||!itens.length) return [];
-    const porW=new Map();
-    itens.forEach(g=>{
-      const w=+g.largura, m=+((+g.metros||0)-(+g.estoqueM||0)).toFixed(4);
+    const porW=new Map(), pedidos=[];
+    itens.forEach((g,gi)=>{
+      const w=+g.largura, raw=fbArr(g.pecas).map(Number), ambs=fbArr(g.pecasAmb), okAmb=ambs.length===raw.length;
+      const pcs=raw.map((m,k)=>({m,amb:okAmb?String(ambs[k]||''):''})).filter(x=>x.m>1e-9);
+      if(pcs.length){ pcs.forEach((x,k)=>{ if(w>0) pedidos.push({mat:'x',w,m:x.m,amb:x.amb,id:'p'+gi+'_'+k}); }); return; }   // com peças: mesmo plano do lote
+      const m=+((+g.metros||0)-(+g.estoqueM||0)).toFixed(4);                                                  // histórico antigo: só o total
       if(w>0&&m>1e-9) porW.set(w,+((porW.get(w)||0)+m).toFixed(4));
     });
-    const pedidos=[...porW.entries()].map(([w,m])=>({mat:'x',w,m}));
+    [...porW.entries()].forEach(([w,m])=>pedidos.push({mat:'x',w,m}));
     if(!pedidos.length||pedidos.every(p=>Math.abs(p.w-larg)<0.01)) return []; // nada a abrir
     let mats; try{ mats=otimizarCorte(pedidos,{x:[{l:larg,m:mRolo}]},0,+l.corteMm||0); }catch(e){ return []; }
     const out=[];
     ((mats[0]&&mats[0].rolosUsados)||[]).forEach(r=>{
-      const cortes=new Map(); let fimY=0;
-      (r.pecas||[]).forEach(pc=>{ cortes.set(pc.w,+((cortes.get(pc.w)||0)+pc.m).toFixed(4)); fimY=Math.max(fimY,pc.y+pc.w); });
+      const cortes=new Map(), pecasW=new Map(); let fimY=0;
+      (r.pecas||[]).forEach(pc=>{ cortes.set(pc.w,+((cortes.get(pc.w)||0)+pc.m).toFixed(4)); fimY=Math.max(fimY,pc.y+pc.w);
+        if(!pecasW.has(pc.w)) pecasW.set(pc.w,[]); pecasW.get(pc.w).push({m:+(+pc.m).toFixed(4),amb:pc.amb||''}); });
       if(cortes.size===1&&Math.abs([...cortes.keys()][0]-r.largura)<0.01) return; // rolo usado inteiro
-      const lista=[...cortes.entries()].map(([w,m])=>({w,m})).sort((a,b)=>b.w-a.w);
+      const lista=[...cortes.entries()].map(([w,m])=>{ const ps=pecasW.get(w)||[]; return ps.some(x=>x.amb)?{w,m,pecas:ps}:{w,m}; }).sort((a,b)=>b.w-a.w);
       out.push({sim:histId||'',larguraRolo:r.largura,metrosRolo:r.metragem,rolos:r.nRolos,metros:r.totalM,
         cortes:lista,corteMm:+l.corteMm||0,refugoMm:+Math.max(0,r.largura-fimY).toFixed(2)});
     });
