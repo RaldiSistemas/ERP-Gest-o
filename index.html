@@ -5519,10 +5519,9 @@
         const i=document.getElementById('fitaCorteMm'); if(i&&document.activeElement!==i) i.value=CORTE_MM||'';
         if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
       e=>console.warn('configFita/corteMm:',e.message));
-    db.ref('configFita/rolosPorMetro').on('value',s=>{ ROLOS_POR_METRO=(s.val()!==false);
-        const c=document.getElementById('fitaRolosMetro'); if(c) c.checked=ROLOS_POR_METRO;
-        if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
-      e=>console.warn('configFita/rolosPorMetro:',e.message));
+    db.ref('configFita/precos').on('value',s=>{ aplicarPrecosFita(s.val());
+        if(TELA==='fita'&&typeof renderFita==='function'&&!document.getElementById('modalOv')) renderFita(); },
+      e=>console.warn('configFita/precos:',e.message));
     db.ref('atividades').on('value',s=>{ ATIVIDADES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('producao').on('value',s=>{ PRODUCAO=s.val()||{}; if(TELA==='acomp') renderAba(); });
     db.ref('tarefas').on('value',s=>{ TAREFAS=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
@@ -8597,16 +8596,21 @@
 
 
   /* ================= Memorial de cálculo — Simulação de fita ================= */
-  const ROLOS_FITA=[{l:22,m:10},{l:35,m:10},{l:45,m:10},{l:100,m:1},{l:260,m:1}];
-  // PREÇO por rolo (R$) — usado para escolher o rolo mais barato na compra. Chave: largura -> {metros do rolo: preço}.
-  // Ex.: 22mm x 10m = R$ 13,00 (R$ 1,30/m); 100mm vendido por metro = R$ 5,72. Abaixo de 3 m o 100mm sai mais barato; de 3 m em diante, o 22mm.
-  // Rolo sem preço aqui é estimado pela área, na mesma proporção (R$ por mm x m) dos rolos com preço. Preencha os demais quando tiver.
-  const PRECO_ROLO={22:{10:13},100:{1:5.72}};
+  // Cadastro de preços da fita: preço por METRO de cada largura (p) e o múltiplo em que o fornecedor aceita o pedido (m).
+  // Não existe rolo físico: m é só o intervalo de pedido (22mm de 10 em 10 m; 100mm de 1 em 1 m...). Fica em configFita/precos.
+  const PRECOS_FITA_PADRAO=[{l:22,p:1.35,m:10},{l:35,p:2.85,m:1},{l:45,p:2.85,m:1},{l:100,p:6,m:1},{l:260,p:17,m:1}];
+  const ROLOS_FITA=PRECOS_FITA_PADRAO.map(x=>({...x}));
+  function aplicarPrecosFita(v){
+    const lista=(Array.isArray(v)?v:Object.values(v||{})).map(x=>({l:parseFloat(x&&x.l),p:parseFloat(x&&x.p),m:parseFloat(x&&x.m)}))
+      .filter(x=>x.l>0&&x.p>0&&x.m>0).sort((a,b)=>a.l-b.l);
+    ROLOS_FITA.splice(0,ROLOS_FITA.length,...(lista.length?lista:PRECOS_FITA_PADRAO.map(x=>({...x}))));
+  }
+  // custo = preço por metro cadastrado × metros comprados. Largura sem preço: estima pela média de R$/mm·m das cadastradas.
   function precoRolo(r){
-    const t=PRECO_ROLO[r.l]; if(t&&t[r.m]!=null) return t[r.m];
-    let somaP=0, somaA=0;
-    Object.keys(PRECO_ROLO).forEach(l=>Object.keys(PRECO_ROLO[l]).forEach(m=>{ somaP+=PRECO_ROLO[l][m]; somaA+=(+l)*(+m); }));
-    return r.l*r.m*(somaA?somaP/somaA:1);
+    const e=ROLOS_FITA.find(x=>Math.abs(x.l-r.l)<0.01);
+    if(e&&e.p>0) return e.p*r.m;
+    let soma=0,n=0; ROLOS_FITA.forEach(x=>{ if(x.p>0){ soma+=x.p/x.l; n++; } });
+    return r.l*r.m*(n?soma/n:0.1);
   }
   // Sobras só são reaproveitadas em blocos de 3 m (tamanho da chapa): um pedaço menor teria que ser emendado.
   // Ex.: sobra de 32 m -> 30 m utilizáveis; sobra de 2 m -> não é reaproveitada.
@@ -8624,18 +8628,37 @@
   let CORTE_MM=0;
   function corteFitaMm(){ return CORTE_MM>0?CORTE_MM:0; }
 
-  // REGRA "ROLO POR METRO": com ela LIGADA (padrão) o sistema escolhe o rolo mais barato — e, abaixo de ~3 m,
-  // o 100mm/260mm vendido por metro (ex.: 1 m de 100mm) sai mais barato que um rolo de 10 m de 22mm.
-  // DESLIGADA: rolos vendidos por metro (<= 1 m) só entram se nenhum rolo de 10 m atender a largura
-  // (ex.: 22mm pede 10 m de 22mm; 60mm continua usando o 100mm porque não existe rolo de 10 m dessa largura).
-  // Fica em configFita/rolosPorMetro (false = desligada) e vale para a simulação do projeto e do lote.
-  let ROLOS_POR_METRO=true;
-  const ROLO_POR_METRO_MAX_M=1;
-  function salvarRolosPorMetro(on){
-    db.ref('configFita/rolosPorMetro').set(on?null:false)
-      .then(()=>{ ROLOS_POR_METRO=!!on; simF.resultado=null; if(TELA==='fita') fitaLive(true);
-        toast(on?'Regra de rolo por metro ligada':'Regra de rolo por metro desligada'); })
-      .catch(e=>{ toast('Erro ao salvar: '+e.message); const c=document.getElementById('fitaRolosMetro'); if(c) c.checked=ROLOS_POR_METRO; });
+  function precoLinhaHtml(r){
+    return `<tr><td><input class="cell-in ctr" type="number" step="any" min="0" data-pl value="${r.l||''}" placeholder="22"></td>
+      <td><input class="cell-in ctr" type="number" step="any" min="0" data-pp value="${r.p||''}" placeholder="0,00"></td>
+      <td><input class="cell-in ctr" type="number" step="any" min="0" data-pm value="${r.m||''}" placeholder="1"></td>
+      <td style="width:40px"><button class="icon-btn danger" title="Remover" onclick="this.closest('tr').remove()">${TRASH_SVG}</button></td></tr>`;
+  }
+  function abrirConfigPrecosFita(){
+    const corpo=`<p style="font-size:13px;color:var(--muted);margin:0 0 14px">Informe o <b>preço por metro</b> de cada largura e o <b>múltiplo</b> em que o fornecedor aceita o pedido
+        (ex.: 22mm de 10 em 10 m; 100mm de 1 em 1 m). A simulação escolhe a combinação de <b>menor custo total</b>, inclusive aproveitando fita mais larga quando compensa.</p>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Largura (mm)</th><th>Preço por metro (R$)</th><th>Pedido em múltiplos de (m)</th><th></th></tr></thead>
+      <tbody id="precosTb">${ROLOS_FITA.map(precoLinhaHtml).join('')}</tbody></table></div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="document.getElementById('precosTb').insertAdjacentHTML('beforeend',precoLinhaHtml({}))">+ Adicionar largura</button>`;
+    abrirModal('Cadastro de preços da fita',corpo,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button><button class="btn btn-primary" onclick="salvarConfigPrecosFita()">Salvar</button>`);
+  }
+  function salvarConfigPrecosFita(){
+    const lista=[], vistos=new Set(); let erro='';
+    document.querySelectorAll('#precosTb tr').forEach(tr=>{
+      const g=a=>parseFloat(String(tr.querySelector('['+a+']').value).replace(',','.'));
+      const l=g('data-pl'), pr=g('data-pp'), m=g('data-pm');
+      if(!(l>0)&&!(pr>0)&&!(m>0)) return;   // linha em branco
+      if(!(l>0&&pr>0&&m>0)){ erro='Preencha largura, preço e múltiplo em todas as linhas'; return; }
+      if(vistos.has(l)){ erro='Largura repetida: '+fmtNum(l)+'mm'; return; }
+      vistos.add(l); lista.push({l,p:+pr.toFixed(4),m});
+    });
+    if(erro){ toast(erro); return; }
+    if(!lista.length){ toast('Cadastre ao menos uma largura'); return; }
+    lista.sort((a,b)=>a.l-b.l);
+    db.ref('configFita/precos').set(lista)
+      .then(()=>{ aplicarPrecosFita(lista); simF.resultado=null; fecharModal(); if(TELA==='fita') renderFita(); toast('Preços salvos'); })
+      .catch(e=>toast('Erro ao salvar: '+e.message));
   }
   function salvarCorteFita(v){
     const n=parseFloat(String(v).replace(',','.'));
@@ -8758,16 +8781,14 @@
           <div class="ft-cfg-perda">
             <button class="btn btn-ghost" onclick="abrirConfigPerdaFita()">${ICO_ENGR}Configurar perda</button>
             <span id="fitaPerdaChips" style="display:contents">${perdaFitaChips()}</span>
-            <label class="ft-corte ft-rmetro" title="Ligada: o sistema pode comprar 1 m de fita 100mm/260mm quando sair mais barato (necessidades pequenas). Desligada: sempre compra rolo de 10 m da largura certa (ex.: 22mm), e só usa 100/260mm se nenhum rolo de 10 m atender a largura.">
-              <span>Rolo 100/260mm por metro</span>
-              <input id="fitaRolosMetro" type="checkbox" ${ROLOS_POR_METRO?'checked':''} onchange="salvarRolosPorMetro(this.checked)"></label>
+            <button class="btn btn-ghost" onclick="abrirConfigPrecosFita()">${ICO_ENGR}Cadastro de preços</button>
             <label class="ft-corte" title="Largura que a lâmina consome a cada corte de abertura do rolo (ex.: 2 mm). Vale para o projeto e para o lote."><span>Perda de corte</span>
               <input id="fitaCorteMm" type="number" step="any" min="0" max="50" value="${CORTE_MM||''}" placeholder="0"
                 onchange="salvarCorteFita(this.value)" onkeydown="if(event.key==='Enter') this.blur()"><em>mm</em></label>
           </div>
         </div>
-        <div class="ft-strip"><span class="fr-t">Rolos do fornecedor</span>
-          ${ROLOS_FITA.map(r=>`<span class="fr-p">${r.l}mm × ${r.m}m</span>`).join('')}
+        <div class="ft-strip"><span class="fr-t">Preços do fornecedor</span>
+          ${ROLOS_FITA.map(r=>`<span class="fr-p" title="Pedido em múltiplos de ${fmtNum(r.m)} m">${fmtNum(r.l)}mm · R$ ${(+r.p).toFixed(2).replace('.',',')}/m · de ${fmtNum(r.m)} em ${fmtNum(r.m)} m</span>`).join('')}
           <span class="fr-obs">+ as dimensões dos itens que você lançar</span></div>
         <div class="ft-tw"><table class="ft-tbl">
           <thead>
@@ -8828,7 +8849,8 @@
   // rolosPorMat: {mat: [{l,m,doItem?}]} — opções de rolo por material (catálogo padrão + rolos avulsos informados).
   // Junta pedaços da mesma largura dentro do mesmo material antes de otimizar — isso evita comprar
   // rolos "picados" à toa quando duas necessidades de mesma largura poderiam vir de uma compra só.
-  function otimizarCorte(pedidosBrutos,rolosPorMat,perdaPct,corteMm){
+  function otimizarCorte(pedidosBrutos,rolosPorMat,perdaPct,corteMm,opts){
+    const OP=opts||{};   // OP.forcar: {'MATERIAL|largura': larguraDoRolo} força a fita comprada; OP.semSobra: não reaproveita sobras
     const perda=1+((perdaPct||0)/100);
     // perda de corte (mm) por abertura; sem o 4º parâmetro usa a configuração atual da tela de simulação
     const kerf=(corteMm!=null)?Math.max(0,+corteMm||0):corteFitaMm();
@@ -8853,14 +8875,16 @@
       const compras={}, alocacoes=[];
       let seq=0;
 
-      lista.forEach(p=>{
+      lista.forEach((p,pi)=>{
         const wNec=p.w, wComCorte=p.w*perda+kerf;
         // largura consumida: sem corte se a tira já tem a largura exata; senão a peça + a perda de corte (no máx. o que existe)
         const gastoDe=disp=>(Math.abs(disp-p.w)<1e-9)?wNec:Math.min(disp,wComCorte);
         let falta=p.m, primeira=true, seguirLargura=false;   // seguirLargura: parte da peça veio da ponta de uma compra contínua; o resto tem que continuar na MESMA fita (senão seria emenda)
         // 1) sobras: usa o que couber, em blocos de 3 m, mesmo que NÃO cubra a necessidade inteira.
         //    O que faltar passa para outra sobra ou para rolo novo (ex.: 480 m com sobra de 32 m -> 30 m da sobra + 450 m de rolo novo).
-        while(falta>1e-9){
+        // custo de comprar f metros desta largura (menor opção do cadastro de preços)
+        const custoCompra=f=>{ if(f<=1e-9) return 0; let b=Infinity; ROLOS.forEach(o=>{ if(o.l+1e-9>=wNec){ const c=precoRolo(o)*Math.ceil(f/o.m-1e-9); if(c<b) b=c; } }); return b; };
+        while(falta>1e-9 && !OP.semSobra){
           let melhor=-1, melhorCobre=false;
           // peça própria (linha): se a sobra cobre a peça INTEIRA, usa mesmo com menos de 3 m (não precisa emendar)
           const inteira=s=>p.peca && s.m+1e-9>=falta;
@@ -8882,6 +8906,15 @@
             else if(s.w<b.w-1e-9 || (mesmaW && util>utilP(b))) melhor=si;
           });
           if(melhor<0) break;
+          // sobra que NÃO cobre a necessidade inteira só entra se realmente reduzir a compra (senão só cria emenda à toa).
+          // Ex.: 38,85 m de 22mm = 40 m comprados com ou sem os 6 m da sobra do 35mm -> não usa.
+          if(!melhorCobre){
+            const sb=sobras[melhor];
+            if(!continua(sb)){
+              const tk=sobraUtilM(sb);
+              if(custoCompra(+(falta-tk).toFixed(4)) >= custoCompra(falta)-1e-9) break;
+            }
+          }
           const s=sobras.splice(melhor,1)[0];
           const take=+(melhorCobre?falta:(continua(s)?s.m:sobraUtilM(s))).toFixed(4);
           if(!melhorCobre && continua(s)) seguirLargura=true;
@@ -8896,14 +8929,16 @@
         }
         if(falta<=1e-9) return;
         // 2) rolo novo para o que faltou
+        // a escolha da fita olha a demanda TOTAL desta largura (esta peça + as próximas de mesma largura), não só esta peça:
+        // 1 peça de 4 m sairia mais barata em 35mm por metro, mas 5 peças de 4 m saem bem mais baratas num pedido contínuo de 20 m de 22mm.
+        const resto=lista.slice(pi+1).filter(q=>Math.abs(q.w-p.w)<1e-9);
+        const demanda=falta+resto.reduce((a,q)=>a+q.m,0), maiorPeca=Math.max(falta,...resto.map(q=>q.m));
+        const tirasPor=r=>p.peca?Math.max(1,Math.floor((r.l+kerf)/(wComCorte)+1e-9)):1;   // tiras lado a lado na largura (só quando cada linha é uma peça)
+        const custoTotal=r=>precoRolo(r)*Math.max(1,Math.ceil(Math.max(maiorPeca,demanda/tirasPor(r))/r.m-1e-9));
         let opcoes=ROLOS.filter(r=>r.l+1e-9>=wNec).map(r=>({...r,n:Math.max(1,Math.ceil((falta-1e-9)/r.m))}));
         if(seguirLargura){ const mesma=opcoes.filter(o=>Math.abs(o.l-p.w)<0.01); if(mesma.length) opcoes=mesma; }
-        // regra desligada: tira os rolos por metro (100/260mm) se existir algum rolo de 10 m que atenda a largura
-        if(!ROLOS_POR_METRO){
-          const semMetro=opcoes.filter(o=>o.doItem||o.m>ROLO_POR_METRO_MAX_M+1e-9);
-          if(semMetro.length) opcoes=semMetro;
-        }
-        opcoes.sort((a,b)=> (precoRolo(a)*a.n)-(precoRolo(b)*b.n) || (a.l*a.m*a.n)-(b.l*b.m*b.n) || a.l-b.l);   // menor custo; empate: menor área
+        if(OP.forcar){ const fl=OP.forcar[mat+'|'+p.w]; if(fl){ const fo=opcoes.filter(o=>Math.abs(o.l-fl)<0.01); if(fo.length) opcoes=fo; } }
+        opcoes.sort((a,b)=> (custoTotal(a)-custoTotal(b)) || (precoRolo(a)*a.n)-(precoRolo(b)*b.n) || (a.l*a.m*a.n)-(b.l*b.m*b.n) || a.l-b.l);   // menor custo; empate: menor área
         const cand=opcoes[0];
         if(!cand){ alocacoes.push({...p,m:falta,mTotal:p.m,primeira,origem:'impossivel'}); return; }
         const nRolos=cand.n, chave=`${fmtNum(cand.l)}x${fmtNum(cand.m)}`;
@@ -8940,6 +8975,52 @@
     });
     return materiais;
   }
+  /* ===== Simulações por preço (tela "Fitas pedidas") ===== */
+  const brlFita=n=>'R$ '+(+n||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  function custoMateriais(mats){
+    let t=0;
+    (mats||[]).forEach(M=>Object.entries(M.compras||{}).forEach(([k,n])=>{ const [l,m]=k.split('x').map(Number); t+=precoRolo({l,m})*n; }));
+    return +t.toFixed(4);
+  }
+  // Gera várias combinações (qual largura comprar para cada fita pedida, com e sem reaproveitar sobras),
+  // calcula o custo de cada uma pelo Cadastro de preços e devolve da mais barata para a mais cara (sem repetir a mesma compra).
+  function sfCenarios(pedidos,rolosPorMat,kerf){
+    const chaves=[], vistos=new Set();
+    pedidos.forEach(p=>{
+      const k=p.mat+'|'+p.w; if(vistos.has(k)) return; vistos.add(k);
+      const lst=rolosPorMat[p.mat]||ROLOS_FITA;
+      const cands=[...new Set(lst.filter(r=>r.l+1e-9>=p.w).map(r=>r.l))].sort((a,b)=>a-b);
+      chaves.push({k,cands});
+    });
+    let combos=[{}];
+    const prod=chaves.reduce((a,c)=>a*Math.max(1,c.cands.length),1);
+    if(prod<=240){ chaves.forEach(c=>{ const n=[]; combos.forEach(cb=>c.cands.forEach(l=>n.push({...cb,[c.k]:l}))); combos=n; }); combos.unshift({}); }
+    else chaves.forEach(c=>c.cands.forEach(l=>combos.push({[c.k]:l})));
+    const out=new Map();
+    combos.forEach(forcar=>[false,true].forEach(semSobra=>{
+      let mats; try{ mats=otimizarCorte(pedidos,rolosPorMat,0,kerf,{forcar,semSobra}); }catch(e){ return; }
+      if(!mats.length || mats.some(M=>M.alocacoes.some(a=>a.origem==='impossivel'))) return;
+      const sig=mats.map(M=>M.mat+':'+Object.entries(M.compras).sort().map(([k,n])=>k+'*'+n).join(',')).join('|');
+      const nSobra=mats.reduce((a,M)=>a+M.alocacoes.filter(x=>x.origem==='sobra').length,0);
+      const sc={mats,sig,nSobra,custo:custoMateriais(mats),metros:mats.reduce((a,M)=>a+M.totalMetros,0)};
+      const ex=out.get(sig); if(!ex||nSobra<ex.nSobra) out.set(sig,sc);
+    }));
+    return [...out.values()].sort((a,b)=>a.custo-b.custo||a.nSobra-b.nSobra||a.metros-b.metros);
+  }
+  function sfResumoCompra(mats){
+    const varios=mats.length>1;
+    return mats.map(M=>(M.linhasCompra||[]).map(c=>`${varios?M.mat.slice(0,26)+' · ':''}${fmtNum(c.largura)}mm × ${fmtNum(+c.metros.toFixed(2))} m`).join(' + ')).filter(Boolean).join(' + ');
+  }
+  function sfNotaCenario(mats){
+    const n=new Set(); let sobra=false;
+    mats.forEach(M=>M.alocacoes.forEach(a=>{
+      if(a.origem==='sobra') sobra=true;
+      if(a.origem==='novo'){ const l=parseFloat(String(a.de).split('x')[0]); if(l>a.w+1e-9) n.add(`${fmtNum(a.w)}mm cortado do rolo de ${fmtNum(l)}mm`); }
+    }));
+    if(sobra) n.add('reaproveita sobra');
+    return [...n].join(' · ')||'compra direta, sem cortar fita mais larga';
+  }
+
   // Cálculo ao vivo: monta os pedidos das linhas preenchidas e redesenha só o plano (a tabela de entrada não é tocada).
   let _fitaRaf=0;
   function fitaLive(agora){
@@ -10418,6 +10499,70 @@
   }
   function sfToggleSelecao(){ sfModoSel=!sfModoSel; sfSel=new Set(); renderSolFitas(); }
   function sfMarcar(chave,checked){ if(checked) sfSel.add(chave); else sfSel.delete(chave); renderSolFitas(); }
+  // Miniatura do plano de corte na tela "Fitas pedidas": só a medida de cada peça, sem a tabela de detalhes.
+  // É o plano DESTA solicitação isolada: ao agrupar por lote o resultado pode mudar (mais peças dividem o mesmo rolo).
+  function sfMiniSVG(r,mat){
+    const W=470, pl=3, iw=W-pl*2, ih=Math.max(26,Math.min(64,r.largura*0.3)), H=ih+4;
+    const ex=m=>pl+(m/r.totalM)*iw, ey=mm=>2+(mm/r.largura)*ih;
+    let g=`<rect x="${pl}" y="2" width="${iw}" height="${ih}" rx="5" fill="#fff" stroke="#b9b7ad"/>`;
+    (r.sobras||[]).forEach(sb=>{ g+=`<rect x="${ex(sb.x)}" y="${ey(sb.y)}" width="${Math.max(1,ex(sb.x+sb.m)-ex(sb.x))}" height="${Math.max(2,ey(sb.y+sb.w)-ey(sb.y))}" fill="#eeede7"/>`; });
+    (r.pecas||[]).forEach(pc=>{
+      const x=ex(pc.x), y=ey(pc.y), w=Math.max(1,ex(pc.x+pc.m)-x), h=Math.max(3,ey(pc.y+pc.w)-y);
+      let v=null; try{ v=visualFita(mat,pc.w); }catch(e){}
+      const fill=(v&&v.hex&&!v.img)?v.hex:'#8d8b82', t=`${fmtNum(+pc.w.toFixed(2))} × ${fmtNum(+pc.m.toFixed(2))}`;
+      g+=`<rect x="${x+.5}" y="${y+.5}" width="${Math.max(1,w-1)}" height="${Math.max(2,h-1)}" rx="3" fill="${fill}" stroke="rgba(0,0,0,.4)"/>`;
+      if(w>t.length*6.2+16 && h>=16){ const tw=t.length*6.2+12;
+        g+=`<rect x="${x+w/2-tw/2}" y="${y+h/2-8}" width="${tw}" height="16" rx="8" fill="rgba(20,20,24,.72)"/><text x="${x+w/2}" y="${y+h/2+4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#fff">${t}</text>`; }
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" style="display:block;width:100%;height:auto" role="img" aria-label="Plano de corte">${g}</svg>`;
+  }
+  let sfSim=null;   // {lista:[cenários], sel:índice} da simulação aberta no modal "Fitas pedidas"
+  function sfPlanoHtml(mats){
+    const blocos=[];
+    mats.forEach(M=>(M.rolosUsados||[]).forEach(r=>{
+      const chips=(r.pecas||[]).slice().sort((a,b)=>b.w-a.w||a.x-b.x).map(pc=>`<span style="display:inline-block;padding:1px 8px;border:1px solid #d6d4ca;border-radius:9px;background:#fff;font-size:11px;font-weight:600">${fmtNum(+pc.w.toFixed(2))} mm × ${fmtNum(+pc.m.toFixed(2))} m</span>`).join(' ');
+      blocos.push(`<div style="margin-bottom:10px"><div class="cel-sub" style="margin-bottom:3px">${fmtNum(r.largura)} mm × ${fmtNum(+r.totalM.toFixed(2))} m</div>${sfMiniSVG(r,M.mat)}<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${chips}</div></div>`);
+    }));
+    return blocos.join('');
+  }
+  function sfSimHtml(){
+    const L=sfSim.lista, sel=L[sfSim.sel], base=L[0];
+    const esc=sfSim.sel===0;
+    const resumo=`<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;margin-top:14px;border:1px solid #e1dfd5;border-radius:12px;background:#faf9f4">
+        <div><div class="cel-sub" style="font-weight:600">${esc?'Simulação escolhida (menor custo)':'Simulação alternativa #'+sfSim.sel}</div>
+          <div style="font-size:12.5px;margin-top:2px">${escHtml(sfResumoCompra(sel.mats))}</div></div>
+        <div style="text-align:right"><div style="font-size:20px;font-weight:700;line-height:1.1">${brlFita(sel.custo)}</div>
+          ${esc?'':`<div class="cel-sub" style="color:#982424">+ ${brlFita(sel.custo-base.custo)} que a escolhida</div><button class="btn btn-ghost btn-sm" style="margin-top:4px" onclick="sfSelSim(0)">Voltar à escolhida</button>`}</div></div>
+      <div style="margin-top:14px"><div class="cel-sub" style="font-weight:600;margin-bottom:6px">Plano de corte</div>${sfPlanoHtml(sel.mats)}</div>`;
+    const outras=L.slice(1,6).map((c,i)=>`<button type="button" onclick="sfSelSim(${i+1})" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:8px 12px;margin-bottom:6px;border:1px solid ${sfSim.sel===i+1?'#982424':'#e1dfd5'};border-radius:10px;background:${sfSim.sel===i+1?'#fbeeee':'#fff'};cursor:pointer;font:inherit">
+        <span style="min-width:0"><span style="font-size:12.5px;font-weight:600">${escHtml(sfResumoCompra(c.mats))}</span><br><span class="cel-sub">${escHtml(sfNotaCenario(c.mats))}</span></span>
+        <span style="flex:none;text-align:right"><b>${brlFita(c.custo)}</b><br><span class="cel-sub">${c.custo-base.custo>0.005?'+ '+brlFita(c.custo-base.custo):'mesmo valor'}</span></span></button>`).join('');
+    return resumo+`<div style="margin-top:14px"><div class="cel-sub" style="font-weight:600;margin-bottom:6px">Outras simulações mais baratas</div>${outras||'<div class="cel-sub">Não há outras combinações possíveis para esta solicitação.</div>'}</div>`;
+  }
+  function sfSelSim(i){
+    if(!sfSim||!sfSim.lista[i]) return;
+    sfSim.sel=i; const b=document.getElementById('sfSimArea'); if(b) b.innerHTML=sfSimHtml();
+  }
+  function sfMiniPlano(g){
+    try{
+      const pedidos=[], rolosPorMat={};
+      g.regs.forEach(r=>(r.itens||[]).forEach((it,ii)=>{
+        if(!it.largura||!it.metros) return;
+        const base={mat:it.mat,desc:it.descricao,codigo:it.codigo,w:it.largura};
+        const ps=fbArr(it.pecas).map(Number).filter(v=>v>1e-9);
+        if(ps.length && Math.abs(ps.reduce((a,v)=>a+v,0)-it.metros)<0.01) ps.forEach((pm,k)=>pedidos.push({...base,m:pm,id:r.id+'#'+ii+'_'+k}));
+        else pedidos.push({...base,m:it.metros});   // solicitação antiga: só o total
+        rolosPorMat[it.mat]=rolosPorMat[it.mat]||ROLOS_FITA.map(x=>({...x}));
+        if(it.larguraRolo>0&&it.metragemRolo>0&&!rolosPorMat[it.mat].some(x=>x.l===it.larguraRolo&&x.m===it.metragemRolo))
+          rolosPorMat[it.mat].push({l:it.larguraRolo,m:it.metragemRolo,doItem:true});
+      }));
+      if(!pedidos.length) return '';
+      const lista=sfCenarios(pedidos,rolosPorMat,corteFitaMm());
+      if(!lista.length) return '';
+      sfSim={lista,sel:0};
+      return `<div id="sfSimArea">${sfSimHtml()}</div>`;
+    }catch(e){ console.warn('mini plano',e); return ''; }
+  }
   function sfAbrirGrupo(chave){
     const g=gruposSolFita().find(x=>x.chave===chave); if(!g) return;
     const itens=itensDoGrupo(g);
@@ -10426,7 +10571,8 @@
         <thead><tr><th>Material</th><th style="width:100px">Largura</th><th style="width:130px">Metros necessários</th></tr></thead>
         <tbody>${itens.map(it=>`<tr><td><div class="cel-nome">${escHtml(it.descricao)}</div><div class="cel-sub">${escHtml(it.codigo)}</div></td>
           <td class="ctr">${fmtNum(it.largura)}mm</td><td class="ctr">${fmtNum(it.metros)} m</td></tr>`).join('')}</tbody></table></div>
-      <p class="fld-hint" style="margin-top:10px">${g.regs.length} solicitação(ões) desse ambiente. O rolo do fornecedor só é decidido no agrupamento por lote.</p>`;
+      ${sfMiniPlano(g)}
+      <p class="fld-hint" style="margin-top:10px">${g.regs.length} solicitação(ões) desse ambiente. O rolo do fornecedor só é decidido no agrupamento por lote; os valores usam o Cadastro de preços e o plano considera só esta solicitação.</p>`;
     abrirModal('Fitas pedidas', corpo, '<button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>');
   }
   function sfExcluirGrupo(chave){
@@ -11547,7 +11693,7 @@
         <p>Calcula quantos metros de fita comprar aproveitando as sobras de largura.</p>
         ${D_FITA}
         <h4>Como usar</h4>
-        <ol><li>Em <b>Perda de corte</b>, informe em mm o que a lâmina consome a cada corte de abertura (ex.: 2 mm). Abrindo 64mm de um rolo de 100mm, a sobra passa a ser 34mm, e não 36mm. A medida vale para o projeto e para o lote e aparece na <b>orientação para abrir a fita</b>.</li><li>Ao comprar, o sistema escolhe o rolo de <b>menor preço</b> (ex.: 22mm a R$ 13 por 10 m e 100mm a R$ 5,72 por metro: até 2 m compensa o de 100mm; de 3 m em diante, o de 22mm).</li><li>As <b>sobras</b> são reaproveitadas mesmo quando não cobrem a necessidade inteira, mas só em <b>blocos de 3 m</b> (tamanho da chapa): uma sobra de 32 m rende 30 m, e uma de 2 m não é usada (exigiria emenda). O que faltar vai para outra sobra ou para rolo novo.</li><li>Em <b>Configurar perda</b>, defina a % de perda de cada largura de fita. Ela é somada à metragem: com 5% em 22 mm, 10 m pedidos viram 10,5 m.</li>
+        <ol><li>Em <b>Perda de corte</b>, informe em mm o que a lâmina consome a cada corte de abertura (ex.: 2 mm). Abrindo 64mm de um rolo de 100mm, a sobra passa a ser 34mm, e não 36mm. A medida vale para o projeto e para o lote e aparece na <b>orientação para abrir a fita</b>.</li><li>Ao comprar, o sistema escolhe a opção de <b>menor custo total</b> usando o <b>Cadastro de preços</b> (preço por metro e múltiplo de pedido de cada largura). Não existe rolo físico: o múltiplo é só o intervalo em que o fornecedor aceita o pedido.</li><li>As <b>sobras</b> são reaproveitadas mesmo quando não cobrem a necessidade inteira, mas só em <b>blocos de 3 m</b> (tamanho da chapa): uma sobra de 32 m rende 30 m, e uma de 2 m não é usada (exigiria emenda). O que faltar vai para outra sobra ou para rolo novo.</li><li>Em <b>Configurar perda</b>, defina a % de perda de cada largura de fita. Ela é somada à metragem: com 5% em 22 mm, 10 m pedidos viram 10,5 m.</li>
         <li>Busque a fita pelo código ou descrição. As dimensões do rolo saem da própria descrição ("22MM X 50M") — e você pode corrigir.</li>
         <li>Informe a <b>largura necessária</b>, a <b>metragem</b> e quantas peças.</li>
         <li>O <b>plano de corte</b> aparece na hora, enquanto você preenche. Quando estiver certo, clique em <b>Gerar solicitação de fita</b>.</li></ol>
@@ -17411,7 +17557,7 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
     renderSolFitaNovo,solFitaCC,salvarSolFitaNova,renderSolFitas,sfToggleSelecao,sfMarcar,sfAbrirGrupo,
     sfExcluirGrupo,sfSomarQuantidade,sfConfirmarLote,sfSomarQuantidadeExec,chaveSolFita,gruposSolFita,itensDoGrupo,irSolFitas,renderHistFitas,atualizarHistFitas,verHistFita,sfHistParaOP,sfMarcarOrientacao,
     abrirImportacaoContagem,lerPlanilhaContagem,confirmarImportacaoContagem,
-    fitaLive,fitaAtualizar,fitaCalcToggle,fitaCalcKey,fitaCalcCopiar,salvarRolosPorMetro});
+    fitaLive,fitaAtualizar,fitaCalcToggle,fitaCalcKey,fitaCalcCopiar,abrirConfigPrecosFita,salvarConfigPrecosFita,precoLinhaHtml,sfSelSim});
   Object.defineProperty(window,'ctForm',{get:()=>ctForm,set:v=>ctForm=v});
   Object.defineProperty(window,'danoBusca',{get:()=>danoBusca,set:v=>danoBusca=v});
   Object.defineProperty(window,'fDan',{get:()=>fDan,set:v=>fDan=v});
