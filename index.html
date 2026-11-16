@@ -2455,6 +2455,52 @@
     margin-top:16px; padding:15px 18px; background:#faf9f5; border:1px solid var(--linha); border-radius:11px; }
   .sim-acao .sa-t{ font-size:13.5px; color:var(--muted); }
   .sim-acao .sa-t b{ color:var(--texto); }
+  /* Plano de corte + custo de fita do lote */
+  .sfc-total{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    padding:13px 16px; background:#faf9f4; border:1px solid #e1dfd5; border-radius:12px; margin-bottom:14px; }
+  .sfc-total .t-l{ font-size:12px; font-weight:600; color:var(--muted); }
+  .sfc-total .t-s{ font-size:12.5px; margin-top:2px; }
+  .sfc-total .t-v{ font-size:22px; font-weight:700; line-height:1.1; text-align:right; white-space:nowrap; }
+  .sfc-tbl tfoot td{ font-weight:700; background:#faf9f4; border-top:1px solid var(--linha); }
+  .sfc-sub{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:20px 0 10px; }
+  .sfc-sub span{ font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); }
+  .sfc-sub em{ font-style:normal; font-size:11.5px; color:var(--muted); }
+  .sfc-roll{ margin-bottom:12px; padding:13px 15px 13px; background:#fff; border:1px solid var(--linha); border-radius:14px; }
+  .sfc-roll-h{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .sfc-roll-h .rh-l{ display:flex; align-items:baseline; gap:8px; }
+  .sfc-roll-h .rh-w{ font-size:13px; font-weight:700; }
+  .sfc-roll-h .rh-m{ font-size:12px; color:var(--muted); }
+  .sfc-roll-h .rh-r{ display:flex; align-items:baseline; gap:12px; }
+  .sfc-roll-h .rh-ap{ font-size:11px; color:var(--muted); }
+  .sfc-roll-h .rh-p{ font-size:13px; font-weight:700; }
+  .sfc-track{ position:relative; border-radius:10px; box-shadow:inset 0 0 0 1px rgba(75,75,85,.12);
+    background:repeating-linear-gradient(135deg,#f4f3ee 0 7px,#ecebe4 7px 14px); }
+  .sfc-lanes{ position:absolute; inset:4px; }
+  .sfc-seg{ position:absolute; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border:0;
+    border-radius:6px; cursor:pointer; min-width:3px; font:inherit;
+    box-shadow:0 0 0 1.5px #fff, inset 0 0 0 1px rgba(0,0,0,.16); transition:filter .15s, box-shadow .15s; }
+  .sfc-seg:hover{ filter:brightness(1.09); }
+  .sfc-seg:focus-visible{ outline:2px solid var(--vermelho); outline-offset:2px; }
+  .sfc-seg.on{ z-index:2; box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--vermelho); }
+  .sfc-lb{ font-style:normal; font-size:10.5px; font-weight:700; color:#fff; background:rgba(20,20,24,.62);
+    padding:1px 9px; border-radius:999px; white-space:nowrap; pointer-events:none; }
+  .sfc-chips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+  .sfc-chip{ display:inline-flex; align-items:center; gap:6px; padding:2px 10px 2px 5px; border:1px solid #e4e2d9; border-radius:999px;
+    background:#fff; font:inherit; font-size:11px; font-weight:600; color:var(--texto); cursor:pointer; transition:background .15s, border-color .15s; }
+  .sfc-chip:hover{ background:#faf9f4; }
+  .sfc-chip.on{ border-color:var(--vermelho); background:#fbeeee; }
+  .sfc-dot{ display:inline-block; width:11px; height:11px; border-radius:50%; flex:none; box-shadow:inset 0 0 0 1px rgba(0,0,0,.22); }
+  .sfc-det{ margin-top:11px; padding:11px 14px; background:#faf9f4; border:1px solid #e4e2d9; border-left:3px solid var(--vermelho); border-radius:10px; }
+  .sfc-det[hidden]{ display:none; }
+  .sfc-det-h{ display:flex; align-items:center; gap:8px; font-size:12.5px; margin-bottom:8px; }
+  .sfc-x{ margin-left:auto; border:0; background:transparent; font-size:18px; line-height:1; color:var(--muted); cursor:pointer; padding:0 4px; }
+  .sfc-x:hover{ color:var(--vermelho); }
+  .sfc-det-r{ display:flex; flex-wrap:wrap; gap:6px 28px; padding:6px 0; border-top:1px solid var(--linha); }
+  .sfc-det-r div{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .sfc-det-r span{ font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); }
+  .sfc-det-r b{ font-size:13px; }
+  .sfc-det-n{ font-size:12.5px; color:var(--muted); }
+  .sfc-nota{ font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.5; }
   .ger-ok{ display:flex; align-items:flex-start; gap:13px; background:#e9f2ea; border:1px solid #cbe0ce;
     border-radius:11px; padding:16px 18px; }
   .ger-ok svg{ width:22px; height:22px; color:#2f6b39; flex:0 0 22px; margin-top:1px; }
@@ -5515,6 +5561,7 @@
     db.ref('setores').on('value',s=>{ SETORES=Object.values(s.val()||{}); if(TELA==='acomp') renderAba(); });
     db.ref('configFita/perdas').on('value',s=>{ perdaFitaDeFirebase(s.val()); const c=document.getElementById('fitaPerdaChips'); if(c) c.innerHTML=perdaFitaChips(); if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
       e=>console.warn('configFita:',e.message));
+    db.ref('configFita/regraRoloInteiro').on('value',s=>{ REGRA_ROLO=!!s.val(); },()=>{});
     db.ref('configFita/corteMm').on('value',s=>{ const v=parseFloat(s.val()); CORTE_MM=isFinite(v)&&v>0?v:0;
         const i=document.getElementById('fitaCorteMm'); if(i&&document.activeElement!==i) i.value=CORTE_MM||'';
         if(TELA==='fita'&&typeof fitaLive==='function') fitaLive(true); },
@@ -7351,12 +7398,12 @@
             return ps.map(x=>`<span>${chip(c.w,x.m,est)}${x.amb?` · ${escHtml(x.amb)}`:''}</span>`).join(''); }).join('')
         : (r.pecas||[]).slice().sort((p,q)=>q.w-p.w||p.x-q.x).map(pc=>{ const v=visualFita(mat,pc.w);
             return `<span>${chip(pc.w,pc.m,v?v.estilo:'background:#c9c7bd')}</span>`; }).join('');
-      const sobras=(r.sobras||[]).filter(sb=>sb.w>=10&&sb.m>=0.5).sort((p,q)=>q.w-p.w).map(sb=>`<span class="sb">${chip(sb.w,sb.m,'')} <small>sobra</small></span>`).join('');
+      const sobras=(r.sobras||[]).filter(sb=>sb.w>=10&&sb.m>=0.5).sort((p,q)=>q.w-p.w).map(sb=>`<span class="sb">${chip(sb.w,sb.m,'')} <small>${it.regraRolo?'sobra prevista':'sobra'}</small></span>`).join('');
       return `<div class="opz-plano-b">
         <div class="opz-plano-h"><b>Plano de corte</b><span>Rolo de ${fmtNum(+(+a.larguraRolo).toFixed(2))} mm · abrir ${fmtNum(+(+a.metros||r.totalM).toFixed(2))} m</span>
           ${(+a.corteMm>0)?`<span>perda de corte: ${fmtNum(+(+a.corteMm).toFixed(2))} mm por corte</span>`:''}</div>
         ${opzPlanoSVG(r,mat)}
-        <div class="opz-plano-c">${pecas}${sobras}${(+a.corteMm>0&&(r.pecas||[]).some(pc=>(pc.gasto||0)>pc.w+1e-9))?`<span class="pd"><i></i>perda de corte ${fmtNum(+(+a.corteMm).toFixed(2))} mm</span>`:''}</div></div>`;
+        <div class="opz-plano-c">${pecas}${sobras}${it.regraRolo?'<span class="pd"><i></i>sobra prevista: só entra no estoque depois de medida e lançada</span>':''}${(+a.corteMm>0&&(r.pecas||[]).some(pc=>(pc.gasto||0)>pc.w+1e-9))?`<span class="pd"><i></i>perda de corte ${fmtNum(+(+a.corteMm).toFixed(2))} mm</span>`:''}</div></div>`;
     }).join('');
     return blocos?`<tr class="opz-plano"><td colspan="${cols}">${blocos}</td></tr>`:'';
   }
@@ -8505,6 +8552,49 @@
     db.ref().update(upd).then(()=>toast('Status: '+ST_SA[st].label)).catch(e=>toast('Erro: '+e.message));
   }
 
+  /* ===== Sobra real da fita (regra do rolo inteiro) ===== */
+  function sobraSAHtml(x){
+    if(!x.regraRolo) return '';
+    let corpo;
+    if(x.sobraRealM!=null) corpo=`<p style="margin:0">Sobra real lançada: <b>${fmtNum(+(+x.sobraRealM).toFixed(2))} m</b> · ${fmtDataHora(x.sobraRealEm)} por ${escHtml((x.sobraRealPor||'').split('@')[0]||'—')}. ${+x.sobraRealM>0?'Já está no estoque disponível.':'Nada voltou ao estoque.'}</p>`;
+    else if(!x.consumido) corpo=`<p class="fld-hint" style="margin:0">Esta SA consome o rolo inteiro. Depois de entregue e cortada, lance aqui a sobra real medida pelo operador; só então ela entra no estoque.</p>`;
+    else corpo=`<p class="fld-hint" style="margin:0 0 10px">O rolo inteiro foi baixado do estoque. Meça o que sobrou e lance a sobra real (0 se não sobrou nada).</p>
+      <button class="btn btn-primary" onclick="lancarSobraSA('${x.id}')">Lançar sobra real</button>`;
+    return `<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Sobra real da fita</h3>${corpo}</section>`;
+  }
+  function lancarSobraSA(id){
+    const x=SAS.find(y=>y.id===id); if(!x) return;
+    if(!x.consumido){ toast('Lance a sobra depois da entrega da SA'); return; }
+    if(x.sobraRealM!=null){ toast('A sobra desta SA já foi lançada'); return; }
+    abrirModal('Lançar sobra real',
+      `<div class="inv-item"><span class="cod-mono">${escHtml(x.codigo)}</span><b>${escHtml(x.descricao)}</b><span>${escHtml(x.numero)}</span></div>
+       <div class="fld" style="margin-top:14px"><label>Sobra real medida<i>*</i></label>
+         <div class="qt-row"><input id="sbReal" type="number" step="any" min="0" placeholder="0" autofocus onkeydown="if(event.key==='Enter') confirmarSobraSA('${id}')"><span class="qt-un">m</span></div>
+         <span class="fld-hint">A sobra entra no estoque disponível e será usada nas próximas simulações. Só pode ser lançada uma vez por SA.</span></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button><button class="btn btn-primary" onclick="confirmarSobraSA('${id}')">Lançar no estoque</button>`);
+  }
+  function confirmarSobraSA(id){
+    const x=SAS.find(y=>y.id===id); if(!x) return;
+    if(x.sobraRealM!=null){ toast('A sobra desta SA já foi lançada'); fecharModal(); return; }
+    const v=parseFloat(String((document.getElementById('sbReal')||{}).value).replace(',','.'));
+    if(!isFinite(v)||v<0){ toast('Informe a sobra em metros (0 se não sobrou nada)'); return; }
+    const sc=SCS.find(y=>y.id===x.scId), ins=INSUMOS.find(i=>i.id===x.insumoId);
+    const mpu=x.unidade==='M'?1:(parseFloat(ins&&ins.metrosPorUn)||parseFloat(sc&&sc.metrosRolo)||0);
+    if(!mpu){ toast('Sem equivalência em metros para este item'); return; }
+    const maxM=(parseFloat(x.qtd)||0)*mpu;
+    if(v>maxM+1e-9){ toast('A sobra não pode passar do que foi consumido ('+fmtNum(+maxM.toFixed(2))+' m)'); return; }
+    const q=+(v/mpu).toFixed(4), quem=usuarioAtual(), quando=new Date().toISOString();
+    const gravar=()=>{
+      const upd={}; upd['sas/'+id+'/sobraRealM']=v; upd['sas/'+id+'/sobraRealQtd']=q; upd['sas/'+id+'/sobraRealEm']=quando; upd['sas/'+id+'/sobraRealPor']=quem;
+      upd['sas/'+id+'/historico/'+db.ref().push().key]={status:stSa(x),por:quem,em:quando,sobraReal:v};
+      db.ref().update(upd).then(()=>{ fecharModal(); toast(q>0?'Sobra de '+fmtNum(v)+' m lançada no estoque':'Registrado: não houve sobra'); })
+        .catch(e=>toast('Erro: '+e.message));
+    };
+    if(q<=0){ gravar(); return; }
+    db.ref('inventario/'+x.insumoId).transaction(cur=>{ const a=cur||{insumoId:x.insumoId,codigo:x.codigo,posicao:''};
+      return {...a,qtd:(parseFloat(a.qtd)||0)+q,por:quem,em:quando}; },
+      (err,ok)=>{ if(err||!ok){ toast('Não foi possível dar entrada da sobra no estoque'); return; } gravar(); });
+  }
   function verSA(id){
     const x=SAS.find(y=>y.id===id); if(!x) return;
     TELA='sa-detalhe'; saViewId=id;
@@ -8546,6 +8636,7 @@
           <span class="${s2.disp<=0?'sd-neg':'sd-ok'}">Disponível <b>${fmtNum(s2.disp)}</b></span>
         </div>
       </section>
+      ${sobraSAHtml(x)}
       ${hist.length?`<section class="fs"><h3 class="fs-title">Histórico</h3><div class="hist">
         ${hist.map(h=>{const hv=ST_SA[h.status]||ST_SA.pendente;
           return `<div class="hist-l"><span class="dot" style="background:${hv.cor}"></span>
@@ -8615,6 +8706,19 @@
   // Sobras só são reaproveitadas em blocos de 3 m (tamanho da chapa): um pedaço menor teria que ser emendado.
   // Ex.: sobra de 32 m -> 30 m utilizáveis; sobra de 2 m -> não é reaproveitada.
   const SOBRA_BLOCO_M=3;
+  /* Regra do rolo inteiro (configFita/regraRoloInteiro): a necessidade APLICADA (compra, SC e SA) é o rolo inteiro do fornecedor;
+     a necessidade REAL (plano de corte e OP) continua a do projeto. A sobra do rolo é só "prevista": entra no estoque
+     quando o operador lança a sobra real medida, na SA. */
+  let REGRA_ROLO=false;
+  const fmtM=v=>fmtNum(+(+v||0).toFixed(2));
+  // necessidade REAL (m) que a linha atende = soma dos projetos menos o que veio do estoque; o resto do rolo é sobra prevista
+  function sfRealDaLinha(l){
+    const it=(l.itens||l.fitaItens)?Object.values(l.itens||l.fitaItens):[];
+    const tot=+(l.metros!=null?l.metros:l.comprarM)||0;
+    if(!it.length) return {real:tot,sobra:0};
+    const real=Math.max(0,Math.min(tot,it.reduce((a,x)=>a+(+x.metros||0)-(+x.estoqueM||0),0)));
+    return {real:+real.toFixed(4),sobra:+Math.max(0,tot-real).toFixed(4)};
+  }
   const sobraUtilM=s=>Math.floor(((+s.m||0)+1e-9)/SOBRA_BLOCO_M)*SOBRA_BLOCO_M;
   let simF={usarMetragem:true, linhas:[], resultado:null}; // usarMetragem: regra fixa (sem emenda)
 
@@ -8704,7 +8808,9 @@
       <div class="table-wrap"><table class="tbl"><thead><tr><th>Largura da fita</th><th style="width:140px">% de perda</th></tr></thead>
       <tbody>${ws.map(w=>`<tr><td class="cel-nome">${fmtNum(w)}mm</td>
         <td><input class="cell-in ctr" type="number" step="any" min="0" max="100" data-pw="${w}" value="${perdaFitaPct(w)||''}" placeholder="0"
-          onkeydown="if(event.key==='Enter') salvarConfigPerdaFita()"></td></tr>`).join('')}</tbody></table></div>`;
+          onkeydown="if(event.key==='Enter') salvarConfigPerdaFita()"></td></tr>`).join('')}</tbody></table></div>
+      <label class="chk" style="margin-top:16px"><input type="checkbox" id="cfgRegraRolo" ${REGRA_ROLO?'checked':''}>
+        <span>Considerar o rolo inteiro do fornecedor como necessidade aplicada<i>A compra, a SC e a SA usam o rolo fechado (ex.: 3 m → 10 m). A diferença não vira estoque: só entra quando o operador lançar a sobra real medida. O plano de corte e a OP continuam com a necessidade real.</i></span></label>`;
     abrirModal('Configuração de perda',corpo,
       `<button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button><button class="btn btn-primary" onclick="salvarConfigPerdaFita()">Salvar</button>`);
   }
@@ -8715,8 +8821,9 @@
       if(isFinite(v)&&v>0) novo[k]=Math.min(100,v); else delete novo[k];
     });
     const lista=Object.keys(novo).map(k=>({l:parseFloat(k),p:novo[k]})).sort((x,y)=>x.l-y.l);
-    db.ref('configFita/perdas').set(lista.length?lista:null)
-      .then(()=>{ perdaFitaDeFirebase(lista); simF.resultado=null; fecharModal(); if(TELA==='fita') renderFita(); toast('Perda salva'); })
+    const chk=document.getElementById('cfgRegraRolo'), regra=!!(chk&&chk.checked);
+    Promise.all([db.ref('configFita/perdas').set(lista.length?lista:null), db.ref('configFita/regraRoloInteiro').set(regra)])
+      .then(()=>{ REGRA_ROLO=regra; perdaFitaDeFirebase(lista); simF.resultado=null; fecharModal(); if(TELA==='fita') renderFita(); toast('Perda salva'); })
       .catch(e=>toast('Erro ao salvar: '+e.message));
   }
 
@@ -8858,8 +8965,10 @@
     pedidosBrutos.forEach(p=>{
       // p.id = linha da simulação: cada linha é uma PEÇA própria e não se soma às outras de mesma largura
       const k=p.mat+'|'+p.w+'|'+(p.id||'');
-      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,mBase:0,pct:p.pct||0,peca:!!p.id,pk:p.id||'',amb:p.amb||''});
+      if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,mBase:0,pct:p.pct||0,peca:!!p.id,pk:p.id||'',amb:p.amb||'',projs:[]});
       agreg.get(k).m+=p.m; agreg.get(k).mBase+=(p.mBase!=null?p.mBase:p.m);
+      if(p.proj){ const ag=agreg.get(k), kp=[p.proj.clienteNome,p.proj.ambiente,p.proj.numeroProjeto].join('|');   // origem (cliente/ambiente) da peça
+        if(!ag.projs.some(q=>[q.clienteNome,q.ambiente,q.numeroProjeto].join('|')===kp)) ag.projs.push(p.proj); }
     });
     const pedidos=[...agreg.values()];
     pedidos.sort((a,b)=> b.w-a.w || b.m-a.m);
@@ -8920,7 +9029,7 @@
           if(!melhorCobre && continua(s)) seguirLargura=true;
           const gasto=gastoDe(s.w);
           const rl=rolosUsados.find(r=>r.id===s.roloId);
-          if(rl) rl.pecas.push({w:p.w,m:take,x:s.x,y:s.y,gasto,origem:'sobra',amb:p.amb||''});
+          if(rl) rl.pecas.push({w:p.w,m:take,x:s.x,y:s.y,gasto,origem:'sobra',amb:p.amb||'',projs:p.projs||[]});
           alocacoes.push({...p,m:take,mTotal:p.m,primeira,origem:'sobra',de:s.roloId,roloId:s.roloId,
             usou:`${fmtNum(s.w)}mm × ${fmtNum(+s.m.toFixed(2))}m`, corte:gasto>p.w+1e-9});
           primeira=false;
@@ -8947,7 +9056,7 @@
         const id='R'+(++seq);
         const totalM=cand.m*nRolos;
         rolosUsados.push({id,largura:cand.l,metragem:cand.m,nRolos,totalM,chave,
-          pecas:[{w:p.w,m:falta,x:0,y:0,gasto:gastoN,origem:'novo',amb:p.amb||''}]});
+          pecas:[{w:p.w,m:falta,x:0,y:0,gasto:gastoN,origem:'novo',amb:p.amb||'',projs:p.projs||[]}]});
         alocacoes.push({...p,m:falta,mTotal:p.m,primeira,origem:'novo',de:chave,roloId:id,nRolos,corte:gastoN>p.w+1e-9,
           usou:`${nRolos>1?nRolos+'× ':''}${fmtNum(cand.l)}mm × ${fmtNum(cand.m)}m`});
         cortar(sobras,cand.l,totalM,0,0,gastoN,falta,id,p.w);
@@ -9683,13 +9792,14 @@
   function renderGerarSA(){
     TELA='gsa';
     const itens=[...gsaSel].map(id=>SCS.find(y=>y.id===id)).filter(x=>x && stSc(x)==='pronto');
+    itens.forEach(x=>{ if(x.regraRolo&&(gsaNec[x.id]==null||gsaNec[x.id]==='')) gsaNec[x.id]=String(parseFloat(x.qtd)||0); });   // rolo inteiro = necessidade aplicada
     view.innerHTML=`<div class="page">
       <div class="page-head"><div><h1 class="page-title">Gerar SA</h1>
         <p class="page-sub">${gsaOrigem==='est'?'Estoque':'PCP'} · Solicitações · SC — ${itens.length} SC(s) selecionada(s)</p></div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-ghost" onclick="gsaVoltarSelecao()">Voltar</button>
           <button class="btn btn-primary" id="gsaConcluirBtn" onclick="gsaConcluir()">Concluído</button></div></div>
-      <div class="gsa-aviso">Informe a <b>quantidade necessária</b> de cada item. Ao concluir, é criada uma SA por SC com essa quantidade e as SCs ficam <b>Concluídas</b>.</div>
+      <div class="gsa-aviso">Informe a <b>quantidade necessária</b> de cada item. Ao concluir, é criada uma SA por SC com essa quantidade e as SCs ficam <b>Concluídas</b>.${itens.some(x=>x.regraRolo)?' SCs de fita já vêm com o <b>rolo inteiro</b> (necessidade aplicada): a SA consome o rolo todo e a sobra só entra no estoque quando o operador lançar a sobra real.':''}</div>
       <div class="table-wrap"><table class="tbl">
         <thead><tr><th style="width:104px">Nº SC</th><th style="width:112px">Código</th><th>Descrição</th>
           <th style="width:70px">CC</th><th style="width:110px">Qtde comprada</th><th style="width:190px">Quantidade necessária</th></tr></thead>
@@ -9728,7 +9838,7 @@
         nums.push(num);
         upd['sas/'+id]={id,numero:num,insumoId:x.insumoId,codigo:x.codigo||'',descricao:x.descricao||'',unidade:x.unidade||'',
           ccCod:x.ccCod,setor:x.setor||setorDe(x.ccCod),qtd:q,obs:'Gerada a partir da '+x.numero+(x.obs?' — '+x.obs:''),
-          lote:x.lote||null,...vincDados(x),status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,
+          lote:x.lote||null,...vincDados(x),status:'pendente',consumido:false,criadoEm:agora,criadoPor:quem,...(x.regraRolo?{regraRolo:true}:{}),
           origem:'sc',scId:x.id,scNumero:x.numero};
         upd['scs/'+x.id+'/status']='concluida'; upd['scs/'+x.id+'/statusPor']=quem; upd['scs/'+x.id+'/statusEm']=agora;
         upd['scs/'+x.id+'/saId']=id; upd['scs/'+x.id+'/saNumero']=num; upd['scs/'+x.id+'/saQtd']=q;
@@ -10013,10 +10123,12 @@
     }).join('');
     return `<section class="fs" style="margin-bottom:18px"><h3 class="fs-title">Necessidade de fita por projeto</h3>
       <div class="sa-saldo" style="margin-bottom:14px">
-        <span>Necessária <b>${fmtNum(nec)} M</b></span>
+        <span>${x.regraRolo?'Necessidade real':'Necessária'} <b>${fmtNum(x.regraRolo&&x.necReal!=null?(+x.necReal||0):nec)} M</b></span>
+        ${x.regraRolo?`<span>Necessidade aplicada <b>${fmtNum(+(+x.necAplicada||comprado).toFixed(2))} M</b></span>`:''}
         <span>Do estoque <b>${fmtNum(est)} M</b></span>
         <span>A comprar <b>${fmtNum(parseFloat(x.qtd)||0)} ${escHtml(x.unidade||'')}</b>${comprado>0?` (${fmtNum(parseFloat(x.rolos)||0)} rolo(s) de ${fmtNum(parseFloat(x.metrosRolo)||0)} M)`:''}</span>
-        ${sobra>0?`<span>Sobra após o lote <b>${fmtNum(sobra)} M</b></span>`:''}</div>
+        ${sobra>0?`<span>${x.regraRolo?'Sobra prevista':'Sobra após o lote'} <b>${fmtNum(sobra)} M</b></span>`:''}</div>
+      ${x.regraRolo?`<p class="fld-hint" style="margin:-6px 0 12px">A sobra prevista não entra no estoque. Depois do corte, o operador lança a sobra real na SA.</p>`:''}
       <div class="table-wrap"><table class="tbl">
         <thead><tr><th>Cliente</th><th>Ambiente</th><th style="width:110px">Nº projeto</th><th style="width:90px">Largura</th><th style="width:120px">Necessidade</th></tr></thead>
         <tbody>${corpo}</tbody></table></div>
@@ -10644,7 +10756,7 @@
     simFita.pedidosBrutos.forEach(p=>{
       const k=p.mat+'|'+p.w;
       if(!agreg.has(k)) agreg.set(k,{mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m:0,forcar:null,pecas:[]});
-      agreg.get(k).m+=p.m; agreg.get(k).pecas.push({pid:p.pid||null,m:p.m});
+      agreg.get(k).m+=p.m; agreg.get(k).pecas.push({pid:p.pid||null,m:p.m,proj:p.proj||null});
       if(p.forcarRolo) agreg.get(k).forcar=p.forcarRolo;   // fita pedida editada na mesma largura: compra esse rolo direto
     });
     const liquidos=[], diretas=[], usos=new Map(), restM=new Map();
@@ -10668,13 +10780,14 @@
       p.pecas.forEach(pc=>{
         let m=pc.m;
         if(resta>1e-9){ const t=Math.min(m,resta); m=+(m-t).toFixed(4); resta=+(resta-t).toFixed(4); }
-        if(m>1e-9) liquidos.push({mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m,forcar:null,id:pc.pid||undefined});
+        if(m>1e-9) liquidos.push({mat:p.mat,desc:p.desc,codigo:p.codigo,w:p.w,m,forcar:null,id:pc.pid||undefined,proj:pc.proj||null});
       });
     });
     console.log('[fita-debug] liquidos', JSON.parse(JSON.stringify(liquidos)));
     simFita.corteMm=corteFitaMm();   // perda de corte (mm) usada neste cálculo: fica gravada no histórico
     const materiais=liquidos.length?otimizarCorte(liquidos,simFita.rolosPorMat,0,simFita.corteMm):[];
     console.log('[fita-debug] materiais', JSON.parse(JSON.stringify(materiais)));
+    simFita.materiais=materiais;   // plano de corte do lote (já sem o que sai do estoque): usado na seção de custo
     const linhas=[], porIns=new Map();
     materiais.forEach(M=>{
       M.linhasCompra.forEach(c=>{
@@ -10751,8 +10864,10 @@
     return itens;
   }
   function sfCamposNecessidade(l){
-    const it=l.itens||[]; if(!it.length) return {};
-    return {necM:+it.reduce((a,x)=>a+x.metros,0).toFixed(4), estoqueM:+it.reduce((a,x)=>a+x.estoqueM,0).toFixed(4),
+    const it=l.itens||[], rs=sfRealDaLinha(l);
+    const base={regraRolo:!!REGRA_ROLO, necReal:rs.real, necAplicada:+(+l.metros||0).toFixed(4)};
+    if(!it.length) return base;
+    return {...base, necM:+it.reduce((a,x)=>a+x.metros,0).toFixed(4), estoqueM:+it.reduce((a,x)=>a+x.estoqueM,0).toFixed(4),
       rolos:l.rolos||0, metrosRolo:l.metrosRolo||0, fitaItens:it};
   }
   // pergunta a equivalência em metros para itens que não estão cadastrados em M — só faz sentido
@@ -10823,6 +10938,7 @@
       l.qSC=emb(l.metros/mpu);            // compra: já em rolos fechados
       l.qtd=emb((l.necM||l.metros)/mpu);  // necessidade total (só para exibir)
       l.tipo=l.qSC<=0?'SA':(l.qSA<=0?'SC':'AMBOS');
+      const rs=sfRealDaLinha(l); l.necReal=rs.real; l.sobraPrev=rs.sobra;   // real x aplicada (aplicada = l.metros, rolo fechado)
     });
   }
   function renderSimFita(){
@@ -10857,17 +10973,18 @@
           <div class="ger-list">${origem.map(o=>`<span class="ger-p ger-sa">${escHtml(o.clienteNome||'—')}${o.ambiente?' · '+escHtml(o.ambiente):''}${o.numeroProjeto?' · Nº '+escHtml(o.numeroProjeto):''}</span>`).join('')}</div>
         </div></section>`}
 
+      ${sfSecaoCusto()}
       <section class="fs">
         <div class="fs-head"><h3 class="fs-title" style="margin:0">Rolos necessários</h3>
           <div class="sim-badges"><span class="sim-b sb-sa">${nSA} reserva(s)</span><span class="sim-b sb-sc">${nSC} compra(s)</span></div></div>
         <div class="table-wrap"><table class="tbl tbl-sim">
           <thead><tr><th style="width:112px">Código</th><th>Item</th><th style="width:52px">Un.</th>
-            <th style="width:96px">Necessário</th><th style="width:86px">Em estoque</th><th style="width:86px">Disponível</th>
+            <th style="width:96px">${REGRA_ROLO?'Aplicada':'Necessário'}</th><th style="width:86px">Em estoque</th><th style="width:86px">Disponível</th>
             <th style="width:92px">Reservar</th><th style="width:92px">Comprar</th><th style="width:112px">Ação</th></tr></thead>
           <tbody>${validas.map(l=>`<tr>
             <td><span class="cod-mono">${escHtml(l.codigo)}</span></td>
             <td><div class="cel-nome">${escHtml(l.descricao)}</div>
-              <div class="cel-sub">necessário ${fmtNum(l.necM||l.metros)} m · estoque usado ${fmtNum(l.metrosEstoque||0)} m · comprar ${fmtNum(l.metros)} m (${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m)${
+              <div class="cel-sub">${REGRA_ROLO?`necessidade real ${fmtM(l.necReal)} m · aplicada ${fmtNum(l.metros)} m (${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m) · estoque usado ${fmtNum(l.metrosEstoque||0)} m${l.sobraPrev>0.004?` · sobra prevista ${fmtM(l.sobraPrev)} m (não entra no estoque até ser medida)`:''}`:`necessário ${fmtNum(l.necM||l.metros)} m · estoque usado ${fmtNum(l.metrosEstoque||0)} m · comprar ${fmtNum(l.metros)} m (${l.rolos} rolo(s) de ${fmtNum(l.metrosRolo)}m)`}${
                 l.unidade!=='M'&&simFita.conv&&simFita.conv[l.insumoId]?` · 1 ${escHtml(l.unidade)} = ${fmtNum(simFita.conv[l.insumoId])} m`:''}</div></td>
             <td class="ctr">${escHtml(l.unidade)}</td>
             <td class="ctr sd-tot">${fmtNum(l.qtd)}</td>
@@ -10893,6 +11010,107 @@
             :`Nenhuma OP de Laminado emitida ainda para o lote ${escHtml(simFita.lote)||'—'} — a necessidade fica guardada no histórico.`}</div>`; })()}
       </section></div>`;
   }
+  /* ===== Custo de fita do lote =====
+     Custo = o que realmente será COMPRADO (linhas de compra) × preço por metro do Cadastro de preços.
+     O que sai do estoque não entra no custo. Fica em sincronia com a tabela "Rolos necessários". */
+  function sfCustoLinhas(){
+    const out=[];
+    ((simFita&&simFita.linhas)||[]).forEach(l=>{
+      const m=+l.metros||0; if(m<=1e-9) return;
+      const w=+l.largura, pm=precoRolo({l:w,m:1});
+      out.push({descricao:l.descricao||`${l.mat||''} ${fmtNum(w)}MM`, codigo:l.codigo||'', largura:w, rolos:l.rolos||0, metrosRolo:l.metrosRolo||0,
+        metros:m, pm, total:+(pm*m).toFixed(2)});
+    });
+    return out;
+  }
+  function sfCustoTotal(){ return +sfCustoLinhas().reduce((a,x)=>a+x.total,0).toFixed(2); }
+  // ===== Plano de corte do lote: visual minimalista; clicar numa fita mostra cliente / ambiente / nº do projeto =====
+  let sfPecasIdx=[];   // peças desenhadas no plano (o clique consulta aqui a origem de cada uma)
+  function sfPlanoLoteHtml(mats){
+    sfPecasIdx=[];
+    const blocos=[];
+    (mats||[]).forEach(M=>(M.rolosUsados||[]).forEach(r=>{
+      const ih=Math.round(Math.max(30,Math.min(54,r.largura*0.4)));
+      const pcs=(r.pecas||[]).slice().sort((a,b)=>(a.y-b.y)||(a.x-b.x));
+      const usada=pcs.reduce((t,pc)=>t+pc.w*pc.m,0);
+      const aprov=Math.max(0,Math.min(100,Math.round(usada/(r.largura*r.totalM)*100)));
+      let segs='', chips='';
+      pcs.forEach(pc=>{
+        let v=null; try{ v=visualFita(M.mat,pc.w); }catch(e){}
+        const estilo=(v&&v.estilo)?v.estilo:'background:#8d8b82';
+        const i=sfPecasIdx.push({w:pc.w,m:pc.m,projs:pc.projs||[],estilo})-1;
+        const txt=`${fmtNum(+pc.w.toFixed(2))} × ${fmtNum(+pc.m.toFixed(2))}`;
+        const pw=pc.m/r.totalM*100, ph=pc.w/r.largura*ih;
+        const lb=(pw>=8 && ph>=15)?`<i class="sfc-lb">${txt}</i>`:'';
+        segs+=`<button type="button" class="sfc-seg" data-i="${i}" style="left:${(pc.x/r.totalM*100).toFixed(3)}%;top:${(pc.y/r.largura*100).toFixed(3)}%;width:${pw.toFixed(3)}%;height:${(pc.w/r.largura*100).toFixed(3)}%;${estilo}" title="${txt}" aria-label="Fita ${txt}: ver cliente e ambiente" onclick="sfPecaClick(this)">${lb}</button>`;
+        chips+=`<button type="button" class="sfc-chip" data-i="${i}" onclick="sfPecaClick(this)"><span class="sfc-dot" style="${estilo}"></span>${fmtNum(+pc.w.toFixed(2))} mm × ${fmtNum(+pc.m.toFixed(2))} m</button>`;
+      });
+      const sobraM=(r.sobras||[]).reduce((t,sb)=>t+sb.w*sb.m,0)/r.largura;
+      const metr=(r.nRolos>1&&r.metragem)?`${r.nRolos} × ${fmtNum(r.metragem)} m`:`${fmtNum(+r.totalM.toFixed(2))} m`;
+      blocos.push(`<div class="sfc-roll">
+        <div class="sfc-roll-h"><div class="rh-l"><span class="rh-w">${fmtNum(r.largura)} mm</span><span class="rh-m">${metr}</span></div>
+          <div class="rh-r"><span class="rh-ap">${aprov}% aproveitado${REGRA_ROLO&&sobraM>0.004?` · sobra prevista ${fmtM(sobraM)} m`:''}</span><b class="rh-p">${brlFita(precoRolo({l:r.largura,m:r.totalM}))}</b></div></div>
+        <div class="sfc-track" style="height:${ih+8}px"><div class="sfc-lanes">${segs}</div></div>
+        <div class="sfc-chips">${chips}</div>
+        <div class="sfc-det" hidden></div></div>`);
+    }));
+    return blocos.join('');
+  }
+  function sfPecaDetHtml(p){
+    const projs=p.projs||[];
+    const lista=projs.length
+      ? projs.map(pr=>`<div class="sfc-det-r">
+          <div><span>Cliente</span><b>${escHtml(pr.clienteNome||'—')}</b></div>
+          <div><span>Ambiente</span><b>${escHtml(pr.ambiente||'—')}</b></div>
+          ${pr.numeroProjeto?`<div><span>Projeto</span><b>Nº ${escHtml(pr.numeroProjeto)}</b></div>`:''}</div>`).join('')
+      : `<div class="sfc-det-n">Origem não registrada para esta fita (solicitação antiga, sem cliente/ambiente).</div>`;
+    return `<div class="sfc-det-h"><span class="sfc-dot" style="${p.estilo}"></span><b>${fmtNum(+p.w.toFixed(2))} mm × ${fmtNum(+p.m.toFixed(2))} m</b>
+      <button type="button" class="sfc-x" title="Fechar" onclick="sfPecaFechar()">×</button></div>${lista}`;
+  }
+  function sfPecaFechar(){
+    document.querySelectorAll('.sfc-roll .on').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.sfc-det').forEach(d=>{ d.hidden=true; d.innerHTML=''; });
+  }
+  function sfPecaClick(el){
+    const roll=el.closest('.sfc-roll'); if(!roll) return;
+    const i=+el.dataset.i, p=sfPecasIdx[i]; if(!p) return;
+    const jaAberta=el.classList.contains('on');
+    sfPecaFechar();
+    if(jaAberta) return;   // clicar de novo fecha
+    roll.querySelectorAll('[data-i="'+i+'"]').forEach(x=>x.classList.add('on'));
+    const det=roll.querySelector('.sfc-det');
+    if(det){ det.innerHTML=sfPecaDetHtml(p); det.hidden=false; }
+  }
+  function sfSecaoCusto(){
+    const L=sfCustoLinhas(), total=sfCustoTotal();
+    const mats=simFita.materiais||[];
+    const estM=(simFita.linhas||[]).reduce((a,l)=>a+(+l.metrosEstoque||0),0);
+    const plano=sfPlanoLoteHtml(mats);
+    const custoPlano=+custoMateriais(mats).toFixed(2);
+    const direto=+(total-custoPlano).toFixed(2);
+    const resumoCompra=L.map(x=>`${fmtNum(x.largura)}mm × ${fmtNum(+x.metros.toFixed(2))} m`).join(' + ');
+    const nAmb=(simFita.origemInfo||[]).length;
+    return `<section class="fs" style="margin-bottom:18px">
+      <div class="fs-head"><h3 class="fs-title" style="margin:0">Plano de corte e custo de fita</h3>
+        <div class="sim-badges"><span class="sim-b sb-sc">${brlFita(total)}</span></div></div>
+      <div class="sfc-total">
+        <div><div class="t-l">Custo total de fita do lote${simFita.lote?' '+escHtml(simFita.lote):''}</div>
+          <div class="t-s">${L.length?escHtml(resumoCompra):'Nada a comprar: toda a fita sai do estoque'}${nAmb?` · ${nAmb} ambiente(s)`:''}</div></div>
+        <div class="t-v">${brlFita(total)}</div></div>
+      ${L.length?`<div class="table-wrap"><table class="tbl tbl-sim sfc-tbl">
+        <thead><tr><th>Fita comprada</th><th style="width:130px">Metros</th><th style="width:120px">Preço por metro</th><th style="width:120px">Subtotal</th></tr></thead>
+        <tbody>${L.map(x=>`<tr>
+          <td><div class="cel-nome">${escHtml(x.descricao)}</div><div class="cel-sub">${x.codigo?escHtml(x.codigo)+' · ':''}${x.rolos} × ${fmtNum(x.metrosRolo)} m</div></td>
+          <td class="ctr">${fmtNum(+x.metros.toFixed(2))} m</td>
+          <td class="ctr">${brlFita(x.pm)}</td>
+          <td class="ctr"><b>${brlFita(x.total)}</b></td></tr>`).join('')}</tbody>
+        <tfoot><tr><td colspan="3">Total de fita do lote</td><td class="ctr">${brlFita(total)}</td></tr></tfoot></table></div>`:''}
+      ${plano?`<div class="sfc-sub"><span>Plano de corte</span><em>Clique em uma fita para ver o cliente e o ambiente</em></div>${plano}`:''}
+      <div class="sfc-nota">${estM>1e-9?`${fmtNum(+estM.toFixed(2))} m saem do estoque e não entram no custo. `:''}${direto>0.005?`${brlFita(direto)} do custo vêm de rolo pedido direto, sem plano de corte. `:''}Os valores usam o Cadastro de preços e o plano considera todos os ambientes do lote juntos.${REGRA_ROLO?' A sobra do plano é apenas prevista: não entra no estoque até o operador medir e lançar a sobra real.':''}</div>
+    </section>
+
+    `;
+  }
   function opLaminadoDoLote(lote){
     const l=String(lote||'').trim(); if(!l) return null;
     return OPS.find(o=>o.atividade==='Laminado' && String(o.lote||'').trim()===l) || null;
@@ -10902,6 +11120,7 @@
     return L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',
       necessario:+(l.necM||l.metros||0).toFixed(4), estoqueUsado:+(l.metrosEstoque||0).toFixed(4),
       comprar:+(l.metros||0).toFixed(4), rolos:l.rolos||0, metrosRolo:l.metrosRolo||0,
+      ...(REGRA_ROLO?{regraRolo:true,necReal:sfRealDaLinha(l).real,sobraPrevista:sfRealDaLinha(l).sobra}:{}),
       projetos:(l.itens||[]).reduce((a,g)=>a.concat((g.projetos||[]).map(p=>({...p,largura:g.largura}))),[]),
       abrir:sfOrientarLinha({descricao:l.descricao,largura:l.largura,metrosRolo:l.metrosRolo,fitaItens:l.itens,corteMm:(simFita&&simFita.corteMm)||0},histId)}));
   }
@@ -11060,7 +11279,7 @@
       } else if(opL){ opPend=opL.numero; } // OP já tem fita: quem decide é o Histórico (sobrescrever ou adicionar)
       try{
         await db.ref('histFitas/'+hid).set(sfLimpa({id:hid,lote:simFita.lote||'',criadoEm:agora,criadoPor:quem,
-          ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',corteMm:simFita.corteMm||0,ambientes:simFita.origemInfo||[],sas,scs,
+          ccCod:simFita.ccCod,setor:simFita.setor,obs:simFita.obs||'',corteMm:simFita.corteMm||0,regraRolo:!!REGRA_ROLO,custoFita:sfCustoTotal(),ambientes:simFita.origemInfo||[],sas,scs,
           op:opNum?{id:opL.id,numero:opNum}:null,
           pedidos:simFita.pedidosBrutos, conv:simFita.conv||{}, rolosExtra:sfRolosExtra(simFita.rolosPorMat),
           linhas:L.map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necM:+(l.necM||l.metros||0).toFixed(4),
@@ -11093,6 +11312,7 @@
   function sfItensDoHist(h){
     return fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
       comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
+      ...(h.regraRolo?{regraRolo:true,necReal:sfRealDaLinha(l).real,sobraPrevista:sfRealDaLinha(l).sobra}:{}),
       projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[]),
       abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens,corteMm:h.corteMm||0},h.id)}));
   }
@@ -11300,7 +11520,7 @@
       }
       etapa='gravando o histórico';
       const linhas=sfLinhasHist(L);
-      const novo=sfLimpa({...h,corteMm:simFita.corteMm||0,ambientes:simFita.origemInfo,sas,scs,linhas,pedidos:simFita.pedidosBrutos,conv:simFita.conv||{},
+      const novo=sfLimpa({...h,corteMm:simFita.corteMm||0,custoFita:sfCustoTotal(),ambientes:simFita.origemInfo,sas,scs,linhas,pedidos:simFita.pedidosBrutos,conv:simFita.conv||{},
         rolosExtra:sfRolosExtra(simFita.rolosPorMat),reconstruidoDoHistorico:!!simFita.reconstruida||null,atualizadoEm:agora,atualizadoPor:quem});
       await db.ref('histFitas/'+hid).set(novo);
       etapa='excluindo as solicitações antigas';
@@ -11479,6 +11699,7 @@
     const op=opLaminadoDoLote(h.lote); if(!op){ toast('Nenhuma OP de Laminado para o lote '+(h.lote||'—')); return; }
     const itens=fbArr(h.linhas).map(l=>({codigo:l.codigo||'',descricao:l.descricao||'',unidade:l.unidade||'',necessario:l.necM||0,estoqueUsado:l.estoqueM||0,
       comprar:l.comprarM||0,rolos:l.rolos||0,metrosRolo:l.metrosRolo||0,
+      ...(h.regraRolo?{regraRolo:true,necReal:sfRealDaLinha(l).real,sobraPrevista:sfRealDaLinha(l).sobra}:{}),
       projetos:fbArr(l.fitaItens).reduce((a,g)=>a.concat(fbArr(g.projetos).map(p=>({...p,largura:g.largura}))),[]),
       abrir:sfOrientarLinha({descricao:l.descricao,metrosRolo:l.metrosRolo,fitaItens:l.fitaItens,corteMm:h.corteMm||0},h.id)}));
     const tem=!!(op.necessidadeFita&&fbArr(op.necessidadeFita.itens).length);
@@ -16549,7 +16770,7 @@ function chkMontHtml(c){
           <th style="width:76px">Necessário</th>${temAbrir?'<th style="width:36%">Orientação para abrir a fita</th>':''}</tr></thead>
           <tbody>${nf.itens.map(it=>`<tr${fbArr(it.abrir).length?' class="has-plano"':''}>
             <td class="mono">${escHtml(it.codigo)||'—'}</td><td class="ctr opz-cor">${opzAmostraFita(it)}</td><td>${escHtml(it.descricao)||'—'}</td><td class="ctr">${escHtml(it.unidade)}</td>
-            <td class="ctr">${fmtNum(it.necessario||0)}</td>
+            <td class="ctr">${it.regraRolo?`${fmtNum(+(+it.necReal||0).toFixed(2))}<div style="font-size:9.5px;font-weight:500;line-height:1.25">aplicada ${fmtNum(+(+it.comprar||0).toFixed(2))}${(+it.sobraPrevista>0.004)?`<br>sobra prevista ${fmtNum(+(+it.sobraPrevista).toFixed(2))}`:''}</div>`:fmtNum(it.necessario||0)}</td>
             ${temAbrir?`<td class="opz-abrir">${fbArr(it.abrir).map(a=>`<b>${escHtml(sfTextoAbrir(a))}</b>`).join('<br>')}</td>`:''}
           </tr>${opzPlanoLinha(it,temAbrir?6:5)}`).join('')}</tbody></table>`; })()}
       </div>`:''}
