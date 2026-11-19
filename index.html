@@ -3908,6 +3908,258 @@
   .rpp-i3{ grid-template-columns:.8fr 1fr 1fr; }
   .pp-hb{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .pp-cor-t{ font-size:12px; font-weight:600; color:var(--muted); } .pp-cor-t b{ color:var(--texto); }
+
+  /* ===== Orçamentos · Clientes (lista + edição) ===== */
+  .clx .page-head{ align-items:center; margin-bottom:20px; }
+  .clx .page-title{ font-size:24px; letter-spacing:-.01em; }
+  .clx .btn-novo{ display:inline-flex; align-items:center; gap:8px; border-radius:12px; padding:10px 18px; box-shadow:0 10px 20px -12px rgba(152,36,36,.7); }
+  .clx .btn-novo svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; }
+  .clx .page-head > .btn-ghost{ border-radius:12px; background:var(--surface); }
+  .cli-kpis{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .cli-kpi{ --c:#4b4b55; font:inherit; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
+    background:var(--surface); border:1px solid var(--linha); border-radius:999px; color:var(--muted); cursor:pointer; transition:border-color .12s, background .12s, box-shadow .12s; }
+  .cli-kpi b{ color:var(--texto); font-size:13.5px; }
+  .cli-kpi .dot{ background:var(--c); }
+  .cli-kpi:hover{ border-color:color-mix(in srgb,var(--c) 50%,transparent); color:var(--texto); }
+  .cli-kpi.on{ border-color:var(--c); background:color-mix(in srgb,var(--c) 9%,#fff); color:var(--texto); box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 14%,transparent); }
+  .cli-kpi-sep{ flex:1; }
+  .cli-kpi-info{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:var(--muted); }
+  .cli-kpi-info b{ color:var(--texto); }
+  .cli-kpi-info svg, .cli-favbtn svg{ width:15px; height:15px; fill:#e0a800; stroke:#b98700; stroke-width:1.6; stroke-linejoin:round; }
+  .cli-filtros{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; padding:10px 12px;
+    background:var(--surface); border:1px solid var(--linha); border-radius:14px; box-shadow:0 1px 2px rgba(75,75,85,.05); }
+  .cli-busca{ position:relative; flex:1; min-width:240px; }
+  .cli-busca svg{ position:absolute; left:11px; top:50%; transform:translateY(-50%); width:16px; height:16px; fill:none; stroke:var(--muted); stroke-width:2; stroke-linecap:round; }
+  .cli-busca input{ width:100%; font:inherit; font-size:13.5px; padding:9px 12px 9px 34px; border:1px solid var(--linha); border-radius:10px; background:#faf9f5; color:var(--texto); }
+  .cli-busca input:focus, .cli-sels select:focus{ outline:none; border-color:var(--vermelho); box-shadow:0 0 0 3px rgba(152,36,36,.12); background:#fff; }
+  .cli-sels{ display:contents; }
+  .cli-sels select{ font:inherit; font-size:13px; padding:9px 11px; border:1px solid var(--linha); border-radius:10px; background:#faf9f5; color:var(--texto); max-width:200px; }
+  .cli-favbtn{ font:inherit; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:10px; border:1px solid var(--linha); background:transparent; color:var(--muted); cursor:pointer; }
+  .cli-favbtn svg{ fill:none; }
+  .cli-favbtn:hover{ color:var(--texto); background:#faf9f5; }
+  .cli-favbtn.on{ background:#fff2b8; border-color:#e0a800; color:#7a5b00; }
+  .cli-favbtn.on svg{ fill:#e0a800; }
+  .cli-limpar{ font:inherit; font-size:12.5px; font-weight:600; border:0; background:transparent; color:var(--vermelho); cursor:pointer; padding:6px 8px; border-radius:8px; }
+  .cli-limpar:hover{ background:rgba(152,36,36,.08); }
+  .cli-wrap{ border-radius:16px; box-shadow:0 1px 3px rgba(75,75,85,.07); overflow-x:auto; }
+  .clx.cli-full{ max-width:none; }
+  @media(min-width:901px){
+    .clx.cli-full{ height:100%; display:flex; flex-direction:column; }
+    .clx.cli-full .cli-wrap{ flex:1 1 auto; min-height:0; overflow:auto; }
+  }
+  .ok-card{ cursor:grab; display:block; width:100%; }
+  .ok-card.arrastando{ opacity:.45; cursor:grabbing; }
+  .ok-nome{ font-size:13px; font-weight:700; color:var(--texto); line-height:1.3; }
+  .ok-col{ transition:background .12s, box-shadow .12s; }
+  .ok-col.drop{ background:#dcdbd1; box-shadow:0 0 0 2px var(--sc,var(--vermelho)); }
+  .ok-col .and-kb-body{ min-height:90px; }
+  .ok-ic{ display:inline-flex; margin-right:6px; }
+  .ok-vazio{ font-size:12px; color:var(--muted); text-align:center; padding:18px 6px; }
+  /* Kanban de Orçamentos — layout em tela cheia, sem barra de rolagem inferior */
+  .ok-sec{ background:var(--surface); border:1px solid var(--linha); border-radius:18px; padding:18px 18px 16px; box-shadow:0 1px 3px rgba(75,75,85,.07); display:flex; flex-direction:column; min-width:0; }
+  .ok-sec-h{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .ok-sec-h h3{ margin:0; font-size:12.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--vermelho); }
+  .ok-resumo{ display:flex; gap:8px; flex-wrap:wrap; }
+  .ok-box{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+  .ok-wrap{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+  .ok-wrap .and-nav{ position:absolute; top:50%; left:0; right:0; height:0; }
+  .ok-kanban{ flex:1 1 auto; min-height:0; align-items:stretch; gap:8px; padding:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -ms-overflow-style:none; }
+  .ok-kanban::-webkit-scrollbar{ display:none; height:0; }
+  .clx.ok-full{ max-width:none; }
+  .ok-kanban .and-kb-col{ flex:1 1 0; min-width:146px; display:flex; flex-direction:column; min-height:0; background:#efeee8; border-radius:14px; overflow:hidden; }
+  .ok-kanban .and-kb-head{ flex:0 0 auto; border-radius:0; padding:10px 12px 10px; }
+  .ok-kanban .and-kb-linha .kb-nome{ font-size:10.5px; letter-spacing:.03em; line-height:1.25; }
+  .ok-body{ flex:1 1 auto; min-height:90px; overflow-y:auto; padding:9px; gap:8px; scrollbar-width:thin; scrollbar-color:#d3d0c4 transparent; }
+  .ok-card{ padding:10px 11px 9px; border-radius:11px; box-shadow:0 1px 2px rgba(75,75,85,.08); transition:box-shadow .15s, transform .15s; }
+  .ok-card:hover{ box-shadow:0 8px 20px -8px rgba(75,75,85,.35); transform:translateY(-1px); }
+  .ok-card .ac-cli{ font-weight:500; color:var(--muted); font-size:11.5px; margin-top:2px; white-space:normal; }
+  .ok-card .ac-f{ margin-top:8px; padding-top:7px; border-top:1px solid #efede6; font-size:11.5px; }
+  .ok-vazio{ border:1.5px dashed #d3d0c4; border-radius:10px; font-size:12px; color:#9a988e; text-align:center; padding:18px 6px; }
+  .ok-col.drop .ok-vazio{ border-color:var(--sc,var(--vermelho)); color:var(--sc,var(--vermelho)); }
+  @media(min-width:901px){
+    .clx.ok-full{ height:100%; display:flex; flex-direction:column; }
+    .clx.ok-full .ok-sec{ flex:1 1 auto; min-height:0; }
+  }
+  @media(max-width:900px){
+    .ok-kanban{ overflow-y:visible; }
+    .ok-kanban .and-kb-col{ flex:0 0 230px; }
+    .ok-body{ overflow-y:visible; }
+  }
+  /* anexos: miniaturas e visualizador */
+  .det-anx{ border:0; background:transparent; cursor:pointer; padding:0 6px; width:auto; display:inline-flex; align-items:center; gap:3px; font:inherit; }
+  .det-anx b{ font-size:11.5px; color:var(--texto); }
+  .anx-th{ cursor:zoom-in; }
+  #anxViewer{ position:fixed; inset:0; z-index:100000; background:rgba(20,20,24,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #anxViewer .av-top{ position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 18px; color:#fff; font-size:13px; }
+  #anxViewer .av-top span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #anxViewer .av-top a, #anxViewer .av-top button{ color:#fff; background:rgba(255,255,255,.14); border:0; border-radius:9px; padding:7px 12px; font:inherit; font-size:12.5px; cursor:pointer; text-decoration:none; }
+  #anxViewer .av-top a:hover, #anxViewer .av-top button:hover{ background:rgba(255,255,255,.26); }
+  #anxViewer img{ max-width:92vw; max-height:84vh; object-fit:contain; background:#fff; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5); }
+  #anxViewer .av-n{ position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.16); color:#fff; cursor:pointer; display:grid; place-items:center; }
+  #anxViewer .av-n:hover{ background:rgba(255,255,255,.3); }
+  #anxViewer .av-n svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+  #anxViewer .av-n.e{ left:16px; } #anxViewer .av-n.e svg{ transform:scaleX(-1); } #anxViewer .av-n.d{ right:16px; }
+  .cli-cons{ display:flex; align-items:center; gap:8px; white-space:nowrap; font-size:13px; }
+  .cli-cons .av{ width:28px; height:28px; font-size:10.5px; border-width:1.5px; }
+  .cli-tbl th{ position:sticky; top:0; z-index:2; background:#f6f5f0; padding:12px 14px; font-size:10.5px; border-bottom:0; box-shadow:0 1px 0 var(--linha); }
+  .cli-tbl td{ padding:11px 14px; border-bottom:1px solid #efede6; }
+  .cli-row:hover td{ background:#faf9f5; }
+  .cli-tbl tbody tr.cli-row.fav td{ background:#fff6cc; }
+  .cli-tbl tbody tr.cli-row.fav:hover td{ background:#ffefa8; }
+  .cli-tbl tbody tr.cli-row.fav td:first-child{ box-shadow:inset 4px 0 0 #e0a800; }
+  .cli-nm{ display:flex; align-items:center; gap:11px; }
+  .cli-av{ width:36px; height:36px; flex:0 0 36px; border-radius:50%; display:grid; place-items:center; font-size:12.5px; font-weight:700; letter-spacing:.02em;
+    background:rgba(152,36,36,.09); color:var(--vermelho); }
+  .cli-row.fav .cli-av{ background:#ffe58a; color:#7a5b00; }
+  .cli-star{ border:0; background:transparent; cursor:pointer; padding:5px; border-radius:9px; line-height:0; color:#bdbab0; transition:transform .12s, background .12s; }
+  .cli-star svg{ width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linejoin:round; }
+  .cli-star:hover{ background:rgba(224,168,0,.14); color:#e0a800; transform:scale(1.1); }
+  .cli-star.on{ color:#e0a800; }
+  .cli-star.on svg{ fill:#f2b800; stroke:#b98700; }
+  .cli-stw{ position:relative; display:inline-block; border-radius:999px; }
+  .cli-stw select{ appearance:none; -webkit-appearance:none; background:transparent; border:0; color:inherit; font:inherit; font-size:12px; font-weight:700;
+    padding:6px 28px 6px 13px; border-radius:999px; cursor:pointer; max-width:100%; }
+  .cli-stw select:focus{ outline:2px solid var(--vermelho); outline-offset:1px; }
+  .cli-stw select option{ color:#333; background:#fff; font-weight:500; }
+  .cli-stw::after{ content:''; position:absolute; right:12px; top:50%; width:5px; height:5px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-70%) rotate(45deg); pointer-events:none; opacity:.7; }
+  .cli-tbl .acoes .icon-btn{ opacity:.5; transition:opacity .12s, background .12s; padding:6px; }
+  .cli-tbl tr:hover .acoes .icon-btn{ opacity:1; }
+  @media (hover:none){ .cli-tbl .acoes .icon-btn{ opacity:1; } }
+
+  /* ===== Ambientes / Relacionamento (orçamentos) ===== */
+  .cli-kpi.ro{ cursor:default; } .cli-kpi.ro:hover{ border-color:var(--linha); color:var(--muted); }
+  .cli-tbl td.ctr, .cli-tbl th.ctr{ text-align:center; }
+  .cli-exp{ border:0; background:transparent; cursor:pointer; padding:5px; border-radius:8px; line-height:0; color:var(--muted); }
+  .cli-exp svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; transition:transform .18s; }
+  .cli-exp:hover{ background:rgba(75,75,85,.08); color:var(--texto); } .cli-exp.on svg{ transform:rotate(180deg); } .cli-exp.on{ color:var(--vermelho); }
+  .cli-rel{ display:inline-flex; gap:6px; }
+  .rel-b{ width:32px; height:32px; border-radius:50%; border:1px solid var(--linha); background:#fff; cursor:pointer; display:grid; place-items:center; padding:0; transition:transform .12s, box-shadow .12s, background .12s; }
+  .rel-b svg{ width:17px; height:17px; }
+  .rel-wa{ color:#1fa855; } .rel-ml{ color:#2f8fd8; }
+  .rel-b:hover{ transform:scale(1.08); box-shadow:0 3px 10px -4px rgba(0,0,0,.35); }
+  .rel-wa:hover,.rel-wa[data-aberto]{ background:#e6f7ec; } .rel-ml:hover,.rel-ml[data-aberto]{ background:#e6f1fb; }
+  .rel-b.off{ opacity:.35; }
+  .cli-casa{ position:relative; display:inline-flex; align-items:center; gap:5px; border:1px solid var(--linha); background:#fff; color:var(--muted); cursor:pointer; border-radius:10px; padding:6px 10px; font:inherit; font-size:12.5px; font-weight:700; transition:background .12s,color .12s,border-color .12s; }
+  .cli-casa svg{ width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .cli-casa:hover{ border-color:var(--vermelho); color:var(--vermelho); background:rgba(152,36,36,.05); }
+  .cli-casa.on{ color:var(--vermelho); border-color:rgba(152,36,36,.35); background:rgba(152,36,36,.06); }
+  .cli-tot{ text-align:right; font-weight:700; color:#1f7a3a; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .cli-row.exp td{ border-bottom-color:transparent; }
+  .cli-det > td{ padding:0 !important; background:#f6f5f0 !important; border-bottom:1px solid #e4e2d9; }
+  .det-box{ padding:6px 16px 14px 56px; overflow-x:auto; }
+  .det-vazio{ padding:14px 20px 14px 56px; font-size:13px; color:var(--muted); }
+  .det-link{ border:0; background:transparent; color:var(--vermelho); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; padding:2px 4px; border-radius:6px; }
+  .det-link:hover{ background:rgba(152,36,36,.08); }
+  .det-tbl{ width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(75,75,85,.1); min-width:760px; }
+  .det-tbl th{ font-size:10.5px; text-align:left; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:9px 12px; background:#fbfaf7; border-bottom:1px solid #eceae2; }
+  .det-tbl td{ padding:9px 12px; font-size:13px; border-bottom:1px solid #f1efe8; vertical-align:middle; }
+  .det-tbl .det-n{ font-weight:600; } .det-tbl .det-v{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .det-tbl .det-o{ color:var(--muted); font-size:12.5px; max-width:260px; }
+  .det-tbl tfoot td{ background:#fbfaf7; border-bottom:0; }
+  .det-tbl .det-sum{ color:#1f7a3a; font-size:14px; } .det-tbl .det-sl{ font-size:12px; color:var(--muted); }
+  .det-anx{ display:inline-grid; place-items:center; width:26px; height:26px; border-radius:7px; color:var(--muted); text-decoration:none; }
+  .det-anx:hover{ background:rgba(152,36,36,.09); color:var(--vermelho); }
+  .amb-chip{ display:inline-flex; align-items:center; gap:6px; background:var(--c); color:#fff; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; }
+  /* popovers */
+  .pop-orc{ position:fixed; z-index:400; background:#fff; border:1px solid var(--linha); border-radius:12px; box-shadow:0 16px 40px -12px rgba(0,0,0,.35); }
+  .rel-pop{ padding:6px; min-width:250px; max-width:320px; }
+  .rp-it{ display:grid; grid-template-columns:1fr auto; gap:2px 10px; align-items:center; padding:8px 10px; }
+  .rp-it + .rp-it{ border-top:1px solid #efede6; }
+  .rp-l{ grid-column:1/-1; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+  .rp-v{ font-size:14px; word-break:break-all; user-select:all; } .rp-no{ color:var(--muted); font-weight:400; font-size:13px; }
+  .rp-a{ display:flex; gap:4px; }
+  .rp-a button,.rp-a a{ font:inherit; font-size:12px; font-weight:700; padding:5px 9px; border-radius:7px; border:1px solid var(--linha); background:#faf9f5; color:var(--texto); cursor:pointer; text-decoration:none; }
+  .rp-a a{ background:var(--vermelho); color:#fff; border-color:var(--vermelho); } .rp-a button:hover{ background:#fff; }
+  .st-menu{ padding:6px; min-width:250px; }
+  .st-menu button{ display:flex; align-items:center; gap:12px; width:100%; border:0; background:transparent; font:inherit; font-size:14.5px; color:var(--texto); padding:9px 12px; border-radius:8px; cursor:pointer; text-align:left; }
+  .st-menu button:hover,.st-menu button.on{ background:#f1f0ea; } .st-menu button span{ display:grid; place-items:center; width:22px; }
+  /* tela de ambientes */
+  .amb-ov{ align-items:flex-start; }
+  .amb-box{ width:min(1180px,100%); margin:3vh auto; }
+  .amb-sub{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .amb-body{ padding:14px 20px 8px; background:#faf9f5; max-height:68vh; overflow-y:auto; }
+  .amb-main,.amb-head{ display:grid; grid-template-columns:184px minmax(160px,1fr) 160px 138px 140px 44px 36px; gap:10px; align-items:center; }
+  .amb-head{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); padding:0 14px 6px; }
+  .amb-row{ background:#fff; border:1px solid var(--linha); border-radius:12px; padding:12px 14px; margin-bottom:10px; box-shadow:0 1px 2px rgba(75,75,85,.05); }
+  .amb-row input,.amb-row select{ font:inherit; font-size:13.5px; padding:9px 11px; border:1px solid var(--linha); border-radius:8px; background:#faf9f5; color:var(--texto); width:100%; min-width:0; }
+  .amb-row input:focus,.amb-row select:focus{ outline:none; border-color:var(--vermelho); background:#fff; box-shadow:0 0 0 3px rgba(152,36,36,.12); }
+  .amb-st{ display:flex; align-items:center; gap:8px; width:100%; border:0; border-radius:8px; padding:9px 11px; background:var(--c); color:#fff; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; text-align:left; }
+  .amb-st span{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .amb-st:hover{ filter:brightness(1.07); }
+  .amb-nome{ position:relative; } .amb-nome input{ font-weight:600; }
+  .amb-sug{ position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:30; background:#fff; border:1px solid var(--linha); border-radius:10px; box-shadow:0 14px 30px -12px rgba(0,0,0,.35); padding:4px; min-width:220px; }
+  .amb-sug .sg{ display:flex; justify-content:space-between; gap:8px; width:100%; border:0; background:transparent; font:inherit; font-size:13.5px; padding:8px 10px; border-radius:7px; cursor:pointer; text-align:left; color:var(--texto); }
+  .amb-sug .sg:hover,.amb-sug .sg.on{ background:#f1f0ea; } .amb-sug .sg b{ color:var(--vermelho); } .amb-sug .sg em{ font-style:normal; font-size:11px; color:var(--muted); }
+  .amb-sug .sg-novo{ padding:8px 10px; font-size:12px; color:var(--muted); border-top:1px solid #efede6; }
+  .amb-sug .sg-novo:first-child{ border-top:0; }
+  .amb-valw{ position:relative; display:block; } .amb-valw i{ position:absolute; left:11px; top:50%; transform:translateY(-50%); font-style:normal; font-size:12.5px; color:var(--muted); pointer-events:none; }
+  .amb-valw input{ padding-left:34px; text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
+  .amb-clip,.amb-del{ border:1px solid var(--linha); background:#fff; border-radius:9px; height:38px; display:grid; place-items:center; cursor:pointer; color:var(--muted); position:relative; padding:0; }
+  .amb-clip:hover,.amb-clip.open{ color:var(--vermelho); border-color:var(--vermelho); background:rgba(152,36,36,.05); } .amb-clip.on{ color:var(--vermelho); }
+  .amb-clip b{ position:absolute; top:-6px; right:-6px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:var(--vermelho); color:#fff; font-size:10.5px; display:grid; place-items:center; }
+  .amb-del:hover{ color:#b3261e; border-color:#b3261e; background:#fdeceb; }
+  .amb-row .amb-obs{ margin-top:10px; font-size:13px; }
+  .amb-anex{ margin-top:10px; padding:12px; background:#faf9f5; border:1px dashed #d6d4ca; border-radius:10px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .anx-lista{ display:flex; flex-wrap:wrap; gap:8px; flex:1; min-width:200px; }
+  .anx{ display:flex; align-items:center; background:#fff; border:1px solid var(--linha); border-radius:9px; overflow:hidden; }
+  .anx a{ display:flex; align-items:center; gap:8px; padding:4px 8px 4px 4px; text-decoration:none; color:var(--texto); max-width:210px; }
+  .anx img{ width:34px; height:34px; object-fit:cover; border-radius:6px; }
+  .anx-pdf{ width:34px; height:34px; border-radius:6px; background:#fdeceb; color:#b3261e; font-size:10px; font-weight:800; display:grid; place-items:center; }
+  .anx-n{ font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .anx-x{ border:0; border-left:1px solid var(--linha); background:transparent; width:28px; align-self:stretch; cursor:pointer; color:var(--muted); font-size:17px; } .anx-x:hover{ background:#fdeceb; color:#b3261e; }
+  .anx-add{ display:inline-flex; align-items:center; gap:7px; cursor:pointer; } .anx-st{ font-size:12px; color:var(--muted); }
+  .amb-novo{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:12px; border:2px dashed #d3d1c6; border-radius:12px; background:transparent; color:var(--vermelho); font:inherit; font-weight:700; font-size:13.5px; cursor:pointer; }
+  .amb-novo svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; } .amb-novo:hover{ background:rgba(152,36,36,.05); border-color:var(--vermelho); }
+  .amb-foot{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:14px 20px; border-top:1px solid var(--linha); background:#fff; }
+  .amb-tot{ font-size:13px; color:var(--muted); } .amb-tot b{ font-size:20px; color:#1f7a3a; margin-left:8px; font-variant-numeric:tabular-nums; }
+  .amb-acoes{ display:flex; gap:10px; }
+  .clf-amb svg{ fill:none; }
+  @media (max-width:980px){
+    .amb-head{ display:none; }
+    .amb-main{ grid-template-columns:1fr 1fr 44px 36px; }
+    .amb-st{ grid-column:1/3; } .amb-nome{ grid-column:1/-1; order:-1; } .amb-forma{ grid-column:1/3; } .amb-valw{ grid-column:1/3; } .amb-data{ grid-column:1/3; }
+    .amb-clip{ grid-column:3; grid-row:span 1; } .amb-del{ grid-column:4; }
+    .det-box{ padding-left:12px; }
+  }
+
+  /* formulário */
+  .clf{ max-width:1080px; }
+  .clf .form{ gap:16px; }
+  .clf-hero{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:18px 22px; border-radius:18px; color:#fff;
+    background:linear-gradient(120deg,#982424 0%,#7f1e1e 60%,#5e1717 100%); box-shadow:0 14px 28px -18px rgba(152,36,36,.8); }
+  .clf-av{ width:60px; height:60px; flex:0 0 60px; border-radius:50%; display:grid; place-items:center; font-size:20px; font-weight:700;
+    background:rgba(255,255,255,.16); border:2px solid rgba(255,255,255,.4); }
+  .clf-hid{ flex:1; min-width:180px; }
+  .clf-hn{ font-size:20px; font-weight:700; line-height:1.2; word-break:break-word; }
+  .clf-hs{ font-size:12.5px; opacity:.78; margin-top:3px; }
+  .clf-hct{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .clf-lbl{ font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; opacity:.75; }
+  .clf-hero .cli-stw{ box-shadow:0 0 0 2px rgba(255,255,255,.55); }
+  .clf-fav{ font:inherit; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; cursor:pointer;
+    border:1px solid rgba(255,255,255,.45); background:rgba(255,255,255,.1); color:#fff; transition:background .12s; }
+  .clf-fav svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linejoin:round; }
+  .clf-fav:hover{ background:rgba(255,255,255,.2); }
+  .clf-fav.on{ background:#fff2b8; border-color:#e0a800; color:#6b4f00; }
+  .clf-fav.on svg{ fill:#f2b800; stroke:#b98700; }
+  .clf-sec{ background:var(--surface); border:1px solid var(--linha); border-radius:16px; padding:20px 22px 22px; box-shadow:0 10px 26px -22px rgba(75,75,85,.5); }
+  .clf-sh{ display:flex; align-items:center; gap:12px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid #efede6; }
+  .clf-ic{ width:38px; height:38px; flex:0 0 38px; border-radius:11px; display:grid; place-items:center; background:rgba(152,36,36,.08); color:var(--vermelho); }
+  .clf-ic svg{ width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .clf-sh h3{ font-size:15px; font-weight:700; color:var(--texto); line-height:1.2; }
+  .clf-sh p{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .clf .grid{ grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px 18px; }
+  .clf .fld.s2{ grid-column:span 2; } .clf .fld.s4{ grid-column:span 4; }
+  .clf .fld label{ font-size:12px; color:var(--muted); font-weight:600; }
+  .clf .fld input,.clf .fld select,.clf .fld textarea{ padding:10px 12px; border-radius:10px; background:#faf9f5; transition:border-color .12s, box-shadow .12s, background .12s; }
+  .clf .fld input:hover,.clf .fld select:hover,.clf .fld textarea:hover{ background:#fff; }
+  .clf .fld input:focus,.clf .fld select:focus,.clf .fld textarea:focus{ outline:none; background:#fff; border-color:var(--vermelho); box-shadow:0 0 0 3px rgba(152,36,36,.12); }
+  .clf .fld textarea{ min-height:96px; }
+  .clf-bar{ position:sticky; bottom:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    padding:12px 16px; margin-top:2px; border-radius:14px; background:rgba(255,255,255,.92); backdrop-filter:blur(8px); border:1px solid var(--linha); box-shadow:0 -6px 20px -12px rgba(75,75,85,.35); }
+  .clf-bar-info{ font-size:12px; color:var(--muted); } .clf-bar-info i{ color:var(--vermelho); font-style:normal; font-weight:700; }
+  .clf .form-actions{ padding:0; }
+  .clf .form-actions .btn{ border-radius:11px; padding:10px 20px; }
+  @media (max-width:900px){ .clf .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } .clf .fld.s4{ grid-column:span 2; } }
+  @media (max-width:560px){ .clf .grid{ grid-template-columns:1fr; } .clf .fld.s2,.clf .fld.s4{ grid-column:auto; } .clf-hct{ width:100%; } }
 </style>
 </head>
 <body>
@@ -4053,9 +4305,16 @@
   const EDIT_SVG='<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
   const TRASH_SVG='<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';
 
+  /* Setor comercial: só existe na Equipe Produtiva (não entra nas OPs). Quem está nele é consultor(a). */
+  const SETOR_VENDAS={sigla:'VD', nome:'Vendas', cor:'#8a4fa0'};
+  function eqSetorDe(sig){ return sig==='VD'?SETOR_VENDAS:opSetorDe(sig); }
+  function consultoresVendas(){ return EQUIPE.filter(f=>(f.setores||[]).includes('VD')); }
+  function equipeProd(){ return EQUIPE.filter(f=>{ const st=f.setores||[]; return !(st.length && st.every(x=>x==='VD')); }); }
+  function consultorDe(c){ if(!c) return null; return EQUIPE.find(f=>c.consultorId&&f.id===c.consultorId) || (c.consultor?EQUIPE.find(f=>normTxt(f.nome)===normTxt(c.consultor)):null) || null; }
+
   /* ===== Módulos (Orçamentos no topo) ===== */
   const MODULES = [
-    {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Cadastro de clientes'}, {label:'Cadastro de dados'}, {label:'Mapa'} ]},
+    {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Lista de Orçamentos'}, {label:'Kanban de Orçamentos'}, {label:'Mapa'} ]},
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Pendências de Pintura','Rendimento','Equipe Produtiva']},
@@ -4188,8 +4447,8 @@
   function renderView(mod,name){
     gsaMode=false; gsaSel=new Set(); gsaNec={}; paMode=false; paSel=new Set();
     if(mod.id==='dev' && name==='Controle de usuários') return renderUsuarios();
-    if(mod.id==='orc' && name==='Cadastro de clientes') return renderClientes();
-    if(mod.id==='orc' && name==='Cadastro de dados') return renderDados();
+    if(mod.id==='orc' && name==='Lista de Orçamentos') return renderClientes();
+    if(mod.id==='orc' && name==='Kanban de Orçamentos') return renderOrcKanban();
     if(mod.id==='orc' && name==='Mapa') return renderMapa();
     if(mod.id==='pcp' && name==='Solicitação de Acessórios (ACE)') return renderACE();
     if(mod.id==='est' && name==='Solicitação de Acessórios (ACE)') return renderACEEstoque();
@@ -4244,45 +4503,163 @@
   });
 
   /* ===== Clientes: lista ===== */
+  const STAR_SVG='<svg viewBox="0 0 24 24"><path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.1 1.1-6.5L2.6 9.6l6.5-.9Z"/></svg>';
+  const PLUS_SVG='<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+  const LUPA_SVG='<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+  let fCli={q:'',cidade:'',origem:'',resp:'',fav:false};
+  const cliExp=new Set();   // clientes com a lista de ambientes aberta na tela principal
+
+  function mesAtualISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+  function cliFav(c){ return !!c && c.favoritoMes===mesAtualISO(); }   // vale só no mês em que foi marcado
+  function nomeCli(c){ return c.cliente2?`${c.cliente1} & ${c.cliente2}`:(c.cliente1||''); }
+  function iniciaisCli(nome){
+    const p=(nome||'').trim().split(/\s+/).filter(w=>w.length>2||/^[A-Z]/.test(w));
+    if(!p.length) return '?'; return ((p[0][0]||'')+(p.length>1?p[p.length-1][0]:'')).toUpperCase();
+  }
+  function cliPassa(c,ignorar){
+    const f=fCli;
+    if(f.cidade && (c.cidade||'').trim().toLowerCase()!==f.cidade.toLowerCase()) return false;
+    if(f.origem && (c.origem||'—')!==f.origem) return false;
+    if(f.resp && (c.resp||'').trim().toLowerCase()!==f.resp.toLowerCase()) return false;
+    if(f.fav && !cliFav(c)) return false;
+    const t=(f.q||'').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if(t.length){
+      const txt=[c.cliente1,c.cliente2,c.cidade,c.bairro,c.resp,(consultorDe(c)||{}).nome||c.consultor,c.whatsapp,c.telefone,c.email].filter(Boolean).join(' ').toLowerCase();
+      if(!t.every(x=>txt.includes(x))) return false;
+    }
+    return true;
+  }
+  function listaClientes(){
+    return CLIENTES.filter(c=>cliPassa(c)).sort((a,b)=>
+      (cliFav(b)-cliFav(a)) || nomeCli(a).localeCompare(nomeCli(b),'pt-BR'));
+  }
+  function valoresUnicos(campo){
+    const m=new Map(); CLIENTES.forEach(c=>{ const v=(c[campo]||'').trim(); if(v&&v!=='—'&&!m.has(v.toLowerCase())) m.set(v.toLowerCase(),v); });
+    return [...m.values()].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  }
+  function selCli(chave,rotulo,opcoes){
+    return `<select onchange="fCli.${chave}=this.value; atualizarClientes()" title="${rotulo}">
+      <option value="">${rotulo}</option>${opcoes.map(o=>`<option value="${esc(o)}" ${fCli[chave]===o?'selected':''}>${escHtml(o)}</option>`).join('')}</select>`;
+  }
+  function selectsCli(){
+    return selCli('cidade','Todas as cidades',valoresUnicos('cidade'))
+      + selCli('resp','Todos os responsáveis',valoresUnicos('resp'))
+      + selCli('origem','Todas as origens',ORIGENS.filter(o=>o!=='—'));
+  }
+  function kpisCli(){
+    const lista=CLIENTES.filter(c=>cliPassa(c));
+    let amb=0, tot=0, favs=0;
+    lista.forEach(c=>{ amb+=ambDoCliente(c).length; tot+=totalCliente(c); if(cliFav(c)) favs++; });
+    return `<span class="cli-kpi ro" style="--c:#4b4b55">Orçamentos <b>${lista.length}</b></span>`
+      + `<span class="cli-kpi ro" style="--c:#4b4b55">Ambientes <b>${amb}</b></span>`
+      + `<span class="cli-kpi ro" style="--c:#2f8f46">Valor total <b>${orcBRL(tot)}</b></span>`
+      + `<span class="cli-kpi-sep"></span><span class="cli-kpi-info" title="Clientes marcados como prioridade neste mês">${STAR_SVG} Prioridades do mês <b>${favs}</b></span>`;
+  }
+  function filtrosAtivosCli(){ const f=fCli; return !!(f.q||f.cidade||f.origem||f.resp||f.fav); }
   function renderClientes(){
     clienteEditId=null; TELA='clientes';
     const total=CLIENTES.length;
-    view.innerHTML=`<div class="page">
+    view.innerHTML=`<div class="page page-wide clx cli-full">
       <div class="page-head">
-        <div><h1 class="page-title">Clientes</h1><p class="page-sub">${total} cadastrado(s)</p></div>
-        <button class="btn btn-primary" onclick="abrirFormCliente()">+ Novo cliente</button>
+        <div><h1 class="page-title">Lista de Orçamentos</h1><p class="page-sub" id="cliSub"></p></div>
+        <button class="btn btn-primary btn-novo" onclick="abrirFormCliente()">${PLUS_SVG} Novo cliente</button>
       </div>
       ${total?`
-      <div class="toolbar"><input class="search" id="buscaCliente" placeholder="Buscar por nome ou cidade..." oninput="filtrarClientes(this.value)"></div>
-      <div class="table-wrap"><table class="tbl">
-        <thead><tr><th>Cliente(s)</th><th>Cidade</th><th>WhatsApp</th><th>Status</th><th></th></tr></thead>
-        <tbody id="clientesBody">${CLIENTES.map(linhaCliente).join('')}</tbody>
+      <div class="cli-kpis" id="cliKpis"></div>
+      <div class="cli-filtros">
+        <div class="cli-busca">${LUPA_SVG}<input id="buscaCliente" value="${esc(fCli.q)}" placeholder="Buscar por nome, cidade, telefone ou e-mail..." oninput="fCli.q=this.value; atualizarClientes(true)"></div>
+        <div class="cli-sels" id="cliSels"></div>
+        <button class="cli-favbtn ${fCli.fav?'on':''}" id="cliFavBtn" onclick="fCli.fav=!fCli.fav; atualizarClientes()" title="Mostrar só as prioridades do mês">${STAR_SVG}<span>Prioridades do mês</span></button>
+        <button class="cli-limpar" id="cliLimpar" onclick="limparFiltrosCli()">Limpar filtros</button>
+      </div>
+      <div class="table-wrap cli-wrap"><table class="tbl cli-tbl">
+        <thead><tr><th style="width:40px"></th><th style="width:46px" title="Prioridade do mês"></th><th>Cliente(s)</th><th style="width:120px;text-align:center">Relacionamento</th><th>Cidade</th><th>Origem</th><th>Consultor</th><th style="width:96px;text-align:center">Ambientes</th><th style="width:140px;text-align:right">Valor total</th><th style="width:84px"></th></tr></thead>
+        <tbody id="clientesBody"></tbody>
       </table></div>`:emptyState()}
     </div>`;
+    if(total) atualizarClientes();
+  }
+  function atualizarOuRenderClientes(){ if(document.getElementById('clientesBody')) atualizarClientes(); else renderClientes(); }
+  function atualizarClientes(soLinhas){
+    const body=document.getElementById('clientesBody'); if(!body){ renderClientes(); return; }
+    const lista=listaClientes();
+    body.innerHTML=lista.length?lista.map(linhaCliente).join(''):`<tr><td class="td-empty" colspan="10">Nenhum cliente encontrado${filtrosAtivosCli()?' com esses filtros. <a href="#" onclick="limparFiltrosCli();return false" style="color:var(--vermelho);font-weight:600">Limpar filtros</a>':''}</td></tr>`;
+    const sub=document.getElementById('cliSub');
+    if(sub) sub.textContent=filtrosAtivosCli()?`${lista.length} de ${CLIENTES.length} cadastrado(s)`:`${CLIENTES.length} cadastrado(s)`;
+    const k=document.getElementById('cliKpis'); if(k) k.innerHTML=kpisCli();
+    const s=document.getElementById('cliSels');
+    if(s && !(soLinhas===true) && !s.contains(document.activeElement)) s.innerHTML=selectsCli();
+    const fb=document.getElementById('cliFavBtn'); if(fb) fb.classList.toggle('on',fCli.fav);
+    const lm=document.getElementById('cliLimpar'); if(lm) lm.style.display=filtrosAtivosCli()?'':'none';
+  }
+  function limparFiltrosCli(){
+    fCli={q:'',cidade:'',origem:'',resp:'',fav:false};
+    const b=document.getElementById('buscaCliente'); if(b) b.value='';
+    atualizarClientes();
   }
   function linhaCliente(c){
-    const nome=c.cliente2?`${c.cliente1} &amp; ${c.cliente2}`:c.cliente1;
-    const st=STATUS[c.status]||STATUS.novo;
-    return `<tr>
-      <td><div class="cel-nome">${nome}</div>${c.resp?`<div class="cel-sub">Resp.: ${c.resp}</div>`:''}</td>
-      <td>${c.cidade||'—'}${c.uf?(' / '+c.uf):''}</td>
-      <td>${c.whatsapp||'—'}</td>
-      <td><span class="badge-st ${st.cls}">${st.label}</span></td>
+    const fav=cliFav(c), amb=ambDoCliente(c), aberto=cliExp.has(c.id);
+    const local=[c.cidade,c.uf].filter(Boolean).join(' / ');
+    const linha=`<tr class="cli-row ${fav?'fav':''} ${aberto?'exp':''}">
+      <td class="ctr"><button class="cli-exp ${aberto?'on':''}" title="${aberto?'Recolher':'Ver ambientes'}" onclick="alternarAmbCliente('${c.id}')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></td>
+      <td class="ctr"><button class="cli-star ${fav?'on':''}" title="${fav?'Remover das prioridades do mês':'Marcar como prioridade do mês'}" onclick="alternarFavoritoCliente('${c.id}')">${STAR_SVG}</button></td>
+      <td><div class="cli-nm"><span class="cli-av">${escHtml(iniciaisCli(c.cliente1))}</span>
+        <div><div class="cel-nome">${escHtml(nomeCli(c))}</div>${c.resp?`<div class="cel-sub">Resp.: ${escHtml(c.resp)}</div>`:''}</div></div></td>
+      <td class="ctr"><div class="cli-rel">
+        <button class="rel-b rel-wa ${(c.whatsapp||c.telefone)?'':'off'}" title="WhatsApp" onclick="relMostrar(event,'${c.id}','wa')">${WA_SVG}</button>
+        <button class="rel-b rel-ml ${c.email?'':'off'}" title="E-mail" onclick="relMostrar(event,'${c.id}','ml')">${MAIL_SVG}</button></div></td>
+      <td>${local?escHtml(local):'<span class="cel-sub">—</span>'}</td>
+      <td>${c.origem&&c.origem!=='—'?escHtml(c.origem):'<span class="cel-sub">—</span>'}</td>
+      <td>${consultorCelula(c)}</td>
+      <td class="ctr"><button class="cli-casa ${amb.length?'on':''}" title="Cadastrar / editar ambientes" onclick="abrirAmbientes('${c.id}')">${IC_CASA}${amb.length?`<b>${amb.length}</b>`:''}</button></td>
+      <td class="cli-tot">${amb.length?orcBRL(totalCliente(c)):'<span class="cel-sub">—</span>'}</td>
       <td class="acoes">
         <button class="icon-btn" title="Editar" onclick="editarCliente('${c.id}')">${EDIT_SVG}</button>
         <button class="icon-btn danger" title="Excluir" onclick="excluirCliente('${c.id}')">${TRASH_SVG}</button>
       </td></tr>`;
+    return linha + (aberto?detalheAmbientes(c):'');
+  }
+  // usuário do Controle de Usuários que corresponde ao consultor (foto de perfil vem dele)
+  function consultorUsuario(c){
+    const f=consultorDe(c), nome=f?f.nome:(c&&c.consultor)||''; if(!nome) return null;
+    const n=normTxt(nome);
+    let u=USUARIOS.find(x=>normTxt(x.funcEquipe)===n) || USUARIOS.find(x=>normTxt(x.nome)===n);
+    if(!u){   // sem vínculo explícito: aceita se o 1º nome bate com um único usuário
+      const pn=n.split(' ')[0], cand=USUARIOS.filter(x=>normTxt(x.nome).split(' ')[0]===pn);
+      if(cand.length===1) u=cand[0];
+    }
+    return u||null;
+  }
+  function consultorNome(c){ const f=consultorDe(c); return f?f.nome:((c&&c.consultor)||''); }
+  function consultorCelula(c){
+    const nome=consultorNome(c);
+    if(!nome) return '<span class="cel-sub">—</span>';
+    return `<div class="cli-cons">${avatarHtml(consultorUsuario(c),nome,'')}<span>${escHtml(nome)}</span></div>`;
+  }
+  function selectConsultor(c){
+    const lista=consultoresVendas(), atual=consultorDe(c);
+    const fora=atual && !lista.some(f=>f.id===atual.id);
+    const o=lista.map(f=>`<option value="${esc(f.id)}" ${atual&&atual.id===f.id?'selected':''}>${escHtml(f.nome)}</option>`).join('')
+      + (fora?`<option value="${esc(atual.id)}" selected>${escHtml(atual.nome)} (fora de Vendas)</option>`:'');
+    const dica=lista.length?'':'<span class="fld-hint">Nenhum funcionário no setor Vendas. Cadastre em PCP › Equipe Produtiva.</span>';
+    return `<div class="fld s2"><label>Consultor</label><select name="consultor"><option value="">— Sem consultor —</option>${o}</select>${dica}</div>`;
+  }
+  function alternarFavoritoCliente(id){
+    const c=CLIENTES.find(x=>x.id===id); if(!c) return;
+    const ligar=!cliFav(c);
+    db.ref('clientes/'+id).update({
+      favoritoMes: ligar?mesAtualISO():null,
+      favoritoPor: ligar?usuarioAtual():null,
+      favoritoEm:  ligar?new Date().toISOString():null
+    }).then(()=>toast(ligar?(c.cliente1+' marcado como prioridade do mês'):'Prioridade removida'))
+      .catch(e=>toast('Erro: '+e.message));
   }
   function emptyState(){
     return `<div class="empty"><div class="e-ic"><svg viewBox="0 0 24 24">${I.rh}</svg></div>
       <h3>Nenhum cliente cadastrado</h3><p>Comece adicionando o primeiro cliente da movelaria.</p>
       <button class="btn btn-primary" onclick="abrirFormCliente()">+ Novo cliente</button></div>`;
   }
-  function filtrarClientes(q){
-    q=(q||'').toLowerCase();
-    const f=CLIENTES.filter(c=>((c.cliente1||'')+' '+(c.cliente2||'')+' '+(c.cidade||'')).toLowerCase().includes(q));
-    document.getElementById('clientesBody').innerHTML=f.length?f.map(linhaCliente).join(''):'<tr><td class="td-empty" colspan="5">Nenhum resultado</td></tr>';
-  }
+  function filtrarClientes(q){ fCli.q=q||''; atualizarClientes(true); }
 
   /* ===== Clientes: formulário ===== */
   function abrirFormCliente(){ renderClienteForm(null); }
@@ -4300,6 +4677,13 @@
     return `<div class="fld"><label>${label}${req?'<i>*</i>':''}</label>
       <input name="${name}" type="${type||'text'}" value="${esc(value)}" placeholder="${ph||''}" ${oninput} ${ob}></div>`;
   }
+  function cfield(name,label,value,o){
+    o=o||{};
+    const oninput=o.oninput?`oninput="${o.oninput}"`:(o.mask?`oninput="${o.mask}(this)"`:'');
+    const ob=o.onblur?`onblur="${o.onblur}"`:'';
+    return `<div class="fld ${o.span?'s'+o.span:''}"><label>${label}${o.req?'<i>*</i>':''}</label>
+      <input name="${name}" type="${o.type||'text'}" value="${esc(value)}" placeholder="${o.ph||''}" ${oninput} ${ob} ${o.max?`maxlength="${o.max}"`:''}></div>`;
+  }
   function selectStatus(val){
     const o=Object.entries(STATUS).map(([k,s])=>`<option value="${k}" ${val===k?'selected':''}>${s.label}</option>`).join('');
     return `<div class="fld"><label>Status</label><select name="status">${o}</select></div>`;
@@ -4308,41 +4692,63 @@
     const o=ORIGENS.map(x=>`<option ${val===x?'selected':''}>${x}</option>`).join('');
     return `<div class="fld"><label>Origem do contato</label><select name="origem">${o}</select></div>`;
   }
+  const IC_PESSOA='<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/></svg>';
+  const IC_FONE='<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>';
+  const IC_CASA='<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>';
+  const IC_NOTA='<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6Z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>';
+  function secCli(ic,titulo,sub,corpo){
+    return `<section class="clf-sec"><header class="clf-sh"><span class="clf-ic">${ic}</span><div><h3>${titulo}</h3><p>${sub}</p></div></header>${corpo}</section>`;
+  }
   function renderClienteForm(c){
     c=c||{}; clienteEditId=c.id||null; TELA='form';
-    view.innerHTML=`<div class="page">
+    const fav=cliFav(c);
+    const criado=c.criadoEm?new Date(c.criadoEm).toLocaleDateString('pt-BR'):'';
+    view.innerHTML=`<div class="page clx clf">
       <div class="page-head">
         <div><h1 class="page-title">${clienteEditId?'Editar cliente':'Novo cliente'}</h1>
-        <p class="page-sub">Orçamentos · Cadastro de clientes</p></div>
-        <button class="btn btn-ghost" onclick="renderClientes()">Voltar</button>
+        <p class="page-sub">Orçamentos · Lista de Orçamentos</p></div>
+        <button class="btn btn-ghost" onclick="renderClientes()">← Voltar</button>
       </div>
       <form id="formCliente" class="form" onsubmit="return false">
-        <section class="fs"><h3 class="fs-title">Clientes</h3><div class="grid">
-          ${field('cliente1','Cliente 1','text',c.cliente1,true)}
-          ${field('cliente2','Cliente 2 (cônjuge)','text',c.cliente2)}
-          ${field('cpf1','CPF — Cliente 1','text',c.cpf1,false,'000.000.000-00','maskCPF')}
-          ${field('cpf2','CPF — Cliente 2','text',c.cpf2,false,'000.000.000-00','maskCPF')}
-          ${field('resp','Responsável pelo projeto','text',c.resp)}
-          ${selectStatus(c.status)}
-        </div></section>
 
-        <section class="fs"><h3 class="fs-title">Contato</h3><div class="grid">
-          ${field('whatsapp','WhatsApp','text',c.whatsapp,true,'(00) 00000-0000','maskFone')}
-          ${field('telefone','Telefone','text',c.telefone,false,'(00) 0000-0000','maskFone')}
-          ${field('email','E-mail','email',c.email)}
-          ${field('contato','Contato (pessoa / observação)','text',c.contato)}
-        </div></section>
+        <div class="clf-hero">
+          <div class="clf-av" id="clfAv">${escHtml(iniciaisCli(c.cliente1))}</div>
+          <div class="clf-hid">
+            <div class="clf-hn" id="clfNome">${escHtml(c.cliente1||'Novo cliente')}</div>
+            <div class="clf-hs">${clienteEditId?('Cadastrado em '+(criado||'—')):'Preencha os dados abaixo para cadastrar'}</div>
+          </div>
+          <div class="clf-hct">
+            ${clienteEditId?`<button type="button" class="clf-fav clf-amb" onclick="abrirAmbientes('${clienteEditId}')" title="Cadastrar ambientes deste cliente">${IC_CASA}<span>Ambientes${ambDoCliente(c).length?' ('+ambDoCliente(c).length+')':''}</span></button>`:''}
+            <button type="button" class="clf-fav ${fav?'on':''}" id="clfFav" onclick="toggleFavForm(this)" title="Prioridade do mês: clientes com maior potencial de fechar neste mês">${STAR_SVG}<span>${fav?'Prioridade do mês':'Marcar prioridade'}</span></button>
+            <input type="hidden" name="favorito" value="${fav?'1':'0'}">
+          </div>
+        </div>
 
-        <section class="fs"><h3 class="fs-title">Endereço</h3><div class="grid">
-          ${field('cep','CEP','text',c.cep,false,'00000-000','maskCEP','buscarCEP(this.value)')}
-          ${field('endereco','Endereço','text',c.endereco)}
-          ${field('numero','Número','text',c.numero)}
-          ${field('complemento','Complemento','text',c.complemento)}
-          ${field('edificio','Edifício','text',c.edificio)}
-          ${field('bairro','Bairro','text',c.bairro)}
-          ${field('cidade','Cidade','text',c.cidade)}
-          ${field('uf','UF','text',c.uf)}
-          <div class="fld"><label>Ponto de referência</label>
+        ${secCli(IC_PESSOA,'Clientes','Quem está contratando o projeto',`<div class="grid">
+          ${cfield('cliente1','Cliente 1',c.cliente1,{req:1,span:2,oninput:'atualizarHeroCliente(this.value)'})}
+          ${cfield('cliente2','Cliente 2 (cônjuge)',c.cliente2,{span:2})}
+          ${cfield('cpf1','CPF — Cliente 1',c.cpf1,{ph:'000.000.000-00',mask:'maskCPF'})}
+          ${cfield('cpf2','CPF — Cliente 2',c.cpf2,{ph:'000.000.000-00',mask:'maskCPF'})}
+          ${cfield('resp','Responsável pelo projeto',c.resp,{span:2})}
+        </div>`)}
+
+        ${secCli(IC_FONE,'Contato','Como falar com o cliente',`<div class="grid">
+          ${cfield('whatsapp','WhatsApp',c.whatsapp,{req:1,ph:'(00) 00000-0000',mask:'maskFone'})}
+          ${cfield('telefone','Telefone',c.telefone,{ph:'(00) 0000-0000',mask:'maskFone'})}
+          ${cfield('email','E-mail',c.email,{type:'email',span:2})}
+          ${cfield('contato','Contato (pessoa / observação)',c.contato,{span:4})}
+        </div>`)}
+
+        ${secCli(IC_CASA,'Endereço','Local da obra ou entrega — o CEP preenche o restante',`<div class="grid">
+          ${cfield('cep','CEP',c.cep,{ph:'00000-000',mask:'maskCEP',onblur:'buscarCEP(this.value)'})}
+          ${cfield('endereco','Endereço',c.endereco,{span:2})}
+          ${cfield('numero','Número',c.numero)}
+          ${cfield('complemento','Complemento',c.complemento)}
+          ${cfield('edificio','Edifício',c.edificio)}
+          ${cfield('bairro','Bairro',c.bairro)}
+          ${cfield('cidade','Cidade',c.cidade)}
+          ${cfield('uf','UF',c.uf,{max:2})}
+          <div class="fld s2"><label>Ponto de referência</label>
             <div class="ref-row">
               <input name="referencia" type="text" value="${esc(c.referencia)}">
               <button type="button" class="btn-mapa ${c.lat?'on':''}" onclick="abrirMapaPin()" title="Encontrar no mapa">
@@ -4354,41 +4760,433 @@
             <input type="hidden" name="lat" value="${c.lat||''}"><input type="hidden" name="lng" value="${c.lng||''}">
             <span class="fld-hint" id="coordHint">${c.lat?`Coordenadas: ${(+c.lat).toFixed(5)}, ${(+c.lng).toFixed(5)}`:'Nenhuma localização marcada.'}</span>
           </div>
-        </div></section>
+        </div>`)}
 
-        <section class="fs"><h3 class="fs-title">Informações adicionais</h3><div class="grid">
+        ${secCli(IC_NOTA,'Informações adicionais','Origem do contato e anotações',`<div class="grid">
           ${selectOrigem(c.origem)}
-          <div class="fld full"><label>Observações</label><textarea name="obs">${esc(c.obs)}</textarea></div>
-        </div></section>
+          <div class="fld full"><label>Observações</label><textarea name="obs" placeholder="Preferências do cliente, prazos, detalhes do projeto...">${esc(c.obs)}</textarea></div>
+          ${selectConsultor(c)}
+        </div>`)}
 
-        <div class="form-actions">
-          <button type="button" class="btn btn-ghost" onclick="renderClientes()">Cancelar</button>
-          <button type="button" class="btn btn-primary" onclick="salvarCliente()">${clienteEditId?'Salvar alterações':'Cadastrar cliente'}</button>
+        <div class="clf-bar">
+          <span class="clf-bar-info"><i>*</i> Campos obrigatórios</span>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" onclick="renderClientes()">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="salvarCliente()">${clienteEditId?'Salvar alterações':'Cadastrar cliente'}</button>
+          </div>
         </div>
       </form></div>`;
+  }
+  function atualizarHeroCliente(v){
+    const n=document.getElementById('clfNome'), a=document.getElementById('clfAv');
+    if(n) n.textContent=v.trim()||'Novo cliente'; if(a) a.textContent=iniciaisCli(v);
+  }
+  function toggleFavForm(btn){
+    const f=document.getElementById('formCliente'); const on=f.favorito.value!=='1';
+    f.favorito.value=on?'1':'0'; btn.classList.toggle('on',on);
+    btn.querySelector('span').textContent=on?'Prioridade do mês':'Marcar prioridade';
   }
   function salvarCliente(){
     const f=document.getElementById('formCliente'); const g=n=>f[n]?f[n].value.trim():'';
     if(!g('cliente1')){ toast('Informe o Cliente 1'); f.cliente1.focus(); return; }
     if(!g('whatsapp')){ toast('Informe o WhatsApp'); f.whatsapp.focus(); return; }
     const anterior=clienteEditId?CLIENTES.find(x=>x.id===clienteEditId):null;
-    const data={
+    const data=Object.assign({}, anterior||{}, {
       id: clienteEditId || ('c'+Date.now()),
       cliente1:g('cliente1'), cliente2:g('cliente2'), cpf1:g('cpf1'), cpf2:g('cpf2'),
-      resp:g('resp'), status:g('status')||'novo',
+      resp:g('resp'),
       whatsapp:g('whatsapp'), telefone:g('telefone'), email:g('email'), contato:g('contato'),
       cep:g('cep'), endereco:g('endereco'), numero:g('numero'), complemento:g('complemento'),
       edificio:g('edificio'), bairro:g('bairro'), cidade:g('cidade'), uf:g('uf').toUpperCase(), referencia:g('referencia'),
       origem:g('origem'), obs:g('obs'),
+      consultorId:g('consultor'), consultor:((EQUIPE.find(x=>x.id===g('consultor'))||{}).nome)||'',
       lat:g('lat')||'', lng:g('lng')||'',
-      criadoEm: anterior? anterior.criadoEm : new Date().toISOString()
-    };
+      criadoEm: anterior&&anterior.criadoEm ? anterior.criadoEm : new Date().toISOString()
+    });
+    delete data.status;   // o status agora é por ambiente
+    // prioridade do mês (preserva data/autor se já estava marcada neste mês)
+    if(g('favorito')==='1'){
+      if(!cliFav(anterior)){ data.favoritoMes=mesAtualISO(); data.favoritoPor=usuarioAtual(); data.favoritoEm=new Date().toISOString(); }
+    } else { delete data.favoritoMes; delete data.favoritoPor; delete data.favoritoEm; }
     const editando=!!clienteEditId;
     db.ref('clientes/'+data.id).set(data)
       .then(()=>toast(editando?'Cliente atualizado':'Cliente cadastrado'))
       .catch(e=>toast('Erro ao salvar: '+e.message));
     renderClientes();
   }
+
+  /* ===== Orçamentos: ambientes do cliente ===== */
+  const _ic=(d,s)=>`<svg viewBox="0 0 24 24" width="${s||15}" height="${s||15}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const ORC_STATUS={
+    novo:      {label:'Novo orçamento',          cor:'#4a6fa5', d:'<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9L9.6 3.9A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>'},
+    orcando:   {label:'Em orçamento',            cor:'#4c4cd9', d:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="M15 5l4 4"/>'},
+    reorc:     {label:'Reorçamento',             cor:'#6b1f1f', d:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>'},
+    apres:     {label:'Apresentação',            cor:'#12b9c4', d:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'},
+    negoc:     {label:'Em negociação',           cor:'#2323c9', d:'<path d="M11 17l2 2a1 1 0 1 0 3-3"/><path d="M14 14l2.5 2.5a1 1 0 1 0 3-3l-3.9-3.9a3 3 0 0 0-4.2 0l-.9.9a1 1 0 1 1-3-3l2.8-2.8a5.8 5.8 0 0 1 7.1-.9l.5.3a2 2 0 0 0 1.4.3L21 4"/><path d="M21 3l1 11h-2"/><path d="M3 3L2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/>'},
+    aprovado:  {label:'Aprovado',                cor:'#84b013', d:'<path d="M20 6L9 17l-5-5"/>'},
+    pasta:     {label:'Pasta de produção pronta',cor:'#1fa64a', d:'<path d="M7 10v12"/><path d="M15 5.9L14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 8a2 2 0 0 1-1.9 1.4H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9Z"/>'},
+    semresp:   {label:'Sem resposta',            cor:'#e02424', d:'<path d="M9 10h.01M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/>'},
+    perdido:   {label:'Perdido',                 cor:'#ec7a6f', d:'<path d="M17 14V2"/><path d="M9 18.1L10 14H4.2a2 2 0 0 1-1.9-2.6l2.3-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.8 1.1L12 22a3.1 3.1 0 0 1-3-3.9Z"/>'}
+  };
+  const FORMAS_PAG=['A combinar','Dinheiro','PIX','Cartão de crédito','Cartão de débito','Boleto','Transferência','Financiamento','Cheque'];
+  const WA_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2a9.9 9.9 0 0 0-8.5 14.9L2 22l5.25-1.38A9.9 9.9 0 1 0 12.04 2Zm0 18.1a8.2 8.2 0 0 1-4.2-1.15l-.3-.18-3.1.82.83-3.03-.2-.31a8.2 8.2 0 1 1 6.97 3.85Zm4.5-6.14c-.25-.12-1.46-.72-1.69-.8-.23-.09-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06a6.7 6.7 0 0 1-3.3-2.88c-.25-.43.25-.4.74-1.37.08-.16.04-.3-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42h-.47c-.16 0-.43.06-.66.3-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.57.12.16 1.75 2.67 4.24 3.75 1.57.68 2.19.74 2.98.62.48-.07 1.46-.6 1.67-1.17.2-.58.2-1.07.14-1.17-.06-.1-.23-.16-.48-.28Z"/></svg>';
+  const MAIL_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+  const CLIP_SVG=_ic('<path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/>',17);
+  const CHEV_SVG='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+
+  function orcBRL(n){ return 'R$ '+(+n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function ambDoCliente(c){
+    const a=c&&c.ambientes; if(!a) return [];
+    return (Array.isArray(a)?a:Object.values(a)).filter(Boolean).map(x=>Object.assign({},x,{anexos:Array.isArray(x.anexos)?x.anexos.filter(Boolean):Object.values(x.anexos||{})}));
+  }
+  function totalCliente(c){ return ambDoCliente(c).reduce((t,a)=>t+(+a.valor||0),0); }
+  function chipStatus(k){ const st=ORC_STATUS[k]||ORC_STATUS.novo; return `<span class="amb-chip" style="--c:${st.cor}">${_ic(st.d,13)}${st.label}</span>`; }
+  function normTxt(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+
+  /* ---- lista expansível na tela principal ---- */
+  function alternarAmbCliente(id){ if(cliExp.has(id)) cliExp.delete(id); else cliExp.add(id); atualizarClientes(true); }
+  function detalheAmbientes(c){
+    const l=ambDoCliente(c);
+    if(!l.length) return `<tr class="cli-det"><td colspan="10"><div class="det-vazio">Nenhum ambiente cadastrado para este cliente.
+      <button type="button" class="det-link" onclick="abrirAmbientes('${c.id}')">Cadastrar ambientes</button></div></td></tr>`;
+    const linhas=l.map(a=>{
+      const an=a.anexos||[];
+      return `<tr><td>${chipStatus(a.status)}</td><td class="det-n">${escHtml(a.nome||'—')}</td><td>${escHtml(a.forma||'—')}</td>
+        <td class="det-v">${orcBRL(a.valor)}</td><td>${a.entrega?fmtData(a.entrega):'—'}</td>
+        <td>${an.length?`<button type="button" class="det-anx" onclick="anxVerCli('${esc(c.id)}','${esc(a.id)}')" title="Ver ${an.length} anexo(s)">${CLIP_SVG}<b>${an.length}</b></button>`:'<span class="cel-sub">—</span>'}</td>
+        <td class="det-o">${a.obs?escHtml(a.obs):'<span class="cel-sub">—</span>'}</td></tr>`;
+    }).join('');
+    return `<tr class="cli-det"><td colspan="10"><div class="det-box">
+      <table class="det-tbl"><thead><tr><th style="width:190px">Status</th><th>Ambiente</th><th style="width:150px">Pagamento</th><th style="width:130px;text-align:right">Valor</th><th style="width:100px">Entrega</th><th style="width:80px">Anexos</th><th>Observações</th></tr></thead>
+      <tbody>${linhas}</tbody>
+      <tfoot><tr><td colspan="3"><button type="button" class="det-link" onclick="abrirAmbientes('${c.id}')">Editar ambientes</button></td><td class="det-v det-sum" colspan="1">${orcBRL(totalCliente(c))}</td><td colspan="3" class="det-sl">Total de ${l.length} ambiente(s)</td></tr></tfoot></table></div></td></tr>`;
+  }
+
+  /* ---- Relacionamento: mostra telefone / e-mail sem abrir o cadastro ---- */
+  function fecharPopsOrc(){ document.querySelectorAll('.pop-orc').forEach(p=>p.remove()); }
+  function posicionarPop(p,btn){
+    document.body.appendChild(p);
+    const r=btn.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight;
+    let x=Math.min(Math.max(8,r.left+r.width/2-w/2),window.innerWidth-w-8);
+    let y=r.bottom+6; if(y+h>window.innerHeight-8) y=Math.max(8,r.top-h-6);
+    p.style.left=x+'px'; p.style.top=y+'px';
+  }
+  document.addEventListener('mousedown',e=>{ if(!e.target.closest('.pop-orc') && !e.target.closest('.rel-b') && !e.target.closest('.amb-st')) fecharPopsOrc(); });
+  window.addEventListener('scroll',fecharPopsOrc,true);
+  function relMostrar(ev,id,tipo){
+    ev.stopPropagation(); const btn=ev.currentTarget; const ja=btn.dataset.aberto==='1'; fecharPopsOrc();
+    document.querySelectorAll('.rel-b[data-aberto]').forEach(b=>b.removeAttribute('data-aberto'));
+    if(ja) return; btn.dataset.aberto='1';
+    const c=CLIENTES.find(x=>x.id===id); if(!c) return;
+    const itens=[];
+    if(tipo==='wa'){
+      if(c.whatsapp) itens.push({rot:'WhatsApp',v:c.whatsapp,href:'https://wa.me/'+(d(c.whatsapp).length<=11?'55':'')+d(c.whatsapp)});
+      if(c.telefone) itens.push({rot:'Telefone',v:c.telefone,href:'tel:'+d(c.telefone)});
+    } else if(c.email) itens.push({rot:'E-mail',v:c.email,href:'mailto:'+c.email});
+    const p=document.createElement('div'); p.className='pop-orc rel-pop';
+    p.innerHTML=itens.length?itens.map((it,k)=>`<div class="rp-it"><span class="rp-l">${it.rot}</span><b class="rp-v">${escHtml(it.v)}</b>
+        <span class="rp-a"><button type="button" onclick="relCopiar(${k})">Copiar</button><a href="${esc(it.href)}" target="_blank" rel="noopener">Abrir</a></span></div>`).join('')
+      :`<div class="rp-it"><span class="rp-l">${tipo==='wa'?'WhatsApp':'E-mail'}</span><span class="rp-v rp-no">Não informado no cadastro</span></div>`;
+    p._itens=itens; window._relPop=p; posicionarPop(p,btn);
+  }
+  function relCopiar(k){
+    const it=window._relPop&&window._relPop._itens[k]; if(!it) return;
+    const ok=()=>toast('Copiado: '+it.v);
+    if(navigator.clipboard) navigator.clipboard.writeText(it.v).then(ok,()=>toast(it.v)); else toast(it.v);
+  }
+
+  /* ---- tela de cadastro de ambientes (casinha) ---- */
+  let AMB=null;
+  function novoAmbiente(){ return {id:'a'+Date.now()+Math.floor(Math.random()*900+100),nome:'',forma:'A combinar',valor:0,status:'novo',entrega:'',obs:'',anexos:[]}; }
+  function abrirAmbientes(id){
+    const c=CLIENTES.find(x=>x.id===id); if(!c) return; fecharPopsOrc();
+    AMB={id,nome:nomeCli(c),lista:ambDoCliente(c),anex:null,up:0,sujo:false,sug:[],sel:-1};
+    if(!AMB.lista.length) AMB.lista.push(novoAmbiente());
+    let ov=document.getElementById('ambOv'); if(!ov){ ov=document.createElement('div'); ov.id='ambOv'; ov.className='rx-ov amb-ov'; document.body.appendChild(ov); }
+    ov.classList.add('open'); ambRender();
+  }
+  function ambFechar(forcar){
+    if(!forcar && AMB && AMB.sujo && !confirm('Há alterações não salvas. Fechar mesmo assim?')) return;
+    const ov=document.getElementById('ambOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; } fecharPopsOrc(); AMB=null;
+  }
+  function ambSomaTexto(){ return orcBRL(AMB.lista.reduce((t,a)=>t+(+a.valor||0),0)); }
+  function ambRender(){
+    const ov=document.getElementById('ambOv'); if(!ov||!AMB) return;
+    const lista=AMB.lista;
+    const linhas=lista.map((a,i)=>{
+      const st=ORC_STATUS[a.status]||ORC_STATUS.novo, n=(a.anexos||[]).length;
+      const painel=AMB.anex===i?`<div class="amb-anex">
+        <div class="anx-lista">${n?a.anexos.map((x,k)=>`<div class="anx"><a href="${esc(x.url)}" target="_blank" rel="noopener" title="${esc(x.nome)}" onclick="return anxClique(${i},${k})">
+          ${x.tipo==='img'?`<img src="${esc(x.url)}" alt="">`:`<span class="anx-pdf">PDF</span>`}<span class="anx-n">${escHtml(x.nome)}</span></a>
+          <button type="button" class="anx-x" title="Remover anexo" onclick="ambAnexRemover(${i},${k})">×</button></div>`).join(''):'<span class="cel-sub">Nenhum arquivo anexado.</span>'}</div>
+        <label class="btn btn-ghost btn-sm anx-add">${CLIP_SVG} Anexar imagem ou PDF<input type="file" multiple accept="image/*,application/pdf" hidden title="PDF vira uma imagem por página automaticamente" onchange="ambAnexEnviar(this.files,${i});this.value=''"></label>
+        <span class="anx-st" id="ambUpSt">${AMB.up?'Enviando…':''}</span></div>`:'';
+      return `<div class="amb-row">
+        <div class="amb-main">
+          <button type="button" class="amb-st" style="--c:${st.cor}" onclick="ambMenuStatus(event,${i})" title="Status">${_ic(st.d,14)}<span>${st.label}</span>${CHEV_SVG}</button>
+          <div class="amb-nome"><input value="${esc(a.nome)}" placeholder="Nome do ambiente (ex.: Cozinha)" autocomplete="off"
+            oninput="ambNome(this,${i})" onfocus="ambNome(this,${i})" onblur="setTimeout(ambSugFechar,140)" onkeydown="ambKey(event,this,${i})"><div class="amb-sug" id="ambSug${i}" hidden></div></div>
+          <select class="amb-forma" onchange="ambSet(${i},'forma',this.value)" title="Forma de pagamento">${FORMAS_PAG.map(f=>`<option ${a.forma===f?'selected':''}>${f}</option>`).join('')}</select>
+          <label class="amb-valw" title="Valor do ambiente"><i>R$</i><input inputmode="numeric" value="${a.valor?(+a.valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):''}" placeholder="0,00" oninput="ambValor(this,${i})"></label>
+          <input type="date" class="amb-data" value="${esc(a.entrega)}" onchange="ambSet(${i},'entrega',this.value)" title="Data prevista de entrega">
+          <button type="button" class="amb-clip ${n?'on':''} ${AMB.anex===i?'open':''}" onclick="ambAnexAbrir(${i})" title="Anexos (imagem ou PDF)">${CLIP_SVG}${n?`<b>${n}</b>`:''}</button>
+          <button type="button" class="amb-del" onclick="ambRemover(${i})" title="Remover ambiente">${_ic('<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>',16)}</button>
+        </div>
+        <input class="amb-obs" value="${esc(a.obs)}" placeholder="Observações deste ambiente..." oninput="ambSet(${i},'obs',this.value)">
+        ${painel}</div>`;
+    }).join('');
+    ov.innerHTML=`<div class="rx-box amb-box">
+      <div class="rx-h"><div><h3>Ambientes</h3><div class="amb-sub">${escHtml(AMB.nome)}</div></div>
+        <button class="icon-btn" onclick="ambFechar()" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="amb-body">
+        <div class="amb-head"><span>Status</span><span>Ambiente</span><span>Pagamento</span><span>Valor</span><span>Entrega</span><span></span><span></span></div>
+        ${linhas}
+        <button type="button" class="amb-novo" onclick="ambAdicionar()">${PLUS_SVG}<span>Novo ambiente</span></button>
+      </div>
+      <div class="amb-foot"><div class="amb-tot">Valor total <b id="ambTotal">${ambSomaTexto()}</b></div>
+        <div class="amb-acoes"><button class="btn btn-ghost" onclick="ambFechar()">Cancelar</button><button class="btn btn-primary" onclick="ambSalvar()">Salvar ambientes</button></div></div></div>`;
+  }
+  function ambSet(i,k,v){ AMB.lista[i][k]=v; AMB.sujo=true; }
+  function ambValor(el,i){
+    const dg=el.value.replace(/\D/g,'').slice(0,11), v=(+dg||0)/100;
+    el.value=dg?v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'';
+    AMB.lista[i].valor=v; AMB.sujo=true; const t=document.getElementById('ambTotal'); if(t) t.textContent=ambSomaTexto();
+  }
+  function ambAdicionar(){ AMB.lista.push(novoAmbiente()); AMB.sujo=true; ambRender();
+    const ins=document.querySelectorAll('#ambOv .amb-nome input'); if(ins.length) ins[ins.length-1].focus(); }
+  function ambRemover(i){
+    const a=AMB.lista[i]; if((a.nome||a.valor||(a.anexos||[]).length) && !confirm('Remover o ambiente'+(a.nome?' “'+a.nome+'”':'')+'?')) return;
+    AMB.lista.splice(i,1); if(AMB.anex===i) AMB.anex=null; else if(AMB.anex>i) AMB.anex--; AMB.sujo=true;
+    if(!AMB.lista.length) AMB.lista.push(novoAmbiente()); ambRender();
+  }
+  /* status (menu igual à imagem de referência) */
+  function ambMenuStatus(ev,i){
+    ev.stopPropagation(); const btn=ev.currentTarget; const ja=btn.dataset.aberto==='1'; fecharPopsOrc();
+    document.querySelectorAll('.amb-st[data-aberto]').forEach(b=>b.removeAttribute('data-aberto')); if(ja) return; btn.dataset.aberto='1';
+    const p=document.createElement('div'); p.className='pop-orc st-menu';
+    p.innerHTML=Object.entries(ORC_STATUS).map(([k,s])=>`<button type="button" class="${AMB.lista[i].status===k?'on':''}" onclick="ambStatus(${i},'${k}')"><span style="color:${s.cor}">${_ic(s.d,18)}</span>${s.label}</button>`).join('');
+    posicionarPop(p,btn);
+  }
+  function ambStatus(i,k){ AMB.lista[i].status=k; AMB.sujo=true; fecharPopsOrc(); ambRender(); }
+  /* sugestões por correspondência */
+  function ambNomesConhecidos(){
+    const m=new Map(), add=n=>{ n=String(n||'').trim(); if(n&&!m.has(normTxt(n))) m.set(normTxt(n),n); };
+    AMBIENTES.forEach(add);
+    (typeof PROJETOS!=='undefined'?PROJETOS:[]).forEach(p=>(p.ambientes||[]).forEach(a=>add(a.nome)));
+    CLIENTES.forEach(c=>ambDoCliente(c).forEach(a=>add(a.nome)));
+    return [...m.values()];
+  }
+  function ambNome(el,i){
+    AMB.lista[i].nome=el.value; AMB.sujo=true;
+    const q=normTxt(el.value), box=document.getElementById('ambSug'+i); ambSugFechar(box);
+    if(!q){ return; }
+    const jaUsados=new Set(AMB.lista.filter((_,k)=>k!==i).map(a=>normTxt(a.nome)));
+    const lista=ambNomesConhecidos().filter(n=>{ const t=normTxt(n); return t.includes(q) && t!==q; })
+      .sort((a,b)=>(normTxt(b).startsWith(q)-normTxt(a).startsWith(q))||a.localeCompare(b,'pt-BR')).slice(0,6);
+    AMB.sug=lista; AMB.sel=-1; AMB.sugI=i;
+    const exato=ambNomesConhecidos().some(n=>normTxt(n)===q);
+    if(!lista.length && exato){ return; }
+    box.innerHTML=lista.map((n,k)=>`<button type="button" class="sg" onmousedown="event.preventDefault();ambPick(${i},${k})">${destacar(n,q)}${jaUsados.has(normTxt(n))?'<em>já adicionado</em>':''}</button>`).join('')
+      +(!exato?`<div class="sg-novo">${lista.length?'Ou':'Não encontrado:'} cadastrar “${escHtml(el.value.trim())}” como novo ambiente</div>`:'');
+    box.hidden=false;
+  }
+  function destacar(n,q){   // negrito na parte que combina (sem acento)
+    const t=normTxt(n), p=t.indexOf(q); if(p<0) return escHtml(n);
+    return escHtml(n.slice(0,p))+'<b>'+escHtml(n.slice(p,p+q.length))+'</b>'+escHtml(n.slice(p+q.length));
+  }
+  function ambSugFechar(box){ (box&&box.nodeType===1?[box]:document.querySelectorAll('#ambOv .amb-sug')).forEach(b=>{ b.hidden=true; b.innerHTML=''; }); if(AMB){ AMB.sug=[]; AMB.sel=-1; } }
+  function ambPick(i,k){
+    const n=AMB.sug[k]; if(n==null) return; AMB.lista[i].nome=n; AMB.sujo=true;
+    const inp=document.querySelectorAll('#ambOv .amb-nome input')[i]; if(inp){ inp.value=n; }
+    ambSugFechar();
+  }
+  function ambKey(ev,el,i){
+    if(!AMB||!AMB.sug||!AMB.sug.length) return;
+    if(ev.key==='ArrowDown'||ev.key==='ArrowUp'){
+      ev.preventDefault(); AMB.sel=(AMB.sel+(ev.key==='ArrowDown'?1:-1)+AMB.sug.length)%AMB.sug.length;
+      document.querySelectorAll('#ambSug'+i+' .sg').forEach((b,k)=>b.classList.toggle('on',k===AMB.sel));
+    } else if(ev.key==='Enter'&&AMB.sel>=0){ ev.preventDefault(); ambPick(i,AMB.sel); }
+    else if(ev.key==='Escape'){ ambSugFechar(); }
+  }
+  /* anexos */
+  function ambAnexAbrir(i){ AMB.anex=(AMB.anex===i)?null:i; ambRender(); }
+  function ambAnexRemover(i,k){ AMB.lista[i].anexos.splice(k,1); AMB.sujo=true; ambRender(); }
+  /* PDF -> uma imagem por página (feito no navegador com pdf.js; o usuário só anexa o PDF) */
+  const PDF_MAX_MB=30, PDF_MAX_PAGS=60;
+  function nomePagPdf(f,p,n){ return String(f.name).replace(/\.pdf$/i,'')+(n>1?` · pág. ${p}/${n}`:''); }
+  async function pdfPaginasParaImagens(file,aoPagina){
+    if(file.size>PDF_MAX_MB*1024*1024) throw new Error('passa de '+PDF_MAX_MB+' MB');
+    await dinaCarregarPdfJs();
+    const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+    const n=pdf.numPages; if(n>PDF_MAX_PAGS) throw new Error('tem '+n+' páginas (máximo '+PDF_MAX_PAGS+')');
+    try{
+      for(let p=1;p<=n;p++){
+        const page=await pdf.getPage(p), v1=page.getViewport({scale:1});
+        const esc=Math.min(3,2400/Math.max(v1.width,v1.height)), vp=page.getViewport({scale:esc});   // lado maior ~2400 px, proporção original
+        const c=document.createElement('canvas'); c.width=Math.round(vp.width); c.height=Math.round(vp.height);
+        const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+        await page.render({canvasContext:ctx,viewport:vp}).promise;
+        const blob=await new Promise((res,rej)=>c.toBlob(x=>x?res(x):rej(new Error('Falha ao gerar a imagem da página '+p)),'image/jpeg',.9));
+        c.width=c.height=0; page.cleanup();
+        await aoPagina(blob,p,n);
+      }
+    } finally { try{ pdf.destroy(); }catch(e){} }
+  }
+  async function ambAnexEnviar(files,i){
+    const lista=[...(files||[])]; if(!lista.length) return; const a=AMB.lista[i]; let ok=0;
+    const stat=t=>{ const st=document.getElementById('ambUpSt'); if(st) st.textContent=t; };
+    for(let n=0;n<lista.length;n++){
+      const f=lista[n]; AMB.up++; stat(`Enviando ${n+1} de ${lista.length}…`);
+      const img=/^image\//.test(f.type), pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
+      try{
+        if(!img&&!pdf) throw new Error('só imagem ou PDF');
+        if(pdf){
+          await pdfPaginasParaImagens(f,async(blob,p,np)=>{
+            stat(`Convertendo “${f.name}” — página ${p} de ${np}…`);
+            const url=await desigCloud(blob,'pagina.jpg');
+            a.anexos.push({nome:nomePagPdf(f,p,np),url,tipo:'img',tam:blob.size,em:new Date().toISOString(),por:usuarioAtual(),origem:f.name,pag:p});
+            ok++; if(AMB) AMB.sujo=true;
+          });
+        } else {
+          const blob=await desigPrepararFoto(f), url=await desigCloud(blob,'foto.jpg');
+          a.anexos.push({nome:f.name,url,tipo:'img',tam:blob.size,em:new Date().toISOString(),por:usuarioAtual()}); ok++; if(AMB) AMB.sujo=true;
+        }
+      }catch(e){ toast('“'+f.name+'”: '+(e&&e.message?e.message:e)); }
+      finally{ if(AMB) AMB.up--; }
+    }
+    if(ok) toast(ok+' imagem(ns) anexada(s)'); if(document.getElementById('ambOv')&&AMB) ambRender();
+  }
+  /* visualizador de anexos (dentro do sistema): setas, Esc, tecla ← → */
+  let ANXV=null;
+  function anxVer(lista,idx){
+    const l=(lista||[]).filter(x=>x&&x.url);
+    const imgs=l.filter(x=>x.tipo!=='pdf');
+    if(!imgs.length){ if(l[0]) window.open(l[0].url,'_blank','noopener'); return; }
+    const alvo=l[idx]; ANXV={l:imgs,i:Math.max(0,imgs.indexOf(alvo))}; anxRender();
+  }
+  function anxRender(){
+    if(!ANXV) return; const x=ANXV.l[ANXV.i], n=ANXV.l.length;
+    let ov=document.getElementById('anxViewer'); if(!ov){ ov=document.createElement('div'); ov.id='anxViewer'; ov.onclick=e=>{ if(e.target===ov) anxFechar(); }; document.body.appendChild(ov); }
+    const seta='<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>';
+    ov.innerHTML=`<div class="av-top"><span>${escHtml(x.nome||'Anexo')} ${n>1?'· '+(ANXV.i+1)+' de '+n:''}</span>
+        <div style="display:flex;gap:8px"><a href="${esc(x.url)}" target="_blank" rel="noopener">Abrir original</a><button type="button" onclick="anxFechar()">Fechar ✕</button></div></div>
+      ${n>1?`<button class="av-n e" onclick="anxNav(-1)" aria-label="Anterior">${seta}</button><button class="av-n d" onclick="anxNav(1)" aria-label="Próxima">${seta}</button>`:''}
+      <img src="${esc(x.url)}" alt="${esc(x.nome||'')}">`;
+  }
+  function anxNav(d){ if(!ANXV) return; ANXV.i=(ANXV.i+d+ANXV.l.length)%ANXV.l.length; anxRender(); }
+  function anxFechar(){ ANXV=null; const ov=document.getElementById('anxViewer'); if(ov) ov.remove(); }
+  document.addEventListener('keydown',e=>{ if(!ANXV) return;
+    if(e.key==='Escape'){ e.stopPropagation(); anxFechar(); } else if(e.key==='ArrowRight') anxNav(1); else if(e.key==='ArrowLeft') anxNav(-1); },true);
+  function anxClique(i,k){ const a=AMB&&AMB.lista[i]; if(!a) return true; const x=a.anexos[k]; if(!x||x.tipo==='pdf') return true; anxVer(a.anexos,k); return false; }
+  function anxVerCli(cid,aid){ const c=CLIENTES.find(x=>x.id===cid); if(!c) return; const a=ambDoCliente(c).find(x=>x.id===aid); if(a) anxVer(a.anexos,0); }
+  /* salvar */
+  function ambSalvar(){
+    if(AMB.up>0){ toast('Aguarde o envio dos anexos'); return; }
+    const out=[];
+    for(const a of AMB.lista){
+      const nome=(a.nome||'').trim(), vazio=!nome&&!a.valor&&!a.obs&&!a.entrega&&!(a.anexos||[]).length;
+      if(vazio) continue;
+      if(!nome){ toast('Informe o nome do ambiente'); return; }
+      out.push({id:a.id,nome,forma:a.forma||'A combinar',valor:Math.round((+a.valor||0)*100)/100,status:a.status||'novo',entrega:a.entrega||'',obs:(a.obs||'').trim(),anexos:(a.anexos||[])});
+    }
+    const id=AMB.id;
+    db.ref('clientes/'+id+'/ambientes').set(out.length?out:null)
+      .then(()=>{ toast('Ambientes salvos'); if(out.length) cliExp.add(id); ambFechar(true); if(TELA==='form'){ const c=CLIENTES.find(x=>x.id===id); } })
+      .catch(e=>toast('Erro ao salvar: '+e.message));
+  }
+
+  /* ===== Kanban de Orçamentos: alimentado pelo status de cada ambiente (mesmo dado da Lista de Orçamentos) ===== */
+  let okArrasto=null, okPendente=false;
+  function okCards(){
+    const out=[];
+    CLIENTES.forEach(c=>ambDoCliente(c).forEach(a=>out.push({c,a,st:ORC_STATUS[a.status]?a.status:'novo'})));
+    out.sort((x,y)=>nomeCli(x.c).localeCompare(nomeCli(y.c),'pt-BR')||String(x.a.nome||'').localeCompare(String(y.a.nome||''),'pt-BR'));
+    return out;
+  }
+  function okCardHtml(o){
+    const st=ORC_STATUS[o.st], nome=consultorNome(o.c);
+    return `<div class="and-c ok-card" draggable="true" style="--sc:${st.cor}" data-c="${esc(o.c.id)}" data-a="${esc(o.a.id||'')}"
+        ondragstart="okDragStart(event,this)" ondragend="okDragEnd(this)" onclick="abrirAmbientes('${esc(o.c.id)}')" title="Arraste para outra coluna para mudar o status">
+      <div class="ok-nome">${escHtml(nomeCli(o.c))}</div>
+      <div class="ac-cli">${escHtml(o.a.nome||'Sem nome')}</div>
+      <div class="ac-f ac-fn">${nome?avatarHtml(consultorUsuario(o.c),nome,'av-sm'):''}<span>${nome?escHtml(nome):'Sem consultor'}</span></div>
+    </div>`;
+  }
+  function okColunas(){
+    const cards=okCards();
+    const seta='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+    const cols=Object.entries(ORC_STATUS).map(([k,st])=>{
+      const l=cards.filter(o=>o.st===k), tot=l.reduce((t,o)=>t+(+o.a.valor||0),0);
+      return `<div class="and-kb-col ok-col" style="--sc:${st.cor}" data-st="${k}" ondragover="okDragOver(event,this)" ondragleave="okDragLeave(this)" ondrop="okDrop(event,this)">
+        <div class="kb-head and-kb-head">
+          <div class="and-kb-grupo">${orcBRL(tot)}</div>
+          <div class="and-kb-linha"><span class="kb-nome"><span class="ok-ic" style="color:${st.cor}">${_ic(st.d,15)}</span>${escHtml(st.label)}</span><span class="kb-qtd">${l.length}</span></div>
+        </div>
+        <div class="and-kb-body ok-body">${l.map(okCardHtml).join('')||'<div class="ok-vazio">Solte um card aqui</div>'}</div></div>`;
+    }).join('');
+    return `<div class="and-wrap ok-wrap">
+      <div class="and-nav">
+        <button class="and-arr l oculta" id="andSetaE" onclick="andRolar(-1)" title="Ver colunas anteriores" aria-label="Voltar">${seta}</button>
+        <button class="and-arr r oculta" id="andSetaD" onclick="andRolar(1)" title="Ver próximas colunas" aria-label="Avançar">${seta}</button>
+      </div>
+      <div class="and-kanban ok-kanban" id="andKanban" onscroll="andNavAtualizar()">${cols}</div></div>`;
+  }
+  function okResumo(){
+    const l=okCards(), tot=l.reduce((t,o)=>t+(+o.a.valor||0),0);
+    return `<span class="cli-kpi ro" style="--c:#4b4b55">Ambientes <b>${l.length}</b></span><span class="cli-kpi ro" style="--c:#2f8f46">Valor total <b>${orcBRL(tot)}</b></span>`;
+  }
+  function renderOrcKanban(){
+    TELA='orckanban';
+    view.innerHTML=`<div class="page page-wide clx ok-full">
+      <div class="page-head"><div><h1 class="page-title">Kanban de Orçamentos</h1>
+        <p class="page-sub">Arraste o card para mudar o status — a Lista de Orçamentos acompanha</p></div></div>
+      <section class="ok-sec">
+        <div class="ok-sec-h"><h3>Pipeline de orçamentos</h3><div class="ok-resumo" id="okResumo">${okResumo()}</div></div>
+        <div id="okBox" class="ok-box">${okColunas()}</div>
+      </section></div>`;
+    andNavAtualizar(); setTimeout(andNavAtualizar,150);
+  }
+  function okAtualizar(){
+    if(okArrasto){ okPendente=true; return; }   // não redesenha no meio de um arrasto
+    const box=document.getElementById('okBox'); if(!box){ renderOrcKanban(); return; }
+    const k=document.getElementById('andKanban'), sx=k?k.scrollLeft:0;
+    const ys=[...document.querySelectorAll('.ok-body')].map(x=>x.scrollTop);
+    box.innerHTML=okColunas();
+    const k2=document.getElementById('andKanban'); if(k2) k2.scrollLeft=sx;
+    document.querySelectorAll('.ok-body').forEach((x,i)=>{ x.scrollTop=ys[i]||0; });
+    const r=document.getElementById('okResumo'); if(r) r.innerHTML=okResumo();
+    andNavAtualizar();
+  }
+  function okDragStart(ev,el){
+    okArrasto={c:el.dataset.c,a:el.dataset.a}; el.classList.add('arrastando');
+    ev.dataTransfer.effectAllowed='move'; try{ ev.dataTransfer.setData('text/plain',okArrasto.c+'|'+okArrasto.a); }catch(e){}
+  }
+  function okDragEnd(el){
+    okArrasto=null; if(el) el.classList.remove('arrastando');
+    document.querySelectorAll('.ok-col.drop').forEach(x=>x.classList.remove('drop'));
+    if(okPendente){ okPendente=false; okAtualizar(); }
+  }
+  function okDragOver(ev,col){ if(!okArrasto) return; ev.preventDefault(); ev.dataTransfer.dropEffect='move'; col.classList.add('drop'); }
+  function okDragLeave(col){ col.classList.remove('drop'); }
+  function okDrop(ev,col){
+    ev.preventDefault(); col.classList.remove('drop');
+    const arr=okArrasto; okArrasto=null; if(!arr) return;
+    okMover(arr.c,arr.a,col.dataset.st);
+    if(okPendente){ okPendente=false; }
+  }
+  function okMover(cid,aid,novo){
+    const c=CLIENTES.find(x=>x.id===cid); if(!c||!ORC_STATUS[novo]) return;
+    const raw=c.ambientes||{}, ent=Array.isArray(raw)?raw.map((x,i)=>[i,x]):Object.entries(raw);
+    const e=ent.find(p=>p[1]&&p[1].id===aid);
+    if(!e){ toast('Não encontrei este ambiente. Abra a Lista de Orçamentos e salve os ambientes novamente.'); okAtualizar(); return; }
+    if((e[1].status||'novo')===novo){ okAtualizar(); return; }
+    db.ref('clientes/'+cid+'/ambientes/'+e[0]+'/status').set(novo)
+      .then(()=>toast(nomeCli(c)+' · '+(e[1].nome||'ambiente')+' → '+ORC_STATUS[novo].label))
+      .catch(err=>{ toast('Erro ao mover: '+err.message); okAtualizar(); });
+  }
+
+  Object.assign(window,{anxVer,anxNav,anxFechar,anxClique,anxVerCli,renderOrcKanban,okDragStart,okDragEnd,okDragOver,okDragLeave,okDrop,atualizarClientes,atualizarOuRenderClientes,limparFiltrosCli,alternarFavoritoCliente,
+    atualizarHeroCliente,toggleFavForm,filtrarClientes,renderClientes,renderClienteForm,salvarCliente,fCli});
 
   /* ===== Máscaras / CEP ===== */
   function d(s){ return (s||'').replace(/\D/g,''); }
@@ -4517,7 +5315,7 @@
     const list=document.getElementById('acList'); q=(q||'').trim().toLowerCase();
     if(!q){ list.innerHTML=''; return; }
     const res=CLIENTES.filter(c=>((c.cliente1||'')+' '+(c.cliente2||'')).toLowerCase().includes(q)).slice(0,8);
-    if(!res.length){ list.innerHTML=`<div class="ac-list"><div class="ac-empty">Nenhum cliente encontrado. Cadastre em "Cadastro de clientes".</div></div>`; return; }
+    if(!res.length){ list.innerHTML=`<div class="ac-list"><div class="ac-empty">Nenhum cliente encontrado. Cadastre em "Lista de Orçamentos".</div></div>`; return; }
     list.innerHTML=`<div class="ac-list">${res.map(c=>{
       const nome=c.cliente2?`${escHtml(c.cliente1)} & ${escHtml(c.cliente2)}`:escHtml(c.cliente1);
       const sub=[c.cidade,c.whatsapp].filter(Boolean).map(escHtml).join(' · ');
@@ -5543,7 +6341,7 @@
   function ligarListeners(){
     if(listenersAtivos) return; listenersAtivos=true;
     ligarListenersDesig();
-    db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') renderClientes(); else if(TELA==='mapa') atualizarMapa(); },
+    db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') atualizarOuRenderClientes(); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='mapa') atualizarMapa(); },
       e=>toast('Erro de leitura: '+e.message));
     db.ref('projetos').on('value',s=>{ PROJETOS=objParaArray(s); if(TELA==='projetos') renderDados(); },
       e=>toast('Erro de leitura: '+e.message));
@@ -5599,10 +6397,10 @@
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='pend-pint') renderPendPint(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     oriLigarDb(); dinaLigarDb(); bomLigar();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
+      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      if(TELA==='equipe') renderEquipe(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
+      if(TELA==='equipe') renderEquipe(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
       resumoCarregado.ops=true; sincronizarResumoTela();
       if(TELA==='ops') renderOPs(); else if(TELA==='ori-det') oriAtualizarOPBar(); else if(TELA==='apont') renderApont();
@@ -6501,7 +7299,7 @@
   function vazioLista(){
     return `<div class="empty"><div class="e-ic">${symSvg('caixa','e-sym')}</div>
       <h3>Nenhum ambiente aqui</h3>
-      <p>${filtroSetor||buscaAcomp?'Ajuste a busca ou limpe o filtro de setor.':'Cadastre um projeto em Orçamentos › Cadastro de dados para começar a acompanhar.'}</p></div>`;
+      <p>${filtroSetor||buscaAcomp?'Ajuste a busca ou limpe o filtro de setor.':'Os ambientes cadastrados aparecem aqui para acompanhamento.'}</p></div>`;
   }
   function semSetores(){
     semearSetores();
@@ -7820,7 +8618,7 @@
     return CLIENTES.filter(c=>{
       if(!c.lat||!c.lng) return false;
       if(filtroMapa.cliente && c.id!==filtroMapa.cliente) return false;
-      if(filtroMapa.status && (c.status||'novo')!==filtroMapa.status) return false;
+      if(filtroMapa.status && !ambDoCliente(c).some(a=>a.status===filtroMapa.status)) return false;
       if(!q) return true;
       return [c.cliente1,c.cliente2,c.cidade,c.bairro,c.endereco,c.whatsapp].filter(Boolean).join(' ').toLowerCase().includes(q);
     });
@@ -7837,10 +8635,10 @@
           </select></div>
         <div class="mf-f"><label>Pesquisar</label>
           <input value="${(filtroMapa.txt||'').replace(/"/g,'&quot;')}" placeholder="Cidade, bairro, endereço..." oninput="filtroMapa.txt=this.value; atualizarMapa()"></div>
-        <div class="mf-f"><label>Status</label>
+        <div class="mf-f"><label>Status do ambiente</label>
           <select onchange="filtroMapa.status=this.value; atualizarMapa()">
             <option value="">Todos</option>
-            ${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${filtroMapa.status===k?'selected':''}>${v.label}</option>`).join('')}
+            ${Object.entries(ORC_STATUS).map(([k,v])=>`<option value="${k}" ${filtroMapa.status===k?'selected':''}>${v.label}</option>`).join('')}
           </select></div>
         <button class="mf-btn" onclick="filtroMapa={txt:'',cliente:'',status:''}; renderMapa()" title="Limpar filtros">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8Z"/></svg></button>
@@ -7851,7 +8649,7 @@
         <div id="mapaGeral" class="mapa-canvas"></div>
         ${!comCoord?`<div class="mapa-vazio">
           <b>Nenhum cliente tem localização marcada</b>
-          <span>Abra um cliente em <b>Cadastro de clientes</b>, clique em <b>Encontrar no mapa</b> ao lado do Ponto de referência e marque o local.</span>
+          <span>Abra um cliente em <b>Lista de Orçamentos</b>, clique em <b>Encontrar no mapa</b> ao lado do Ponto de referência e marque o local.</span>
         </div>`:''}
       </div>
       <div class="mapa-rodape">
@@ -7876,11 +8674,11 @@
     lista.forEach(c=>{
       const ll=[parseFloat(c.lat),parseFloat(c.lng)]; if(isNaN(ll[0])) return;
       pts.push(ll);
-      const st=STATUS[c.status]||STATUS.novo;
+      const nAmb=ambDoCliente(c).length;
       const nome=c.cliente2?`${escHtml(c.cliente1)} &amp; ${escHtml(c.cliente2)}`:escHtml(c.cliente1);
       L.marker(ll,{icon:pinIcon('#2f4f8f')}).addTo(camadaGeral).bindPopup(
         `<div class="mp-pop"><b>${nome}</b>
-         <span class="pop-st">${st.label}</span>
+         ${nAmb?`<span class="pop-st">${nAmb} ambiente(s)</span>`:''}
          ${enderecoCliente(c)?`<span>${escHtml(enderecoCliente(c))}</span>`:''}
          ${c.whatsapp?`<span>${escHtml(c.whatsapp)}</span>`:''}
          <a href="https://www.google.com/maps/search/?api=1&query=${ll[0]},${ll[1]}" target="_blank" rel="noopener">Abrir rota</a></div>`);
@@ -11823,7 +12621,7 @@
         <p>O ícone de seta no canto superior direito. Sempre saia em computador compartilhado.</p>`}]},
 
     {g:'Orçamentos', itens:[
-      {id:'clientes', t:'Cadastro de clientes', c:`
+      {id:'clientes', t:'Lista de Orçamentos', c:`
         <p>É o ponto de partida. Sem cliente cadastrado não dá para criar projeto, nem ACE, nem vincular material a obra.</p>
         <h4>Cadastrar</h4>
         <ol><li>Clique em <b>+ Novo cliente</b>.</li>
@@ -11837,16 +12635,6 @@
         <p>Se o cliente <b>já existe</b>, o local é gravado na hora ao clicar em "Usar este local". Se for <b>cliente novo</b>, você ainda precisa clicar em "Cadastrar cliente" no final — senão o ponto se perde.</p></div>
         <h4>Status comercial</h4>
         <p>Novo lead → Em atendimento → Orçamento enviado → Em negociação → Fechado ou Perdido. Serve para você filtrar e saber onde cada cliente está.</p>`},
-      {id:'dados', t:'Cadastro de dados do projeto', c:`
-        <p>Aqui você registra <b>quais ambientes</b> o cliente contratou e os dados de cada um. É o que alimenta a ACE depois.</p>
-        <h4>Os três passos</h4>
-        <ol><li><b>Cliente</b> — digite o nome e escolha na lista que aparece.</li>
-        <li><b>Ambientes</b> — marque os cômodos do projeto. Se faltar algum, escreva no campo de baixo e clique em Adicionar; ele vira uma etiqueta.</li>
-        <li><b>Dados</b> — cada ambiente vira uma linha com Nº do projeto, contrato, lote, consultor e entrega.</li></ol>
-        <div class="hc-box"><b>Por que cada ambiente tem dados próprios?</b>
-        <p>Porque na prática a cozinha e o dormitório do mesmo cliente costumam ter número de projeto e prazo diferentes. O Nº do projeto é obrigatório em cada ambiente para salvar.</p></div>
-        <h4>Ficha técnica</h4>
-        <p>Na lista, o ícone de documento gera um PDF com os dados do cliente e a tabela de ambientes. Use <b>Imprimir / PDF</b> e escolha "Salvar como PDF" no destino.</p>`},
       {id:'mapa', t:'Mapa de clientes', c:`
         <p>Mostra todos os clientes que têm local marcado, como bolinhas azuis.</p>
         <ul><li>Clique numa bolinha para ver nome, status, endereço e WhatsApp.</li>
@@ -13331,7 +14119,7 @@
         <thead><tr><th>Funcionário</th><th style="width:200px">Setores</th><th>Atividades</th><th style="width:72px"></th></tr></thead>
         <tbody>${EQUIPE.map(f=>`<tr>
           <td class="cel-nome">${escHtml(f.nome)}</td>
-          <td>${(f.setores||[]).map(s=>`<span class="set-pill" style="background:${opSetorDe(s).cor}22;color:${opSetorDe(s).cor}">${escHtml(s)}</span>`).join(' ')||'—'}</td>
+          <td>${(f.setores||[]).map(s=>`<span class="set-pill" style="background:${eqSetorDe(s).cor}22;color:${eqSetorDe(s).cor}">${escHtml(s==='VD'?'Vendas':s)}</span>`).join(' ')||'—'}</td>
           <td class="cel-disc">${(f.atividades||[]).map(escHtml).join(' · ')||'—'}</td>
           <td class="acoes">
             <button class="icon-btn" title="Editar" onclick="formFunc('${f.id}')">${EDIT_SVG}</button>
@@ -13348,7 +14136,7 @@
     abrirModal(f?'Editar funcionário':'Novo funcionário',
       `<div class="fld"><label>Nome<i>*</i></label><input id="fnNome" value="${f?escHtml(f.nome):''}" placeholder="Ex.: João da Silva"></div>
        <div class="fld" style="margin-top:16px"><label>Setores em que pode trabalhar</label>
-         <div class="chk-grid">${Object.values(OP_SETORES).map(s=>`
+         <div class="chk-grid">${[...Object.values(OP_SETORES),SETOR_VENDAS].map(s=>`
            <label class="chk-b"><input type="checkbox" class="fnSet" value="${s.sigla}" ${sets.includes(s.sigla)?'checked':''} onchange="atualizaAtivsFunc()">
              <span><b style="color:${s.cor}">${s.sigla}</b> ${escHtml(s.nome)}</span></label>`).join('')}</div></div>
        <div class="fld" style="margin-top:16px"><label>Atividades que pode executar</label>
@@ -13358,6 +14146,8 @@
   }
   function htmlAtivsFunc(sets,ats){
     if(!sets.length) return '<p class="aviso" style="grid-column:1/-1;font-size:12px">Selecione ao menos um setor.</p>';
+    sets=sets.filter(x=>OP_SETORES[x]);
+    if(!sets.length) return '<p class="aviso" style="grid-column:1/-1;font-size:12px">Vendas não tem atividades de apontamento — este funcionário aparece como consultor(a) no cadastro de clientes.</p>';
     return sets.flatMap(s=>opSetorDe(s).atividades.map(a=>
       `<label class="chk-b"><input type="checkbox" class="fnAt" value="${escHtml(a)}" ${ats.includes(a)?'checked':''}>
         <span>${escHtml(a)} <i class="ca-set" style="color:${opSetorDe(s).cor}">${s}</i></span></label>`)).join('');
@@ -13558,7 +14348,7 @@
         <div class="fld"><label>Status</label><select id="grSt" onchange="grCampos(this.value)">
           <option value="encerrada">Encerrada</option><option value="parcial">Parcial / Iniciada</option></select></div>
         <div class="fld"><label>Funcionário<i>*</i></label><input id="grFunc" list="grFl">
-          <datalist id="grFl">${EQUIPE.map(f=>`<option value="${escHtml(f.nome)}">`).join('')}</datalist></div>
+          <datalist id="grFl">${equipeProd().map(f=>`<option value="${escHtml(f.nome)}">`).join('')}</datalist></div>
         <div class="fld"><label>Início real<i>*</i></label><input id="grIni" type="datetime-local" oninput="grPrev()"></div>
         <div class="fld" id="grWFim"><label>Fim real<i>*</i></label><input id="grFim" type="datetime-local" oninput="grPrev()"></div>
         <div class="fld full" id="grWRat"><label class="chk-prio"><input type="checkbox" id="grRat" checked onchange="grPrev()">
@@ -13658,7 +14448,7 @@
           ${Object.entries(ST_OP).map(([k,vv])=>`<option value="${k}" ${st===k?'selected':''}>${vv.label}</option>`).join('')}
         </select></div>
         <div class="fld"><label>Funcionário</label><input id="edFunc" value="${escHtml((o.fim&&o.fim.func)||(o.inicio&&o.inicio.func)||'')}" list="edFl">
-          <datalist id="edFl">${EQUIPE.map(f=>`<option value="${escHtml(f.nome)}">`).join('')}</datalist></div>
+          <datalist id="edFl">${equipeProd().map(f=>`<option value="${escHtml(f.nome)}">`).join('')}</datalist></div>
         <div class="fld" id="wIni"><label>Início real</label><input id="edIni" type="datetime-local" value="${toDT(o.inicio&&o.inicio.em)}"></div>
         <div class="fld" id="wFim"><label>Fim real</label><input id="edFim" type="datetime-local" value="${toDT(o.fim&&o.fim.em)}"></div>
         <div class="fld full"><label>Observações</label><textarea id="edObs">${escHtml(o.obs)}</textarea></div>
@@ -17126,7 +17916,7 @@ function chkMontHtml(c){
         <div class="fld" style="margin-top:11px;max-width:320px"><label>Adicionar manualmente</label>
           <select onchange="ctAddResp(this.value); this.value=''">
             <option value="">Selecione um colaborador...</option>
-            ${EQUIPE.map(f=>`<option value="${escHtml(f.nome)}">${escHtml(f.nome)}</option>`).join('')}
+            ${equipeProd().map(f=>`<option value="${escHtml(f.nome)}">${escHtml(f.nome)}</option>`).join('')}
           </select></div>
         <label class="ct-ck" style="margin-top:11px"><input type="checkbox" ${ctForm.semResp?'checked':''}
           onchange="ctForm.semResp=this.checked; renderCartaoForm()"> Sem responsável identificado (nem todo dano tem culpado)</label>
@@ -17540,8 +18330,8 @@ const HM_DOC='<path class=a d="M7 3h7l4 4v14H7z"/><path class=b d="M14 3v4h4"/>'
 const HM_CUBE='<path class=a d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path class=b d="M4 7.5L12 12l8-4.5M12 12v9"/>';
 const HM_CAL='<rect class=a x=3 y=5 width=18 height=16 rx=2 /><path class=b d="M3 10h18M8 3v4M16 3v4"/>';
 const HM_ICONS={
- 'Cadastro de clientes':'<circle class=a cx=10 cy=8 r=3.5 /><path class=a d="M3.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path class=c d="M19 4v5M16.5 6.5h5"/>',
- 'Cadastro de dados':'<ellipse class=a cx=12 cy=6 rx=7 ry=3 /><path class=a d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path class=c d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>',
+ 'Lista de Orçamentos':'<circle class=a cx=10 cy=8 r=3.5 /><path class=a d="M3.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path class=c d="M19 4v5M16.5 6.5h5"/>',
+ 'Kanban de Orçamentos':'<rect class=a x=3 y=4 width=5 height=16 rx=1.5 /><rect class=b x=10 y=4 width=5 height=10 rx=1.5 /><rect class=c x=17 y=4 width=4 height=7 rx=1.5 />',
  'Mapa':'<path class=a d="M12 21s-6-5.5-6-11a6 6 0 0112 0c0 5.5-6 11-6 11z"/><circle class=c cx=12 cy=10 r=2.2 />',
  'Solicitação Armazém (SA)':'<path class=a d="M3 10l9-6 9 6v10H3z"/><path class=b d="M8 20v-6h8v6"/><path class=c d="M8 17h8"/>',
  'Solicitação de Compras (SC)':'<path class=a d="M3 4h2.5l2 11h10l2-8H7"/><circle class=c cx=9.5 cy=19 r=1.4 /><circle class=c cx=16.5 cy=19 r=1.4 />',
@@ -18086,7 +18876,17 @@ async function desigEnviar(files,p){
     const f=lista[i]; if(st()) st().textContent=`Enviando ${i+1} de ${lista.length}…`;
     const img=/^image\//.test(f.type), pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
     if(!img&&!pdf){ toast(`“${f.name}”: só fotos e PDF`); continue; }
-    if(pdf&&f.size>10*1024*1024){ toast(`“${f.name}” passa de 10 MB`); continue; }
+    if(pdf){
+      try{
+        await pdfPaginasParaImagens(f,async(blob,pg,np)=>{
+          if(st()) st().textContent=`Convertendo “${f.name}” — página ${pg} de ${np}…`;
+          const url=await desigCloud(blob,'pagina.jpg'), id='an'+Date.now()+Math.floor(Math.random()*900+100);
+          await db.ref('pastaAnexos/'+desigKey(p)+'/'+id).set({id,projeto:p,nome:nomePagPdf(f,pg,np).slice(0,200),url,tipo:'img',tam:blob.size,em:new Date().toISOString(),por:usuarioAtual()});
+          ok++;
+        });
+      }catch(e){ toast(`Erro em “${f.name}”: `+(e&&e.message?e.message:e)); }
+      continue;
+    }
     try{
       const blob=img?await desigPrepararFoto(f):f, url=await desigCloud(blob,img?'foto.jpg':f.name);
       const id='an'+Date.now()+Math.floor(Math.random()*900+100);
