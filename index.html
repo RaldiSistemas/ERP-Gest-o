@@ -3999,6 +3999,50 @@
   #anxViewer .av-n:hover{ background:rgba(255,255,255,.3); }
   #anxViewer .av-n svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
   #anxViewer .av-n.e{ left:16px; } #anxViewer .av-n.e svg{ transform:scaleX(-1); } #anxViewer .av-n.d{ right:16px; }
+  .cm-pos{ display:inline-grid; place-items:center; min-width:28px; height:28px; padding:0 6px; border-radius:9px; background:#efeee8; color:#4b4b55; font-weight:800; font-size:13px; }
+  .cm-pos.top{ background:var(--vermelho); color:#fff; }
+  .cm-prog{ font-size:13px; color:var(--muted); } .cm-prog b{ color:#1fa64a; font-size:14px; }
+  .cm-ent{ display:flex; align-items:center; gap:10px; white-space:nowrap; }
+  .cm-urg{ font-size:11.5px; font-weight:700; }
+  /* ===== Pasta de produção ===== */
+  .pq-layout{ display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:22px; align-items:start; }
+  .pq-main-h{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .pq-main-h h3{ margin:0; font-size:12.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--vermelho); }
+  .pq-busca{ border:1px solid var(--linha); background:#fff; border-radius:10px; padding:8px 12px; font:inherit; font-size:13px; width:240px; max-width:100%; }
+  .pq-tray{ min-height:320px; }
+  .pq-grid{ grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); }
+  .pq-side{ position:sticky; top:8px; }
+  .pq-caixa{ background:var(--surface); border:2px dashed #d3d0c4; border-radius:22px; padding:16px 16px 18px; text-align:center; transition:border-color .15s, box-shadow .15s, transform .15s, background .15s; box-shadow:0 1px 3px rgba(75,75,85,.07); }
+  .pq-caixa-t{ font-size:12.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--vermelho); margin-bottom:10px; }
+  .pq-ilu{ border-radius:16px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(75,75,85,.08); }
+  .pq-ilu svg{ display:block; width:100%; height:auto; }
+  .pq-solte{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:14px; padding:12px 14px; border-radius:14px; background:#f6e6e5; color:var(--vermelho); font-weight:800; font-size:14px; }
+  .pq-solte svg{ width:22px; height:22px; animation:pqSeta 1.4s ease-in-out infinite; }
+  @keyframes pqSeta{ 0%,100%{ transform:translateY(-2px); } 50%{ transform:translateY(4px); } }
+  .pq-dica{ font-size:12px; color:var(--muted); margin:10px 6px 0; line-height:1.45; }
+  .pq-caixa.over{ border-color:var(--vermelho); background:#fff7f6; transform:scale(1.015); box-shadow:0 14px 34px -12px rgba(152,36,36,.45); }
+  .pq-caixa.over .pq-solte{ background:var(--vermelho); color:#fff; }
+  .pq-caixa.ok{ border-color:#1fa64a; box-shadow:0 0 0 4px rgba(31,166,74,.18); }
+  .pq-env{ margin-top:22px; background:var(--surface); border:1px solid var(--linha); border-radius:16px; padding:6px 16px 14px; box-shadow:0 1px 3px rgba(75,75,85,.07); }
+  .pq-env summary{ display:flex; align-items:center; gap:10px; cursor:pointer; padding:12px 0; font-size:12.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--vermelho); list-style:none; }
+  .pq-env summary::-webkit-details-marker{ display:none; }
+  .pq-env summary b{ background:rgba(75,75,85,.1); color:var(--texto); border-radius:20px; padding:1px 9px; font-size:12px; }
+  .pq-env summary::after{ content:'▾'; margin-left:auto; color:var(--muted); transition:transform .2s; }
+  .pq-env:not([open]) summary::after{ transform:rotate(-90deg); }
+  .pq-cod{ font-family:'JetBrains Mono','Consolas',monospace; color:#1d2a8a; font-size:14px; }
+  .pq-div{ width:min(520px,100%); }
+  .pq-div-b{ padding:18px 20px 6px; }
+  .pq-div-q{ display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:14px; margin-bottom:14px; }
+  .pq-step{ display:inline-flex; align-items:center; gap:2px; background:#f2f2ec; border-radius:12px; padding:3px; }
+  .pq-step button{ width:34px; height:34px; border:0; border-radius:9px; background:#fff; font-size:18px; font-weight:700; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.12); }
+  .pq-step b{ min-width:38px; text-align:center; font-size:16px; }
+  .pq-div-l{ display:grid; gap:9px; max-height:46vh; overflow:auto; padding:2px; }
+  .pq-div-l label{ display:grid; grid-template-columns:62px 1fr; align-items:center; gap:10px; font-size:12.5px; color:var(--muted); font-weight:600; }
+  .pq-div-l input{ border:1px solid var(--linha); border-radius:10px; padding:10px 12px; font:inherit; font-size:14px; color:var(--texto); background:#fff; }
+  .pq-div-l input:focus{ outline:2px solid var(--vermelho); outline-offset:0; }
+  .pq-div-i{ font-size:12px; color:var(--muted); margin:12px 0 4px; }
+  .pq-div-f{ display:flex; justify-content:flex-end; gap:10px; padding:14px 20px 18px; }
+  @media(max-width:1100px){ .pq-layout{ grid-template-columns:1fr; } .pq-side{ position:static; order:-1; } .pq-ilu{ max-width:420px; margin:0 auto; } }
   .cli-cons{ display:flex; align-items:center; gap:8px; white-space:nowrap; font-size:13px; }
   .cli-cons .av{ width:28px; height:28px; font-size:10.5px; border-width:1.5px; }
   .cli-tbl th{ position:sticky; top:0; z-index:2; background:#f6f5f0; padding:12px 14px; font-size:10.5px; border-bottom:0; box-shadow:0 1px 0 var(--linha); }
@@ -4160,6 +4204,160 @@
   .clf .form-actions .btn{ border-radius:11px; padding:10px 20px; }
   @media (max-width:900px){ .clf .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } .clf .fld.s4{ grid-column:span 2; } }
   @media (max-width:560px){ .clf .grid{ grid-template-columns:1fr; } .clf .fld.s2,.clf .fld.s4{ grid-column:auto; } .clf-hct{ width:100%; } }
+
+  /* ===== Dados do projeto ===== */
+  .dp-bar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0 0 14px; }
+  .dp-busca,.dp-sel{ font:inherit; font-size:14px; padding:9px 12px; border:1px solid var(--linha); border-radius:10px; background:#fff; color:var(--texto); }
+  .dp-busca{ flex:1; min-width:220px; max-width:380px; }
+  .dp-busca:focus,.dp-sel:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .dp-sb2{ font-size:12px; color:var(--muted); margin-top:1px; }
+  .dp-chip{ --c:#9a988e; display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; background:color-mix(in srgb,var(--c) 14%,#fff); color:var(--c); white-space:nowrap; }
+  .dp-pg{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--muted); }
+  .dp-pgb{ width:90px; height:6px; border-radius:99px; background:#e6e5de; overflow:hidden; flex:none; }
+  .dp-pgb i{ display:block; height:100%; background:var(--c,#1fa64a); border-radius:99px; }
+  .dp-vazio{ padding:34px; text-align:center; color:var(--muted); background:#fff; border:1px dashed var(--linha); border-radius:14px; }
+
+  .dp-box{ width:min(940px,100%); display:flex; flex-direction:column; max-height:94vh; border-radius:18px; }
+  .dp-ov{ align-items:center; }
+  .dp-hd{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:16px 20px; border-bottom:1px solid var(--linha); }
+  .dp-hd h3{ font-size:17px; font-weight:700; color:var(--texto); }
+  .dp-hd .dp-sb2{ font-size:13px; }
+  .dp-prog{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--muted); margin-left:auto; margin-right:6px; white-space:nowrap; }
+  .dp-body{ flex:1; min-height:0; overflow-y:auto; padding:16px 20px 8px; background:var(--content); }
+  .dp-sec{ background:#fff; border:1px solid var(--linha); border-radius:14px; margin-bottom:12px; overflow:hidden; }
+  .dp-sh{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; flex-wrap:wrap; }
+  .dp-sec.on .dp-sh{ border-bottom:1px solid var(--linha); background:#faf9f5; }
+  .dp-sec.nao .dp-sh h4{ color:var(--muted); }
+  .dp-sh h4{ font-size:13.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--vermelho); }
+  .dp-ap{ display:flex; gap:20px; }
+  .dp-sb{ padding:16px; }
+  .dp-chk{ position:relative; display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; font-weight:500; user-select:none; }
+  .dp-chk input{ position:absolute; opacity:0; pointer-events:none; }
+  .dp-chk i{ width:18px; height:18px; border:1.8px solid rgba(75,75,85,.4); border-radius:5px; background:#fff; display:inline-grid; place-items:center; transition:.15s; flex:none; }
+  .dp-chk input:checked+i{ background:var(--vermelho); border-color:var(--vermelho); }
+  .dp-chk input:checked+i::after{ content:''; width:9px; height:5px; border:2px solid #fff; border-top:0; border-right:0; transform:rotate(-45deg) translate(1px,-1px); }
+  .dp-chk input:focus-visible+i{ outline:2px solid var(--vermelho); outline-offset:2px; }
+  .dp-f{ display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px; }
+  .dp-f>span{ font-size:11.5px; font-weight:600; color:var(--muted); }
+  .dp-f input,.dp-f textarea,.dp-in{ font:inherit; font-size:14px; padding:8px 10px; border:1px solid var(--linha); border-radius:8px; background:#fff; color:var(--texto); width:100%; }
+  .dp-f textarea{ min-height:84px; resize:vertical; }
+  .dp-f input:focus,.dp-f textarea:focus,.dp-in:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .dp-row{ display:flex; gap:10px; align-items:flex-end; padding:11px 0; border-top:1px dashed var(--linha); }
+  .dp-row:first-child{ border-top:0; padding-top:0; }
+  .dp-n{ width:22px; height:22px; border-radius:50%; background:#efeee8; font-size:11.5px; font-weight:700; display:grid; place-items:center; margin-bottom:7px; flex:none; }
+  .dp-cs{ display:flex; gap:10px; flex:1; flex-wrap:wrap; }
+  .dp-x{ width:32px; height:34px; border:0; background:transparent; color:var(--muted); font-size:22px; line-height:1; cursor:pointer; border-radius:8px; flex:none; }
+  .dp-x:hover{ background:#f3e1e1; color:var(--vermelho); }
+  .dp-add{ border:1.5px dashed rgba(152,36,36,.45); color:var(--vermelho); background:transparent; border-radius:10px; padding:8px 14px; font:inherit; font-weight:600; font-size:13px; cursor:pointer; display:inline-flex; gap:6px; align-items:center; margin-top:8px; }
+  .dp-add:hover{ background:#f8ecec; }
+  .dp-add svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; }
+  .dp-g{ margin-top:16px; }
+  .dp-g:first-child{ margin-top:0; }
+  .dp-gl{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:8px; }
+  .dp-opts{ display:flex; flex-wrap:wrap; gap:10px 24px; align-items:center; }
+  .dp-ox{ display:inline-flex; align-items:center; gap:8px; }
+  .dp-ox .dp-in{ width:170px; padding:6px 9px; }
+  .dp-un{ font-style:normal; font-size:13px; color:var(--muted); }
+  .dp-campos{ display:flex; flex-wrap:wrap; gap:12px; }
+  .dp-campos .dp-f{ min-width:210px; }
+  .dp-aviso{ background:#fff8e6; border:1px solid #f1dfa6; border-radius:12px; padding:12px 16px; margin-bottom:12px; font-size:13px; color:#6b5a1d; }
+  .dp-aviso b{ display:block; margin-bottom:4px; letter-spacing:.03em; }
+  .dp-aviso ul{ margin-left:18px; }
+
+  .dp-tudo .cli-av{ background:#d6efdc; color:#1f7a3a; }
+  .det-tbl.dp-dt{ min-width:640px; }
+  .det-tbl tr.dp-ok td{ background:#e8f6ec; border-bottom-color:#cfe8d6; }
+  .det-tbl tr.dp-ok td:first-child{ box-shadow:inset 4px 0 0 #1fa64a; }
+  .det-tbl tr.dp-ok .det-n{ color:#17632f; }
+  .dp-acs{ display:flex; gap:8px; justify-content:flex-end; align-items:center; }
+  .dp-prt{ width:34px; height:34px; border:1px solid var(--linha); background:#fff; border-radius:9px; display:grid; place-items:center; cursor:pointer; color:var(--texto); }
+  .dp-prt:hover{ background:#f3e1e1; color:var(--vermelho); border-color:rgba(152,36,36,.35); }
+  .dp-prt svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .cli-casa.ro{ cursor:default; }
+
+  /* folha impressa · Dados do projeto */
+  .dpp{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .dpp .ficha-head{ padding:20px 30px; }
+  .dpp .ficha-body{ padding:18px 30px 22px; }
+  .dpp-id{ display:grid; grid-template-columns:1.3fr 1fr 1.1fr; border:1px solid var(--linha); border-radius:12px; overflow:hidden; background:linear-gradient(180deg,#fcfbf8,#f6f4ee); }
+  .dpp-id>div{ padding:11px 16px; border-left:1px solid var(--linha); }
+  .dpp-id>div:first-child{ border-left:0; }
+  .dpp-k{ font-size:9px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+  .dpp-v{ font-size:16px; font-weight:700; color:var(--texto); margin-top:3px; }
+  .dpp-s{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .dpp-cons{ display:flex; align-items:center; gap:10px; margin-top:4px; }
+  .dpp-cons .av{ width:38px; height:38px; font-size:13px; }
+  .dpp-cons .dpp-v{ margin-top:0; font-size:15px; }
+  .dpp-sec-t{ display:flex; align-items:center; gap:10px; margin:16px 0 9px; font-size:9.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--vermelho); }
+  .dpp-sec-t::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg,rgba(152,36,36,.35),transparent); }
+  .dpp-top{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .dpp-cols{ display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+  .dpp-col{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .dpp-wide{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
+  .dpp-card{ border:1px solid var(--linha); border-radius:11px; overflow:hidden; break-inside:avoid; page-break-inside:avoid; background:#fff; box-shadow:0 1px 0 rgba(75,75,85,.04); }
+  .dpp-ch{ display:flex; align-items:center; gap:8px; background:#f8f1f0; color:var(--vermelho); border-bottom:1px solid rgba(152,36,36,.18); border-left:4px solid var(--vermelho); font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; padding:7px 12px; }
+  .dpp-card.destaque .dpp-ch{ background:var(--vermelho); color:#fff; border-left-color:var(--vermelho-2); border-bottom:0; }
+  .dpp-cb{ padding:10px 14px 12px; display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:9px 14px; align-items:start; }
+  .dpp-cb>.w{ grid-column:1/-1; }
+  .dpp-kv{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .dpp-kv>span{ font-size:8.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+  .dpp-kv>b{ font-size:13px; font-weight:600; line-height:1.25; overflow-wrap:anywhere; }
+  .dpp-card.destaque .dpp-kv>b{ font-size:14px; }
+  .dpp-t{ width:100%; border-collapse:collapse; font-size:12px; }
+  .dpp-t th{ text-align:left; font-size:8.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:0 8px 5px 0; border-bottom:1px solid var(--linha); }
+  .dpp-t td{ padding:5px 8px 5px 0; border-bottom:1px dashed #e9e6dd; font-weight:600; }
+  .dpp-t tr:last-child td{ border-bottom:0; padding-bottom:0; }
+  .dpp-tags{ display:flex; flex-wrap:wrap; gap:5px; }
+  .dpp-tag{ background:#f6e6e6; color:var(--vermelho); border:1px solid rgba(152,36,36,.22); border-radius:999px; padding:2px 10px; font-size:11.5px; font-weight:700; }
+  .dpp-vz{ font-size:11.5px; color:var(--muted); font-style:italic; }
+  .dpp-txt{ font-size:12.5px; line-height:1.5; white-space:pre-wrap; }
+  .dpp-rod{ margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .dpp-lin{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; font-size:11px; color:var(--muted); padding:8px 11px; border:1px dashed var(--linha); border-radius:10px; background:#faf9f5; }
+  .dpp-lin>b{ width:100%; font-size:8.5px; letter-spacing:.09em; text-transform:uppercase; margin-bottom:2px; }
+  .dpp-lin:only-child{ grid-column:1/-1; }
+  .dpp-lin .dpp-tag{ background:#efeee8; color:#5b5b64; border-color:transparent; font-weight:600; font-size:10.5px; padding:2px 8px; }
+  .dpp-lin.pend{ background:#fffaf0; border-color:#f1dfa6; }
+  .dpp-lin.pend .dpp-tag{ background:#fff3d6; color:#8a5a00; }
+  .dpp .ficha-foot{ margin-top:16px; padding-top:10px; }
+  @media print{ .dpp-card{ break-inside:avoid; } .dpp-cols,.dpp-top{ break-inside:avoid; } }
+  /* Dados do projeto · obrigatórios e foto de referência */
+  .dp-req{ color:var(--vermelho); font-style:normal; font-weight:800; }
+  .dp-oblig{ font-style:normal; font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:none; color:var(--vermelho); background:#f6e6e6; border-radius:999px; padding:2px 9px; margin-left:10px; vertical-align:middle; }
+  .dp-f select{ font:inherit; font-size:14px; padding:8px 10px; border:1px solid var(--linha); border-radius:8px; background:#fff; color:var(--texto); width:100%; }
+  .dp-f select:focus{ outline:2px solid var(--vermelho); outline-offset:1px; border-color:transparent; }
+  .dp-f input.dp-err,.dp-f select.dp-err{ border-color:#c0392b; background:#fff5f4; box-shadow:0 0 0 2px rgba(192,57,43,.15); }
+  .dp-g.dp-err{ outline:2px solid rgba(192,57,43,.5); outline-offset:6px; border-radius:8px; background:#fff5f4; }
+  .dp-foto{ position:relative; width:62px; height:62px; flex:none; margin-bottom:1px; border:1.5px dashed rgba(152,36,36,.4); border-radius:10px; background:#fbf7f6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; outline:none; }
+  .dp-foto:focus,.dp-foto.arrasta{ border-color:var(--vermelho); background:#f6e6e6; }
+  .dp-foto em{ font-style:normal; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .dp-foto-bts{ display:flex; gap:3px; }
+  .dp-foto-bts button{ width:24px; height:24px; border:0; border-radius:6px; background:#fff; color:var(--vermelho); display:grid; place-items:center; cursor:pointer; box-shadow:0 0 0 1px var(--linha); }
+  .dp-foto-bts button:hover{ background:#f3e1e1; }
+  .dp-foto-bts svg{ width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .dp-foto.tem{ border-style:solid; border-color:var(--linha); padding:0; background:#fff; }
+  .dp-foto-img{ width:100%; height:100%; border:0; padding:0; background:none; cursor:zoom-in; border-radius:9px; overflow:hidden; }
+  .dp-foto-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .dp-foto-x{ position:absolute; top:-7px; right:-7px; width:20px; height:20px; border-radius:50%; border:0; background:var(--vermelho); color:#fff; font-size:14px; line-height:1; cursor:pointer; display:grid; place-items:center; }
+  .dp-foto-env{ font-size:10px; color:var(--muted); font-weight:600; }
+  .dpp-item{ display:flex; align-items:center; gap:14px; }
+  .dpp-fields{ flex:1; min-width:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:9px 14px; }
+  .dpp-ph{ width:104px; height:104px; object-fit:cover; border-radius:8px; border:1px solid var(--linha); flex:none; }
+  .dpp-ph.s{ width:58px; height:58px; border-radius:8px; display:block; }
+  .dp-secfoto{ display:flex; align-items:center; gap:12px; }
+  .dp-secfoto .dp-gl{ margin:0; }
+  .dp-secfoto small{ text-transform:none; letter-spacing:0; font-weight:500; }
+  .dp-foto.mdf{ width:92px; height:60px; border-radius:13px; }
+  .dp-foto.tem.mdf .dp-foto-img{ border-radius:12px; }
+  .dp-foto.tem.mdf{ box-shadow:0 2px 6px rgba(0,0,0,.18); }
+  .dp-foto.tem.mdf .dp-foto-img img{ border-radius:12px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.35); }
+  .dpp-item.mdf{ gap:14px; }
+  .dpp-mdf{ width:92px; height:60px; object-fit:cover; border-radius:13px; flex:none; display:block; border:1px solid rgba(75,75,85,.28); box-shadow:0 2px 5px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.35); }
+  .dpp-mdf.s{ width:50px; height:33px; border-radius:8px; }
+  .dpp-card.destaque .dpp-kv>b{ font-size:15px; }
+  .dpp-secph{ display:flex; align-items:center; gap:8px; }
+  .dpp-secph span{ font-size:9px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+
+
 </style>
 </head>
 <body>
@@ -4314,7 +4512,7 @@
 
   /* ===== Módulos (Orçamentos no topo) ===== */
   const MODULES = [
-    {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Lista de Orçamentos'}, {label:'Kanban de Orçamentos'}, {label:'Mapa'} ]},
+    {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Lista de Orçamentos'}, {label:'Kanban de Orçamentos'}, {label:'Cronograma de Medição'}, {label:'Dados do projeto'}, {label:'Pasta de produção'}, {label:'Mapa'} ]},
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Pendências de Pintura','Rendimento','Equipe Produtiva']},
@@ -4449,6 +4647,9 @@
     if(mod.id==='dev' && name==='Controle de usuários') return renderUsuarios();
     if(mod.id==='orc' && name==='Lista de Orçamentos') return renderClientes();
     if(mod.id==='orc' && name==='Kanban de Orçamentos') return renderOrcKanban();
+    if(mod.id==='orc' && name==='Cronograma de Medição') return renderCronoMedicao();
+    if(mod.id==='orc' && name==='Dados do projeto') return renderDadosProj();
+    if(mod.id==='orc' && name==='Pasta de produção') return renderPastaProd();
     if(mod.id==='orc' && name==='Mapa') return renderMapa();
     if(mod.id==='pcp' && name==='Solicitação de Acessórios (ACE)') return renderACE();
     if(mod.id==='est' && name==='Solicitação de Acessórios (ACE)') return renderACEEstoque();
@@ -5185,7 +5386,727 @@
       .catch(err=>{ toast('Erro ao mover: '+err.message); okAtualizar(); });
   }
 
-  Object.assign(window,{anxVer,anxNav,anxFechar,anxClique,anxVerCli,renderOrcKanban,okDragStart,okDragEnd,okDragOver,okDragLeave,okDrop,atualizarClientes,atualizarOuRenderClientes,limparFiltrosCli,alternarFavoritoCliente,
+  /* ===== Cronograma de Medição =====
+     Derivado em tempo real do status dos ambientes (nada é copiado): o cliente aparece quando algum ambiente
+     está em um dos status abaixo; a prioridade vem da data de entrega preenchida na Lista de Orçamentos. */
+  const CM_GATILHO=['pasta'];   // status que colocam o cliente no cronograma
+  const cmExp=new Set();
+  function cmDias(iso){ return diasAte(iso); }
+  function cmLinhas(){
+    const out=[];
+    CLIENTES.forEach(c=>{
+      const ambs=ambDoCliente(c).filter(a=>CM_GATILHO.includes(a.status));
+      if(!ambs.length) return;
+      ambs.sort((x,y)=>(x.entrega||'9999').localeCompare(y.entrega||'9999')||String(x.nome||'').localeCompare(String(y.nome||''),'pt-BR'));
+      const datas=ambs.map(a=>a.entrega).filter(Boolean).sort();
+      out.push({c,ambs,prox:datas[0]||'',pasta:ambs.filter(a=>a.status==='pasta').length,total:ambs.reduce((t,a)=>t+(+a.valor||0),0)});
+    });
+    out.sort((x,y)=>(x.prox||'9999').localeCompare(y.prox||'9999')||nomeCli(x.c).localeCompare(nomeCli(y.c),'pt-BR'));
+    return out;
+  }
+  function cmUrg(iso){ const u=urg(iso); return `<span class="cm-urg pz-t ${u.cls}">${escHtml(u.txt)}</span>`; }
+  function cmDetalhe(L){
+    const linhas=L.ambs.map(a=>{
+      const an=a.anexos||[];
+      return `<tr><td>${chipStatus(a.status)}</td><td class="det-n">${escHtml(a.nome||'—')}</td>
+        <td>${a.entrega?fmtData(a.entrega):'<span class="cel-sub">sem data</span>'}</td><td>${cmUrg(a.entrega)}</td>
+        <td class="det-v">${orcBRL(a.valor)}</td>
+        <td>${an.length?`<button type="button" class="det-anx" onclick="anxVerCli('${esc(L.c.id)}','${esc(a.id)}')" title="Ver ${an.length} anexo(s)">${CLIP_SVG}<b>${an.length}</b></button>`:'<span class="cel-sub">—</span>'}</td>
+        <td class="det-o">${a.obs?escHtml(a.obs):'<span class="cel-sub">—</span>'}</td></tr>`;
+    }).join('');
+    return `<tr class="cli-det"><td colspan="9"><div class="det-box"><table class="det-tbl">
+      <thead><tr><th style="width:190px">Status</th><th>Ambiente</th><th style="width:100px">Entrega</th><th style="width:150px">Prazo</th><th style="width:130px;text-align:right">Valor</th><th style="width:80px">Anexos</th><th>Observações</th></tr></thead>
+      <tbody>${linhas}</tbody></table></div></td></tr>`;
+  }
+  function cmLinhaHtml(L,pos){
+    const c=L.c, aberto=cmExp.has(c.id), local=[c.cidade,c.uf].filter(Boolean).join(' / ');
+    const u=urg(L.prox), topo=pos<3&&L.prox;
+    return `<tr class="cli-row cm-row ${aberto?'exp':''}">
+      <td class="ctr"><button class="cli-exp ${aberto?'on':''}" title="${aberto?'Recolher':'Ver ambientes'}" onclick="cmAlternar('${esc(c.id)}')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></td>
+      <td class="ctr"><span class="cm-pos ${topo?'top':''}">${pos+1}</span></td>
+      <td><div class="cli-nm"><span class="cli-av">${escHtml(iniciaisCli(c.cliente1))}</span>
+        <div><div class="cel-nome">${escHtml(nomeCli(c))}</div>${c.resp?`<div class="cel-sub">Resp.: ${escHtml(c.resp)}</div>`:''}</div></div></td>
+      <td>${local?escHtml(local):'<span class="cel-sub">—</span>'}</td>
+      <td>${consultorCelula(c)}</td>
+      <td class="ctr"><span class="cm-prog" title="Ambientes em Pasta de produção pronta"><b>${L.ambs.length}</b></span></td>
+      <td><div class="cm-ent">${L.prox?`<b>${fmtData(L.prox)}</b>`:'<span class="cel-sub">sem data</span>'}${cmUrg(L.prox)}</div></td>
+      <td class="cli-tot">${orcBRL(L.total)}</td>
+      <td class="acoes"><button class="icon-btn" title="Editar ambientes" onclick="abrirAmbientes('${esc(c.id)}')">${EDIT_SVG}</button></td></tr>`+(aberto?cmDetalhe(L):'');
+  }
+  function cmCorpo(){
+    const ls=cmLinhas(), atras=ls.filter(L=>urg(L.prox).k==='atraso').length, sem=ls.filter(L=>!L.prox).length;
+    const kpis=`<span class="cli-kpi ro" style="--c:#4b4b55">Clientes <b>${ls.length}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#e02424">Atrasados <b>${atras}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#9a988e">Sem data de entrega <b>${sem}</b></span>`;
+    const th=`<thead><tr><th style="width:40px"></th><th class="ctr" style="width:64px" title="Ordem de prioridade (entrega mais próxima primeiro)">Prior.</th><th>Cliente(s)</th><th>Cidade</th><th>Consultor</th><th class="ctr" style="width:110px" title="Ambientes em Pasta de produção pronta">Ambientes</th><th style="width:230px">Próxima entrega</th><th style="width:140px;text-align:right">Valor total</th><th style="width:60px"></th></tr></thead>`;
+    const corpo=ls.length?ls.map((L,i)=>cmLinhaHtml(L,i)).join('')
+      :`<tr><td colspan="9" class="td-empty">Nenhum cliente no cronograma ainda. Eles aparecem aqui quando um ambiente é movido para <b>Pasta de produção pronta</b>.</td></tr>`;
+    return {kpis,html:`<table class="tbl cli-tbl">${th}<tbody>${corpo}</tbody></table>`};
+  }
+  function cmAlternar(id){ if(cmExp.has(id)) cmExp.delete(id); else cmExp.add(id); cmAtualizar(); }
+  function renderCronoMedicao(){
+    TELA='cronomed'; const r=cmCorpo();
+    view.innerHTML=`<div class="page page-wide clx cli-full">
+      <div class="page-head"><div><h1 class="page-title">Cronograma de Medição</h1>
+        <p class="page-sub">Prioridade pela data de entrega da Lista de Orçamentos · clientes com ambiente em Pasta de produção pronta</p></div></div>
+      <div class="cli-kpis" id="cmKpis">${r.kpis}</div>
+      <div class="table-wrap cli-wrap" id="cmWrap">${r.html}</div></div>`;
+  }
+  function cmAtualizar(){
+    const w=document.getElementById('cmWrap'); if(!w){ renderCronoMedicao(); return; }
+    const y=w.scrollTop, r=cmCorpo(); w.innerHTML=r.html; w.scrollTop=y;
+    const k=document.getElementById('cmKpis'); if(k) k.innerHTML=r.kpis;
+  }
+
+
+  /* ===== Dados do projeto =====
+     dadosProjeto/{clienteId}__{ambId} = {clienteId,ambId,dados:{<seção>:{ap:'sim'|'nao', ...campos}},atualizadoEm,atualizadoPor}
+     Cada seção (menos MDF e observações) tem "Aplica / Não se aplica"; os campos só abrem e só são salvos quando "Aplica".
+     tipos de bloco: lista (linhas repetíveis) · chk (caixas de marcar; uma:true = só uma) · campos (campos soltos) · area (texto longo)
+     opção de chk pode ser {l, txt:'placeholder'} (abre campo de texto) ou {l, un:'mm'} (abre campo numérico). */
+  const DP_MOD={k:'modelo',l:'Modelo'}, DP_COR={k:'cor',l:'Cor'}, DP_LOC={k:'local',l:'Local'};
+  const DP_SECOES=[
+    {id:'mdfInt',t:'MDF interno',fixo:true,b:[{k:'itens',tipo:'lista',foto:true,add:'Adicionar outro MDF interno',c:[{k:'mdf',l:'MDF',ph:'Ex.: Branco TX'},{k:'marca',l:'Marca'},{k:'acab',l:'Acabamento'}]}]},
+    {id:'mdfExt',t:'MDF externo',fixo:true,b:[{k:'itens',tipo:'lista',foto:true,add:'Adicionar outro MDF externo',c:[{k:'mdf',l:'MDF',ph:'Ex.: Freijó'},{k:'marca',l:'Marca'},{k:'acab',l:'Acabamento'}]}]},
+    {id:'vidro',t:'Vidros',req:true,b:[{k:'itens',tipo:'lista',foto:true,add:'Adicionar outro vidro',c:[DP_MOD,DP_COR,{k:'temp',l:'Tipo',sel:['Temperado','Comum']},{k:'esp',l:'Espessura',ph:'Ex.: 8 mm'},DP_LOC]}]},
+    {id:'espelho',t:'Espelhos',b:[
+      {k:'cor',tipo:'chk',l:'Espelho',o:['Prata','Bronze','Fumê','Âmbar']},
+      {k:'acab',tipo:'chk',l:'Acabamento',o:['Polido',{l:'Bisotê',un:'mm'}]}]},
+    {id:'serralheria',t:'Serralheria',req:true,b:[
+      {k:'mat',tipo:'chk',req:true,l:'Material',o:['Ferro','Inox']},
+      {k:'itens',tipo:'lista',foto:true,add:'Adicionar outra serralheria',c:[DP_MOD,DP_COR,{k:'esp',l:'Espessura',ph:'Ex.: 20 x 20 x 1,2 mm'},DP_LOC]}]},
+    {id:'perfil',t:'Perfil',b:[{k:'itens',tipo:'lista',foto:true,add:'Adicionar outro perfil',c:[DP_MOD,DP_COR,DP_LOC]}]},
+    {id:'puxador',t:'Puxador',req:true,b:[
+      {k:'itens',tipo:'lista',foto:true,add:'Adicionar outro puxador',c:[DP_MOD,DP_COR,{k:'tam',l:'Tamanho',ph:'Ex.: 320 mm'},DP_LOC]},
+      {k:'exp',tipo:'chk',req:true,uma:true,l:'Puxadores expostos',o:['Com a Raldi','Com o cliente']},
+      {k:'exp2',tipo:'campos',c:[{k:'expMod',l:'Modelo dos puxadores expostos'}]}]},
+    {id:'deslizante',t:'Sistemas deslizantes',b:[{k:'kit',tipo:'chk',l:'Kit porta de correr',o:['Kit Flow','Kit Dominus',{l:'Outro',txt:'Qual?'}]}]},
+    {id:'cristaleira',t:'Cristaleira',b:[{k:'cris',tipo:'campos',c:[{k:'fundo',l:'Fundo'},{k:'laterais',l:'Laterais'},{k:'prateleiras',l:'Prateleiras'},{k:'portas',l:'Portas'}]}]},
+    {id:'ferragens',t:'Ferragens',b:[
+      {k:'corr',tipo:'chk',l:'Corrediça',o:['Oculta c/ amortecimento','Telescópica','Hettich','Soprano','Blum']},
+      {k:'dob',tipo:'chk',l:'Dobradiça',o:['Hettich','Soprano','Blum']}]},
+    {id:'lixeira',t:'Lixeira',b:[{k:'mod',tipo:'chk',uma:true,l:'Modelo',o:['Padrão de MDF',{l:'Outro',txt:'Qual?'}]}]},
+    {id:'tempero',t:'Porta tempero',b:[{k:'mod',tipo:'chk',uma:true,l:'Modelo',o:['Padrão de MDF',{l:'Outro',txt:'Qual?'}]}]},
+    {id:'gaveta',t:'Gaveta metálica',b:[{k:'gav',tipo:'campos',c:[{k:'marca',l:'Marca'},{k:'cor',l:'Cor'}]}]},
+    {id:'tapete',t:'Tapete emborrachado',b:[{k:'onde',tipo:'chk',uma:true,l:'Aplicar',o:['Nas gavetas','Em tudo']}]},
+    {id:'divisor',t:'Divisor',b:[{k:'tipo',tipo:'chk',l:'Tipo',o:['Padrão','Orga Um','Orga Versátil','Inox Fgv','MDF']}]},
+    {id:'eletrica',t:'Elétrica',b:[
+      {k:'lum',tipo:'chk',l:'Luminárias',o:['Fita de LED','Perfil LED','Spot','Arandela','Pendente']},
+      {k:'ilum',tipo:'chk',l:'Cor da iluminação',o:['2700K','3000K','4000K','4500K']},
+      {k:'tom',tipo:'chk',uma:true,l:'Cor das tomadas e spots',o:['Branco','Preto',{l:'Pintado cor do MDF',txt:'Qual cor?'}]}]},
+    {id:'acessorios',t:'Acessórios',b:[{k:'ac',tipo:'campos',c:[{k:'articulador',l:'Articulador'},{k:'rodizios',l:'Rodízios'},{k:'suporteTv',l:'Suporte TV'},{k:'tabua',l:'Tábua de passar'},{k:'fechadura',l:'Fechadura porta de passagem'},{k:'boiserie',l:'Boiserie'}]}]},
+    {id:'obs',t:'Observações',fixo:true,aviso:true,b:[{k:'obs',tipo:'area',l:'Observações'},{k:'nao',tipo:'area',l:'Não incluso'}]}
+  ];
+  let DPROJ={}, DPD=null, dpBusca='', dpFiltro='';
+  const DP_TOTAL=DP_SECOES.filter(S=>S.id!=='obs').length;
+  function dpKey(cid,aid){ return cid+'__'+aid; }
+  function dpA(v){ return Array.isArray(v)?v.filter(x=>x!=null):(v&&typeof v==='object'?Object.values(v):[]); }
+  function dpOpt(o){ return typeof o==='string'?{l:o}:o; }
+  function dpVazia(b){ const o={}; b.c.forEach(c=>o[c.k]=''); if(b.foto) o.foto=''; return o; }
+  function dpProg(dados){
+    let ok=0; const d=dados||{};
+    DP_SECOES.forEach(S=>{
+      if(S.id==='obs') return; const x=d[S.id]||{};
+      if(S.fixo){ if(dpA(x.itens).some(r=>r&&String(r.mdf||'').trim())) ok++; }
+      else if(x.ap==='sim'||x.ap==='nao') ok++;
+    });
+    return {ok,tot:DP_TOTAL};
+  }
+  const DP_EST={nao:{t:'Não cadastrado',c:'#9a988e'},and:{t:'Em andamento',c:'#d98a00'},ok:{t:'Completo',c:'#1fa64a'}};
+  function dpEstado(reg){ if(!reg) return {k:'nao',ok:0,tot:DP_TOTAL}; const p=dpProg(reg.dados); return {k:p.ok>=p.tot?'ok':'and',ok:p.ok,tot:p.tot}; }
+
+  /* ---- lista (mesmo estilo da Lista de Orçamentos: ambientes só ao clicar na seta) ---- */
+  const dpExp=new Set();
+  const DP_PRT_SVG='<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5a1 1 0 01-1-1v-5a2 2 0 012-2h12a2 2 0 012 2v5a1 1 0 01-1 1h-2"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>';
+  function dpAlternar(id){ if(dpExp.has(id)) dpExp.delete(id); else dpExp.add(id); dpAtualizar(); }
+  function dpCorpo(){
+    const q=normTxt(dpBusca); let n={nao:0,and:0,ok:0}, tot=0, html='';
+    CLIENTES.slice().sort((a,b)=>nomeCli(a).localeCompare(nomeCli(b),'pt-BR')).forEach(c=>{
+      let ambs=ambDoCliente(c); if(!ambs.length) return;
+      const casa=!q||normTxt(nomeCli(c)).includes(q);
+      ambs=ambs.filter(a=>casa||normTxt(a.nome).includes(q)); if(!ambs.length) return;
+      const linhas=ambs.map(a=>({a,reg:DPROJ[dpKey(c.id,a.id)]})).map(x=>Object.assign(x,{e:dpEstado(x.reg)}));
+      linhas.forEach(x=>{ n[x.e.k]++; tot++; });
+      const vis=linhas.filter(x=>!dpFiltro||x.e.k===dpFiltro); if(!vis.length) return;
+      const cad=linhas.filter(x=>x.reg).length, tudo=cad===linhas.length, aberto=dpExp.has(c.id), local=[c.cidade,c.uf].filter(Boolean).join(' / ');
+      html+=`<tr class="cli-row ${tudo?'dp-tudo':''} ${aberto?'exp':''}">
+        <td class="ctr"><button class="cli-exp ${aberto?'on':''}" title="${aberto?'Recolher':'Ver ambientes'}" onclick="dpAlternar('${esc(c.id)}')"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></td>
+        <td><div class="cli-nm"><span class="cli-av">${escHtml(iniciaisCli(c.cliente1))}</span>
+          <div><div class="cel-nome">${escHtml(nomeCli(c))}</div>${c.resp?`<div class="cel-sub">Resp.: ${escHtml(c.resp)}</div>`:''}</div></div></td>
+        <td>${local?escHtml(local):'<span class="cel-sub">—</span>'}</td>
+        <td>${consultorCelula(c)}</td>
+        <td class="ctr"><span class="cli-casa on ro" title="Ambientes">${IC_CASA}<b>${linhas.length}</b></span></td>
+        <td class="ctr"><span class="dp-chip" style="--c:${tudo?'#1fa64a':(cad?'#d98a00':'#9a988e')}">${cad} de ${linhas.length} cadastrado${linhas.length>1?'s':''}</span></td></tr>`;
+      if(aberto){
+        html+=`<tr class="cli-det"><td colspan="6"><div class="det-box"><table class="det-tbl dp-dt">
+          <thead><tr><th>Ambiente</th><th style="width:190px">Status</th><th style="width:240px">Dados do projeto</th><th style="width:250px;text-align:right">Ações</th></tr></thead><tbody>`
+          +vis.map(x=>{ const E=DP_EST[x.e.k], pct=Math.round(x.e.ok/x.e.tot*100);
+            return `<tr class="${x.reg?'dp-ok':''}"><td class="det-n">${escHtml(x.a.nome||'Ambiente sem nome')}</td><td>${chipStatus(x.a.status)}</td>
+              <td><div class="dp-pg"><span class="dp-chip" style="--c:${E.c}">${E.t}</span>${x.reg?`<span class="dp-pgb" style="--c:${E.c}"><i style="width:${pct}%"></i></span><span>${x.e.ok}/${x.e.tot}</span>`:''}</div></td>
+              <td><div class="dp-acs">${x.reg?`<button type="button" class="dp-prt" title="Imprimir / PDF" onclick="dpImprimir('${esc(c.id)}','${esc(x.a.id)}')">${DP_PRT_SVG}</button>`:''}
+                <button type="button" class="btn ${x.reg?'btn-ghost':'btn-primary'} btn-sm" onclick="dpAbrir('${esc(c.id)}','${esc(x.a.id)}')">${x.reg?'Editar dados':'Cadastrar dados'}</button></div></td></tr>`; }).join('')
+          +`</tbody></table></div></td></tr>`;
+      }
+    });
+    const kpis=`<span class="cli-kpi ro" style="--c:#4b4b55">Ambientes <b>${tot}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#9a988e">Não cadastrados <b>${n.nao}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#d98a00">Em andamento <b>${n.and}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#1fa64a">Completos <b>${n.ok}</b></span>`;
+    return {kpis,html:html||`<tr><td colspan="6" class="td-empty">${CLIENTES.some(c=>ambDoCliente(c).length)?'Nenhum ambiente encontrado com esse filtro.':'Nenhum ambiente cadastrado ainda. Cadastre os ambientes na Lista de Orçamentos.'}</td></tr>`};
+  }
+  function renderDadosProj(){
+    TELA='dadosproj'; const r=dpCorpo();
+    view.innerHTML=`<div class="page page-wide clx cli-full">
+      <div class="page-head"><div><h1 class="page-title">Dados do projeto</h1>
+        <p class="page-sub">Especificações de cada ambiente: MDF, vidros, ferragens, elétrica e acessórios · clique na seta para ver os ambientes</p></div></div>
+      <div class="cli-kpis" id="dpKpis">${r.kpis}</div>
+      <div class="dp-bar"><input class="dp-busca" id="dpBusca" placeholder="Buscar cliente ou ambiente…" value="${esc(dpBusca)}" oninput="dpBusca=this.value;dpAtualizar()">
+        <select class="dp-sel" onchange="dpFiltro=this.value;dpAtualizar()">
+          <option value="">Todos os dados</option>${Object.keys(DP_EST).map(k=>`<option value="${k}" ${dpFiltro===k?'selected':''}>${DP_EST[k].t}</option>`).join('')}</select></div>
+      <div class="table-wrap cli-wrap"><table class="tbl cli-tbl">
+        <thead><tr><th style="width:40px"></th><th>Cliente(s)</th><th>Cidade</th><th>Consultor</th><th style="width:96px;text-align:center">Ambientes</th><th style="width:190px;text-align:center">Dados do projeto</th></tr></thead>
+        <tbody id="dpTbody">${r.html}</tbody></table></div></div>`;
+  }
+  function dpAtualizar(){
+    const w=document.getElementById('dpTbody'); if(!w){ renderDadosProj(); return; }
+    const sc=document.querySelector('.cli-wrap'), y=sc?sc.scrollTop:0, r=dpCorpo(); w.innerHTML=r.html; if(sc) sc.scrollTop=y;
+    const k=document.getElementById('dpKpis'); if(k) k.innerHTML=r.kpis;
+  }
+
+  /* ---- folha para imprimir / PDF ---- */
+  function dpPrintSec(S,x){
+    const p=[], mdf=/^mdf/.test(S.id);
+    S.b.forEach(b=>{
+      if(b.tipo==='lista'){
+        const l=dpA(x[b.k]).filter(r=>r&&(b.c.some(c=>String(r[c.k]||'').trim())||r.foto)); if(!l.length) return;
+        const cols=b.c.filter(c=>l.some(r=>String(r[c.k]||'').trim())), temF=l.some(r=>r.foto&&aceUrl(r.foto));
+        if(l.length===1){
+          const kv=cols.map(c=>`<div class="dpp-kv"><span>${c.l}</span><b>${escHtml(l[0][c.k])}</b></div>`).join('');
+          const im=temF?(mdf?`<img class="dpp-mdf" src="${dpThumb(l[0].foto,300,200)}" alt="">`:`<img class="dpp-ph" src="${dpThumb(l[0].foto,360)}" alt="">`):'';
+          if(temF) p.push(`<div class="w dpp-item ${mdf?'mdf':''}">${mdf?im:''}<div class="dpp-fields">${kv}</div>${mdf?'':im}</div>`);
+          else p.push(kv);
+        } else p.push(`<div class="w"><table class="dpp-t"><thead><tr>${cols.map(c=>`<th>${c.l}</th>`).join('')}${temF?'<th style="width:66px">Foto</th>':''}</tr></thead><tbody>${l.map(r=>`<tr>${cols.map(c=>`<td>${r[c.k]?escHtml(r[c.k]):'—'}</td>`).join('')}${temF?`<td>${r.foto&&aceUrl(r.foto)?`<img class="${mdf?'dpp-mdf s':'dpp-ph s'}" src="${mdf?dpThumb(r.foto,160,106):dpThumb(r.foto,200)}" alt="">`:''}</td>`:''}</tr>`).join('')}</tbody></table></div>`);
+      } else if(b.tipo==='chk'){
+        const sel=dpA(x[b.k]); if(!sel.length) return;
+        const tags=sel.map(l=>{ const i=b.o.findIndex(o=>dpOpt(o).l===l), o=i>=0?dpOpt(b.o[i]):{l}, v=String(x[b.k+'_'+i]||'').trim();
+          const t=o.un?(v?l+' '+v+' '+o.un:l):(o.txt&&v?l+': '+v:l); return `<span class="dpp-tag">${escHtml(t)}</span>`; }).join('');
+        p.push(`<div class="dpp-kv w"><span>${b.l}</span><div class="dpp-tags">${tags}</div></div>`);
+      } else if(b.tipo==='campos'){
+        b.c.forEach(c=>{ if(x[c.k]) p.push(`<div class="dpp-kv"><span>${c.l}</span><b>${escHtml(x[c.k])}</b></div>`); });
+      }
+    });
+    if(x.foto&&aceUrl(x.foto)&&!S.b.some(b=>b.tipo==='lista')) p.push(`<div class="w dpp-secph"><img class="dpp-ph" src="${dpThumb(x.foto,360)}" alt=""><span>Foto de referência</span></div>`);
+    return p.join('');
+  }
+  function dpImprimir(cid,aid){
+    const c=CLIENTES.find(x=>x.id===cid), a=c&&ambDoCliente(c).find(x=>x.id===aid), reg=DPROJ[dpKey(cid,aid)];
+    if(!a||!reg){ toast('Cadastre os dados antes de imprimir'); return; }
+    const d=reg.dados||{}, cons=consultorNome(c), local=[c.cidade,c.uf].filter(Boolean).join(' / ');
+    let nao=[], pend=[]; const top=[], norm=[], wide=[];
+    const peso=h=>2+(h.match(/dpp-kv/g)||[]).length*0.7+(h.match(/<tr>/g)||[]).length*1.2+(h.match(/dpp-tag/g)||[]).length*0.15+(h.match(/dpp-ph|dpp-mdf/g)||[]).length*1.5;
+    const card=(t,h,cls)=>`<div class="dpp-card ${cls||''}"><div class="dpp-ch">${t}</div><div class="dpp-cb">${h||'<span class="dpp-vz w">Aplica — sem detalhes informados</span>'}</div></div>`;
+    DP_SECOES.forEach(S=>{
+      if(S.id==='obs') return; const x=d[S.id]||{};
+      if(!S.fixo){ if(x.ap==='nao'){ nao.push(S.t); return; } if(x.ap!=='sim'){ pend.push(S.t); return; } }
+      const h=dpPrintSec(S,x); if(S.fixo&&!h){ pend.push(S.t); return; }
+      if(S.fixo) top.push(card(S.t,h,'destaque'));
+      else if(S.b.some(b=>b.tipo==='lista'&&b.c.length>3&&dpA(x[b.k]).filter(Boolean).length>1)) wide.push(card(S.t,h));
+      else norm.push({h:card(S.t,h),w:peso(h)});
+    });
+    const colA=[],colB=[]; let wa=0,wb=0;
+    norm.forEach(n=>{ if(wa<=wb){ colA.push(n.h); wa+=n.w; } else { colB.push(n.h); wb+=n.w; } });
+    const ob=d.obs||{}, txts=[];
+    [['obs','Observações'],['nao','Não incluso']].forEach(([k,t])=>{ if(ob[k]) txts.push(`<div class="dpp-card"><div class="dpp-ch">${t}</div><div class="dpp-cb"><div class="dpp-txt w">${escHtml(ob[k])}</div></div></div>`); });
+    const cards=(top.length?`<div class="dpp-sec-t">Materiais</div><div class="dpp-top">${top.join('')}</div>`:'')
+      +(norm.length?`<div class="dpp-sec-t">Especificações</div><div class="dpp-cols"><div class="dpp-col">${colA.join('')}</div><div class="dpp-col">${colB.join('')}</div></div>`:'')
+      +(wide.length?`<div class="dpp-wide">${wide.join('')}</div>`:'')
+      +(txts.length?`<div class="dpp-sec-t">Observações</div><div class="dpp-top">${txts.join('')}</div>`:'');
+    const agora=new Date(), upd=reg.atualizadoEm?new Date(reg.atualizadoEm):null;
+    const ov=document.getElementById('fichaOverlay');
+    ov.innerHTML=`<div class="ficha-actions" style="width:min(900px,100%)">
+        <button class="btn btn-ghost" style="background:#fff" onclick="dpFecharFolha()">Fechar</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button></div>
+      <div class="ficha dpp" style="width:min(900px,100%)">
+        <div class="ficha-head"><div class="fh-l"><img src="https://i.postimg.cc/ZKKbdCCF/image-removebg-preview-(18).png" alt="Raldi" onerror="this.style.display='none'">
+            <div class="fh-brand"><div class="bn">raldi</div><div class="bs">Móveis com Precisão</div></div></div>
+          <div class="fh-r"><div class="t">Dados do Projeto</div><div class="np" style="font-size:15px;font-weight:600">${agora.toLocaleDateString('pt-BR')}</div></div></div>
+        <div class="ficha-body">
+          <div class="dpp-id">
+            <div><div class="dpp-k">Cliente</div><div class="dpp-v">${escHtml(nomeCli(c))}</div>${local?`<div class="dpp-s">${escHtml(local)}</div>`:''}</div>
+            <div><div class="dpp-k">Ambiente</div><div class="dpp-v">${escHtml(a.nome||'—')}</div>${a.entrega?`<div class="dpp-s">Entrega: ${fmtData(a.entrega)}</div>`:''}</div>
+            <div><div class="dpp-k">Consultor</div>${cons?`<div class="dpp-cons">${avatarHtml(consultorUsuario(c),cons,'')}<div class="dpp-v">${escHtml(cons)}</div></div>`:'<div class="dpp-v">—</div>'}</div>
+          </div>
+          ${cards||'<div class="dpp-vz" style="margin-top:14px">Nenhum dado preenchido.</div>'}
+          <div class="dpp-rod">
+            ${nao.length?`<div class="dpp-lin"><b>Não se aplica</b>${nao.map(t=>`<span class="dpp-tag">${t}</span>`).join('')}</div>`:''}
+            ${pend.length?`<div class="dpp-lin pend"><b>Ainda não definido</b>${pend.map(t=>`<span class="dpp-tag">${t}</span>`).join('')}</div>`:''}
+          </div>
+          <div class="ficha-foot"><span>Raldi · Móveis com Precisão</span><span>${upd?'Atualizado em '+upd.toLocaleDateString('pt-BR')+' às '+upd.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):''}</span></div>
+        </div></div>`;
+    document.title='Dados do projeto - '+nomeCli(c)+' - '+(a.nome||'ambiente');
+    ov.onclick=e=>{ if(e.target===ov) dpFecharFolha(); };
+    setPageOrientation('portrait'); ov.classList.add('open');
+  }
+  function dpFecharFolha(){ fecharFicha(); }
+
+  /* ---- tela de cadastro ---- */
+  function dpAbrir(cid,aid){
+    const c=CLIENTES.find(x=>x.id===cid), a=c&&ambDoCliente(c).find(x=>x.id===aid); if(!a){ toast('Ambiente não encontrado'); return; }
+    const k=dpKey(cid,aid), reg=DPROJ[k], dados=JSON.parse(JSON.stringify((reg&&reg.dados)||{}));
+    DP_SECOES.forEach(S=>{ const x=dados[S.id]||(dados[S.id]={});
+      S.b.forEach(b=>{
+        if(b.tipo==='lista'){ x[b.k]=dpA(x[b.k]).map(r=>Object.assign(dpVazia(b),r)); if(!x[b.k].length) x[b.k]=[dpVazia(b)]; }
+        else if(b.tipo==='chk') x[b.k]=dpA(x[b.k]);
+      }); });
+    DPD={cid,aid,k,nome:nomeCli(c),amb:a.nome||'Ambiente',dados,sujo:false};
+    let ov=document.getElementById('dpOv'); if(!ov){ ov=document.createElement('div'); ov.id='dpOv'; ov.className='rx-ov dp-ov'; document.body.appendChild(ov); dpLigar(ov); }
+    ov.classList.add('open'); dpRender();
+  }
+  function dpFechar(forcar){
+    if(!forcar && DPD && DPD.sujo && !confirm('Há alterações não salvas. Fechar mesmo assim?')) return;
+    const ov=document.getElementById('dpOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; } DPD=null;
+  }
+  function dpRender(){
+    const ov=document.getElementById('dpOv'); if(!ov||!DPD) return;
+    ov.innerHTML=`<div class="rx-box dp-box">
+      <div class="dp-hd"><div><h3>Dados do projeto</h3><div class="dp-sb2">${escHtml(DPD.nome)} · ${escHtml(DPD.amb)}</div></div>
+        <div class="dp-prog" id="dpProg"></div>
+        <button type="button" class="icon-btn" data-act="fechar" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <input type="file" id="dpFotoFile" accept="image/*" hidden data-act="fotofile">
+      <div class="dp-body" id="dpBody">${DP_SECOES.map(dpSecHtml).join('')}</div>
+      <div class="rx-f"><button type="button" class="btn btn-ghost" data-act="fechar">Cancelar</button><button type="button" class="btn btn-primary" data-act="salvar">Salvar dados</button></div></div>`;
+    dpHeadProg();
+  }
+  function dpHeadProg(){
+    const el=document.getElementById('dpProg'); if(!el||!DPD) return; const p=dpProg(DPD.dados), pct=Math.round(p.ok/p.tot*100);
+    el.innerHTML=`<span>${p.ok} de ${p.tot} itens</span><span class="dp-pgb" style="--c:${p.ok>=p.tot?'#1fa64a':'#d98a00'}"><i style="width:${pct}%"></i></span>`;
+  }
+  function dpSecHtml(S){
+    const x=DPD.dados[S.id], aberto=S.fixo||x.ap==='sim';
+    const tog=S.fixo?'':`<div class="dp-ap">
+      <label class="dp-chk"><input type="checkbox" data-act="ap" data-s="${S.id}" data-v="sim" ${x.ap==='sim'?'checked':''}><i></i>Aplica</label>
+      <label class="dp-chk"><input type="checkbox" data-act="ap" data-s="${S.id}" data-v="nao" ${x.ap==='nao'?'checked':''}><i></i>Não se aplica</label></div>`;
+    const aviso=S.aviso?`<div class="dp-aviso"><b>ATENÇÃO VENDEDORES</b><ul><li>Conferir se todos os eletros estão na pastinha de produção;</li><li>Conferir modelo da cuba (sobrepor, embutida, semi-encaixe…) e, se possível, torneira em banheiros;</li><li>Tamanho dos colchões (L x A x P).</li></ul>Entregue a pastinha quando estiver tudo alinhado: isso otimiza o tempo do setor e diminui a margem de erro e alteração. Definições são antes da produção!</div>`:'';
+    return (S.aviso?aviso:'')+`<section class="dp-sec ${aberto?'on':''} ${x.ap==='nao'?'nao':''}" id="dps-${S.id}"><div class="dp-sh"><h4>${S.t}${S.req?'<em class="dp-oblig">preenchimento obrigatório</em>':''}</h4>${tog}</div>${aberto?`<div class="dp-sb">${S.b.map(b=>dpBlocoHtml(S,b,x)).join('')}${(S.id!=='obs'&&!S.b.some(b=>b.tipo==='lista'))?dpSecFotoHtml(S,x):''}</div>`:''}</section>`;
+  }
+  function dpBlocoHtml(S,b,x){
+    const at=`data-s="${S.id}" data-b="${b.k}"`;
+    if(b.tipo==='lista'){
+      const l=x[b.k];
+      return `<div class="dp-g">${l.map((r,i)=>`<div class="dp-row" ${b.foto?`data-foto="1" data-s="${S.id}" data-b="${b.k}" data-i="${i}"`:''}><span class="dp-n">${i+1}</span><div class="dp-cs">${b.c.map(c=>{
+          const lb=c.l+(S.req?' <i class="dp-req">*</i>':'');
+          const ctl=c.sel?`<select data-act="row" ${at} data-i="${i}" data-c="${c.k}"><option value="">Selecione</option>${c.sel.map(o=>`<option ${r[c.k]===o?'selected':''}>${o}</option>`).join('')}</select>`
+            :`<input data-act="row" ${at} data-i="${i}" data-c="${c.k}" value="${esc(r[c.k])}" placeholder="${esc(c.ph||'')}" autocomplete="off">`;
+          return `<label class="dp-f"><span>${lb}</span>${ctl}</label>`; }).join('')}</div>
+        ${b.foto?dpFotoHtml(S,b,r,i):''}
+        ${l.length>1?`<button type="button" class="dp-x" data-act="del" ${at} data-i="${i}" title="Remover">×</button>`:''}</div>`).join('')}
+        <button type="button" class="dp-add" data-act="add" ${at}><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>${b.add}</button></div>`;
+    }
+    if(b.tipo==='chk'){
+      const sel=x[b.k];
+      return `<div class="dp-g" data-g="${S.id}|${b.k}"><div class="dp-gl">${b.l}${b.req?' <i class="dp-req">*</i>':''}</div><div class="dp-opts">${b.o.map((o,i)=>{ o=dpOpt(o); const on=sel.includes(o.l);
+        const ex=(o.txt||o.un)&&on?`<input class="dp-in" id="dpx-${S.id}-${b.k}-${i}" data-act="optx" ${at} data-i="${i}" placeholder="${esc(o.un?'0':o.txt)}" value="${esc(x[b.k+'_'+i]||'')}" ${o.un?'inputmode="numeric" style="width:84px"':''} autocomplete="off">${o.un?`<em class="dp-un">${o.un}</em>`:''}`:'';
+        return `<span class="dp-ox"><label class="dp-chk"><input type="checkbox" data-act="opt" ${at} data-i="${i}" ${on?'checked':''}><i></i>${escHtml(o.l)}</label>${ex}</span>`; }).join('')}</div></div>`;
+    }
+    if(b.tipo==='campos') return `<div class="dp-g dp-campos">${b.c.map(c=>`<label class="dp-f"><span>${c.l}</span><input data-act="fld" data-s="${S.id}" data-c="${c.k}" value="${esc(x[c.k])}" autocomplete="off"></label>`).join('')}</div>`;
+    if(b.tipo==='area') return `<div class="dp-g"><label class="dp-f"><span>${b.l}</span><textarea data-act="fld" data-s="${S.id}" data-c="${b.k}">${escHtml(x[b.k]||'')}</textarea></label></div>`;
+    return '';
+  }
+  /* ---- foto de referência por item (Cloudinary, mesmo envio da solicitação) ---- */
+  const dpFotoPend=new WeakSet();
+  const DP_CAM_SVG='<svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg>';
+  function dpThumb(u,w,h){ return aceUrl(String(u).replace('/upload/','/upload/w_'+w+',h_'+(h||w)+',c_fill,q_auto,f_auto/')); }
+  function dpFotoLinha(s,b,i){ const x=DPD&&DPD.dados[s]; if(b==='_sec') return x; return x&&x[b]&&x[b][i]; }
+  function dpFotoHtml(S,b,r,i){
+    const at=`data-s="${S.id}" data-b="${b.k}" data-i="${i}"`, mdf=/^mdf/.test(S.id)?'mdf':'';
+    if(dpFotoPend.has(r)) return `<div class="dp-foto ${mdf}"><span class="dp-foto-env">Enviando…</span></div>`;
+    if(r.foto&&aceUrl(r.foto)) return `<div class="dp-foto tem ${mdf}" title="${mdf?'Textura do MDF':'Foto de referência'}"><button type="button" class="dp-foto-img" data-act="fotover" ${at} title="Ampliar foto"><img src="${mdf?dpThumb(r.foto,260,170):dpThumb(r.foto,160)}" alt="Foto de referência"></button><button type="button" class="dp-foto-x" data-act="fotox" ${at} title="Remover foto">×</button></div>`;
+    return `<div class="dp-foto ${mdf}" tabindex="0" title="${mdf?'Textura do MDF (opcional)':'Foto de referência (opcional)'}: clique aqui e use Ctrl+V para colar um print, ou arraste uma imagem" ondragover="event.preventDefault();this.classList.add('arrasta')" ondragleave="this.classList.remove('arrasta')" ondrop="dpFotoSolta(event,'${S.id}','${b.k}',${i})">
+      <div class="dp-foto-bts"><button type="button" data-act="fotoadd" ${at} title="Enviar foto">${DP_CAM_SVG}</button><button type="button" data-act="fotocolar" ${at} title="Colar print">${ACE_PASTE_SVG}</button></div><em>${mdf?'Textura':'Foto'}</em></div>`;
+  }
+  async function dpFotoProcessar(r,f,sid){
+    const D=DPD; if(!r||!f||!D) return;
+    if(!/^image\//.test(f.type)){ toast('Selecione um arquivo de imagem'); return; }
+    dpFotoPend.add(r); D.pend=(D.pend||0)+1; dpSecRender(sid);
+    try{ const blob=await desigPrepararFoto(f); r.foto=await desigCloud(blob,'projeto.jpg'); D.sujo=true; toast('Foto anexada'); }
+    catch(e){ toast('Erro ao enviar a foto: '+(e&&e.message?e.message:e)); }
+    dpFotoPend.delete(r); D.pend=Math.max(0,(D.pend||1)-1);
+    if(DPD===D) dpSecRender(sid);
+  }
+  function dpSecFotoHtml(S,x){
+    return `<div class="dp-g dp-secfoto" data-foto="1" data-s="${S.id}" data-b="_sec" data-i="0"><div class="dp-gl">Foto de referência <small>(opcional)</small></div>${dpFotoHtml(S,{k:'_sec'},x,0)}</div>`;
+  }
+  function dpFotoEnviar(inp){
+    const f=inp.files&&inp.files[0]; inp.value=''; const al=DPD&&DPD.alvo; if(DPD) DPD.alvo=null;
+    const r=al&&dpFotoLinha(al.s,al.b,al.i); if(f&&r) dpFotoProcessar(r,f,al.s);
+  }
+  function dpFotoSolta(ev,s,b,i){
+    ev.preventDefault(); ev.currentTarget.classList.remove('arrasta');
+    const f=[...((ev.dataTransfer&&ev.dataTransfer.files)||[])].find(x=>/^image\//.test(x.type));
+    if(!f){ toast('Solte um arquivo de imagem'); return; }
+    const r=dpFotoLinha(s,b,i); if(r) dpFotoProcessar(r,f,s);
+  }
+  async function dpFotoColarBtn(s,b,i){
+    const r=dpFotoLinha(s,b,i); if(!r) return;
+    if(!navigator.clipboard||!navigator.clipboard.read){ toast('Neste navegador, clique na linha e use Ctrl+V'); return; }
+    try{
+      const lista=await navigator.clipboard.read();
+      for(const ci of lista){ const tp=ci.types.find(t=>/^image\//.test(t));
+        if(tp){ const blob=await ci.getType(tp); return dpFotoProcessar(r,new File([blob],'print.'+tp.split('/')[1],{type:tp}),s); } }
+      toast('Não há imagem copiada. Tire o print (Win+Shift+S) e tente de novo');
+    }catch(e){ toast('Não consegui ler a área de transferência — clique na linha e use Ctrl+V'); }
+  }
+  function dpAtivar(e){ if(!DPD||!e.target.closest) return; const r=e.target.closest('[data-foto]'); if(r) DPD.ativa={s:r.dataset.s,b:r.dataset.b,i:+r.dataset.i}; }
+  /* campos obrigatórios: Vidros, Serralheria e Puxador (quando "Aplica") */
+  function dpValidar(){
+    document.querySelectorAll('#dpOv .dp-err').forEach(n=>n.classList.remove('dp-err'));
+    const nomes=new Set(); let first=null;
+    const mark=sel=>{ const el=document.querySelector('#dpOv '+sel); if(el){ el.classList.add('dp-err'); if(!first) first=el; } };
+    DP_SECOES.forEach(S=>{
+      if(!S.req) return; const x=DPD.dados[S.id]; if(x.ap!=='sim') return;
+      S.b.forEach(b=>{
+        if(b.tipo==='lista'){
+          const rows=x[b.k]; let alvo=rows.filter(r=>b.c.some(c=>String(r[c.k]||'').trim())||r.foto); if(!alvo.length) alvo=[rows[0]];
+          alvo.forEach(r=>{ const i=rows.indexOf(r); b.c.forEach(c=>{ if(!String(r[c.k]||'').trim()){ nomes.add(S.t); mark(`[data-s="${S.id}"][data-b="${b.k}"][data-i="${i}"][data-c="${c.k}"]`); } }); });
+        } else if(b.tipo==='chk'&&b.req&&!x[b.k].length){ nomes.add(S.t); mark(`[data-g="${S.id}|${b.k}"]`); }
+      });
+    });
+    if(!nomes.size) return true;
+    toast('Preencha todos os campos obrigatórios: '+[...nomes].join(', '));
+    if(first){ first.scrollIntoView({block:'center',behavior:'smooth'}); if(/^(INPUT|SELECT)$/.test(first.tagName)) first.focus({preventScroll:true}); }
+    return false;
+  }
+  function dpSecRender(id){ const S=DP_SECOES.find(q=>q.id===id), el=document.getElementById('dps-'+id); if(S&&el) el.outerHTML=dpSecHtml(S).replace(/^[\s\S]*?(<section)/,'$1'); dpHeadProg(); }
+  function dpLigar(ov){
+    ov.addEventListener('focusin',dpAtivar); ov.addEventListener('mousedown',dpAtivar);
+    ov.addEventListener('input',e=>{
+      const t=e.target, a=t.dataset&&t.dataset.act; if(!a||!DPD) return; if(t.classList) t.classList.remove('dp-err'); const x=DPD.dados[t.dataset.s]; if(!x) return;
+      if(a==='row') x[t.dataset.b][+t.dataset.i][t.dataset.c]=t.value;
+      else if(a==='fld') x[t.dataset.c]=t.value;
+      else if(a==='optx') x[t.dataset.b+'_'+t.dataset.i]=t.value;
+      else return;
+      DPD.sujo=true; if(a==='row'&&t.dataset.s&&/^mdf/.test(t.dataset.s)) dpHeadProg();
+    });
+    ov.addEventListener('change',e=>{
+      const t=e.target, a=t.dataset&&t.dataset.act; if(!a||!DPD) return; if(a==='fotofile') return dpFotoEnviar(t); const x=DPD.dados[t.dataset.s]; if(!x) return;
+      if(a==='ap'){ x.ap=t.checked?t.dataset.v:''; DPD.sujo=true; dpSecRender(t.dataset.s); }
+      else if(a==='opt'){
+        const S=DP_SECOES.find(q=>q.id===t.dataset.s), b=S.b.find(q=>q.k===t.dataset.b), o=dpOpt(b.o[+t.dataset.i]);
+        let sel=x[b.k]; if(t.checked){ if(b.uma) sel=[o.l]; else if(!sel.includes(o.l)) sel.push(o.l); } else sel=sel.filter(v=>v!==o.l);
+        x[b.k]=sel; DPD.sujo=true; dpSecRender(S.id);
+        if(t.checked&&(o.txt||o.un)){ const i=document.getElementById('dpx-'+S.id+'-'+b.k+'-'+t.dataset.i); if(i) i.focus(); }
+      }
+    });
+    ov.addEventListener('click',e=>{
+      const t=e.target.closest('[data-act]'); if(!t||!DPD) return; const a=t.dataset.act;
+      if(a==='fechar') return dpFechar();
+      if(a==='salvar') return dpSalvar();
+      if(a==='fotoadd'){ DPD.alvo={s:t.dataset.s,b:t.dataset.b,i:+t.dataset.i}; const f=document.getElementById('dpFotoFile'); if(f) f.click(); return; }
+      if(a==='fotocolar') return dpFotoColarBtn(t.dataset.s,t.dataset.b,+t.dataset.i);
+      if(a==='fotox'){ const r=dpFotoLinha(t.dataset.s,t.dataset.b,+t.dataset.i); if(r){ r.foto=''; DPD.sujo=true; dpSecRender(t.dataset.s); } return; }
+      if(a==='fotover'){ const r=dpFotoLinha(t.dataset.s,t.dataset.b,+t.dataset.i); if(r&&r.foto&&aceUrl(r.foto)) window.open(aceFotoGrande(r.foto),'_blank','noopener'); return; }
+      if(a==='add'||a==='del'){
+        const S=DP_SECOES.find(q=>q.id===t.dataset.s), b=S.b.find(q=>q.k===t.dataset.b), l=DPD.dados[S.id][b.k];
+        if(a==='add') l.push(dpVazia(b)); else l.splice(+t.dataset.i,1);
+        DPD.sujo=true; dpSecRender(S.id);
+        if(a==='add'){ const ins=document.querySelectorAll('#dps-'+S.id+' .dp-row'); const u=ins[ins.length-1]; const f=u&&u.querySelector('input'); if(f) f.focus(); }
+      }
+    });
+  }
+  function dpSalvar(){
+    if(!DPD) return; if(DPD.pend>0){ toast('Aguarde o envio da foto terminar'); return; } if(!dpValidar()) return; const out={};
+    DP_SECOES.forEach(S=>{
+      const x=DPD.dados[S.id], o={};
+      if(!S.fixo){ if(!x.ap) return; o.ap=x.ap; if(x.ap!=='sim'){ out[S.id]=o; return; } }
+      S.b.forEach(b=>{
+        if(b.tipo==='lista'){
+          const l=x[b.k].filter(r=>b.c.some(c=>String(r[c.k]||'').trim())||r.foto).map(r=>{ const q={}; b.c.forEach(c=>q[c.k]=String(r[c.k]||'').trim()); if(b.foto&&r.foto&&aceUrl(r.foto)) q.foto=r.foto; return q; });
+          if(l.length) o[b.k]=l;
+        } else if(b.tipo==='chk'){
+          if(x[b.k].length) o[b.k]=x[b.k];
+          b.o.forEach((op,i)=>{ op=dpOpt(op); const kk=b.k+'_'+i, v=String(x[kk]||'').trim(); if((op.txt||op.un)&&x[b.k].includes(op.l)&&v) o[kk]=v; });
+        } else if(b.tipo==='campos'){
+          b.c.forEach(c=>{ const v=String(x[c.k]||'').trim(); if(v) o[c.k]=v; });
+        } else if(b.tipo==='area'){ const v=String(x[b.k]||'').trim(); if(v) o[b.k]=v; }
+      });
+      if(S.id!=='obs'&&!S.b.some(b=>b.tipo==='lista')&&x.foto&&aceUrl(x.foto)) o.foto=x.foto;
+      if(Object.keys(o).length) out[S.id]=o;
+    });
+    const ref=db.ref('dadosProjeto/'+DPD.k);
+    const op=Object.keys(out).length?ref.set({clienteId:DPD.cid,ambId:DPD.aid,dados:out,atualizadoEm:new Date().toISOString(),atualizadoPor:usuarioAtual()}):ref.remove();
+    op.then(()=>{ toast('Dados do projeto salvos'); dpFechar(true); })
+      .catch(e=>toast('Erro ao salvar: '+(e&&e.message?e.message:e)));
+  }
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&DPD) dpFechar(); });
+  document.addEventListener('paste',e=>{
+    if(!DPD) return; const cd=e.clipboardData; if(!cd) return;
+    let img=[...(cd.files||[])].find(f=>/^image\//.test(f.type));
+    if(!img) for(const x of (cd.items||[])){ if(x.kind==='file'&&/^image\//.test(x.type)){ img=x.getAsFile(); break; } }
+    if(!img) return;
+    const el=document.activeElement;
+    if(el&&/^(INPUT|TEXTAREA)$/.test(el.tagName)&&(cd.getData('text/plain')||'').trim()!=='') return;
+    e.preventDefault();
+    const rw=el&&el.closest?el.closest('[data-foto]'):null, al=rw?{s:rw.dataset.s,b:rw.dataset.b,i:+rw.dataset.i}:DPD.ativa, r=al&&dpFotoLinha(al.s,al.b,al.i);
+    if(!r){ toast('Clique na linha do item (ou no campo da foto) e cole com Ctrl+V'); return; }
+    if(r.foto&&!confirm('Este item já tem foto. Substituir pelo print colado?')) return;
+    dpFotoProcessar(r,img,al.s);
+  });
+
+  /* ===== Pasta de produção =====
+     pastasProd/{id} = {id,clienteId,ambId,ambiente,estado:'caixa'|'enviando'|'pcp'|'dividida',projeto,parte,de,pai,ordem,criadoEm,enviadoEm,enviadoPor,painelId}
+     Uma pasta nasce sozinha para cada ambiente em "Pasta de produção pronta". Dados do cliente vêm sempre da Lista de Orçamentos.
+     Ao arrastar para a caixa do PCP: gera o código (a partir de 3200) e cadastra a linha no Painel de Controle. */
+  const PQ_PRIMEIRO=3200;
+  let pqSync=false, pqDrag=null, pqBusca='';
+  function pqAmbiente(p){ const c=CLIENTES.find(x=>x.id===p.clienteId); if(!c) return null; const a=ambDoCliente(c).find(x=>x.id===p.ambId); return a?{c,a}:null; }
+  function pqVisiveis(){   // pastas na caixa cujo ambiente de origem ainda está em "Pasta de produção pronta"
+    return PASTAS.filter(p=>p.estado==='caixa').filter(p=>{ const o=pqAmbiente(p); return o&&o.a.status==='pasta'; })
+      .sort((x,y)=>(x.ordem||0)-(y.ordem||0));
+  }
+  async function pqSincronizar(){
+    if(!PASTAS_OK||pqSync) return; pqSync=true;
+    try{
+      for(const c of CLIENTES){
+        for(const a of ambDoCliente(c)){
+          if(a.status!=='pasta'||!a.id) continue;
+          if(PASTAS.some(p=>p.clienteId===c.id&&p.ambId===a.id)) continue;
+          const id=c.id+'__'+a.id, reg={id,clienteId:c.id,ambId:a.id,ambiente:a.nome||'',estado:'caixa',projeto:'',parte:1,de:1,ordem:Date.now(),criadoEm:new Date().toISOString()};
+          await db.ref('pastasProd/'+id).transaction(cur=>cur===null?reg:undefined);
+        }
+      }
+    }catch(e){ console.warn('pastasProd:',e.message); }
+    finally{ pqSync=false; }
+  }
+  function pqIcRel(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>'; }
+  function pqPastaHtml(p){
+    const o=pqAmbiente(p); if(!o) return '';
+    const c=o.c, tel=c.telefone||c.whatsapp||'', local=[c.cidade,c.uf].filter(Boolean).join(' / ');
+    const sub=p.de>1?`<div class="pst-sub">Parte ${p.parte} de ${p.de}</div>`:'';
+    return `<div class="pst-wrap ${p.de>1?'sub':''}"><div class="pst" data-pq="${esc(p.id)}" draggable="true" style="--c:#a93a49" title="Clique para abrir · botão direito para opções · arraste para o PCP">
+      <div class="pst-capa"><i class="pst-lv"></i><i class="pst-lh"></i>
+        <div class="pst-logo"><b>Raldi</b><span>MÓVEIS COM<br>PRECISÃO</span></div>
+        <div class="pst-tab"><div class="pst-tit">Dados importantes:<i>R</i></div>
+          <div class="pst-band">Atendimento</div>
+          <div class="pst-r"><div class="l">Entrega:</div><div class="v">${escHtml(o.a.entrega?fmtData(o.a.entrega):'—')}</div><div class="l">Nº de projeto:</div><div class="v num">—</div></div>
+          <div class="pst-r"><div class="l">Ambiente:</div><div class="v w3">${escHtml(p.ambiente||'—')}</div></div>
+          <div class="pst-band">Cliente</div>
+          <div class="pst-r"><div class="l">Cliente:</div><div class="v w3">${escHtml(nomeCli(c)||'—')}</div></div>
+          <div class="pst-r"><div class="l">Telefone:</div><div class="v w3">${escHtml(tel||'—')}</div></div>
+          <div class="pst-r"><div class="l">Local:</div><div class="v w3">${escHtml(local||'—')}</div></div></div>
+        <div class="pst-tag">Seu móvel, sua medida.</div>
+        <svg class="pst-mark" viewBox="0 0 82 56" fill="#a93a49" aria-hidden="true"><path d="M0 4C20 4 26 16 26 28S20 52 0 52z"/><path d="M28 7C44 7 49 17 49 28S44 49 28 49z"/><path d="M51 11C63 11 67 19 67 28S63 45 51 45z"/><path d="M69 15C77 15 80 21 80 28S77 41 69 41z"/></svg></div>
+      <span class="pst-st oco">${pqIcRel()}</span></div>${sub}</div>`;
+  }
+  function pqCaixaSvg(){
+    const pessoa=(x,pele,cabelo,roupa,tela)=>`<g transform="translate(${x} 0)">
+      <rect x="22" y="104" width="76" height="72" rx="10" fill="#e7e5dc"/>
+      <path d="M34 128c0-14 11-24 26-24s26 10 26 24v14H34z" fill="#1f1f24"/>
+      <rect x="54" y="94" width="12" height="14" rx="5" fill="#1f1f24"/>
+      <circle cx="60" cy="84" r="17" fill="#1f1f24"/>
+      <rect x="14" y="120" width="92" height="52" rx="6" fill="#2b2b30"/>
+      <rect x="18" y="124" width="84" height="44" rx="3" fill="${tela}"/>
+      <rect x="24" y="131" width="30" height="4" rx="2" fill="#fff" opacity=".85"/><rect x="24" y="140" width="46" height="4" rx="2" fill="#fff" opacity=".55"/>
+      <rect x="74" y="150" width="6" height="12" rx="1.5" fill="#fff" opacity=".9"/><rect x="83" y="144" width="6" height="18" rx="1.5" fill="#fff" opacity=".9"/><rect x="92" y="138" width="6" height="24" rx="1.5" fill="#fff" opacity=".9"/>
+      <rect x="52" y="172" width="16" height="6" fill="#4b4b55"/><rect x="40" y="178" width="40" height="4" rx="2" fill="#4b4b55"/>
+      <rect x="4" y="181" width="112" height="9" rx="4" fill="#c9a46b"/><rect x="10" y="190" width="6" height="26" fill="#a98450"/><rect x="104" y="190" width="6" height="26" fill="#a98450"/>
+      <rect x="92" y="170" width="9" height="11" rx="2" fill="#fff"/><path d="M101 173h3a2.4 2.4 0 010 5h-3" stroke="#fff" stroke-width="1.6" fill="none"/></g>`;
+    return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Equipe do PCP">
+      <defs><linearGradient id="pqBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f1e8"/><stop offset="1" stop-color="#ece8dc"/></linearGradient></defs>
+      <rect width="400" height="250" rx="18" fill="url(#pqBg)"/>
+      <rect x="0" y="196" width="400" height="54" rx="0" fill="#dcd7c8"/><rect x="0" y="196" width="400" height="4" fill="#cfc9b8"/>
+      <rect x="22" y="26" width="86" height="58" rx="6" fill="#dfeaf1"/><path d="M22 84l30-34 24 20 14-12 18 26z" fill="#c4d8e4"/><path d="M65 26v58M22 55h86" stroke="#fff" stroke-width="3"/>
+      <circle cx="360" cy="44" r="20" fill="#fff" stroke="#a93a49" stroke-width="4"/><path d="M360 31v13l9 6" stroke="#3a3a40" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <rect x="152" y="24" width="96" height="46" rx="6" fill="#fff"/><rect x="152" y="24" width="96" height="10" rx="5" fill="#a93a49"/>
+      <rect x="162" y="42" width="40" height="4" rx="2" fill="#cfc9b8"/><rect x="162" y="51" width="62" height="4" rx="2" fill="#cfc9b8"/><rect x="162" y="60" width="28" height="4" rx="2" fill="#cfc9b8"/>
+            ${pessoa(2,'#f1c9a5','#4a3426','#a93a49','#3b82c4')}${pessoa(128,'#c68a62','#1f1a17','#2f6f5e','#e08a2c')}${pessoa(254,'#f4d3b6','#8a5a2b','#4a5a8a','#2f9e6a')}
+      <g transform="translate(86 50) scale(.78)"><path d="M368 172c-4-14 2-26 10-30-2 10 4 12 6 20 2-10 8-16 14-18-2 14-6 24-14 28z" fill="#5a9a63"/><rect x="368" y="170" width="26" height="22" rx="4" fill="#a93a49"/></g>
+    </svg>`;
+  }
+  function pqMiniHtml(){
+    const env=PASTAS.filter(p=>p.estado==='pcp').sort((a,b)=>String(b.enviadoEm||'').localeCompare(String(a.enviadoEm||'')));
+    if(!env.length) return '';
+    const linhas=env.slice(0,60).map(p=>{
+      const c=CLIENTES.find(x=>x.id===p.clienteId);
+      return `<tr><td><b class="pq-cod">${escHtml(p.projeto)}</b></td><td>${c?escHtml(nomeCli(c)):'<span class="cel-sub">—</span>'}</td><td>${escHtml(p.ambiente||'—')}</td><td class="cel-sub">${p.enviadoEm?escHtml(fmtDataHora(p.enviadoEm)):''}</td><td class="cel-sub">${escHtml(p.enviadoPor||'')}</td></tr>`;
+    }).join('');
+    return `<details class="pq-env"><summary><span>Enviadas ao PCP</span><b>${env.length}</b></summary>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th style="width:90px">Projeto</th><th>Cliente</th><th>Ambiente</th><th style="width:150px">Enviada em</th><th style="width:200px">Por</th></tr></thead><tbody>${linhas}</tbody></table></div></details>`;
+  }
+  function pqCorpo(){
+    const todas=pqVisiveis(), t=normTxt(pqBusca).split(/\s+/).filter(Boolean);
+    const l=t.length?todas.filter(p=>{ const o=pqAmbiente(p); const x=normTxt([nomeCli(o.c),p.ambiente,o.c.cidade].join(' ')); return t.every(w=>x.includes(w)); }):todas;
+    const nEnv=PASTAS.filter(p=>p.estado==='pcp').length;
+    return {kpis:`<span class="cli-kpi ro" style="--c:#a93a49">Aguardando envio <b>${todas.length}</b></span><span class="cli-kpi ro" style="--c:#2f8f46">Enviadas ao PCP <b>${nEnv}</b></span>`,
+      grid:l.length?`<div class="ds-grid pq-grid">${l.map(pqPastaHtml).join('')}</div>`
+        :`<div class="ds-vazio"><b>${todas.length?'Nenhuma pasta encontrada':'Nenhuma pasta aguardando'}</b>${todas.length?'Ajuste a busca.':'Elas aparecem aqui quando um ambiente é movido para “Pasta de produção pronta”.'}</div>`,
+      mini:pqMiniHtml(), n:todas.length};
+  }
+  function renderPastaProd(){
+    TELA='pastaprod'; const r=pqCorpo();
+    view.innerHTML=`<div class="page page-wide clx pq-page">
+      <div class="page-head"><div><h1 class="page-title">Pasta de produção</h1>
+        <p class="page-sub">Arraste cada pastinha para o PCP — o projeto ganha um código e entra no Painel de Controle</p></div></div>
+      <div class="cli-kpis" id="pqKpis">${r.kpis}</div>
+      <div class="pq-layout">
+        <section class="pq-main">
+          <div class="pq-main-h"><h3>Aguardando envio ao PCP</h3>
+            <input class="pq-busca" id="pqBusca" placeholder="Buscar cliente ou ambiente…" value="${esc(pqBusca)}" oninput="pqBusca=this.value;pqAtualizar()"></div>
+          <div class="ds-tray pq-tray" id="pqGrid">${r.grid}</div>
+        </section>
+        <aside class="pq-side">
+          <div class="pq-caixa" id="pqCaixa" ondragover="pqOver(event)" ondragleave="pqLeave()" ondrop="pqDrop(event)">
+            <div class="pq-caixa-t">PCP</div>
+            <div class="pq-ilu">${pqCaixaSvg()}</div>
+            <div class="pq-solte" id="pqSolte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v13M6 12l6 6 6-6"/></svg>
+              <span id="pqSolteTxt">Arraste para o PCP</span></div>
+            <p class="pq-dica">Cada pastinha recebe um código próprio, a partir de ${PQ_PRIMEIRO}, e vira uma linha no Painel de Controle.</p>
+          </div>
+        </aside>
+      </div>
+      <div id="pqMini">${r.mini}</div></div>`;
+    pqSincronizar();
+  }
+  function pqAtualizar(){
+    if(!document.getElementById('pqGrid')){ renderPastaProd(); return; }
+    if(pqDrag) return;
+    const r=pqCorpo();
+    document.getElementById('pqGrid').innerHTML=r.grid; document.getElementById('pqKpis').innerHTML=r.kpis;
+    const m=document.getElementById('pqMini'); if(m){ const aberto=m.querySelector('details')&&m.querySelector('details').open; m.innerHTML=r.mini; if(aberto){ const d=m.querySelector('details'); if(d) d.open=true; } }
+    pqSincronizar();
+  }
+  /* arrastar / soltar */
+  function pqOver(ev){ if(!pqDrag) return; ev.preventDefault(); ev.dataTransfer.dropEffect='move'; const c=document.getElementById('pqCaixa'); if(c) c.classList.add('over'); const t=document.getElementById('pqSolteTxt'); if(t) t.textContent='Solte para cadastrar no PCP'; }
+  function pqLeave(){ const c=document.getElementById('pqCaixa'); if(c) c.classList.remove('over'); const t=document.getElementById('pqSolteTxt'); if(t) t.textContent='Arraste para o PCP'; }
+  function pqDrop(ev){ ev.preventDefault(); const id=pqDrag; pqDrag=null; pqLeave(); document.querySelectorAll('.pst.dragging').forEach(x=>x.classList.remove('dragging')); if(id) pqEnviar(id); }
+  async function pqNovoCodigo(){
+    for(let i=0;i<50;i++){
+      const r=await db.ref('contadores/pastaProjeto').transaction(cur=>(typeof cur==='number'&&cur>=PQ_PRIMEIRO)?cur+1:PQ_PRIMEIRO);
+      const n=String(r.snapshot.val());
+      if(!PAINEL.some(x=>String(x.projeto||'').trim()===n)) return n;   // pula códigos que já existem no Painel
+    }
+    throw new Error('Não consegui gerar um código livre');
+  }
+  async function pqEnviar(id){
+    const p=PASTAS.find(x=>x.id===id), o=p&&pqAmbiente(p); if(!p||!o){ toast('Pasta não encontrada'); return; }
+    const ref=db.ref('pastasProd/'+id+'/estado');
+    let tomou=false;
+    try{
+      const cl=await ref.transaction(cur=>cur==='caixa'?'enviando':undefined);
+      if(!cl.committed){ toast('Esta pasta já foi enviada ao PCP'); return; }
+      tomou=true;
+      const cod=await pqNovoCodigo(), c=o.c, l=linhaPainelVazia();
+      Object.assign(l,{projeto:cod,cliente:nomeCli(c),telefone:c.telefone||c.whatsapp||'',local:c.cidade||'',ambiente:p.ambiente||o.a.nome||'',consultor:consultorNome(c)});
+      const upd={}; upd['painel/'+l.id]=l;
+      upd['pastasProd/'+id+'/estado']='pcp'; upd['pastasProd/'+id+'/projeto']=cod; upd['pastasProd/'+id+'/painelId']=l.id;
+      upd['pastasProd/'+id+'/enviadoEm']=new Date().toISOString(); upd['pastasProd/'+id+'/enviadoPor']=usuarioAtual();
+      await db.ref().update(upd); tomou=false;
+      toast('Projeto '+cod+' cadastrado no Painel de Controle');
+      const cx=document.getElementById('pqCaixa'); if(cx){ cx.classList.add('ok'); setTimeout(()=>cx.classList.remove('ok'),1400); }
+    }catch(e){
+      toast('Erro ao enviar: '+(e&&e.message?e.message:e));
+      if(tomou) ref.set('caixa').catch(()=>{});
+    }
+  }
+  /* menu da pastinha (botão direito) */
+  function pqFecharMenu(){ const m=document.getElementById('pqCtx'); if(m) m.remove(); }
+  function pqMenu(x,y,id){
+    pqFecharMenu(); const p=PASTAS.find(q=>q.id===id); if(!p) return;
+    const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+    const m=document.createElement('div'); m.className='ds-ctx'; m.id='pqCtx';
+    m.innerHTML=`<button type="button" data-fn="dividir">${ic('<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>')}Dividir pasta</button>
+      <button type="button" data-fn="enviar">${ic('<path d="M5 12h14M13 6l6 6-6 6"/>')}Enviar para o PCP</button><hr>
+      <button type="button" data-fn="cliente">${ic('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3-6 7-6s7 2.4 7 6"/>')}Ver ambientes do cliente</button>`;
+    document.body.appendChild(m);
+    const w=m.offsetWidth,h=m.offsetHeight; m.style.left=Math.max(6,Math.min(x,innerWidth-w-6))+'px'; m.style.top=Math.max(6,Math.min(y,innerHeight-h-6))+'px';
+    m.onclick=e=>{ const b=e.target.closest('button[data-fn]'); if(!b) return; pqFecharMenu();
+      ({dividir:()=>pqDividirAbrir(id),enviar:()=>pqEnviar(id),cliente:()=>abrirAmbientes(p.clienteId)})[b.dataset.fn](); };
+  }
+  /* pasta aberta (clique esquerdo): dados do cliente, ambiente, consultor... */
+  function pqAbrirPasta(id){
+    const p=PASTAS.find(q=>q.id===id), o=p&&pqAmbiente(p); if(!p||!o){ toast('Pasta não encontrada'); return; }
+    const c=o.c, tel=c.telefone||c.whatsapp||'', local=[c.cidade,c.uf].filter(Boolean).join(' / ');
+    const pasta=pqPastaHtml(p).replace(/ draggable="true"/,'').replace(/data-pq="[^"]*"/,'');
+    abrirModal('Pasta de produção',
+      `<div class="dsm"><div>${pasta}</div>
+        <div class="dsm-info"><dl>
+          <dt>Cliente</dt><dd>${escHtml(nomeCli(c)||'—')}</dd>
+          <dt>Ambiente</dt><dd>${escHtml(p.ambiente||'—')}</dd>
+          <dt>Consultor</dt><dd>${escHtml(consultorNome(c)||'—')}</dd>
+          <dt>Entrega</dt><dd>${escHtml(o.a.entrega?fmtData(o.a.entrega):'—')}</dd>
+          <dt>Telefone</dt><dd>${escHtml(tel||'—')}</dd>
+          <dt>Local</dt><dd>${escHtml(local||'—')}</dd>
+          ${p.de>1?`<dt>Parte</dt><dd>${p.parte} de ${p.de}</dd>`:''}
+        </dl></div></div>`,
+      `<button class="btn btn-ghost" onclick="fecharModal();pqDividirAbrir('${esc(id)}')">Dividir pasta</button>
+       <button class="btn btn-ghost" onclick="fecharModal();abrirAmbientes('${esc(p.clienteId)}')">Ver ambientes do cliente</button>
+       <button class="btn btn-primary" onclick="fecharModal();pqEnviar('${esc(id)}')">Enviar para o PCP</button>
+       <button class="btn btn-ghost" onclick="fecharModal()">Fechar</button>`);
+    const bx=document.querySelector('#modalOv .rx-box'); if(bx) bx.style.width='min(780px,100%)';
+  }
+  /* dividir pasta */
+  let PQD=null;
+  function pqDividirAbrir(id){
+    const p=PASTAS.find(q=>q.id===id), o=p&&pqAmbiente(p); if(!p||!o) return;
+    PQD={id,n:2,nomes:['','']};
+    let ov=document.getElementById('pqDivOv'); if(!ov){ ov=document.createElement('div'); ov.id='pqDivOv'; ov.className='rx-ov'; document.body.appendChild(ov); }
+    ov.classList.add('open'); pqDividirRender();
+    setTimeout(()=>{ const i=document.querySelector('#pqDivOv .pq-nm'); if(i) i.focus(); },50);
+  }
+  function pqDividirFechar(){ const ov=document.getElementById('pqDivOv'); if(ov){ ov.classList.remove('open'); ov.innerHTML=''; } PQD=null; }
+  function pqDividirRender(){
+    const ov=document.getElementById('pqDivOv'); if(!ov||!PQD) return;
+    const p=PASTAS.find(q=>q.id===PQD.id), o=p&&pqAmbiente(p); if(!o){ pqDividirFechar(); return; }
+    ov.innerHTML=`<div class="rx-box pq-div"><div class="rx-h"><div><h3>Dividir pasta</h3><div class="amb-sub">${escHtml(nomeCli(o.c))} · ${escHtml(p.ambiente||'—')}</div></div>
+        <button class="icon-btn" onclick="pqDividirFechar()" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="pq-div-b">
+        <label class="pq-div-q">Em quantas pastas?
+          <span class="pq-step"><button type="button" onclick="pqDivN(-1)" aria-label="Menos">−</button><b>${PQD.n}</b><button type="button" onclick="pqDivN(1)" aria-label="Mais">+</button></span></label>
+        <div class="pq-div-l">${PQD.nomes.map((v,i)=>`<label><span>Pasta ${i+1}</span><input class="pq-nm" value="${esc(v)}" placeholder="Nome do ambiente (ex.: Cozinha)" oninput="PQD.nomes[${i}]=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault();pqDividir();}"></label>`).join('')}</div>
+        <p class="pq-div-i">A pasta original é substituída por ${PQD.n} pastinhas. Cada uma recebe seu próprio código ao ser enviada ao PCP.</p></div>
+      <div class="pq-div-f"><button class="btn btn-ghost" onclick="pqDividirFechar()">Cancelar</button><button class="btn" onclick="pqDividir()">Dividir em ${PQD.n} pastas</button></div></div>`;
+  }
+  function pqDivN(d){
+    const n=Math.min(12,Math.max(2,PQD.n+d)); if(n===PQD.n) return;
+    while(PQD.nomes.length<n) PQD.nomes.push(''); PQD.nomes.length=n; PQD.n=n; pqDividirRender();
+  }
+  async function pqDividir(){
+    if(!PQD) return; const p=PASTAS.find(q=>q.id===PQD.id); if(!p) return;
+    const nomes=PQD.nomes.map(x=>x.trim());
+    if(nomes.some(x=>!x)){ toast('Escreva o nome de todos os ambientes'); return; }
+    const ref=db.ref('pastasProd/'+p.id+'/estado');
+    try{
+      const cl=await ref.transaction(cur=>cur==='caixa'?'dividida':undefined);
+      if(!cl.committed){ toast('Esta pasta já foi alterada por outra pessoa'); pqDividirFechar(); return; }
+      const upd={}, t=Date.now(), n=nomes.length;
+      nomes.forEach((nm,i)=>{ const id=p.id+'__p'+t+'_'+(i+1);
+        upd['pastasProd/'+id]={id,clienteId:p.clienteId,ambId:p.ambId,ambiente:nm,estado:'caixa',projeto:'',parte:i+1,de:n,pai:p.id,ordem:(p.ordem||t)+(i+1)/1000,criadoEm:new Date().toISOString()}; });
+      await db.ref().update(upd);
+      toast('Pasta dividida em '+n); pqDividirFechar();
+    }catch(e){ toast('Erro ao dividir: '+(e&&e.message?e.message:e)); }
+  }
+  /* eventos delegados (uma vez só) */
+  (function pqLigar(){
+    const naTela=()=>TELA==='pastaprod';
+    view.addEventListener('click',e=>{
+      if(!naTela()) return; const ps=e.target.closest('.pst[data-pq]'); if(!ps) return;
+      e.stopPropagation(); pqFecharMenu(); pqAbrirPasta(ps.dataset.pq);
+    });
+    view.addEventListener('contextmenu',e=>{
+      if(!naTela()) return; const ps=e.target.closest('.pst[data-pq]'); if(!ps) return;
+      e.preventDefault(); e.stopPropagation(); const r=ps.getBoundingClientRect(); pqMenu(Math.min(e.clientX,r.right-20),Math.min(e.clientY+6,r.bottom),ps.dataset.pq);
+    });
+    view.addEventListener('dragstart',e=>{
+      if(!naTela()) return; const ps=e.target.closest('.pst[data-pq]'); if(!ps) return;
+      pqDrag=ps.dataset.pq; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain',pqDrag); }catch(x){}
+      setTimeout(()=>ps.classList.add('dragging'),0); pqFecharMenu();
+    });
+    view.addEventListener('dragend',()=>{ pqDrag=null; pqLeave(); document.querySelectorAll('.pst.dragging').forEach(x=>x.classList.remove('dragging')); pqAtualizar(); });
+    document.addEventListener('click',e=>{ if(!e.target.closest('#pqCtx')) pqFecharMenu(); });
+    document.addEventListener('contextmenu',e=>{ if(!e.target.closest('#pqCtx')&&!e.target.closest('.pst[data-pq]')) pqFecharMenu(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ pqFecharMenu(); if(PQD) pqDividirFechar(); } });
+  })();
+
+  Object.assign(window,{renderPastaProd,pqOver,pqLeave,pqDrop,pqAtualizar,pqDivN,pqDividir,pqDividirFechar,renderCronoMedicao,cmAlternar,cmAtualizar,anxVer,anxNav,anxFechar,anxClique,anxVerCli,renderOrcKanban,okDragStart,okDragEnd,okDragOver,okDragLeave,okDrop,atualizarClientes,atualizarOuRenderClientes,limparFiltrosCli,alternarFavoritoCliente,
     atualizarHeroCliente,toggleFavForm,filtrarClientes,renderClientes,renderClienteForm,salvarCliente,fCli});
 
   /* ===== Máscaras / CEP ===== */
@@ -6341,7 +7262,7 @@
   function ligarListeners(){
     if(listenersAtivos) return; listenersAtivos=true;
     ligarListenersDesig();
-    db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') atualizarOuRenderClientes(); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='mapa') atualizarMapa(); },
+    db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') atualizarOuRenderClientes(); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='mapa') atualizarMapa(); else if(TELA==='dadosproj') dpAtualizar(); },
       e=>toast('Erro de leitura: '+e.message));
     db.ref('projetos').on('value',s=>{ PROJETOS=objParaArray(s); if(TELA==='projetos') renderDados(); },
       e=>toast('Erro de leitura: '+e.message));
@@ -6392,15 +7313,18 @@
       if(TELA==='modulos') atualizarModulosMv();
       if(document.getElementById('cfgPkGrid')) cfgPkRender(); },
       e=>console.warn('modulosMoveis:',e.message));
+    db.ref('dadosProjeto').on('value',s=>{ DPROJ=s.val()||{}; if(TELA==='dadosproj') dpAtualizar(); },e=>console.warn('dadosProjeto:',e.message));
+    db.ref('pastasProd').on('value',s=>{ PASTAS=Object.values(s.val()||{}).filter(Boolean); PASTAS_OK=true;
+      if(TELA==='pastaprod') pqAtualizar(); },e=>console.warn('pastasProd:',e.message));
     db.ref('painel').on('value',s=>{ PAINEL=Object.values(s.val()||{}).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
       if(TELA==='painel'){ const f=document.activeElement, r=f&&f.dataset?f.dataset.r:null, c=f&&f.dataset?f.dataset.c:null;
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='pend-pint') renderPendPint(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     oriLigarDb(); dinaLigarDb(); bomLigar();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
+      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      if(TELA==='equipe') renderEquipe(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
+      if(TELA==='equipe') renderEquipe(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
       resumoCarregado.ops=true; sincronizarResumoTela();
       if(TELA==='ops') renderOPs(); else if(TELA==='ori-det') oriAtualizarOPBar(); else if(TELA==='apont') renderApont();
@@ -12855,7 +13779,7 @@
   const TIPO_OP={lote:'OP de Lote', produto:'OP de Produto', digital:'Apontamento Digital'};
   const DIAS_SEM=[['Dom',0],['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6]];
 
-  let PAINEL=[], EQUIPE=[], OPS=[];
+  let PAINEL=[], EQUIPE=[], OPS=[], PASTAS=[], PASTAS_OK=false;
   let grupoModo=false, grupoSel=new Set(), painelSel=new Set(), emitOP=null, emitApoio=null, apontOP=null, buscaOps='', fOps={setor:'',status:'',tipo:'',ativ:'',emis:'',exec:''}, painelBusca='';
 
   /* ---- tempo dentro da jornada ---- */
@@ -18331,6 +19255,9 @@ const HM_CUBE='<path class=a d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path class=b d
 const HM_CAL='<rect class=a x=3 y=5 width=18 height=16 rx=2 /><path class=b d="M3 10h18M8 3v4M16 3v4"/>';
 const HM_ICONS={
  'Lista de Orçamentos':'<circle class=a cx=10 cy=8 r=3.5 /><path class=a d="M3.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path class=c d="M19 4v5M16.5 6.5h5"/>',
+ 'Dados do projeto':'<path class=a d="M7 3h7l4 4v14H7z"/><path class=b d="M14 3v4h4"/><path class=c d="M10 12l1.6 1.6L14.5 10.5M10 17h5"/>',
+ 'Pasta de produção':'<path class=a d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path class=b d="M9 14l2 2 4-4"/>',
+ 'Cronograma de Medição':'<rect class=a x=3 y=5 width=18 height=16 rx=2 /><path class=b d="M3 10h18M8 3v4M16 3v4"/><path class=c d="M7 14h4M7 17.5h7"/>',
  'Kanban de Orçamentos':'<rect class=a x=3 y=4 width=5 height=16 rx=1.5 /><rect class=b x=10 y=4 width=5 height=10 rx=1.5 /><rect class=c x=17 y=4 width=4 height=7 rx=1.5 />',
  'Mapa':'<path class=a d="M12 21s-6-5.5-6-11a6 6 0 0112 0c0 5.5-6 11-6 11z"/><circle class=c cx=12 cy=10 r=2.2 />',
  'Solicitação Armazém (SA)':'<path class=a d="M3 10l9-6 9 6v10H3z"/><path class=b d="M8 20v-6h8v6"/><path class=c d="M8 17h8"/>',
