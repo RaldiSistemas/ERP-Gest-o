@@ -4205,6 +4205,85 @@
   @media (max-width:900px){ .clf .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } .clf .fld.s4{ grid-column:span 2; } }
   @media (max-width:560px){ .clf .grid{ grid-template-columns:1fr; } .clf .fld.s2,.clf .fld.s4{ grid-column:auto; } .clf-hct{ width:100%; } }
 
+  /* ===== Agenda (Orçamentos) ===== */
+  .ora-bar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:14px 0; }
+  .ora-nav{ display:inline-flex; align-items:center; gap:2px; background:#fff; border:1px solid var(--linha); border-radius:12px; padding:4px; }
+  .ora-nav button{ border:0; background:transparent; color:var(--texto); width:32px; height:32px; border-radius:8px; display:grid; place-items:center; cursor:pointer; transition:background .12s; }
+  .ora-nav button:hover{ background:#f1f0ea; }
+  .ora-nav svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .ora-title{ font-size:18px; font-weight:700; min-width:158px; text-align:center; color:var(--texto); }
+  .ora-hoje{ font:inherit; font-size:13px; font-weight:600; padding:9px 14px; border:1px solid var(--linha); border-radius:10px; background:#fff; color:var(--texto); cursor:pointer; }
+  .ora-hoje:hover{ border-color:var(--vermelho); color:var(--vermelho); }
+  .ora-sp{ flex:1; }
+  .ora-busca{ font:inherit; font-size:13px; padding:9px 12px; border:1px solid var(--linha); border-radius:10px; background:#faf9f5; color:var(--texto); width:210px; }
+  .ora-busca:focus,.ora-sel:focus{ outline:none; border-color:var(--vermelho); box-shadow:0 0 0 3px rgba(152,36,36,.12); background:#fff; }
+  .ora-sel{ font:inherit; font-size:13px; padding:9px 11px; border:1px solid var(--linha); border-radius:10px; background:#faf9f5; color:var(--texto); max-width:200px; }
+  .ora-tg{ --c:#4a6fa5; font:inherit; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:999px; border:1px solid var(--linha); background:#fff; color:var(--muted); cursor:pointer; transition:all .12s; }
+  .ora-tg i{ width:9px; height:9px; border-radius:50%; background:var(--c); opacity:.35; }
+  .ora-tg.on{ color:var(--texto); border-color:var(--c); background:color-mix(in srgb,var(--c) 9%,#fff); }
+  .ora-tg.on i{ opacity:1; }
+  .ora-tg.ent{ --c:#982424; }
+  .ora-main{ display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:18px; align-items:start; }
+  .ora-cal{ background:#fff; border:1px solid var(--linha); border-radius:16px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+  .ora-wd{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); background:#faf9f5; border-bottom:1px solid var(--linha); }
+  .ora-wd span{ padding:10px 0; text-align:center; font-size:11.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--muted); }
+  .ora-grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); grid-auto-rows:minmax(112px,auto); }
+  .ora-d{ border-right:1px solid var(--linha); border-bottom:1px solid var(--linha); padding:6px; cursor:pointer; display:flex; flex-direction:column; gap:4px; min-width:0; transition:background .12s; }
+  .ora-d:nth-child(7n){ border-right:0; }
+  .ora-d:nth-last-child(-n+7){ border-bottom:0; }
+  .ora-d:hover{ background:#faf9f5; }
+  .ora-d.we{ background:#fcfcfa; }
+  .ora-d.out{ background:#fbfbf8; }
+  .ora-d.out .ora-n{ opacity:.35; }
+  .ora-d.sel{ box-shadow:inset 0 0 0 2px var(--vermelho); }
+  .ora-n{ font-size:12.5px; font-weight:700; width:24px; height:24px; display:grid; place-items:center; border-radius:50%; color:var(--texto); }
+  .ora-d.hoje .ora-n{ background:var(--vermelho); color:#fff; }
+  .ora-ev{ --c:#4a6fa5; display:flex; align-items:center; gap:5px; width:100%; font-size:11.5px; font-weight:600; padding:3px 6px 3px 4px; border-radius:7px; border-left:3px solid var(--c);
+    background:color-mix(in srgb,var(--c) 11%,#fff); color:color-mix(in srgb,var(--c) 80%,#000); overflow:hidden; }
+  .ora-ev.ent{ --c:#982424; }
+  .ora-ev .t{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+  .ora-ev .av{ width:18px; height:18px; font-size:7.5px; flex:none; border-width:0; }
+  .ora-mais{ font-size:11px; font-weight:600; color:var(--muted); padding:0 4px; }
+  .ora-side{ display:flex; flex-direction:column; gap:14px; position:sticky; top:0; }
+  .ora-box{ background:#fff; border:1px solid var(--linha); border-radius:16px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+  .ora-sh{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
+  .ora-sh h3{ font-size:15px; font-weight:700; color:var(--texto); text-transform:capitalize; }
+  .ora-sh small{ font-size:11.5px; font-weight:700; color:#fff; background:var(--vermelho); padding:3px 9px; border-radius:999px; }
+  .ora-lista{ display:flex; flex-direction:column; gap:10px; max-height:52vh; overflow:auto; }
+  .ora-card{ --c:#4a6fa5; border:1px solid var(--linha); border-left:4px solid var(--c); border-radius:12px; padding:12px 13px; background:#fff; display:flex; flex-direction:column; gap:9px; }
+  .ora-card.ent{ --c:#982424; }
+  .ora-ct{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .ora-pill{ font-size:10.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--c); }
+  .ora-rel{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#eee; color:#666; }
+  .ora-rel.hj{ background:#fde8e8; color:var(--vermelho); }
+  .ora-rel.fut{ background:#e8f0e8; color:#2f8f46; }
+  .ora-cn{ font-size:15px; font-weight:700; color:var(--texto); line-height:1.25; }
+  .ora-dts{ display:flex; align-items:center; gap:10px; background:#faf9f5; border-radius:10px; padding:8px 10px; }
+  .ora-dts div{ display:flex; flex-direction:column; }
+  .ora-dts small{ font-size:10.5px; color:var(--muted); font-weight:600; }
+  .ora-dts b{ font-size:13px; color:var(--texto); }
+  .ora-seta{ color:var(--muted); flex:none; }
+  .ora-cf{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .ora-cons{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; min-width:0; }
+  .ora-cons span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ora-cons .av{ width:28px; height:28px; font-size:10.5px; }
+  .ora-amb{ display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:var(--muted); white-space:nowrap; }
+  .ora-amb svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .ora-open{ font:inherit; font-size:12.5px; font-weight:600; padding:7px 10px; border-radius:9px; border:1px solid var(--linha); background:#faf9f5; color:var(--texto); cursor:pointer; }
+  .ora-open:hover{ border-color:var(--vermelho); color:var(--vermelho); background:#fff; }
+  .ora-vazio{ text-align:center; padding:22px 10px; color:var(--muted); font-size:13px; }
+  .ora-vazio b{ display:block; color:var(--texto); font-size:14px; margin-bottom:4px; }
+  .ora-prox{ display:flex; align-items:center; gap:11px; padding:8px 6px; border-radius:10px; cursor:pointer; }
+  .ora-prox:hover{ background:#faf9f5; }
+  .ora-dia{ width:42px; flex:none; text-align:center; border-radius:10px; background:#fbeeee; color:var(--vermelho); padding:4px 0; line-height:1.1; }
+  .ora-dia b{ display:block; font-size:16px; }
+  .ora-dia span{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+  .ora-pn{ flex:1; min-width:0; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ora-pn small{ display:block; font-size:11.5px; color:var(--muted); font-weight:500; }
+  .ora-prox .av{ width:26px; height:26px; font-size:10px; flex:none; }
+  @media (max-width:1100px){ .ora-main{ grid-template-columns:1fr; } .ora-side{ position:static; } .ora-sp{ display:none; } }
+  @media (max-width:640px){ .ora-grid{ grid-auto-rows:minmax(70px,auto); } .ora-ev .av{ display:none; } .ora-ev{ font-size:10.5px; padding:2px 4px; } .ora-busca{ width:100%; } .ora-title{ min-width:0; flex:1; } }
+
   /* ===== Dados do projeto ===== */
   .dp-bar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0 0 14px; }
   .dp-busca,.dp-sel{ font:inherit; font-size:14px; padding:9px 12px; border:1px solid var(--linha); border-radius:10px; background:#fff; color:var(--texto); }
@@ -4512,7 +4591,7 @@
 
   /* ===== Módulos (Orçamentos no topo) ===== */
   const MODULES = [
-    {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Lista de Orçamentos'}, {label:'Kanban de Orçamentos'}, {label:'Cronograma de Medição'}, {label:'Dados do projeto'}, {label:'Pasta de produção'}, {label:'Mapa'} ]},
+    {id:'orc', label:'Orçamentos', icon:I.orc, tree:[ {label:'Lista de Orçamentos'}, {label:'Kanban de Orçamentos'}, {label:'Agenda'}, {label:'Cronograma de Medição'}, {label:'Dados do projeto'}, {label:'Pasta de produção'}, {label:'Mapa'} ]},
     {id:'pcp', label:'PCP', icon:I.pcp, tree:[
       {label:'Solicitações', children:['Solicitação Armazém (SA)','Solicitação de Compras (SC)','Solicitação de Acessórios (ACE)','Solicitações de fita','Histórico de simulações de fita','Simulação de Estoque']},
       {label:'Ordens de Produção', children:['Painel de Controle','Emissão de OP','Apontamento','Acompanhamento da Produção','Pendências de Pintura','Rendimento','Equipe Produtiva']},
@@ -4647,6 +4726,7 @@
     if(mod.id==='dev' && name==='Controle de usuários') return renderUsuarios();
     if(mod.id==='orc' && name==='Lista de Orçamentos') return renderClientes();
     if(mod.id==='orc' && name==='Kanban de Orçamentos') return renderOrcKanban();
+    if(mod.id==='orc' && name==='Agenda') return renderOrcAgenda();
     if(mod.id==='orc' && name==='Cronograma de Medição') return renderCronoMedicao();
     if(mod.id==='orc' && name==='Dados do projeto') return renderDadosProj();
     if(mod.id==='orc' && name==='Pasta de produção') return renderPastaProd();
@@ -4896,6 +4976,7 @@
   const IC_PESSOA='<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/></svg>';
   const IC_FONE='<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>';
   const IC_CASA='<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>';
+  const IC_CAL='<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
   const IC_NOTA='<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6Z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>';
   function secCli(ic,titulo,sub,corpo){
     return `<section class="clf-sec"><header class="clf-sh"><span class="clf-ic">${ic}</span><div><h3>${titulo}</h3><p>${sub}</p></div></header>${corpo}</section>`;
@@ -4963,6 +5044,11 @@
           </div>
         </div>`)}
 
+        ${secCli(IC_CAL,'Prazos do orçamento','Quando o orçamento foi pedido e quando deve ser entregue',`<div class="grid">
+          ${cfield('dataSolicitacao','Data de solicitação do orçamento',c.dataSolicitacao,{type:'date',span:2})}
+          ${cfield('dataEntregaOrc','Data de entrega do orçamento',c.dataEntregaOrc,{type:'date',span:2})}
+        </div>`)}
+
         ${secCli(IC_NOTA,'Informações adicionais','Origem do contato e anotações',`<div class="grid">
           ${selectOrigem(c.origem)}
           <div class="fld full"><label>Observações</label><textarea name="obs" placeholder="Preferências do cliente, prazos, detalhes do projeto...">${esc(c.obs)}</textarea></div>
@@ -4991,6 +5077,7 @@
     const f=document.getElementById('formCliente'); const g=n=>f[n]?f[n].value.trim():'';
     if(!g('cliente1')){ toast('Informe o Cliente 1'); f.cliente1.focus(); return; }
     if(!g('whatsapp')){ toast('Informe o WhatsApp'); f.whatsapp.focus(); return; }
+    if(g('dataSolicitacao') && g('dataEntregaOrc') && g('dataEntregaOrc')<g('dataSolicitacao')){ toast('A entrega do orçamento não pode ser antes da solicitação'); f.dataEntregaOrc.focus(); return; }
     const anterior=clienteEditId?CLIENTES.find(x=>x.id===clienteEditId):null;
     const data=Object.assign({}, anterior||{}, {
       id: clienteEditId || ('c'+Date.now()),
@@ -5000,6 +5087,7 @@
       cep:g('cep'), endereco:g('endereco'), numero:g('numero'), complemento:g('complemento'),
       edificio:g('edificio'), bairro:g('bairro'), cidade:g('cidade'), uf:g('uf').toUpperCase(), referencia:g('referencia'),
       origem:g('origem'), obs:g('obs'),
+      dataSolicitacao:g('dataSolicitacao'), dataEntregaOrc:g('dataEntregaOrc'),
       consultorId:g('consultor'), consultor:((EQUIPE.find(x=>x.id===g('consultor'))||{}).nome)||'',
       lat:g('lat')||'', lng:g('lng')||'',
       criadoEm: anterior&&anterior.criadoEm ? anterior.criadoEm : new Date().toISOString()
@@ -5457,6 +5545,118 @@
     const y=w.scrollTop, r=cmCorpo(); w.innerHTML=r.html; w.scrollTop=y;
     const k=document.getElementById('cmKpis'); if(k) k.innerHTML=r.kpis;
   }
+
+
+  /* ===== Agenda (Orçamentos) =====
+     Calendário com as datas gravadas no cadastro do cliente: dataSolicitacao e dataEntregaOrc. Consultor e ambientes vêm do próprio cliente. */
+  let ORA=null;
+  const ORA_MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const ORA_DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const ORA_DIAS_L=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  const ORA_SVG_L='<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>', ORA_SVG_R='<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>';
+  function oraIso(y,m,d){ return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'); }
+  function oraHoje(){ const d=new Date(); return oraIso(d.getFullYear(),d.getMonth(),d.getDate()); }
+  function oraMais(iso,n){ const p=iso.split('-').map(Number), d=new Date(p[0],p[1]-1,p[2]+n); return oraIso(d.getFullYear(),d.getMonth(),d.getDate()); }
+  function oraDiff(a,b){ const pa=a.split('-').map(Number), pb=b.split('-').map(Number); return Math.round((new Date(pa[0],pa[1]-1,pa[2])-new Date(pb[0],pb[1]-1,pb[2]))/86400000); }
+  function oraFmt(iso){ if(!/^\d{4}-\d{2}-\d{2}$/.test(iso||'')) return '—'; const p=iso.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+  function oraOk(iso){ return /^\d{4}-\d{2}-\d{2}$/.test(iso||''); }
+  function oraRel(iso,hoje){
+    const d=oraDiff(iso,hoje);
+    if(d===0) return {t:'Hoje',cls:'hj'}; if(d===1) return {t:'Amanhã',cls:'fut'};
+    if(d>1) return {t:'Em '+d+' dias',cls:'fut'}; return {t:'Há '+(-d)+' dia'+(d<-1?'s':''),cls:''};
+  }
+  function oraEventos(){
+    const out=[], q=normTxt(ORA.q);
+    CLIENTES.forEach(c=>{
+      const f=consultorDe(c);
+      if(ORA.cons && !(f&&f.id===ORA.cons)) return;
+      const nome=nomeCli(c); if(q && !normTxt(nome).includes(q)) return;
+      const base={c,nome,cons:consultorNome(c),user:consultorUsuario(c),amb:ambDoCliente(c).length};
+      if(oraOk(c.dataSolicitacao)) out.push(Object.assign({tipo:'sol',data:c.dataSolicitacao},base));
+      if(oraOk(c.dataEntregaOrc))  out.push(Object.assign({tipo:'ent',data:c.dataEntregaOrc},base));
+    });
+    return out;
+  }
+  function oraCard(e,hoje){
+    const ent=e.tipo==='ent', c=e.c, rel=ent?oraRel(e.data,hoje):null;
+    return `<div class="ora-card ${e.tipo}">
+      <div class="ora-ct"><span class="ora-pill">${ent?'Entrega do orçamento':'Solicitação do orçamento'}</span>${rel?`<span class="ora-rel ${rel.cls}">${rel.t}</span>`:''}</div>
+      <div class="ora-cn">${escHtml(e.nome)}</div>
+      <div class="ora-dts"><div><small>Solicitado em</small><b>${oraFmt(c.dataSolicitacao)}</b></div><span class="ora-seta">→</span><div><small>Entrega</small><b>${oraFmt(c.dataEntregaOrc)}</b></div></div>
+      <div class="ora-cf"><div class="ora-cons">${avatarHtml(e.user,e.cons,'')}<span>${e.cons?escHtml(e.cons):'Sem consultor'}</span></div>
+        <span class="ora-amb">${IC_CASA}${e.amb} ambiente${e.amb===1?'':'s'}</span></div>
+      <button type="button" class="ora-open" onclick="editarCliente('${esc(c.id)}')">Abrir cliente</button>
+    </div>`;
+  }
+  function renderOrcAgenda(){
+    TELA='orcagenda';
+    if(!ORA){ const h=new Date(); ORA={ano:h.getFullYear(),mes:h.getMonth(),sel:oraHoje(),tipo:{sol:true,ent:true},cons:'',q:''}; }
+    view.innerHTML=`<div class="page page-wide clx ora">
+      <div class="page-head"><div><h1 class="page-title">Agenda</h1>
+        <p class="page-sub">Solicitações e entregas de orçamentos · datas do cadastro de clientes</p></div></div>
+      <div class="cli-kpis" id="oraKpis"></div>
+      <div class="ora-bar">
+        <div class="ora-nav"><button type="button" onclick="oraNav(-1)" title="Mês anterior">${ORA_SVG_L}</button><span class="ora-title" id="oraTitle"></span><button type="button" onclick="oraNav(1)" title="Próximo mês">${ORA_SVG_R}</button></div>
+        <button type="button" class="ora-hoje" onclick="oraIrHoje()">Hoje</button>
+        <span class="ora-sp"></span>
+        <input class="ora-busca" id="oraBusca" value="${esc(ORA.q)}" placeholder="Buscar cliente..." oninput="oraBusca(this.value)">
+        <select class="ora-sel" id="oraCons" onchange="oraConsSet(this.value)"></select>
+        <button type="button" class="ora-tg sol" id="oraTgSol" onclick="oraTipo('sol')"><i></i>Solicitações</button>
+        <button type="button" class="ora-tg ent" id="oraTgEnt" onclick="oraTipo('ent')"><i></i>Entregas</button>
+      </div>
+      <div class="ora-main"><div class="ora-cal" id="oraCal"></div><aside class="ora-side" id="oraSide"></aside></div></div>`;
+    oraAtualizar();
+  }
+  function oraAtualizar(){
+    const cal=document.getElementById('oraCal'); if(!cal){ renderOrcAgenda(); return; }
+    const hoje=oraHoje(), todos=oraEventos();
+    const porDia={};
+    todos.filter(e=>ORA.tipo[e.tipo]).forEach(e=>(porDia[e.data]=porDia[e.data]||[]).push(e));
+    Object.values(porDia).forEach(l=>l.sort((a,b)=>(a.tipo===b.tipo?0:(a.tipo==='ent'?-1:1))||a.nome.localeCompare(b.nome)));
+    // cabeçalho
+    document.getElementById('oraTitle').textContent=ORA_MESES[ORA.mes]+' '+ORA.ano;
+    document.getElementById('oraTgSol').classList.toggle('on',ORA.tipo.sol);
+    document.getElementById('oraTgEnt').classList.toggle('on',ORA.tipo.ent);
+    const sel=document.getElementById('oraCons');
+    if(sel && document.activeElement!==sel){
+      const mp={}; CLIENTES.forEach(c=>{ const f=consultorDe(c); if(f) mp[f.id]=f.nome; });
+      sel.innerHTML='<option value="">Todos os consultores</option>'+Object.entries(mp).sort((a,b)=>a[1].localeCompare(b[1])).map(([id,n])=>`<option value="${esc(id)}" ${ORA.cons===id?'selected':''}>${escHtml(n)}</option>`).join('');
+    }
+    // KPIs
+    const pref=ORA.ano+'-'+String(ORA.mes+1).padStart(2,'0'), lim=oraMais(hoje,6);
+    const nSol=todos.filter(e=>e.tipo==='sol'&&e.data.startsWith(pref)).length, nEnt=todos.filter(e=>e.tipo==='ent'&&e.data.startsWith(pref)).length;
+    const nHoje=todos.filter(e=>e.tipo==='ent'&&e.data===hoje).length, n7=todos.filter(e=>e.tipo==='ent'&&e.data>=hoje&&e.data<=lim).length;
+    document.getElementById('oraKpis').innerHTML=
+      `<span class="cli-kpi ro" style="--c:#4a6fa5">Solicitações no mês <b>${nSol}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#982424">Entregas no mês <b>${nEnt}</b></span>`
+      +`<span class="cli-kpi-sep"></span><span class="cli-kpi ro" style="--c:#982424">Entregas hoje <b>${nHoje}</b></span>`
+      +`<span class="cli-kpi ro" style="--c:#4b4b55">Entregas nos próximos 7 dias <b>${n7}</b></span>`;
+    // grade do mês (6 semanas)
+    const off=new Date(ORA.ano,ORA.mes,1).getDay(); let cel='';
+    for(let i=0;i<42;i++){
+      const dt=new Date(ORA.ano,ORA.mes,1-off+i), iso=oraIso(dt.getFullYear(),dt.getMonth(),dt.getDate()), ev=porDia[iso]||[], wd=dt.getDay();
+      const chips=ev.slice(0,3).map(e=>`<div class="ora-ev ${e.tipo}" title="${escHtml((e.tipo==='ent'?'Entrega':'Solicitação')+' · '+e.nome+(e.cons?' · '+e.cons:'')+' · '+e.amb+' amb.')}">${avatarHtml(e.user,e.cons,'')}<span class="t">${escHtml(e.nome)}</span></div>`).join('');
+      cel+=`<div class="ora-d ${dt.getMonth()!==ORA.mes?'out':''} ${wd===0||wd===6?'we':''} ${iso===hoje?'hoje':''} ${iso===ORA.sel?'sel':''}" onclick="oraSel('${iso}')">
+        <span class="ora-n">${dt.getDate()}</span>${chips}${ev.length>3?`<span class="ora-mais">+${ev.length-3} mais</span>`:''}</div>`;
+    }
+    cal.innerHTML=`<div class="ora-wd">${ORA_DIAS.map(d=>`<span>${d}</span>`).join('')}</div><div class="ora-grid">${cel}</div>`;
+    // painel do dia + próximas entregas
+    const dia=porDia[ORA.sel]||[], p=ORA.sel.split('-').map(Number), dd=new Date(p[0],p[1]-1,p[2]);
+    const prox=todos.filter(e=>e.tipo==='ent'&&e.data>=hoje).sort((a,b)=>a.data.localeCompare(b.data)||a.nome.localeCompare(b.nome)).slice(0,5);
+    document.getElementById('oraSide').innerHTML=
+      `<div class="ora-box"><div class="ora-sh"><h3>${ORA_DIAS_L[dd.getDay()]}, ${p[2]} de ${ORA_MESES[p[1]-1].toLowerCase()}</h3>${ORA.sel===hoje?'<small>Hoje</small>':''}</div>`
+      +`<div class="ora-lista">${dia.length?dia.map(e=>oraCard(e,hoje)).join(''):'<div class="ora-vazio"><b>Nada neste dia</b>Nenhuma solicitação ou entrega de orçamento.</div>'}</div></div>`
+      +`<div class="ora-box"><div class="ora-sh"><h3>Próximas entregas</h3></div>`
+      +(prox.length?prox.map(e=>{ const q=e.data.split('-'); return `<div class="ora-prox" onclick="oraSel('${e.data}')"><div class="ora-dia"><b>${q[2]}</b><span>${ORA_MESES[+q[1]-1].slice(0,3)}</span></div>`
+        +`<div class="ora-pn">${escHtml(e.nome)}<small>${e.cons?escHtml(e.cons):'Sem consultor'} · ${e.amb} amb.</small></div>${avatarHtml(e.user,e.cons,'')}</div>`; }).join('')
+        :'<div class="ora-vazio">Nenhuma entrega agendada.</div>')+`</div>`;
+  }
+  function oraNav(d){ let m=ORA.mes+d, a=ORA.ano; if(m<0){ m=11; a--; } else if(m>11){ m=0; a++; } ORA.mes=m; ORA.ano=a; oraAtualizar(); }
+  function oraIrHoje(){ const h=new Date(); ORA.ano=h.getFullYear(); ORA.mes=h.getMonth(); ORA.sel=oraHoje(); oraAtualizar(); }
+  function oraSel(iso){ ORA.sel=iso; const p=iso.split('-').map(Number); ORA.ano=p[0]; ORA.mes=p[1]-1; oraAtualizar(); }
+  function oraTipo(t){ const o=t==='sol'?'ent':'sol'; if(ORA.tipo[t]&&!ORA.tipo[o]) return; ORA.tipo[t]=!ORA.tipo[t]; oraAtualizar(); }
+  function oraBusca(v){ ORA.q=v||''; oraAtualizar(); }
+  function oraConsSet(v){ ORA.cons=v||''; oraAtualizar(); }
 
 
   /* ===== Dados do projeto =====
@@ -6106,7 +6306,7 @@
     document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ pqFecharMenu(); if(PQD) pqDividirFechar(); } });
   })();
 
-  Object.assign(window,{renderPastaProd,pqOver,pqLeave,pqDrop,pqAtualizar,pqDivN,pqDividir,pqDividirFechar,renderCronoMedicao,cmAlternar,cmAtualizar,anxVer,anxNav,anxFechar,anxClique,anxVerCli,renderOrcKanban,okDragStart,okDragEnd,okDragOver,okDragLeave,okDrop,atualizarClientes,atualizarOuRenderClientes,limparFiltrosCli,alternarFavoritoCliente,
+  Object.assign(window,{renderOrcAgenda,oraAtualizar,oraNav,oraIrHoje,oraSel,oraTipo,oraBusca,oraConsSet,renderPastaProd,pqOver,pqLeave,pqDrop,pqAtualizar,pqDivN,pqDividir,pqDividirFechar,renderCronoMedicao,cmAlternar,cmAtualizar,anxVer,anxNav,anxFechar,anxClique,anxVerCli,renderOrcKanban,okDragStart,okDragEnd,okDragOver,okDragLeave,okDrop,atualizarClientes,atualizarOuRenderClientes,limparFiltrosCli,alternarFavoritoCliente,
     atualizarHeroCliente,toggleFavForm,filtrarClientes,renderClientes,renderClienteForm,salvarCliente,fCli});
 
   /* ===== Máscaras / CEP ===== */
@@ -7262,7 +7462,7 @@
   function ligarListeners(){
     if(listenersAtivos) return; listenersAtivos=true;
     ligarListenersDesig();
-    db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') atualizarOuRenderClientes(); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='mapa') atualizarMapa(); else if(TELA==='dadosproj') dpAtualizar(); },
+    db.ref('clientes').on('value',s=>{ CLIENTES=objParaArray(s); if(TELA==='clientes') atualizarOuRenderClientes(); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='orcagenda') oraAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='mapa') atualizarMapa(); else if(TELA==='dadosproj') dpAtualizar(); },
       e=>toast('Erro de leitura: '+e.message));
     db.ref('projetos').on('value',s=>{ PROJETOS=objParaArray(s); if(TELA==='projetos') renderDados(); },
       e=>toast('Erro de leitura: '+e.message));
@@ -7321,10 +7521,10 @@
         renderPainel(); if(r!=null){ const e2=document.querySelector(`.pl-in[data-r="${r}"][data-c="${c}"]`); if(e2) e2.focus({preventScroll:true}); } } else if(TELA==='pend-pint') renderPendPint(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     oriLigarDb(); dinaLigarDb(); bomLigar();
     db.ref('usuarios').on('value',s=>{ USUARIOS=Object.values(s.val()||{}).filter(u=>u&&u.email).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
+      atualizarAvatarTopo(); if(TELA==='usuarios') renderUsuarios(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='orcagenda') oraAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); else if(TELA==='rend') renderRendimento(); else if(TELA==='apont'){ const bi=document.getElementById('bipIn'); if(!(bi&&bi.value)) renderApont(); } },
       e=>console.warn('usuarios:',e.message));
     db.ref('equipe').on('value',s=>{ EQUIPE=Object.values(s.val()||{}).sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||'')));
-      if(TELA==='equipe') renderEquipe(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
+      if(TELA==='equipe') renderEquipe(); else if(TELA==='clientes') atualizarClientes(true); else if(TELA==='orckanban') okAtualizar(); else if(TELA==='cronomed') cmAtualizar(); else if(TELA==='orcagenda') oraAtualizar(); else if(TELA==='pastaprod') pqAtualizar(); else if(TELA==='desig'||TELA==='desig-gav') desigAtualizar(); });
     db.ref('ops').on('value',s=>{ OPS=Object.values(s.val()||{}).sort((a,b)=>String(b.numero||'').localeCompare(String(a.numero||'')));
       resumoCarregado.ops=true; sincronizarResumoTela();
       if(TELA==='ops') renderOPs(); else if(TELA==='ori-det') oriAtualizarOPBar(); else if(TELA==='apont') renderApont();
@@ -19257,6 +19457,7 @@ const HM_ICONS={
  'Lista de Orçamentos':'<circle class=a cx=10 cy=8 r=3.5 /><path class=a d="M3.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><path class=c d="M19 4v5M16.5 6.5h5"/>',
  'Dados do projeto':'<path class=a d="M7 3h7l4 4v14H7z"/><path class=b d="M14 3v4h4"/><path class=c d="M10 12l1.6 1.6L14.5 10.5M10 17h5"/>',
  'Pasta de produção':'<path class=a d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path class=b d="M9 14l2 2 4-4"/>',
+ 'Agenda':'<rect class=a x=3 y=5 width=18 height=16 rx=2 /><path class=b d="M3 10h18M8 3v4M16 3v4"/><circle class=c cx=12 cy=15.5 r=2 />',
  'Cronograma de Medição':'<rect class=a x=3 y=5 width=18 height=16 rx=2 /><path class=b d="M3 10h18M8 3v4M16 3v4"/><path class=c d="M7 14h4M7 17.5h7"/>',
  'Kanban de Orçamentos':'<rect class=a x=3 y=4 width=5 height=16 rx=1.5 /><rect class=b x=10 y=4 width=5 height=10 rx=1.5 /><rect class=c x=17 y=4 width=4 height=7 rx=1.5 />',
  'Mapa':'<path class=a d="M12 21s-6-5.5-6-11a6 6 0 0112 0c0 5.5-6 11-6 11z"/><circle class=c cx=12 cy=10 r=2.2 />',
