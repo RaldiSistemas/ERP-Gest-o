@@ -1308,6 +1308,13 @@
     background:var(--surface); font-variant-numeric:tabular-nums; }
   .ltc-in input:focus{ outline:2px solid var(--vermelho); outline-offset:-1px; border-color:transparent; }
   .ltc-in span{ font-size:12px; font-weight:700; color:var(--muted); width:12px; }
+  /* terminar em (data/hora → horas de trabalho) */
+  .ltc-dt{ display:flex; align-items:center; gap:8px; flex:0 0 auto; }
+  .ltc-dt label{ font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+  .ltc-dt input{ font:inherit; font-size:12.5px; padding:7px 9px; border:1px solid var(--linha);
+    border-radius:8px; color:var(--texto); background:var(--surface); }
+  .ltc-dt input:focus{ outline:2px solid var(--vermelho); outline-offset:-1px; border-color:transparent; }
+  .ltc-dt.set input{ border-color:#c9e3d2; background:#f8fcf9; }
   .lt-tag{ display:inline-block; font-size:11px; font-weight:700; color:#1f7a3d;
     background:#e8f6ec; border:1px solid #c3e4ce; padding:3px 9px; border-radius:999px; }
   .lt-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; }
@@ -14256,6 +14263,12 @@
     const h=r?Number(r.horas):NaN;
     return (isFinite(h)&&h>0)?h:null;
   }
+  // data/hora-alvo informada no cadastro (só informativa: o que vale para o cronômetro são as horas)
+  function leadAte(projeto,atividade){
+    const p=LEADS[ltSlug(projeto)]; if(!p) return null;
+    const r=p[ltSlug(atividade)];
+    return (r&&r.ate&&Number(r.horas)>0)?r.ate:null;
+  }
   // OP de lote vale para vários projetos: usa o maior prazo cadastrado entre eles
   function leadMinOP(o){
     if(!o||!o.atividade) return null;
@@ -18471,19 +18484,65 @@ function chkMontHtml(c){
         <section class="fs" style="margin-bottom:14px">
           <h3 class="fs-title" style="color:${S.cor}">${S.sigla} — ${escHtml(S.nome)}${S.tipo==='lote'?' <i class="tag-lote">por lote</i>':''}</h3>
           <div class="ltc-l">${itens.map(({a,i})=>{
-            const h=leadHoras(proj,a.atividade), op=ltOpDoRegistro(reg,a), L=op?leadStatus(op):null;
+            const h=leadHoras(proj,a.atividade), op=ltOpDoRegistro(reg,a), L=op?leadStatus(op):null, ate=leadAte(proj,a.atividade);
             return `<div class="ltc-i ${h!=null?'on':''}">
               <div class="ltc-n"><b>${escHtml(a.atividade)}</b>
                 <span>${op?(ST_OP[stOp(op)].label+' · OP '+escHtml(op.numero||'')
                             +(op.tempoMin?' · '+fmtMin(op.tempoMin):'')):'OP não emitida'}</span></div>
               ${L?htmlLeadMini(op):''}
+              ${(op&&stOp(op)==='encerrada')?'':`<div class="ltc-dt ${(h!=null&&ate)?'set':''}"
+                title="Escolha quando a atividade deve terminar: o sistema converte em horas de trabalho (jornada, intervalos, fins de semana e feriados)">
+                <label>Terminar em</label>
+                <input class="lt-inp" type="datetime-local" value="${ate?ltDTLocal(ate):''}"
+                  onchange="ltSalvarPorData('${reg.id}',${i},this.value)"></div>`}
               <div class="ltc-in">
-                <input class="lt-inp" type="number" min="0" step="0.25" inputmode="decimal"
-                  value="${h!=null?h:''}" placeholder="—"
+                <input class="lt-inp" type="number" min="0" step="any" inputmode="decimal"
+                  value="${h!=null?(Math.round(h*100)/100):''}" placeholder="—"
                   onchange="ltSalvar('${reg.id}',${i},this.value)"><span>h</span></div>
             </div>`;}).join('')}</div>
         </section>`).join('')}
     </div>`;
+  }
+
+  // ISO → valor de <input type="datetime-local"> no horário local
+  function ltDTLocal(iso){
+    const d=new Date(iso); if(isNaN(d)) return '';
+    const p=n=>String(n).padStart(2,'0');
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
+  }
+  /* Define o prazo pela DATA/HORA em que a atividade deve terminar.
+     horas = o que a OP já trabalhou + o expediente que existe entre AGORA e a data-alvo
+     (usa a mesma jornada, intervalos, dias úteis e feriados do cronômetro). */
+  function ltSalvarPorData(regId,idx,val){
+    const reg=PAINEL.find(r=>r.id===regId); if(!reg) return;
+    const a=todasAtividades()[idx]; if(!a) return;
+    const proj=String(reg.projeto||'').trim();
+    if(!proj){ toast('Esta linha do painel não tem projeto'); renderLead(); return; }
+    const ref=db.ref('leadtimes/'+ltSlug(proj)+'/'+ltSlug(a.atividade));
+    if(!val){                                   // limpou a data: mantém as horas, tira só a meta
+      if(leadAte(proj,a.atividade)) ref.child('ate').remove().then(()=>toast('Data-alvo removida'));
+      return;
+    }
+    const alvo=new Date(val), agora=new Date();
+    if(isNaN(alvo)){ toast('Data inválida'); renderLead(); return; }
+    if(alvo<=agora){ toast('Escolha uma data e hora no futuro'); renderLead(); return; }
+    const op=ltOpDoRegistro(reg,a);
+    const jor=(op&&op.jornada)||JORNADA_PADRAO;
+    const gasto=(op&&stOp(op)!=='nao')?tempoTotalOP(op,agora.toISOString(),true):0;
+    const resta=tempoTrabalhado(agora.toISOString(),alvo.toISOString(),jor,true);
+    if(resta<=0){
+      toast('Não há expediente entre agora e essa data (fim de semana, feriado ou fora da jornada)');
+      renderLead(); return;
+    }
+    const totMin=Math.round(gasto+resta);
+    const horas=Math.round(totMin/60*10000)/10000;
+    const ae=document.activeElement; if(ae&&ae.blur) ae.blur();   // libera o re-render da tela
+    ref.set({projeto:proj, atividade:a.atividade, setor:a.setor, horas, ate:alvo.toISOString(),
+      por:usuarioAtual(), em:agora.toISOString()})
+      .then(()=>toast(a.atividade+' — '+fmtMin(totMin)+' de trabalho até '
+        +alvo.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '
+        +alvo.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})))
+      .catch(e=>toast('Erro: '+e.message));
   }
 
   function ltSalvar(regId,idx,val){
