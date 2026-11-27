@@ -3005,6 +3005,11 @@
   .ace-foto[data-t="x"] .ace-foto-th img,.ace-foto[data-t="xg"] .ace-foto-th img,.ace-foto[data-t="fi"] .ace-foto-th img{ width:82px; height:62px; }
   .ace-foto-x{ position:absolute; top:-6px; right:-6px; width:17px; height:17px; border-radius:50%; border:0; background:var(--vermelho);
     color:#fff; font-size:13px; line-height:17px; cursor:pointer; padding:0; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+  .ace-fotos{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; }
+  .ace-foto-bts.mais .ace-foto-add{ width:26px; height:26px; }
+  .ace-foto-bts.mais .ace-foto-add svg{ width:15px; height:15px; }
+  .itc-foto{ position:relative; }
+  .itc-mais{ position:absolute; right:3px; bottom:3px; background:rgba(0,0,0,.72); color:#fff; font:700 10px/1 'Archivo',sans-serif; padding:2px 5px; border-radius:8px; pointer-events:none; }
   .ace-foto-env{ font-size:11px; color:var(--muted); }
   .ace-tam{ display:inline-flex; border:1px solid var(--linha); border-radius:7px; overflow:hidden; background:#fff; }
   .ace-tam button{ border:0; background:transparent; padding:3px 0; width:17px; font:600 9px/1 'Archivo',sans-serif; color:var(--muted); cursor:pointer; border-right:1px solid var(--linha); }
@@ -3241,6 +3246,7 @@
   .fl-tbl td.fl-desc{ font-weight:600; }
   .fl-tbl td.fl-foto{ text-align:center; padding:2px; }
   .fl-tbl td.fl-foto img{ display:block; margin:0 auto; max-width:100%; max-height:70px; object-fit:contain; }
+  .fl-tbl td.fl-foto img+img{ margin-top:3px; }
   .fl-tbl td.fl-foto img.t-m{ max-height:110px; }
   .fl-tbl td.fl-foto img.t-g{ max-height:150px; }
   .fl-tbl td.fl-foto img.t-x{ max-height:200px; }
@@ -7064,6 +7070,15 @@
                   xg:{l:'XG',n:'Gigante (linha própria)', alt:300, col:0, w:1600},   // xg: a foto vai para uma linha abaixo do item, em largura total
                   fi:{l:'<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M1 1h8v10H1z"/></svg>',n:'Folha inteira', alt:0, col:0, w:1800} };   // fi: a foto ocupa uma folha inteira no PDF
   function aceTam(it){ return (it && ACE_TAM[it.fotoTam]) ? it.fotoTam : 'm'; }
+  /* Fotos do item: it.foto é a principal e it.fotos guarda as extras (todas usam o mesmo tamanho, it.fotoTam) */
+  function aceFotosDe(it){
+    const l=[]; if(!it) return l;
+    if(aceUrl(it.foto)) l.push(String(it.foto));
+    const ex=Array.isArray(it.fotos)?it.fotos:Object.values(it.fotos||{});
+    ex.forEach(u=>{ if(aceUrl(u)) l.push(String(u)); });
+    return l;
+  }
+  function aceMaisBadge(it){ const n=aceFotosDe(it).length; return n>1?`<span class="itc-mais">+${n-1}</span>`:''; }
   function aceFotoPdf(u,t){ return String(u).replace('/upload/','/upload/w_'+ACE_TAM[t||'m'].w+',c_limit,q_auto/'); }
   function aceFotoGrande(u){ return String(u).replace('/upload/','/upload/w_1600,c_limit,q_auto,f_auto/'); }   // visualizador
   function aceFotoBaixar(u){ return String(u).replace('/upload/','/upload/fl_attachment/'); }                // baixa sem sair do sistema
@@ -7076,10 +7091,12 @@
     if(aceFotoPend.has(it)) return '<div class="ace-foto"><span class="ace-foto-env">Enviando…</span></div>';
     const dnd=`ondragover="event.preventDefault();this.classList.add('arrasta')" ondragleave="this.classList.remove('arrasta')" ondrop="aceFotoSolta(event,${i})"`;
     if(it.foto && aceUrl(it.foto)){
-      const t=aceTam(it);
-      return `<div class="ace-foto" data-t="${t}" tabindex="0" title="Clique aqui e use Ctrl+V para trocar a foto por um print" ${dnd}><span class="ace-foto-th">
-        <button type="button" class="ace-foto-img" title="Ampliar foto" onclick="aceFotoAbrir('form',${i})"><img src="${aceUrl(desigThumb(it.foto))}" alt="Foto do item" loading="lazy"></button>
-        <button type="button" class="ace-foto-x" title="Remover foto" onclick="aceFotoRem(${i})">×</button></span>
+      const t=aceTam(it), fl=aceFotosDe(it);
+      return `<div class="ace-foto" data-t="${t}" tabindex="0" title="Clique aqui e use Ctrl+V para adicionar mais uma foto (print)" ${dnd}><div class="ace-fotos">${fl.map((u,n)=>`<span class="ace-foto-th">
+        <button type="button" class="ace-foto-img" title="Ampliar foto" onclick="aceFotoAbrir('form',${i},${n})"><img src="${aceUrl(desigThumb(u))}" alt="Foto do item" loading="lazy"></button>
+        <button type="button" class="ace-foto-x" title="Remover esta foto" onclick="aceFotoRem(${i},${n})">×</button></span>`).join('')}
+        <span class="ace-foto-bts mais"><button type="button" class="ace-foto-add" title="Adicionar outra foto (enviar arquivo)" onclick="aceFotoMais(${i})">${ACE_CAM_SVG}</button>
+        <button type="button" class="ace-foto-add ace-foto-colar" title="Adicionar outra foto colando um print (da área de transferência)" onclick="aceFotoColar(${i})">${ACE_PASTE_SVG}</button></span></div>
         <span class="ace-xg-nota n-xg">↓ linha abaixo</span><span class="ace-xg-nota n-fi">folha inteira</span>
         <div class="ace-tam" title="Tamanho da foto na solicitação">${Object.keys(ACE_TAM).map(k=>`<button type="button" data-k="${k}" class="${k===t?'on':''}" title="Foto ${ACE_TAM[k].n.toLowerCase()} na solicitação${k==='fi'?' (ocupa uma folha inteira no PDF)':''}" onclick="aceFotoTam(${i},'${k}',this)">${ACE_TAM[k].l}</button>`).join('')}</div></div>`;
     }
@@ -7093,23 +7110,31 @@
     const box=btn.closest('.ace-foto'); if(!box) return;
     box.dataset.t=k; box.querySelectorAll('.ace-tam button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
   }
+  let aceFotoMaisFlag=false;
   function aceFotoEscolher(i){
     const it=ace&&ace.itens[i]; if(!it) return;
-    aceFotoAlvo=it; const f=document.getElementById('aceFotoFile'); if(f) f.click();
+    aceFotoAlvo=it; aceFotoMaisFlag=false; const f=document.getElementById('aceFotoFile'); if(f) f.click();
+  }
+  function aceFotoMais(i){
+    const it=ace&&ace.itens[i]; if(!it) return;
+    aceFotoAlvo=it; aceFotoMaisFlag=true; const f=document.getElementById('aceFotoFile'); if(f) f.click();
   }
   function aceFotoEnviar(inp){
     const f=inp.files&&inp.files[0]; inp.value='';
-    const it=aceFotoAlvo; aceFotoAlvo=null;
+    const it=aceFotoAlvo, mais=aceFotoMaisFlag; aceFotoAlvo=null; aceFotoMaisFlag=false;
     if(!f||!it) return;
-    return aceFotoProcessar(it,f);
+    return aceFotoProcessar(it,f,mais);
   }
-  async function aceFotoProcessar(it,f){
+  async function aceFotoProcessar(it,f,mais){
     if(!f||!it) return;
     if(!/^image\//.test(f.type)){ toast('Selecione um arquivo de imagem'); return; }
     aceFotoPend.add(it); aceKeep(renderACEForm);
     try{
       const blob=await desigPrepararFoto(f);              // lado maior até 1800 px, JPEG 82%
-      it.foto=await desigCloud(blob,'acessorio.jpg'); if(!ACE_TAM[it.fotoTam]) it.fotoTam='m';
+      const url=await desigCloud(blob,'acessorio.jpg');
+      if(mais && aceUrl(it.foto)){ const ex=aceFotosDe(it).slice(1); ex.push(url); it.fotos=ex; }
+      else it.foto=url;
+      if(!ACE_TAM[it.fotoTam]) it.fotoTam='m';
       toast('Foto anexada');
     }catch(e){ toast('Erro ao enviar a foto: '+(e&&e.message?e.message:e)); }
     aceFotoPend.delete(it);
@@ -7126,8 +7151,7 @@
   document.addEventListener('mousedown',e=>{ const i=aceRowDoEl(e.target); if(i>=0) aceRowSet(i); },true);
   function aceFotoColarArq(f,idx){
     const it=ace&&ace.itens[idx]; if(!it){ toast('Clique na linha do item e cole de novo (Ctrl+V)'); return; }
-    if(it.foto && !confirm('Este item já tem foto. Substituir pelo print colado?')) return;
-    return aceFotoProcessar(it,f);
+    return aceFotoProcessar(it,f,!!aceUrl(it.foto));      // já tem foto: a nova entra como mais uma (para tirar uma, use o × dela)
   }
   document.addEventListener('paste',e=>{
     if(TELA!=='form' || !ace) return;
@@ -7183,7 +7207,14 @@
   }
   let aceResizeT=null;
   window.addEventListener('resize',()=>{ if(TELA!=='form') return; clearTimeout(aceResizeT); aceResizeT=setTimeout(aceAutoTodas,120); });
-  function aceFotoRem(i){ if(!ace||!ace.itens[i]) return; ace.itens[i].foto=''; delete ace.itens[i].fotoTam; aceKeep(renderACEForm); }
+  function aceFotoRem(i,n){
+    const it=ace&&ace.itens[i]; if(!it) return;
+    const l=aceFotosDe(it); l.splice(n||0,1);
+    it.foto=l[0]||''; it.fotos=l.slice(1);
+    if(!it.fotos.length) delete it.fotos;
+    if(!l.length) delete it.fotoTam;
+    aceKeep(renderACEForm);
+  }
   function aceFotoEnviando(){ return !!(ace && ace.itens.some(i=>aceFotoPend.has(i))); }
 
   /* --- visualizador de fotos (dentro do sistema, sem abrir link externo) ---
@@ -7198,9 +7229,9 @@
     const a=ACES.find(x=>x.id===ctx);
     return a?aceLista(a).map(o=>o.it):[];
   }
-  function aceFotoAbrir(ctx,i){
-    const lista=aceFotoBase(ctx).map((it,ix)=>({it,ix})).filter(o=>aceUrl(o.it.foto));
-    const k=lista.findIndex(o=>o.ix===i); if(k<0) return;
+  function aceFotoAbrir(ctx,i,n){
+    const lista=[]; aceFotoBase(ctx).forEach((it,ix)=>aceFotosDe(it).forEach((u,pn,arr)=>lista.push({it,ix,u,pn,tot:arr.length})));
+    const k=lista.findIndex(o=>o.ix===i && o.pn===(n||0)); if(k<0) return;
     aceLb={lista,k,zoom:false};
     let ov=document.getElementById('aceLb');
     if(!ov){
@@ -7219,7 +7250,7 @@
   function aceFotoDesenha(){
     const ov=document.getElementById('aceLb'); if(!ov||!aceLb) return;
     const {lista,k}=aceLb, it=lista[k].it, t=aceTam(it), n=lista.length;
-    const titulo=[it.codigo,it.produto].filter(s=>(s||'').trim()).join(' · ')||'Foto do item';
+    const ft=lista[k], titulo=([it.codigo,it.produto].filter(s=>(s||'').trim()).join(' · ')||'Foto do item')+(ft.tot>1?' ('+(ft.pn+1)+'/'+ft.tot+')':'');
     const det=[it.local&&'Local: '+it.local, it.cor&&'Cor: '+it.cor, it.qtde&&'Qtde: '+it.qtde].filter(Boolean).join('   ·   ');
     ov.innerHTML=`
       <div class="ace-lb-top">
@@ -7227,12 +7258,12 @@
         <div class="ace-lb-tools">
           ${n>1?`<span class="ace-lb-cnt">${k+1} / ${n}</span>`:''}
           <button type="button" class="ace-lb-btn" title="Ampliar / ajustar (Z)" onclick="aceFotoZoom()">${LB_SVG.zoom}</button>
-          <a class="ace-lb-btn" href="${aceUrl(aceFotoBaixar(it.foto))}" download title="Baixar foto">${LB_SVG.down}</a>
+          <a class="ace-lb-btn" href="${aceUrl(aceFotoBaixar(ft.u))}" download title="Baixar foto">${LB_SVG.down}</a>
           <button type="button" class="ace-lb-btn fechar" title="Fechar (Esc)" onclick="aceFotoFechar()">${LB_SVG.x}</button>
         </div>
       </div>
       <div class="ace-lb-stage">
-        <img src="${aceUrl(aceFotoGrande(it.foto))}" alt="${escHtml(titulo)}" onclick="aceFotoZoom()" onload="this.classList.add('ok')" onerror="this.classList.add('ok');this.alt='Não foi possível carregar a foto'">
+        <img src="${aceUrl(aceFotoGrande(ft.u))}" alt="${escHtml(titulo)}" onclick="aceFotoZoom()" onload="this.classList.add('ok')" onerror="this.classList.add('ok');this.alt='Não foi possível carregar a foto'">
         <div class="ace-lb-load"></div>
       </div>
       ${n>1?`<button type="button" class="ace-lb-nav ant" title="Anterior (←)" onclick="aceFotoNav(-1)">&#8249;</button><button type="button" class="ace-lb-nav prox" title="Próxima (→)" onclick="aceFotoNav(1)">&#8250;</button>`:''}
@@ -7332,10 +7363,10 @@
   }
 
   /* --- PDF: partes da folha (tabela, foto em folha inteira, tabela...) --- */
-  function aceFolhaFotoHtml(it,ult){
+  function aceFolhaFotoHtml(it,ult,url,n,tot){
     const det=[it.local&&'Local: '+it.local, it.qtde&&'Qtde: '+it.qtde, it.dimensao&&'Dimensão: '+it.dimensao, it.cor&&'Cor: '+it.cor].filter(Boolean).join('   ·   ');
-    return `<div class="fl-fi${ult?' ult':''}"><div class="fl-fi-h"><b>Foto · ${escHtml(aceItemRotulo(it))}</b>${det?`<span>${escHtml(det)}</span>`:''}</div>
-      <div class="fl-fi-f"><img src="${aceUrl(aceFotoPdf(it.foto,'fi'))}" alt=""></div></div>`;
+    return `<div class="fl-fi${ult?' ult':''}"><div class="fl-fi-h"><b>Foto${tot>1?' '+(n+1)+'/'+tot:''} · ${escHtml(aceItemRotulo(it))}</b>${det?`<span>${escHtml(det)}</span>`:''}</div>
+      <div class="fl-fi-f"><img src="${aceUrl(aceFotoPdf(url||it.foto,'fi'))}" alt=""></div></div>`;
   }
   /* units: [{html, n, fi:item|null, cab:'<tr grupo>', first:bool}] — a foto "Folha inteira" fecha a tabela, ocupa a página e a tabela recomeça depois */
   function aceFolhaPartes(units,tabela){
@@ -7343,7 +7374,7 @@
     units.forEach((u,ix)=>{
       if(u.cab && (u.first || !buf)) buf+=u.cab;
       buf+=u.html; un+=u.n;
-      if(u.fi){ out+=tabela(buf,false,un); buf=''; un=0; out+=aceFolhaFotoHtml(u.fi,ix===units.length-1); }
+      if(u.fi){ out+=tabela(buf,false,un); buf=''; un=0; u.fi.forEach((f,fx)=>{ out+=aceFolhaFotoHtml(f.it,ix===units.length-1&&fx===u.fi.length-1,f.u,fx,u.fi.length); }); }
     });
     if(buf || !out) out+=tabela(buf,true,un);
     return out;
@@ -7357,17 +7388,17 @@
     const catRot=catK==='__sem'?'Não categorizados':(cat?cat.label:'');
     tituloPedido(a.numero);
     const ordem=Object.keys(ACE_TAM);
-    const fi=it=>aceUrl(it.foto)&&aceTam(it)==='fi';        // Folha inteira: a foto ocupa uma página própria
-    const noCol=it=>aceUrl(it.foto)&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';     // foto dentro da coluna Foto
-    const abaixo=it=>aceUrl(it.foto)&&aceTam(it)==='xg';    // XG: foto numa linha própria, logo abaixo do item
+    const fi=it=>aceFotosDe(it).length>0&&aceTam(it)==='fi';        // Folha inteira: a foto ocupa uma página própria
+    const noCol=it=>aceFotosDe(it).length>0&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';     // foto dentro da coluna Foto
+    const abaixo=it=>aceFotosDe(it).length>0&&aceTam(it)==='xg';    // XG: foto numa linha própria, logo abaixo do item
     const tamMax=preenchidas.filter(noCol).reduce((m,i)=>ordem.indexOf(aceTam(i))>ordem.indexOf(m)?aceTam(i):m,'p');
     const larg=aceColsLarg(tamMax);
     const MIN=26;
-    const unidDe=it=>abaixo(it)?1+Math.round(ACE_TAM.xg.alt/16):noCol(it)?Math.max(1,Math.round(ACE_TAM[aceTam(it)].alt/16)):1;
-    const celFoto=it=>fi(it)?'<span class="fl-xg-ref">foto na folha seguinte</span>':abaixo(it)?'<span class="fl-xg-ref">↓ foto abaixo</span>':noCol(it)?`<img class="t-${aceTam(it)}" src="${aceUrl(aceFotoPdf(it.foto,aceTam(it)))}" alt="">`:'';
-    const units=preenchidas.map(it=>({ n:unidDe(it), fi:fi(it)?it:null,
+    const unidDe=it=>abaixo(it)?1+aceFotosDe(it).length*Math.round(ACE_TAM.xg.alt/16):noCol(it)?Math.max(1,aceFotosDe(it).length*Math.round(ACE_TAM[aceTam(it)].alt/16)):1;
+    const celFoto=it=>fi(it)?'<span class="fl-xg-ref">foto na folha seguinte</span>':abaixo(it)?'<span class="fl-xg-ref">↓ foto abaixo</span>':noCol(it)?aceFotosDe(it).map(u=>`<img class="t-${aceTam(it)}" src="${aceUrl(aceFotoPdf(u,aceTam(it)))}" alt="">`).join(''):'';
+    const units=preenchidas.map(it=>({ n:unidDe(it), fi:fi(it)?aceFotosDe(it).map(u=>({it,u})):null,
       html:`<tr class="${abaixo(it)?'fl-xg-pai':''}">${ACE_COLS.map(col=>col.foto?`<td class="ctr fl-foto">${celFoto(it)}</td>`:`<td class="${col.c?'ctr':''}${col.k==='codigo'?' fl-cod':''}${col.k==='produto'?' fl-desc':''}">${escHtml(it[col.k]||'')}</td>`).join('')}</tr>`
-        +(abaixo(it)?`<tr class="fl-xg"><td colspan="${ACE_COLS.length}"><div class="fl-xg-moldura"><img src="${aceUrl(aceFotoPdf(it.foto,'xg'))}" alt=""></div><div class="fl-xg-leg"><span>Foto · ${escHtml([it.codigo,it.produto].filter(v=>(v||'').trim()).join(' · ')||'item')}</span></div></td></tr>`:'') }));
+        +(abaixo(it)?aceFotosDe(it).map((u,n,arr)=>`<tr class="fl-xg"><td colspan="${ACE_COLS.length}"><div class="fl-xg-moldura"><img src="${aceUrl(aceFotoPdf(u,'xg'))}" alt=""></div><div class="fl-xg-leg"><span>Foto${arr.length>1?' '+(n+1)+'/'+arr.length:''} · ${escHtml([it.codigo,it.produto].filter(v=>(v||'').trim()).join(' · ')||'item')}</span></div></td></tr>`).join(''):'') }));
     const tabela=(body,ult,un)=>`<table class="fl-tbl">
           <colgroup>${ACE_COLS.map((c,ci)=>`<col style="width:${larg[ci]}">`).join('')}</colgroup>
           <thead><tr>${ACE_COLS.map(c=>`<th>${c.t}</th>`).join('')}</tr></thead>
@@ -7752,7 +7783,7 @@
       </div>
       <div class="table-wrap"><table class="tbl tbl-sol">
         <thead><tr><th>Cliente / Ambiente</th><th style="width:130px">Projeto / Lote</th><th style="width:150px">Consultor(a)</th><th style="width:92px">Data</th>
-          <th style="width:250px">Andamento dos itens</th><th style="width:96px"></th></tr></thead>
+          <th style="width:250px">Andamento dos itens</th><th style="width:140px"></th></tr></thead>
         <tbody id="aceEstBody">${linhasAceEst(aceSolEstLista())}</tbody></table></div>`;
   }
   function linhasAceEst(lista){
@@ -7765,7 +7796,7 @@
         <td>${escHtml(a.consultor)||'—'}</td>
         <td>${fmtData(a.data)}</td>
         <td>${progBarra(r)}<div class="cel-sub">${r.c.entregue}/${r.n} separados e entregues${r.c.pendente?` · ${r.c.pendente} pendente(s)`:''}</div></td>
-        <td class="acoes"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();verAce('${a.id}','est')">Abrir</button></td>
+        <td class="acoes"><button class="icon-btn" title="Imprimir / PDF (geral ou por categoria)" onclick="event.stopPropagation();imprimirACEPcp('${a.id}')">${FICHA_SVG}</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();verAce('${a.id}','est')">Abrir</button></td>
       </tr>`;
     }).join('');
   }
@@ -7820,7 +7851,7 @@
         <td><div class="cel-nome">${escHtml(it.produto)||'—'}</div>${det?`<div class="cel-sub">${escHtml(det)}</div>`:''}</td>
         <td class="ctr"><b>${escHtml(it.qtde)||'—'}</b> <span class="cel-sub">${escHtml(it.unidade)}</span></td>
         <td>${catTag(it,true)}</td>
-        <td>${aceUrl(it.foto)?`<button type="button" class="itc-foto mini" title="Ampliar foto" onclick="aceFotoAbrir('${escHtml(a.id)}',${o.pos})"><img src="${aceUrl(desigThumb(it.foto))}" alt="" loading="lazy"></button>`:'<span class="cat-vz">—</span>'}</td>
+        <td>${aceUrl(it.foto)?`<button type="button" class="itc-foto mini" title="Ampliar foto" onclick="aceFotoAbrir('${escHtml(a.id)}',${o.pos})"><img src="${aceUrl(desigThumb(it.foto))}" alt="" loading="lazy">${aceMaisBadge(it)}</button>`:'<span class="cat-vz">—</span>'}</td>
         <td><select class="st-sel st-sel-c" style="--c:${s.cor}" onchange="mudarStatusItens('${a.id}',['${o.ix}'],this.value)">
           ${Object.entries(ST_ITEM).map(([k,v])=>`<option value="${k}" ${o.st===k?'selected':''}>${v.label}</option>`).join('')}</select></td>
         <td class="acoes"><button class="icon-btn" title="Abrir solicitação" onclick="verAce('${a.id}','est')">${EYE_SVG}</button></td>
@@ -7895,14 +7926,14 @@
   function folhaACECat(k,lista){
     const cat=ACE_CATS[k];
     const ordem=Object.keys(ACE_TAM);
-    const fi=it=>aceUrl(it.foto)&&aceTam(it)==='fi';
-    const noCol=it=>aceUrl(it.foto)&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';
-    const abaixo=it=>aceUrl(it.foto)&&aceTam(it)==='xg';
+    const fi=it=>aceFotosDe(it).length>0&&aceTam(it)==='fi';
+    const noCol=it=>aceFotosDe(it).length>0&&aceTam(it)!=='xg'&&aceTam(it)!=='fi';
+    const abaixo=it=>aceFotosDe(it).length>0&&aceTam(it)==='xg';
     const tamMax=lista.filter(o=>noCol(o.it)).reduce((m,o)=>ordem.indexOf(aceTam(o.it))>ordem.indexOf(m)?aceTam(o.it):m,'p');
     const cols=ACE_COLS.slice(0,-1).concat([{k:'__st',t:'Status',w:'9%',c:1}],[ACE_COLS[ACE_COLS.length-1]]);
     const fw=ACE_TAM[tamMax].col, soma=cols.filter(c=>!c.foto).reduce((x,c)=>x+parseFloat(c.w),0), f=(100-fw)/soma;
     const larg=cols.map(c=>c.foto?fw+'%':(parseFloat(c.w)*f).toFixed(2)+'%');
-    const celFoto=it=>fi(it)?'<span class="fl-xg-ref">foto na folha seguinte</span>':abaixo(it)?'<span class="fl-xg-ref">↓ foto abaixo</span>':noCol(it)?`<img class="t-${aceTam(it)}" src="${aceUrl(aceFotoPdf(it.foto,aceTam(it)))}" alt="">`:'';
+    const celFoto=it=>fi(it)?'<span class="fl-xg-ref">foto na folha seguinte</span>':abaixo(it)?'<span class="fl-xg-ref">↓ foto abaixo</span>':noCol(it)?aceFotosDe(it).map(u=>`<img class="t-${aceTam(it)}" src="${aceUrl(aceFotoPdf(u,aceTam(it)))}" alt="">`).join(''):'';
     const grupos=[], mapa={};
     lista.forEach(o=>{ let g=mapa[o.a.id]; if(!g){ g=mapa[o.a.id]={a:o.a,itens:[]}; grupos.push(g); } g.itens.push(o); });
     const units=[];
@@ -7916,9 +7947,9 @@
           if(col.k==='__st') return `<td class="ctr fl-st"><b style="color:${s.cor}">${escHtml(s.label)}</b>${pr?'<span class="fl-pri">▲ PRIORIDADE</span>':''}</td>`;
           return `<td class="${col.c?'ctr':''}${col.k==='codigo'?' fl-cod':''}${col.k==='produto'?' fl-desc':''}">${escHtml(it[col.k]||'')}</td>`;
         }).join('');
-        units.push({ cab, first:gi===0, n:1, fi:fi(it)?it:null,
+        units.push({ cab, first:gi===0, n:1, fi:fi(it)?aceFotosDe(it).map(u=>({it,u})):null,
           html:`<tr class="${pr?'fl-prio ':''}${abaixo(it)?'fl-xg-pai':''}">${tds}</tr>`
-            +(abaixo(it)?`<tr class="fl-xg"><td colspan="${cols.length}"><div class="fl-xg-moldura"><img src="${aceUrl(aceFotoPdf(it.foto,'xg'))}" alt=""></div><div class="fl-xg-leg"><span>Foto · ${escHtml(aceItemRotulo(it))}</span></div></td></tr>`:'') });
+            +(abaixo(it)?aceFotosDe(it).map((u,n,arr)=>`<tr class="fl-xg"><td colspan="${cols.length}"><div class="fl-xg-moldura"><img src="${aceUrl(aceFotoPdf(u,'xg'))}" alt=""></div><div class="fl-xg-leg"><span>Foto${arr.length>1?' '+(n+1)+'/'+arr.length:''} · ${escHtml(aceItemRotulo(it))}</span></div></td></tr>`).join(''):'') });
       });
     });
     const tabela=(body)=>`<table class="fl-tbl">
@@ -7987,7 +8018,7 @@
     const nocod=!(it.codigo||'').trim();
     const campos=ACE_COLS.filter(c=>!c.foto && !['codigo','produto','qtde','unidade'].includes(c.k) && (it[c.k]||'').toString().trim());
     const foto=aceUrl(it.foto)
-      ? `<button type="button" class="itc-foto" title="Ampliar foto" onclick="aceFotoAbrir('${escHtml(a.id)}',${o.pos})"><img src="${aceUrl(desigThumb(it.foto))}" alt="Foto do item" loading="lazy"></button>`
+      ? `<button type="button" class="itc-foto" title="Ampliar foto" onclick="aceFotoAbrir('${escHtml(a.id)}',${o.pos})"><img src="${aceUrl(desigThumb(it.foto))}" alt="Foto do item" loading="lazy">${aceMaisBadge(it)}</button>`
       : `<div class="itc-foto vz" title="Sem foto">${ACE_CAM_SVG}</div>`;
     const sel=edit&&aceDet.modo;
     return `<div class="itc ${pr?'prio':''}${o.st==='entregue'?' feito':''}${sel&&aceDet.sel.has(ix)?' sel-on':''}" style="--c:${s.cor}">
@@ -8033,7 +8064,7 @@
           <p class="page-sub">${edit?'Estoque':'PCP'} · Solicitações · ACE</p></div>
         <div style="display:flex;gap:10px">
           <button class="btn btn-ghost" onclick="${voltar}">Voltar</button>
-          <button class="btn btn-primary" onclick="imprimirACE('${a.id}')">Visualizar PDF</button>
+          <button class="btn btn-primary" onclick="${edit?`imprimirACEPcp('${a.id}')`:`imprimirACE('${a.id}')`}">Visualizar PDF</button>
         </div>
       </div>
 
@@ -19701,7 +19732,7 @@ Object.assign(window,{homeToggle,homeFechar,homeAbrir,homeAtFechar,homeAtAbrir})
   Object.assign(window,{renderDanos,renderDanosProjeto,abrirDanosProjeto,renderCartaoForm,novoCartao,editarCartao,excluirCartao,salvarCartao,ctVoltar,ctSetSetor,ctSetAtiv,ctAddResp,ctRemResp,ctPuxarResp,ctBuscaMat,ctFechaMat,ctEscolherMat,ctPayload,blocoResponsaveis,verCartao,folhaCartao,imprimirCartoes,renderCartaoEmissao,emitirBrancos,emitMarcar,emitTodos,reimprimirBrancos,cancelarBrancos,renderDanosDash,dashAtalho,dashPeriodo,cartoesFiltrados,cartoesDoProjeto,numCT,idCT,motivoLabel,ctBrancos,ctValidos,barras,contar,ctLinha,ctResumoResp,abaAgenda,abaKanban,abaLista,abaTarefas,abrirAjuda,andRolar,andNavAtualizar,abrirLoteFila,abrirApont,abrirCard,abrirCardDe,
     abrirChecklist,abrirColar,abrirEmissao,abrirFeriados,abrirFormCliente,abrirImportacao,abrirMapaPin,abrirModal,
     abrirSetor,acBusca,acCaixa,acItemBlur,acItemBusca,acItemEscolher,acItemFechar,acItemTecla,
-    acPreencheExato,aceAddLinha,aceFotoEscolher,aceFotoEnviar,aceFotoRem,aceFotoTam,aceFotoAbrir,aceFotoNav,aceFotoZoom,aceFotoFechar,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
+    acPreencheExato,aceAddLinha,aceFotoEscolher,aceFotoMais,aceFotoEnviar,aceFotoRem,aceFotoTam,aceFotoAbrir,aceFotoNav,aceFotoZoom,aceFotoFechar,aceBusca,aceRemLinha,aceSelAmb,aceSelCliente,aceTrocarCliente,addCustom,addFeriado,
     agHoje,agMover,ambientesDoCliente,aptosPara,ativDe,ativsDoSetor,atualizaAtivsFunc,atualizarContagem,
     emitirApoio,renderEmissaoApoio,salvarApoio,toggleDiaApoio,
     indiceEmissao,emissaoDe,badgeEmissao,painelDetalheEmissao,painelEmitirApoio,painelIrStatus,
